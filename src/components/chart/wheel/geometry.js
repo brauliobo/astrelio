@@ -193,7 +193,7 @@ export const planetPlacements = (chart, wheelShift, band) => {
         longitude,
         radius,
         point: polarPoint(radius, longitude),
-        tick: polarPoint(WHEEL_RADII.houseOuter - 4, longitude),
+        tick: polarPoint(band.tickRadius || WHEEL_RADII.houseOuter - 4, longitude),
       })
     })
   }

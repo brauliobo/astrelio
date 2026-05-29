@@ -44,6 +44,8 @@
     "compare_with": "Compare with",
     "transit_date": "Transit date",
     "progression_date": "Progression date",
+    "natal_positions": "Natal positions",
+    "current_positions": "Current positions",
     "no_data": "No data to display",
     "summary": "Summary"
   },

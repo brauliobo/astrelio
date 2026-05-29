@@ -9,8 +9,7 @@ import { useNatalChart } from '../composables/useChart.js'
 import { secondaryProgression } from '../lib/astro/progressions.js'
 import { localToJdUt, localToUtcMs, offsetMinutesForPerson } from '../lib/astro/timezones.js'
 import { crossAspects } from '../lib/astro/aspects.js'
-import Biwheel from '../components/chart/Biwheel.vue'
-import AspectTable from '../components/chart/AspectTable.vue'
+import ChartComparison from '../components/chart/ChartComparison.vue'
 
 const { t }    = useI18n()
 const people   = usePeopleStore()
@@ -50,9 +49,17 @@ section.progressions-page(data-testid='progressions-page')
         v-model='dateInput'
         data-testid='prog-date'
       )
-    .grid.gap-6(class='lg:grid-cols-2')
-      .border.rounded-xl.p-4(class='border-white/10 bg-night/40')
-        Biwheel(:natal='natal' :overlay='progressed' v-if='natal && progressed')
-      .border.rounded-xl.p-4(class='border-white/10 bg-night/40' v-if='aspects.length')
-        AspectTable(:aspects='aspects')
+      button.text-xs.text-amber-300(
+        class='hover:text-amber-200'
+        @click='dateInput = new Date().toISOString().slice(0,10)'
+        data-testid='btn-today'
+      ) {{ t('common.today') }}
+    ChartComparison(
+      v-if='natal && progressed'
+      :base='natal'
+      :comparison='progressed'
+      :aspects='aspects'
+      :base-label='t("chart.natal_positions")'
+      :comparison-label='t("chart.current_positions")'
+    )
 </template>
