@@ -9,7 +9,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint .",
+    "lint": "node scripts/check-vue-pug.mjs && eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
     "test:watch": "vitest",
