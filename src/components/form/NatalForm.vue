@@ -1,10 +1,13 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import CitySearch from './CitySearch.vue'
 import { ianaOffsetMinutes } from '../../lib/astro/timezones.js'
 
-const props = defineProps({ initial: { type: Object, default: null } })
+const props = defineProps({
+  initial:     { type: Object, default: null },
+  submitLabel: { type: String, default: '' },
+})
 const emit  = defineEmits(['submit', 'cancel'])
 const { t } = useI18n()
 
@@ -19,13 +22,13 @@ const city    = ref(props.initial ? {
   ianaZone: props.initial.ianaZone,
 } : null)
 
-const valid = ref(false)
-
-watch([name, date, time, city], () => {
-  valid.value = !!(name.value && date.value && time.value && city.value)
-})
+const attempted = ref(false)
+const valid = computed(() => !!(name.value.trim() && date.value && time.value && city.value))
+const missingFields = computed(() => attempted.value && !valid.value)
+const buttonLabel = computed(() => props.submitLabel || t('form.calculate'))
 
 const submit = () => {
+  attempted.value = true
   if (!valid.value) return
   const isoLocal = `${date.value}T${time.value}`
   const tzOffsetMinutes = city.value.ianaZone
@@ -33,7 +36,7 @@ const submit = () => {
     : city.value.tz
 
   emit('submit', {
-    name:            name.value,
+    name:            name.value.trim(),
     isoLocal,
     placeLabel:      city.value.name,
     lat:             city.value.lat,
@@ -48,24 +51,22 @@ const submit = () => {
 form.natal-form.grid.gap-3(@submit.prevent='submit' data-testid='natal-form')
   div
     label.block.text-xs.text-slate-400.mb-1 {{ t('form.name') }}
-    input.w-full.bg-slate-900.border.rounded.px-3.py-2.text-slate-100.outline-none(
-      class='border-white/10 focus:border-amber-300'
-      type='text' v-model='name' data-testid='input-name'
+    input.ui-control.ui-control-md.w-full(
+      type='text' v-model='name' required data-testid='input-name'
     )
   .grid.grid-cols-2.gap-3
     div
       label.block.text-xs.text-slate-400.mb-1 {{ t('form.date') }}
-      input.w-full.bg-slate-900.border.rounded.px-3.py-2.text-slate-100.outline-none(
-        class='border-white/10 focus:border-amber-300'
-        type='date' v-model='date' data-testid='input-date'
+      input.ui-control.ui-control-md.w-full(
+        type='date' v-model='date' required data-testid='input-date'
       )
     div
       label.block.text-xs.text-slate-400.mb-1 {{ t('form.time') }}
-      input.w-full.bg-slate-900.border.rounded.px-3.py-2.text-slate-100.outline-none(
-        class='border-white/10 focus:border-amber-300'
-        type='time' v-model='time' data-testid='input-time'
+      input.ui-control.ui-control-md.w-full(
+        type='time' v-model='time' required data-testid='input-time'
       )
   CitySearch(v-model='city')
+  p.text-xs.text-rose-300(v-if='missingFields' data-testid='form-validation') {{ t('form.complete_required') }}
   .flex.justify-end.gap-2.pt-2
     button.px-3.py-2.rounded.text-sm.text-slate-300(
       type='button'
@@ -73,10 +74,10 @@ form.natal-form.grid.gap-3(@submit.prevent='submit' data-testid='natal-form')
       @click='emit("cancel")'
       data-testid='btn-cancel'
     ) {{ t('form.cancel') }}
-    button.px-4.py-2.rounded.text-sm.font-medium.bg-amber-300.text-slate-900.disabled-50(
-      class='hover:bg-amber-200 disabled:opacity-50'
+    button.ui-action-primary.px-4.py-2.text-sm.disabled-50(
+      class='disabled:opacity-50'
       type='submit'
       :disabled='!valid'
       data-testid='btn-submit'
-    ) {{ t('form.calculate') }}
+    ) {{ buttonLabel }}
 </template>
