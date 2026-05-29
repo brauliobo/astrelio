@@ -9,6 +9,7 @@ import { transitsFor } from '../lib/astro/transits.js'
 import { crossAspects } from '../lib/astro/aspects.js'
 import Biwheel from '../components/chart/Biwheel.vue'
 import AspectTable from '../components/chart/AspectTable.vue'
+import ComparisonInsightPanel from '../components/chart/ComparisonInsightPanel.vue'
 
 const { t }    = useI18n()
 const people   = usePeopleStore()
@@ -38,8 +39,7 @@ section.transits-page(data-testid='transits-page')
   div(v-else)
     .flex.items-center.gap-3.mb-4
       label.text-xs.text-slate-400 {{ t('chart.transit_date') }}
-      input.bg-slate-900.border.rounded.px-2.py-1.text-sm.text-slate-100(
-        class='border-white/10'
+      input.ui-control.ui-control-sm(
         type='datetime-local'
         v-model='dateInput'
         data-testid='transit-date'
@@ -49,9 +49,10 @@ section.transits-page(data-testid='transits-page')
         @click='dateInput = new Date().toISOString().slice(0,16)'
         data-testid='btn-now'
       ) {{ t('common.now') }}
+    ComparisonInsightPanel.mb-6(:aspects='aspects' mode='transit')
     .grid.gap-6(class='lg:grid-cols-2')
-      .border.rounded-xl.p-4(class='border-white/10 bg-night/40')
+      .ui-panel
         Biwheel(:natal='natal' :overlay='transit' v-if='natal && transit')
-      .border.rounded-xl.p-4(class='border-white/10 bg-night/40' v-if='aspects.length')
+      .ui-panel(v-if='aspects.length')
         AspectTable(:aspects='aspects')
 </template>

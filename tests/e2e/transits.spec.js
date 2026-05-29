@@ -11,6 +11,8 @@ test.describe('Transits', () => {
   test('renders biwheel and aspect table', async ({ page }) => {
     await page.goto('/#/transits')
     await expect(page.getByTestId('transits-page')).toBeVisible()
+    await expect(page.getByTestId('comparison-insight-panel')).toBeVisible()
+    await expect(page.getByTestId('comparison-insight-row')).toHaveCount(3)
     await expect(page.getByTestId('biwheel')).toBeVisible()
   })
 

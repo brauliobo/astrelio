@@ -8,6 +8,7 @@ import { useNatalChart } from '../composables/useChart.js'
 import { synastryAspects } from '../lib/astro/synastry.js'
 import Biwheel from '../components/chart/Biwheel.vue'
 import AspectTable from '../components/chart/AspectTable.vue'
+import ComparisonInsightPanel from '../components/chart/ComparisonInsightPanel.vue'
 
 const { t }    = useI18n()
 const people   = usePeopleStore()
@@ -33,17 +34,17 @@ section.synastry-page(data-testid='synastry-page')
   div(v-else)
     .flex.items-center.gap-3.mb-4
       label.text-xs.text-slate-400 {{ t('chart.compare_with') }}
-      select.bg-slate-900.border.rounded.px-2.py-1.text-sm.text-slate-100(
-        class='border-white/10'
+      select.ui-control.ui-control-sm(
         @change='onChange'
         :value='compareWith'
         data-testid='compare-select'
       )
         option(value='' :selected='!compareWith') —
         option(v-for='p in people.sorted' :key='p.id' :value='p.id' :selected='p.id === compareWith') {{ p.name }}
+    ComparisonInsightPanel.mb-6(:aspects='aspects' mode='synastry')
     .grid.gap-6(class='lg:grid-cols-2')
-      .border.rounded-xl.p-4(class='border-white/10 bg-night/40')
+      .ui-panel
         Biwheel(:natal='chartA' :overlay='chartB' v-if='chartA && chartB')
-      .border.rounded-xl.p-4(class='border-white/10 bg-night/40' v-if='aspects.length')
+      .ui-panel(v-if='aspects.length')
         AspectTable(:aspects='aspects')
 </template>

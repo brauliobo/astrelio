@@ -203,18 +203,21 @@ export const planetPlacements = (chart, wheelShift, band) => {
 export const placementMap = (placements) =>
   new Map(placements.map(item => [item.planet.name, item]))
 
-export const naturalAspectLines = (chart, wheelShift, radius = WHEEL_RADII.aspect) => {
+export const naturalAspectLines = (chart, wheelShift, radius = WHEEL_RADII.aspect, placements = []) => {
   const byName = new Map((chart.positions || []).map(item => [item.name, item]))
+  const byPlacement = placementMap(placements)
   return naturalAspects(chart)
     .map((aspect) => {
       const a = byName.get(aspect.a)
       const b = byName.get(aspect.b)
+      const placedA = byPlacement.get(aspect.a)
+      const placedB = byPlacement.get(aspect.b)
       return {
         aspect,
         a,
         b,
-        start: a ? polarPoint(radius, norm360(a.longitude + wheelShift)) : null,
-        end: b ? polarPoint(radius, norm360(b.longitude + wheelShift)) : null,
+        start: placedA?.point || (a ? polarPoint(radius, norm360(a.longitude + wheelShift)) : null),
+        end: placedB?.point || (b ? polarPoint(radius, norm360(b.longitude + wheelShift)) : null),
       }
     })
     .filter(line => line.a && line.b)

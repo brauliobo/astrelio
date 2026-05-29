@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
@@ -10,6 +11,7 @@ import { moonPhaseLabel } from '../lib/astro/ephemeris.js'
 import ChartWheel from '../components/chart/ChartWheel.vue'
 import PlanetList from '../components/chart/PlanetList.vue'
 import AspectTable from '../components/chart/AspectTable.vue'
+import ChartInsight from '../components/chart/ChartInsight.vue'
 
 const { t }    = useI18n()
 const people   = usePeopleStore()
@@ -27,14 +29,23 @@ section.natal-page(data-testid='natal-page')
   div(v-if='!person' data-testid='no-person')
     p.text-slate-400 {{ t('chart.select_chart') }}
   div(v-else)
-    h1.text-xl.font-semibold.text-slate-100.mb-1 {{ t('chart.natal_for', { name: person.name }) }}
-    p.text-xs.text-slate-400.mb-4 {{ person.isoLocal }} · {{ person.placeLabel }}
-    .grid.gap-6(class='lg:grid-cols-2')
-      .border.rounded-xl.p-4(class='border-white/10 bg-night/40')
+    .flex.flex-wrap.items-start.justify-between.gap-3.mb-4
+      div
+        h1.text-xl.font-semibold.text-slate-100.mb-1 {{ t('chart.natal_for', { name: person.name }) }}
+        p.text-xs.text-slate-400 {{ person.isoLocal }} · {{ person.placeLabel }}
+      RouterLink.rounded.bg-white.px-3.py-2.text-sm.text-slate-300(
+        to='/report'
+        class='bg-opacity-5 hover:bg-opacity-10 hover:text-white'
+        data-testid='open-report'
+      ) {{ t('report.open') }}
+    .grid.gap-6(class='lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]')
+      .ui-panel
         ChartWheel(:natal='chart' v-if='chart')
-      .border.rounded-xl.p-4(class='border-white/10 bg-night/40')
+      ChartInsight(:chart='chart' :aspects='aspects' :phase-label='phase' v-if='chart')
+    .grid.gap-6.mt-6(class='xl:grid-cols-[minmax(320px,0.8fr)_minmax(0,1fr)]')
+      .ui-panel
         PlanetList(:chart='chart' v-if='chart')
         .mt-4.text-xs.text-slate-400(data-testid='moon-phase') {{ t('chart.moon_phase') }}: {{ phase }}
-    .border.rounded-xl.p-4.mt-6(class='border-white/10 bg-night/40' v-if='aspects.length')
-      AspectTable(:aspects='aspects')
+      .ui-panel(v-if='aspects.length')
+        AspectTable(:aspects='aspects')
 </template>

@@ -12,7 +12,8 @@ test.describe('Solar Return', () => {
     await page.goto('/#/solar-return')
     await expect(page.getByTestId('solar-return-page')).toBeVisible()
     await expect(page.getByTestId('chart-wheel')).toBeVisible()
-    await expect(page.getByTestId('planet-list')).toBeVisible()
+    await expect(page.getByTestId('comparison-positions').getByTestId('planet-list')).toBeVisible()
+    await expect(page.getByTestId('sr-date')).toBeVisible()
   })
 
   test('changing year updates the chart', async ({ page }) => {

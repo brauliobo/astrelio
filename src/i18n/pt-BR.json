@@ -15,10 +15,30 @@
   "home": {
     "heading": "Seus mapas",
     "empty": "Nenhum mapa salvo ainda. Crie o primeiro abaixo.",
+    "empty_title": "Crie seu primeiro mapa natal",
+    "empty_description": "Comece com os dados de nascimento que tiver. Meio-dia fica preenchido quando a hora exata for desconhecida.",
+    "empty_action": "Criar mapa",
+    "new_title": "Novo mapa natal",
+    "edit_title": "Editar mapa natal",
+    "duplicate_title": "Duplicar mapa natal",
+    "duplicate_submit": "Criar duplicata",
+    "copy_name": "Cópia de {name}",
+    "active": "Ativo",
     "new": "Novo mapa",
     "open": "Abrir",
+    "edit": "Editar",
+    "duplicate": "Duplicar",
     "delete": "Excluir",
+    "confirm_delete": "Confirmar exclusão",
+    "deleted": "{name} excluído",
+    "undo": "Desfazer",
     "select_for_synastry": "Selecionar para sinastria"
+  },
+  "report": {
+    "title": "Relatório natal de {name}",
+    "open": "Relatório",
+    "back": "Voltar ao mapa",
+    "print": "Imprimir / PDF"
   },
   "form": {
     "name": "Nome",
@@ -30,6 +50,10 @@
     "lon": "Longitude",
     "tz": "Fuso (min)",
     "no_cities": "Nenhuma cidade encontrada",
+    "city_min_query": "Digite pelo menos {count} caracteres para buscar.",
+    "city_required": "Escolha uma cidade da lista.",
+    "city_detail": "Lat {lat}, lon {lon} · {zone}",
+    "complete_required": "Preencha os campos obrigatórios e escolha uma cidade.",
     "save": "Salvar",
     "cancel": "Cancelar",
     "calculate": "Calcular mapa"
@@ -44,10 +68,102 @@
     "compare_with": "Comparar com",
     "transit_date": "Data dos trânsitos",
     "progression_date": "Data da progressão",
+    "solar_return_year": "Ano da revolução solar",
+    "solar_return_exact": "Retorno exato",
     "natal_positions": "Posições natais",
     "current_positions": "Posições atuais",
+    "solar_return_positions": "Posições da revolução solar",
     "no_data": "Sem dados para exibir",
     "summary": "Resumo"
+  },
+  "analysis": {
+    "title": "Inteligência do mapa",
+    "subtitle": "Posições ponderadas, angularidade e padrões mais fortes.",
+    "sun": "Sol",
+    "moon": "Lua",
+    "horizon": "Assinatura do horizonte",
+    "meridian": "Direção pública",
+    "house_n": "Casa {house}",
+    "element_balance": "Equilíbrio elemental",
+    "modality_balance": "Ritmo modal",
+    "house_emphasis": "Ênfase por casa",
+    "angularity": "Angularidade",
+    "retrogrades": "Retrógrados",
+    "top_aspects": "Aspectos mais fortes",
+    "no_angular": "Nenhum planeta a menos de 8° de um ângulo.",
+    "no_retrogrades": "Nenhum planeta retrógrado neste mapa.",
+    "elements": {
+      "fire": "Fogo",
+      "earth": "Terra",
+      "air": "Ar",
+      "water": "Água"
+    },
+    "modalities": {
+      "cardinal": "Cardinal",
+      "fixed": "Fixo",
+      "mutable": "Mutável"
+    },
+    "angles": {
+      "asc": "ASC",
+      "mc": "MC",
+      "desc": "DESC",
+      "ic": "FC"
+    }
+  },
+  "comparison_insights": {
+    "titles": {
+      "transit": "Temas dos trânsitos",
+      "progression": "Temas das progressões",
+      "synastry": "Temas da sinastria"
+    },
+    "subtitles": {
+      "transit": "Contatos atuais mais fortes com o mapa natal.",
+      "progression": "Contatos mais exatos da progressão secundária.",
+      "synastry": "Vínculos mais ativos entre os dois mapas."
+    },
+    "theme_n": "Tema {n}",
+    "dominant": "Ênfase em {aspect} · {count}",
+    "applying_count": "{count} aplicando",
+    "aspect_meta": "{a} {aspect} {b} · {orb}° · {motion}",
+    "themes": {
+      "transit": {
+        "conjunction": "{b} ativa {a} natal",
+        "opposition": "{b} espelha {a} natal",
+        "trine": "{b} sustenta {a} natal",
+        "square": "{b} desafia {a} natal",
+        "sextile": "{b} abre {a} natal",
+        "quincunx": "{b} ajusta {a} natal"
+      },
+      "progression": {
+        "conjunction": "{b} progredido concentra {a}",
+        "opposition": "{b} progredido testa {a}",
+        "trine": "{b} progredido estabiliza {a}",
+        "square": "{b} progredido pressiona {a}",
+        "sextile": "{b} progredido desenvolve {a}",
+        "quincunx": "{b} progredido refina {a}"
+      },
+      "synastry": {
+        "conjunction": "{a} e {b} se fundem rápido",
+        "opposition": "{a} e {b} polarizam",
+        "trine": "{a} e {b} fluem com facilidade",
+        "square": "{a} e {b} criam atrito",
+        "sextile": "{a} e {b} cooperam",
+        "quincunx": "{a} e {b} pedem ajuste"
+      }
+    },
+    "details": {
+      "conjunction": "Um contato direto torna este par difícil de ignorar e concentra a atenção.",
+      "opposition": "O tema aparece por contraste, negociação e consciência do outro lado.",
+      "trine": "O contato flui com menos resistência e pode parecer naturalmente disponível.",
+      "square": "O contato pede ação, liberação de pressão e escolhas mais claras.",
+      "sextile": "O contato oferece uma abertura viável quando usado de forma deliberada.",
+      "quincunx": "O contato aponta para recalibração, timing e pequenos ajustes práticos."
+    },
+    "empty": {
+      "transit": "Nenhum aspecto de trânsito próximo o bastante para resumir.",
+      "progression": "Nenhum aspecto de progressão próximo o bastante para resumir.",
+      "synastry": "Nenhum aspecto de sinastria próximo o bastante para resumir."
+    }
   },
   "summary": {
     "sun_in":   "Sol em {sign} na casa {house}",
@@ -68,13 +184,15 @@
   },
   "houses": {
     "placidus":      "Placidus",
-    "koch":          "Koch",
+    "koch":          "Koch (aprox.)",
     "porphyry":      "Porfírio",
     "regiomontanus": "Regiomontano",
     "equal":         "Igual",
     "whole_sign":    "Signo inteiro"
   },
   "zodiac": {
+    "tropical": "Tropical",
+    "sidereal": "Sideral",
     "signs": [
       "Áries", "Touro", "Gêmeos", "Câncer", "Leão", "Virgem",
       "Libra", "Escorpião", "Sagitário", "Capricórnio", "Aquário", "Peixes"
@@ -103,7 +221,16 @@
     "trine":       "Trígono",
     "square":      "Quadratura",
     "sextile":     "Sextil",
-    "quincunx":    "Quincúncio"
+    "quincunx":    "Quincúncio",
+    "tight":       "Exatos",
+    "applying":    "Aplicando",
+    "separating":  "Separando",
+    "body_a":      "Corpo",
+    "body_b":      "Corpo",
+    "aspect":      "Aspecto",
+    "motion":      "Movimento",
+    "orb":         "Orbe",
+    "none_for_filter": "Nenhum aspecto neste filtro."
   },
   "settings": {
     "title": "Configurações",
@@ -118,6 +245,7 @@
   "common": {
     "now":    "Agora",
     "today":  "Hoje",
+    "all":    "Todos",
     "loading":"Carregando…",
     "yes":    "Sim",
     "no":     "Não"

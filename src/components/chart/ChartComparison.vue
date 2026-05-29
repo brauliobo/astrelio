@@ -1,4 +1,5 @@
 <script setup>
+import { computed, ref } from 'vue'
 import AspectTable from './AspectTable.vue'
 import ChartWheel from './ChartWheel.vue'
 import PlanetList from './PlanetList.vue'
@@ -32,6 +33,34 @@ const chartMaps = (base, comparison) => [
     planetBand: { inner: 112, outer: 126, tickRadius: 128 },
   },
 ]
+
+const hoverHighlight = ref(null)
+const pinnedHighlight = ref(null)
+const activeHighlight = computed(() => hoverHighlight.value || pinnedHighlight.value || { bodies: [], aspectKey: '' })
+
+const normalizeHighlight = (payload) => ({
+  bodies: [...new Set(payload?.bodies || [])],
+  aspectKey: payload?.aspectKey || '',
+})
+
+const sameHighlight = (a, b) =>
+  a.aspectKey === b.aspectKey &&
+  a.bodies.length === b.bodies.length &&
+  a.bodies.every(body => b.bodies.includes(body))
+
+const setHighlight = (payload) => {
+  hoverHighlight.value = normalizeHighlight(payload)
+}
+
+const clearHighlight = () => {
+  hoverHighlight.value = null
+}
+
+const toggleHighlight = (payload) => {
+  const highlight = normalizeHighlight(payload)
+  pinnedHighlight.value = pinnedHighlight.value && sameHighlight(pinnedHighlight.value, highlight) ? null : highlight
+  hoverHighlight.value = null
+}
 </script>
 
 <template lang="pug">
@@ -46,14 +75,41 @@ const chartMaps = (base, comparison) => [
         .flex.items-center.gap-2
           span.inline-block.h-2.w-6.rounded-full(style='background:#0f8f8f')
           span.text-slate-300 {{ comparisonLabel }}
-    ChartWheel(:charts='chartMaps(base, comparison)' :size='chartSize')
+    ChartWheel(
+      :charts='chartMaps(base, comparison)'
+      :size='chartSize'
+      :highlighted-bodies='activeHighlight.bodies'
+      :highlighted-aspect-key='activeHighlight.aspectKey'
+      @highlight='setHighlight'
+      @clear-highlight='clearHighlight'
+      @toggle-highlight='toggleHighlight'
+    )
   .grid.gap-6.mt-6(class='xl:grid-cols-2')
     .border.rounded-xl.p-4(class='border-white/10 bg-night/40' data-testid='base-positions')
       h2.text-sm.font-semibold.text-slate-200.mb-3 {{ baseLabel }}
-      PlanetList(:chart='base')
+      PlanetList(
+        :chart='base'
+        :highlighted-bodies='activeHighlight.bodies'
+        @highlight='setHighlight'
+        @clear-highlight='clearHighlight'
+        @toggle-highlight='toggleHighlight'
+      )
     .border.rounded-xl.p-4(class='border-white/10 bg-night/40' data-testid='comparison-positions')
       h2.text-sm.font-semibold.text-slate-200.mb-3 {{ comparisonLabel }}
-      PlanetList(:chart='comparison')
+      PlanetList(
+        :chart='comparison'
+        :highlighted-bodies='activeHighlight.bodies'
+        @highlight='setHighlight'
+        @clear-highlight='clearHighlight'
+        @toggle-highlight='toggleHighlight'
+      )
   .border.rounded-xl.p-4.mt-6(class='border-white/10 bg-night/40' v-if='aspects.length')
-    AspectTable(:aspects='aspects')
+    AspectTable(
+      :aspects='aspects'
+      :highlighted-bodies='activeHighlight.bodies'
+      :highlighted-aspect-key='activeHighlight.aspectKey'
+      @highlight='setHighlight'
+      @clear-highlight='clearHighlight'
+      @toggle-highlight='toggleHighlight'
+    )
 </template>

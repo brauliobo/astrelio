@@ -11,6 +11,8 @@ test.describe('Synastry', () => {
   test('renders biwheel + cross-aspects', async ({ page }) => {
     await page.goto('/#/synastry')
     await expect(page.getByTestId('synastry-page')).toBeVisible()
+    await expect(page.getByTestId('comparison-insight-panel')).toBeVisible()
+    await expect(page.getByTestId('comparison-insight-row')).toHaveCount(3)
     await expect(page.getByTestId('biwheel')).toBeVisible()
     await expect(page.getByTestId('aspect-table')).toBeVisible()
   })

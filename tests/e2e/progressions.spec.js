@@ -11,6 +11,8 @@ test.describe('Progressions', () => {
   test('renders progression biwheel', async ({ page }) => {
     await page.goto('/#/progressions')
     await expect(page.getByTestId('progressions-page')).toBeVisible()
+    await expect(page.getByTestId('comparison-insight-panel')).toBeVisible()
+    await expect(page.getByTestId('comparison-insight-row')).toHaveCount(3)
     await expect(page.getByTestId('chart-comparison')).toBeVisible()
     await expect(page.getByTestId('comparison-chart-panel')).toBeVisible()
     await expect(page.getByTestId('chart-wheel')).toHaveCount(1)

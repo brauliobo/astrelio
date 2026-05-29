@@ -10,6 +10,7 @@ import { secondaryProgression } from '../lib/astro/progressions.js'
 import { localToJdUt, localToUtcMs, offsetMinutesForPerson } from '../lib/astro/timezones.js'
 import { crossAspects } from '../lib/astro/aspects.js'
 import ChartComparison from '../components/chart/ChartComparison.vue'
+import ComparisonInsightPanel from '../components/chart/ComparisonInsightPanel.vue'
 
 const { t }    = useI18n()
 const people   = usePeopleStore()
@@ -43,8 +44,7 @@ section.progressions-page(data-testid='progressions-page')
   div(v-else)
     .flex.items-center.gap-3.mb-4
       label.text-xs.text-slate-400 {{ t('chart.progression_date') }}
-      input.bg-slate-900.border.rounded.px-2.py-1.text-sm.text-slate-100(
-        class='border-white/10'
+      input.ui-control.ui-control-sm(
         type='date'
         v-model='dateInput'
         data-testid='prog-date'
@@ -54,6 +54,7 @@ section.progressions-page(data-testid='progressions-page')
         @click='dateInput = new Date().toISOString().slice(0,10)'
         data-testid='btn-today'
       ) {{ t('common.today') }}
+    ComparisonInsightPanel.mb-6(:aspects='aspects' mode='progression')
     ChartComparison(
       v-if='natal && progressed'
       :base='natal'

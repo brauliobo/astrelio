@@ -6,7 +6,12 @@ const props = defineProps({
   placements: { type: Array, required: true },
   color: { type: String, default: '#111827' },
   mapIndex: { type: Number, default: 0 },
+  highlightedBodies: { type: Array, default: () => [] },
 })
+defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
+
+const highlightedBodySet = computed(() => new Set(props.highlightedBodies))
+const hasHighlight = computed(() => highlightedBodySet.value.size > 0)
 
 const glyphs = computed(() =>
   props.placements.map((item) => {
@@ -26,6 +31,12 @@ const glyphs = computed(() =>
     }
   })
 )
+
+const highlightPayload = (body) => ({ bodies: [body], aspectKey: '' })
+const glyphHighlightState = (body) => {
+  if (!hasHighlight.value) return 'idle'
+  return highlightedBodySet.value.has(body) ? 'active' : 'dimmed'
+}
 </script>
 
 <template lang="pug">
@@ -36,15 +47,30 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
     :key='`${item.planet.name}-${item.planet.longitude}`'
     :data-planet='item.planet.name'
     :data-testid='`planet-glyph-${item.planet.name}`'
+    :data-highlight='glyphHighlightState(item.planet.name)'
+    :aria-label='item.planet.name'
+    :aria-pressed='highlightedBodySet.has(item.planet.name)'
+    role='button'
+    tabindex='0'
+    class='cursor-pointer transition-opacity'
+    :class='glyphHighlightState(item.planet.name) === "dimmed" ? "opacity-30" : "opacity-100"'
+    @mouseenter='$emit("highlight", highlightPayload(item.planet.name))'
+    @mouseleave='$emit("clear-highlight")'
+    @focus='$emit("highlight", highlightPayload(item.planet.name))'
+    @blur='$emit("clear-highlight")'
+    @click.stop='$emit("toggle-highlight", highlightPayload(item.planet.name))'
+    @keydown.enter.prevent='$emit("toggle-highlight", highlightPayload(item.planet.name))'
+    @keydown.space.prevent='$emit("toggle-highlight", highlightPayload(item.planet.name))'
   )
+    title {{ item.planet.name }} {{ item.degree }}°
     line(
       :x1='item.exact.x'
       :y1='item.exact.y'
       :x2='item.glyph.x'
       :y2='item.glyph.y'
       :stroke='color'
-      stroke-width='0.45'
-      stroke-opacity='0.32'
+      :stroke-width='glyphHighlightState(item.planet.name) === "active" ? 0.9 : 0.45'
+      :stroke-opacity='glyphHighlightState(item.planet.name) === "active" ? 0.72 : 0.32'
       stroke-linecap='round'
     )
     circle(
@@ -52,15 +78,16 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
       :cy='item.exact.y'
       r='1.35'
       :fill='color'
-      fill-opacity='0.72'
+      :fill-opacity='glyphHighlightState(item.planet.name) === "active" ? 1 : 0.72'
     )
     text(
       :x='item.glyph.x'
       :y='item.glyph.y'
       :fill='item.color'
       :stroke='item.planet.name === "Sun" && mapIndex === 0 ? "#facc15" : "none"'
-      :stroke-width='item.planet.name === "Sun" && mapIndex === 0 ? 0.8 : 0'
+      :stroke-width='glyphHighlightState(item.planet.name) === "active" ? 1.1 : item.planet.name === "Sun" && mapIndex === 0 ? 0.8 : 0'
       :font-size='item.fontSize'
+      :font-weight='glyphHighlightState(item.planet.name) === "active" ? 700 : 400'
       dominant-baseline='central'
       data-role='symbol'
     ) {{ item.symbol }}

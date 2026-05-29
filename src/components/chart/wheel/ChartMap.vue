@@ -11,7 +11,10 @@ const props = defineProps({
   index: { type: Number, required: true },
   count: { type: Number, required: true },
   wheelShift: { type: Number, required: true },
+  highlightedBodies: { type: Array, default: () => [] },
+  highlightedAspectKey: { type: String, default: '' },
 })
+defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 
 const band = computed(() => planetBandFor(props.map, props.index, props.count))
 const placements = computed(() =>
@@ -31,11 +34,21 @@ g(:data-chart-map='map.id')
     :chart='map.chart'
     :wheel-shift='wheelShift'
     :colors='map.aspectColors'
+    :placements='placements'
+    :highlighted-bodies='highlightedBodies'
+    :highlighted-aspect-key='highlightedAspectKey'
+    @highlight='$emit("highlight", $event)'
+    @clear-highlight='$emit("clear-highlight")'
+    @toggle-highlight='$emit("toggle-highlight", $event)'
   )
   PlanetLayer(
     :placements='placements'
     :color='map.color'
     :map-index='index'
+    :highlighted-bodies='highlightedBodies'
+    @highlight='$emit("highlight", $event)'
+    @clear-highlight='$emit("clear-highlight")'
+    @toggle-highlight='$emit("toggle-highlight", $event)'
   )
   HouseNumbers(
     v-if='map.showHouseLabels && count === 1'

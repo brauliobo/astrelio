@@ -15,10 +15,30 @@
   "home": {
     "heading": "Your charts",
     "empty": "No charts saved yet. Create your first one below.",
+    "empty_title": "Create your first birth chart",
+    "empty_description": "Start with the birth details you know. Noon is prefilled when the exact birth time is unknown.",
+    "empty_action": "Create a chart",
+    "new_title": "New birth chart",
+    "edit_title": "Edit birth chart",
+    "duplicate_title": "Duplicate birth chart",
+    "duplicate_submit": "Create duplicate",
+    "copy_name": "Copy of {name}",
+    "active": "Active",
     "new": "New chart",
     "open": "Open",
+    "edit": "Edit",
+    "duplicate": "Duplicate",
     "delete": "Delete",
+    "confirm_delete": "Confirm delete",
+    "deleted": "Deleted {name}",
+    "undo": "Undo",
     "select_for_synastry": "Select for synastry"
+  },
+  "report": {
+    "title": "Natal report for {name}",
+    "open": "Report",
+    "back": "Back to chart",
+    "print": "Print / PDF"
   },
   "form": {
     "name": "Name",
@@ -30,6 +50,10 @@
     "lon": "Longitude",
     "tz": "Timezone (min)",
     "no_cities": "No cities found",
+    "city_min_query": "Type at least {count} characters to search.",
+    "city_required": "Choose a city from the list.",
+    "city_detail": "Lat {lat}, lon {lon} · {zone}",
+    "complete_required": "Complete all required fields and choose a city.",
     "save": "Save",
     "cancel": "Cancel",
     "calculate": "Calculate chart"
@@ -44,10 +68,102 @@
     "compare_with": "Compare with",
     "transit_date": "Transit date",
     "progression_date": "Progression date",
+    "solar_return_year": "Solar return year",
+    "solar_return_exact": "Exact return",
     "natal_positions": "Natal positions",
     "current_positions": "Current positions",
+    "solar_return_positions": "Solar return positions",
     "no_data": "No data to display",
     "summary": "Summary"
+  },
+  "analysis": {
+    "title": "Chart intelligence",
+    "subtitle": "Weighted placements, angularity, and the strongest live patterns.",
+    "sun": "Sun",
+    "moon": "Moon",
+    "horizon": "Horizon signature",
+    "meridian": "Public direction",
+    "house_n": "House {house}",
+    "element_balance": "Element balance",
+    "modality_balance": "Modality rhythm",
+    "house_emphasis": "House emphasis",
+    "angularity": "Angularity",
+    "retrogrades": "Retrogrades",
+    "top_aspects": "Strongest aspects",
+    "no_angular": "No planets within 8° of an angle.",
+    "no_retrogrades": "No retrograde planets in this map.",
+    "elements": {
+      "fire": "Fire",
+      "earth": "Earth",
+      "air": "Air",
+      "water": "Water"
+    },
+    "modalities": {
+      "cardinal": "Cardinal",
+      "fixed": "Fixed",
+      "mutable": "Mutable"
+    },
+    "angles": {
+      "asc": "ASC",
+      "mc": "MC",
+      "desc": "DESC",
+      "ic": "IC"
+    }
+  },
+  "comparison_insights": {
+    "titles": {
+      "transit": "Transit themes",
+      "progression": "Progression themes",
+      "synastry": "Synastry themes"
+    },
+    "subtitles": {
+      "transit": "Strongest live contacts to the natal chart.",
+      "progression": "Tightest secondary progression contacts.",
+      "synastry": "Most active links between both charts."
+    },
+    "theme_n": "Theme {n}",
+    "dominant": "{aspect} emphasis · {count}",
+    "applying_count": "{count} applying",
+    "aspect_meta": "{a} {aspect} {b} · {orb}° · {motion}",
+    "themes": {
+      "transit": {
+        "conjunction": "{b} activates natal {a}",
+        "opposition": "{b} mirrors natal {a}",
+        "trine": "{b} supports natal {a}",
+        "square": "{b} challenges natal {a}",
+        "sextile": "{b} opens natal {a}",
+        "quincunx": "{b} adjusts natal {a}"
+      },
+      "progression": {
+        "conjunction": "Progressed {b} concentrates {a}",
+        "opposition": "Progressed {b} tests {a}",
+        "trine": "Progressed {b} steadies {a}",
+        "square": "Progressed {b} presses {a}",
+        "sextile": "Progressed {b} develops {a}",
+        "quincunx": "Progressed {b} refines {a}"
+      },
+      "synastry": {
+        "conjunction": "{a} and {b} fuse quickly",
+        "opposition": "{a} and {b} polarize",
+        "trine": "{a} and {b} flow easily",
+        "square": "{a} and {b} create friction",
+        "sextile": "{a} and {b} cooperate",
+        "quincunx": "{a} and {b} need adjustment"
+      }
+    },
+    "details": {
+      "conjunction": "A direct contact makes this pair hard to ignore and concentrates attention.",
+      "opposition": "The theme is visible through contrast, negotiation, and awareness of the other side.",
+      "trine": "The contact flows with less resistance and can feel naturally available.",
+      "square": "The contact asks for action, pressure release, and clearer choices.",
+      "sextile": "The contact offers a workable opening when it is used deliberately.",
+      "quincunx": "The contact points to recalibration, timing, and small practical adjustments."
+    },
+    "empty": {
+      "transit": "No transit aspects are close enough to summarize.",
+      "progression": "No progression aspects are close enough to summarize.",
+      "synastry": "No synastry aspects are close enough to summarize."
+    }
   },
   "summary": {
     "sun_in":   "Sun in {sign} in house {house}",
@@ -68,13 +184,15 @@
   },
   "houses": {
     "placidus":      "Placidus",
-    "koch":          "Koch",
+    "koch":          "Koch (approx.)",
     "porphyry":      "Porphyry",
     "regiomontanus": "Regiomontanus",
     "equal":         "Equal",
     "whole_sign":    "Whole sign"
   },
   "zodiac": {
+    "tropical": "Tropical",
+    "sidereal": "Sidereal",
     "signs": [
       "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
       "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
@@ -103,7 +221,16 @@
     "trine":       "Trine",
     "square":      "Square",
     "sextile":     "Sextile",
-    "quincunx":    "Quincunx"
+    "quincunx":    "Quincunx",
+    "tight":       "Tight",
+    "applying":    "Applying",
+    "separating":  "Separating",
+    "body_a":      "Body",
+    "body_b":      "Body",
+    "aspect":      "Aspect",
+    "motion":      "Motion",
+    "orb":         "Orb",
+    "none_for_filter": "No aspects match this filter."
   },
   "settings": {
     "title": "Settings",
@@ -118,6 +245,7 @@
   "common": {
     "now":    "Now",
     "today":  "Today",
+    "all":    "All",
     "loading":"Loading…",
     "yes":    "Yes",
     "no":     "No"
