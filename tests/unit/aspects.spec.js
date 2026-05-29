@@ -29,4 +29,18 @@ describe('aspects', () => {
     const out = crossAspects(a, b)
     expect(out[0].type).toBe('opposition')
   })
+
+  it('uses tighter orbs for nodes and Lilith', () => {
+    const chart = { positions: [mk('Sun', 0), mk('NorthNode', 5.1, -0.053)] }
+    expect(naturalAspects(chart)).toHaveLength(0)
+  })
+
+  it('returns orb, strength, and applying state', () => {
+    const chart = { positions: [mk('Sun', 10, 1), mk('Mars', 72, 0.5)] }
+    const [aspect] = naturalAspects(chart)
+    expect(aspect.type).toBe('sextile')
+    expect(aspect.orb).toBe(5)
+    expect(aspect.strength).toBeGreaterThan(0)
+    expect(typeof aspect.applying).toBe('boolean')
+  })
 })

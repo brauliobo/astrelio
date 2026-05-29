@@ -1,12 +1,12 @@
 import { norm180 } from './zodiac.js'
 
-const DEFS = [
-  { type: 'conjunction', angle:   0, orb: 8 },
-  { type: 'opposition',  angle: 180, orb: 8 },
-  { type: 'trine',       angle: 120, orb: 7 },
-  { type: 'square',      angle:  90, orb: 7 },
-  { type: 'sextile',     angle:  60, orb: 5 },
-  { type: 'quincunx',    angle: 150, orb: 3 }
+export const ASPECT_DEFS = [
+  { type: 'conjunction', angle:   0, orb: 8, weight: 1.00 },
+  { type: 'opposition',  angle: 180, orb: 8, weight: 0.94 },
+  { type: 'trine',       angle: 120, orb: 7, weight: 0.82 },
+  { type: 'square',      angle:  90, orb: 7, weight: 0.90 },
+  { type: 'sextile',     angle:  60, orb: 5, weight: 0.64 },
+  { type: 'quincunx',    angle: 150, orb: 3, weight: 0.54 }
 ]
 
 const TIGHTER = new Set(['Chiron', 'NorthNode', 'SouthNode', 'Lilith'])
@@ -16,12 +16,23 @@ const orbFor = (def, a, b) =>
 
 const detect = (a, b) => {
   const sep = Math.abs(norm180(a.longitude - b.longitude))
-  for (const d of DEFS) {
+  for (const d of ASPECT_DEFS) {
     const delta = Math.abs(sep - d.angle)
-    if (delta <= orbFor(d, a.name, b.name)) {
+    const orb = orbFor(d, a.name, b.name)
+    if (delta <= orb) {
       const rel       = a.speed - b.speed
       const direction = norm180(a.longitude - b.longitude) > 0 ? 1 : -1
-      return { a: a.name, b: b.name, type: d.type, exact: d.angle, delta, applying: rel * direction < 0 }
+      const strength  = Math.max(0, (1 - (delta / orb)) * d.weight)
+      return {
+        a: a.name,
+        b: b.name,
+        type: d.type,
+        exact: d.angle,
+        delta,
+        orb,
+        strength,
+        applying: rel * direction < 0
+      }
     }
   }
   return null

@@ -26,7 +26,8 @@ export const localToJdUt = (isoLocal, tzOffsetMinutes) => {
 /** Resolve IANA tz name + ISO local → offset in minutes (handles historical DST). */
 export const ianaOffsetMinutes = (isoLocal, ianaZone) => {
   const dt = DateTime.fromISO(isoLocal, { zone: ianaZone })
-  return dt.isValid ? dt.offset : 0
+  if (!dt.isValid) throw new Error(`invalid IANA timezone: ${ianaZone}`)
+  return dt.offset
 }
 
 export const inferIanaZone = (placeLabel = '') => {

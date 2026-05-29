@@ -16,3 +16,6 @@ export const findSolarReturnJd = (natalSunLon, nearMs) => {
 
 export const solarReturnChart = (natalSunLon, nearMs, lat, lon, opts) =>
   computeChart(findSolarReturnJd(natalSunLon, nearMs), lat, lon, opts)
+
+export const solarReturnChartForNatal = (natalJdUt, nearMs, lat, lon, opts) =>
+  solarReturnChart(sunLongitude(natalJdUt), nearMs, lat, lon, opts)

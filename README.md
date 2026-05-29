@@ -8,7 +8,7 @@ Frontend-only astrology app — natal charts, transits, secondary progressions, 
 - **Vite 6** + **Tailwind v4**
 - **Pinia** with `pinia-plugin-persistedstate` for the local archive
 - **astronomy-engine** (MIT) for planet positions
-- Custom port for **Placidus / Koch / Porphyry / Regiomontanus / Equal / Whole-Sign** house systems
+- Custom port for **Placidus / Porphyry / Regiomontanus / Equal / Whole-Sign** house systems, with **Koch currently labeled approximate**
 - Offline city lookup generated from **GeoNames cities1000** coordinates and IANA timezones
 - **`@astrodraw/astrochart`** for the SVG wheel
 - **three.js** for the WebGL star background

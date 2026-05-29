@@ -46,6 +46,15 @@ const meanLilith = (jd) => {
 
 const sidereal = (lon, jd, mode) => mode === 'sidereal' ? toSidereal(lon, jd) : lon
 
+const siderealCusps = (houses, jd, mode, system) => {
+  const ascendant = sidereal(houses.ascendant, jd, mode)
+  if (mode === 'sidereal' && system === 'whole_sign') {
+    const start = Math.floor(ascendant / 30) * 30
+    return Array.from({ length: 12 }, (_, i) => norm360(start + i * 30))
+  }
+  return houses.cusps.map(c => sidereal(c, jd, mode))
+}
+
 export const computeChart = (
   jdUt,
   lat,
@@ -77,7 +86,7 @@ export const computeChart = (
     houseSystem: opts.houseSystem,
     ascendant:   sidereal(houses.ascendant, jdUt, opts.zodiac),
     mc:          sidereal(houses.mc,        jdUt, opts.zodiac),
-    cusps:       houses.cusps.map(c => sidereal(c, jdUt, opts.zodiac)),
+    cusps:       siderealCusps(houses, jdUt, opts.zodiac, opts.houseSystem),
     positions
   }
 }

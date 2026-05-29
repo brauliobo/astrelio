@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { calcHouses, houseOf, ascMc } from '../../src/lib/astro/houses.js'
+import { computeChart } from '../../src/lib/astro/ephemeris.js'
 import { localToJdUt } from '../../src/lib/astro/timezones.js'
 import { norm360 } from '../../src/lib/astro/zodiac.js'
 
@@ -30,6 +31,13 @@ describe('houses', () => {
     const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
     const h  = calcHouses('whole_sign', jd, REF.lat, REF.lon)
     for (const c of h.cusps) expect(c % 30).toBeCloseTo(0, 6)
+  })
+
+  it('sidereal whole-sign chart cusps land at sidereal sign boundaries', () => {
+    const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
+    const chart = computeChart(jd, REF.lat, REF.lon, { zodiac: 'sidereal', houseSystem: 'whole_sign' })
+    for (const c of chart.cusps) expect(c % 30).toBeCloseTo(0, 6)
+    expect(chart.cusps[0]).toBe(Math.floor(chart.ascendant / 30) * 30)
   })
 
   it('equal cusps spaced 30°', () => {

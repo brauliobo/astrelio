@@ -35,6 +35,42 @@ describe('ephemeris', () => {
     expect(signIndex(moon.longitude)).toBe(0)  // Aries
   })
 
+  it('pins tropical longitudes for the reference chart', () => {
+    const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
+    const c = computeChart(jd, REF.lat, REF.lon, { zodiac: 'tropical', houseSystem: 'placidus' })
+    const expected = {
+      Sun: 323.822996,
+      Moon: 9.878684,
+      Mercury: 332.944920,
+      Venus: 329.633898,
+      Mars: 246.198046,
+      Jupiter: 328.118930,
+      Saturn: 248.714562,
+      Uranus: 261.582875,
+      Neptune: 275.032481,
+      Pluto: 217.358675,
+      NorthNode: 33.555114,
+      SouthNode: 213.555114,
+      Lilith: 238.463638,
+    }
+
+    for (const [name, longitude] of Object.entries(expected)) {
+      expect(c.positions.find(p => p.name === name).longitude).toBeCloseTo(longitude, 5)
+    }
+  })
+
+  it('pins retrograde state and sidereal ayanamsa shift', () => {
+    const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
+    const tropical = computeChart(jd, REF.lat, REF.lon, { zodiac: 'tropical', houseSystem: 'placidus' })
+    const sidereal = computeChart(jd, REF.lat, REF.lon, { zodiac: 'sidereal', houseSystem: 'placidus' })
+    const tSun = tropical.positions.find(p => p.name === 'Sun')
+    const sSun = sidereal.positions.find(p => p.name === 'Sun')
+
+    expect(tropical.positions.find(p => p.name === 'Pluto').retrograde).toBe(true)
+    expect(tropical.positions.find(p => p.name === 'Mercury').retrograde).toBe(false)
+    expect(tSun.longitude - sSun.longitude).toBeCloseTo(23.656068, 5)
+  })
+
   it('moonPhaseFraction in 0..1', () => {
     const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
     const f  = moonPhaseFraction(jd)
