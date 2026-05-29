@@ -4,6 +4,23 @@ import tailwind from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import { fileURLToPath, URL } from 'node:url'
 
+const manualChunks = (id) => {
+  if (!id.includes('/node_modules/')) return undefined
+  if (id.includes('/node_modules/three/')) return 'vendor-sky'
+  if (id.includes('/node_modules/astronomy-engine/')) return 'vendor-astro'
+  if (id.includes('/node_modules/luxon/')) return 'vendor-time'
+  if (
+    id.includes('/node_modules/@vue/') ||
+    id.includes('/node_modules/vue/') ||
+    id.includes('/node_modules/vue-router/') ||
+    id.includes('/node_modules/vue-i18n/') ||
+    id.includes('/node_modules/pinia')
+  ) {
+    return 'vendor-vue'
+  }
+  return undefined
+}
+
 export default defineConfig(({ mode }) => ({
   base: process.env.GITHUB_PAGES === '1' ? '/astrelio/' : '/',
   plugins: [
@@ -34,5 +51,10 @@ export default defineConfig(({ mode }) => ({
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   server:  { port: 5173, host: '127.0.0.1' },
   preview: { port: 4173, host: '127.0.0.1' },
-  build:   { sourcemap: mode !== 'production' }
+  build:   {
+    sourcemap: mode !== 'production',
+    rollupOptions: {
+      output: { manualChunks }
+    }
+  }
 }))

@@ -1,18 +1,18 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, defineAsyncComponent } from 'vue'
 import { RouterView, RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useSettingsStore } from './stores/settings.js'
 import { usePeopleStore } from './stores/people.js'
 import { useSessionStore } from './stores/session.js'
 import AppLogo from './components/AppLogo.vue'
-import SkyBackground from './components/sky/SkyBackground.vue'
 
 const { t } = useI18n()
 const settings = useSettingsStore()
 const people = usePeopleStore()
 const session = useSessionStore()
 const activePerson = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
+const SkyBackground = defineAsyncComponent(() => import('./components/sky/SkyBackground.vue'))
 
 const links = computed(() => [
   { to: '/',             label: t('nav.home'),         id: 'home' },
@@ -44,7 +44,7 @@ const links = computed(() => [
   main.relative.z-10.flex-1
     .mx-auto.max-w-6xl.px-4.py-6
       RouterView
-  footer.text-xs.text-slate-500.text-center.py-4.relative.z-10
+  footer.text-xs.text-slate-500.text-center.py-4.relative.z-0
     | Astrelio · MIT · {{ new Date().getFullYear() }} · 
     a.underline-offset-2(
       class='hover:text-slate-300 hover:underline'

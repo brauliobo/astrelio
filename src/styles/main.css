@@ -6,6 +6,7 @@
   --color-amber-300:  #fcd34d;
 
   --radius-card:      0.75rem;
+  --radius-control:   0.25rem;
   --shadow-glass:     0 8px 32px rgba(0,0,0,0.35);
 }
 
@@ -32,7 +33,74 @@ body {
   outline-offset: 2px;
 }
 
+@layer components {
+  .ui-panel {
+    background: rgb(11 10 26 / 0.4);
+    border: 1px solid rgb(255 255 255 / 0.1);
+    border-radius: var(--radius-card);
+    padding: 1rem;
+  }
+
+  .ui-control {
+    background: rgb(15 23 42);
+    border: 1px solid rgb(255 255 255 / 0.1);
+    border-radius: var(--radius-control);
+    color: rgb(241 245 249);
+    outline: none;
+  }
+
+  .ui-control:focus {
+    border-color: var(--color-amber-300);
+  }
+
+  .ui-control-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .ui-control-md {
+    font-size: 1rem;
+    line-height: 1.5rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .ui-action-primary {
+    background: var(--color-amber-300);
+    border-radius: var(--radius-control);
+    color: rgb(15 23 42);
+    font-weight: 500;
+  }
+
+  .ui-action-primary:hover {
+    background: rgb(253 230 138);
+  }
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+@media print {
+  header,
+  footer,
+  .report-toolbar {
+    display: none !important;
+  }
+
+  html,
+  body {
+    background: white !important;
+    color: #111827 !important;
+  }
+
+  main,
+  .app-shell {
+    background: white !important;
+  }
+
+  .report-page {
+    color: #111827 !important;
+  }
 }

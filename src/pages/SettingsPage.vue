@@ -29,8 +29,7 @@ section.settings.max-w-md(data-testid='settings-page')
   .grid.gap-4
     div
       label.block.text-xs.text-slate-400.mb-1 {{ t('settings.language') }}
-      select.w-full.bg-slate-900.border.rounded.px-3.py-2.text-slate-100(
-        class='border-white/10'
+      select.ui-control.ui-control-md.w-full(
         :value='settings.locale'
         @change='onLocale'
         data-testid='setting-locale'
@@ -39,16 +38,14 @@ section.settings.max-w-md(data-testid='settings-page')
         option(value='en') English
     div
       label.block.text-xs.text-slate-400.mb-1 {{ t('settings.house_system') }}
-      select.w-full.bg-slate-900.border.rounded.px-3.py-2.text-slate-100(
-        class='border-white/10'
+      select.ui-control.ui-control-md.w-full(
         v-model='settings.houseSystem'
         data-testid='setting-houses'
       )
         option(v-for='h in houses' :key='h' :value='h') {{ t(`houses.${h}`) }}
     div
       label.block.text-xs.text-slate-400.mb-1 {{ t('settings.ayanamsa') }}
-      select.w-full.bg-slate-900.border.rounded.px-3.py-2.text-slate-100(
-        class='border-white/10'
+      select.ui-control.ui-control-md.w-full(
         v-model='settings.zodiac'
         data-testid='setting-zodiac'
       )
