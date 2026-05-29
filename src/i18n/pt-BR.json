@@ -1,0 +1,123 @@
+{
+  "app": {
+    "title": "Astrelio",
+    "tagline": "Mapas astrais no navegador"
+  },
+  "nav": {
+    "home": "Início",
+    "natal": "Mapa Natal",
+    "transits": "Trânsitos",
+    "progressions": "Progressões",
+    "solar_return": "Rev. Solar",
+    "synastry": "Sinastria",
+    "settings": "Configurações"
+  },
+  "home": {
+    "heading": "Seus mapas",
+    "empty": "Nenhum mapa salvo ainda. Crie o primeiro abaixo.",
+    "new": "Novo mapa",
+    "open": "Abrir",
+    "delete": "Excluir",
+    "select_for_synastry": "Selecionar para sinastria"
+  },
+  "form": {
+    "name": "Nome",
+    "date": "Data",
+    "time": "Hora",
+    "place": "Local",
+    "search_place": "Buscar cidade",
+    "lat": "Latitude",
+    "lon": "Longitude",
+    "tz": "Fuso (min)",
+    "no_cities": "Nenhuma cidade encontrada",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "calculate": "Calcular mapa"
+  },
+  "chart": {
+    "natal_for": "Mapa natal de {name}",
+    "asc": "Ascendente",
+    "mc": "Meio do Céu",
+    "moon_phase": "Fase da Lua",
+    "house_system": "Sistema de casas",
+    "select_chart": "Selecione um mapa",
+    "compare_with": "Comparar com",
+    "transit_date": "Data dos trânsitos",
+    "progression_date": "Data da progressão",
+    "no_data": "Sem dados para exibir",
+    "summary": "Resumo"
+  },
+  "summary": {
+    "sun_in":   "Sol em {sign} na casa {house}",
+    "moon_in":  "Lua em {sign} na casa {house}",
+    "asc_in":   "Ascendente em {sign}",
+    "mc_in":    "Meio do Céu em {sign}",
+    "phase":    "Fase da Lua: {phase}"
+  },
+  "moon_phase": {
+    "new":      "Nova",
+    "waxing_c": "Crescente côncava",
+    "first_q":  "Quarto crescente",
+    "waxing_g": "Gibosa crescente",
+    "full":     "Cheia",
+    "waning_g": "Gibosa minguante",
+    "last_q":   "Quarto minguante",
+    "waning_c": "Minguante côncava"
+  },
+  "houses": {
+    "placidus":      "Placidus",
+    "koch":          "Koch",
+    "porphyry":      "Porfírio",
+    "regiomontanus": "Regiomontano",
+    "equal":         "Igual",
+    "whole_sign":    "Signo inteiro"
+  },
+  "zodiac": {
+    "signs": [
+      "Áries", "Touro", "Gêmeos", "Câncer", "Leão", "Virgem",
+      "Libra", "Escorpião", "Sagitário", "Capricórnio", "Aquário", "Peixes"
+    ],
+    "signs_short": ["Ari", "Tou", "Gêm", "Cân", "Leã", "Vir", "Lib", "Esc", "Sag", "Cap", "Aqu", "Pei"]
+  },
+  "planets": {
+    "Sun":     "Sol",
+    "Moon":    "Lua",
+    "Mercury": "Mercúrio",
+    "Venus":   "Vênus",
+    "Mars":    "Marte",
+    "Jupiter": "Júpiter",
+    "Saturn":  "Saturno",
+    "Uranus":  "Urano",
+    "Neptune": "Netuno",
+    "Pluto":   "Plutão",
+    "Chiron":  "Quíron",
+    "NorthNode": "Nodo Norte",
+    "SouthNode": "Nodo Sul",
+    "Lilith":  "Lilith"
+  },
+  "aspects": {
+    "conjunction": "Conjunção",
+    "opposition":  "Oposição",
+    "trine":       "Trígono",
+    "square":      "Quadratura",
+    "sextile":     "Sextil",
+    "quincunx":    "Quincúncio"
+  },
+  "settings": {
+    "title": "Configurações",
+    "language": "Idioma",
+    "house_system": "Sistema de casas",
+    "ayanamsa": "Ayanamsa",
+    "tropical": "Tropical",
+    "sidereal": "Sideral (Lahiri)",
+    "sky_bg": "Fundo estelar (WebGL)",
+    "reset": "Apagar dados locais"
+  },
+  "common": {
+    "now":    "Agora",
+    "today":  "Hoje",
+    "loading":"Carregando…",
+    "yes":    "Sim",
+    "no":     "Não"
+  }
+}

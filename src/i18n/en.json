@@ -1,0 +1,123 @@
+{
+  "app": {
+    "title": "Astrelio",
+    "tagline": "Astrology charts in the browser"
+  },
+  "nav": {
+    "home": "Home",
+    "natal": "Natal",
+    "transits": "Transits",
+    "progressions": "Progressions",
+    "solar_return": "Solar Return",
+    "synastry": "Synastry",
+    "settings": "Settings"
+  },
+  "home": {
+    "heading": "Your charts",
+    "empty": "No charts saved yet. Create your first one below.",
+    "new": "New chart",
+    "open": "Open",
+    "delete": "Delete",
+    "select_for_synastry": "Select for synastry"
+  },
+  "form": {
+    "name": "Name",
+    "date": "Date",
+    "time": "Time",
+    "place": "Place",
+    "search_place": "Search city",
+    "lat": "Latitude",
+    "lon": "Longitude",
+    "tz": "Timezone (min)",
+    "no_cities": "No cities found",
+    "save": "Save",
+    "cancel": "Cancel",
+    "calculate": "Calculate chart"
+  },
+  "chart": {
+    "natal_for": "Natal chart of {name}",
+    "asc": "Ascendant",
+    "mc": "Midheaven",
+    "moon_phase": "Moon phase",
+    "house_system": "House system",
+    "select_chart": "Select a chart",
+    "compare_with": "Compare with",
+    "transit_date": "Transit date",
+    "progression_date": "Progression date",
+    "no_data": "No data to display",
+    "summary": "Summary"
+  },
+  "summary": {
+    "sun_in":   "Sun in {sign} in house {house}",
+    "moon_in":  "Moon in {sign} in house {house}",
+    "asc_in":   "Ascendant in {sign}",
+    "mc_in":    "Midheaven in {sign}",
+    "phase":    "Moon phase: {phase}"
+  },
+  "moon_phase": {
+    "new":      "New",
+    "waxing_c": "Waxing crescent",
+    "first_q":  "First quarter",
+    "waxing_g": "Waxing gibbous",
+    "full":     "Full",
+    "waning_g": "Waning gibbous",
+    "last_q":   "Last quarter",
+    "waning_c": "Waning crescent"
+  },
+  "houses": {
+    "placidus":      "Placidus",
+    "koch":          "Koch",
+    "porphyry":      "Porphyry",
+    "regiomontanus": "Regiomontanus",
+    "equal":         "Equal",
+    "whole_sign":    "Whole sign"
+  },
+  "zodiac": {
+    "signs": [
+      "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+      "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+    ],
+    "signs_short": ["Ari", "Tau", "Gem", "Can", "Leo", "Vir", "Lib", "Sco", "Sag", "Cap", "Aqu", "Pis"]
+  },
+  "planets": {
+    "Sun":     "Sun",
+    "Moon":    "Moon",
+    "Mercury": "Mercury",
+    "Venus":   "Venus",
+    "Mars":    "Mars",
+    "Jupiter": "Jupiter",
+    "Saturn":  "Saturn",
+    "Uranus":  "Uranus",
+    "Neptune": "Neptune",
+    "Pluto":   "Pluto",
+    "Chiron":  "Chiron",
+    "NorthNode": "North Node",
+    "SouthNode": "South Node",
+    "Lilith":  "Lilith"
+  },
+  "aspects": {
+    "conjunction": "Conjunction",
+    "opposition":  "Opposition",
+    "trine":       "Trine",
+    "square":      "Square",
+    "sextile":     "Sextile",
+    "quincunx":    "Quincunx"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "house_system": "House system",
+    "ayanamsa": "Ayanamsa",
+    "tropical": "Tropical",
+    "sidereal": "Sidereal (Lahiri)",
+    "sky_bg": "Star background (WebGL)",
+    "reset": "Erase local data"
+  },
+  "common": {
+    "now":    "Now",
+    "today":  "Today",
+    "loading":"Loading…",
+    "yes":    "Yes",
+    "no":     "No"
+  }
+}

@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@theme {
+  --color-night:      #0b0a1a;
+  --color-night-50:   #1a1530;
+  --color-amber-300:  #fcd34d;
+
+  --radius-card:      0.75rem;
+  --shadow-glass:     0 8px 32px rgba(0,0,0,0.35);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html, body {
+  background: var(--color-night);
+  color:      rgb(241 245 249);
+  min-height: 100dvh;
+}
+
+body {
+  font-feature-settings: "tnum" 0;
+}
+
+/* Tabular numerals for charts */
+.tabular-nums { font-variant-numeric: tabular-nums; }
+
+/* Polished focus rings */
+:focus-visible {
+  outline: 2px solid var(--color-amber-300);
+  outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

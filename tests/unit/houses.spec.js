@@ -1,0 +1,69 @@
+import { describe, it, expect } from 'vitest'
+import { calcHouses, houseOf, ascMc } from '../../src/lib/astro/houses.js'
+import { localToJdUt } from '../../src/lib/astro/timezones.js'
+import { norm360 } from '../../src/lib/astro/zodiac.js'
+
+// Brazil 1986-02-12 was on DST (Horário de Verão) → UTC-2, not UTC-3
+const REF = {
+  isoLocal:        '1986-02-12T18:10',
+  tzOffsetMinutes: -120,
+  lat:             -23.18,
+  lon:             -45.88
+}
+
+describe('houses', () => {
+  it('cusp 1 equals ascendant, cusp 10 equals MC', () => {
+    const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
+    const h  = calcHouses('placidus', jd, REF.lat, REF.lon)
+    expect(h.cusps[0]).toBeCloseTo(h.ascendant, 6)
+    expect(h.cusps[9]).toBeCloseTo(h.mc, 6)
+  })
+
+  it('opposite cusps differ by 180°', () => {
+    const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
+    const h  = calcHouses('placidus', jd, REF.lat, REF.lon)
+    expect(norm360(h.cusps[3] - h.cusps[9])).toBeCloseTo(180, 4)
+    expect(norm360(h.cusps[6] - h.cusps[0])).toBeCloseTo(180, 4)
+  })
+
+  it('whole-sign cusps land at sign boundaries', () => {
+    const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
+    const h  = calcHouses('whole_sign', jd, REF.lat, REF.lon)
+    for (const c of h.cusps) expect(c % 30).toBeCloseTo(0, 6)
+  })
+
+  it('equal cusps spaced 30°', () => {
+    const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
+    const h  = calcHouses('equal', jd, REF.lat, REF.lon)
+    for (let i = 1; i < 12; i++) {
+      const span = norm360(h.cusps[i] - h.cusps[i - 1])
+      expect(span).toBeCloseTo(30, 4)
+    }
+  })
+
+  it('houseOf returns 1..12', () => {
+    const cusps = Array.from({ length: 12 }, (_, i) => i * 30)
+    expect(houseOf(15,  cusps)).toBe(1)
+    expect(houseOf(45,  cusps)).toBe(2)
+    expect(houseOf(355, cusps)).toBe(12)
+  })
+
+  it('ascendant within reasonable range for São José dos Campos', () => {
+    const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
+    const { ascendant, mc } = ascMc(jd, REF.lat, REF.lon)
+    // Vega Plus reference: ASC ~ Cancer 27°49' ≈ 117.8°, MC ~ Taurus 11°36' ≈ 41.6°
+    expect(Math.abs(norm360(ascendant - 117.8))).toBeLessThan(2)
+    expect(Math.abs(norm360(mc - 41.6))).toBeLessThan(2)
+  })
+
+  it('placidus cusps match Vega Plus reference quadrants', () => {
+    const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
+    const h  = calcHouses('placidus', jd, REF.lat, REF.lon)
+    const expected = [117.8, 154.4, 190.6, 221.6, 247.7, 271.9, 297.8, 334.4, 10.6, 41.6, 67.7, 91.9]
+
+    h.cusps.forEach((cusp, i) => {
+      const delta = Math.abs(norm360(cusp - expected[i]))
+      expect(Math.min(delta, 360 - delta)).toBeLessThan(1)
+    })
+  })
+})
