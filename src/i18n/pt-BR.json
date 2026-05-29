@@ -34,6 +34,27 @@
     "undo": "Desfazer",
     "select_for_synastry": "Selecionar para sinastria"
   },
+  "person": {
+    "birth_data": "Auditoria dos dados de nascimento",
+    "edit_title": "Editar dados de nascimento",
+    "actions": "Ações da pessoa",
+    "actions_description": "Duplique este registro ou remova-o dos mapas salvos.",
+    "local_time": "Hora local",
+    "utc_time": "Hora UTC",
+    "timezone": "Fuso horário",
+    "coordinates": "Coordenadas",
+    "source_city": "Cidade de origem",
+    "open_natal": "Mapa natal",
+    "open_report": "Relatório",
+    "edit": "Editar",
+    "duplicate": "Duplicar",
+    "delete": "Excluir",
+    "confirm_delete": "Confirmar exclusão",
+    "copy_name": "Cópia de {name}",
+    "not_found_title": "Pessoa não encontrada",
+    "not_found_description": "Este mapa salvo não está mais disponível.",
+    "back_home": "Voltar aos mapas"
+  },
   "report": {
     "title": "Relatório natal de {name}",
     "open": "Relatório",
@@ -165,6 +186,127 @@
       "synastry": "Nenhum aspecto de sinastria próximo o bastante para resumir."
     }
   },
+  "interpretations": {
+    "title": "Interpretações",
+    "subtitle": "Notas concisas de posições e aspectos a partir dos fatores mais fortes do mapa.",
+    "sections": {
+      "placements": "Posições",
+      "aspects": "Aspectos-chave"
+    },
+    "titles": {
+      "placement": "{planet} em {sign} · casa {house}",
+      "aspect": "{a} {aspect} {b}"
+    },
+    "sentences": {
+      "planet_sign": "{planet} expressa {role} por meio de {tone}.",
+      "planet_house": "Na casa {house}, esse foco se dirige a {area}.",
+      "natal_aspect": "O aspecto {aspect} {tone}.",
+      "transit_aspect": "{primary} em trânsito {tone} {secondary} natal.",
+      "progression_aspect": "{primary} progredido {tone} {secondary} natal.",
+      "synastry_aspect": "{primary} {tone} {secondary} entre os mapas."
+    },
+    "planet_roles": {
+      "Sun": "identidade, propósito e vitalidade",
+      "Moon": "necessidades, memória e resposta instintiva",
+      "Mercury": "linguagem, percepção e tomada de decisão",
+      "Venus": "afeto, gosto e atração",
+      "Mars": "impulso, coragem e estilo de conflito",
+      "Jupiter": "crescimento, fé e oportunidade",
+      "Saturn": "disciplina, limites e domínio a longo prazo",
+      "Uranus": "mudança, autonomia e invenção",
+      "Neptune": "imaginação, sensibilidade e entrega",
+      "Pluto": "profundidade, poder e transformação"
+    },
+    "sign_tones": [
+      "iniciativa direta e começo corajoso",
+      "presença estável, paciência e simplicidade material",
+      "curiosidade, troca e pensamento adaptável",
+      "proteção, sentimento e continuidade emocional",
+      "presença criativa, lealdade e confiança expressiva",
+      "discernimento, técnica e refinamento útil",
+      "equilíbrio, reciprocidade e inteligência social",
+      "intensidade, honestidade e foco psicológico",
+      "exploração, franqueza e horizontes mais amplos",
+      "estrutura, responsabilidade e ambição concreta",
+      "visão independente, redes e ideias voltadas ao futuro",
+      "empatia, simbolismo e imaginação permeável"
+    ],
+    "house_areas": {
+      "1": "identidade, linguagem corporal e primeiras impressões",
+      "2": "recursos, valores e autossuficiência",
+      "3": "aprendizado, voz, irmãos e movimento diário",
+      "4": "lar, raízes, padrões familiares e privacidade",
+      "5": "prazer, romance, criatividade e risco",
+      "6": "ritmo de trabalho, serviço, saúde e habilidade",
+      "7": "parceria, acordos e espelhos diretos",
+      "8": "recursos compartilhados, intimidade, confiança e reparo",
+      "9": "estudo, viagens, crenças e sentido de longo alcance",
+      "10": "vocação, reputação, autoridade e trabalho público",
+      "11": "amizades, grupos, planos e metas coletivas",
+      "12": "recolhimento, padrões ocultos, compaixão e liberação"
+    },
+    "aspect_tones": {
+      "conjunction": "concentra os dois planetas em um tema direto",
+      "opposition": "torna o tema visível por contraste e negociação",
+      "trine": "permite cooperação entre os planetas com menos resistência",
+      "square": "cria pressão que pede ação e escolhas mais claras",
+      "sextile": "abre uma oportunidade viável quando usada com intenção",
+      "quincunx": "pede ajuste, timing e recalibração prática"
+    },
+    "variant_tones": {
+      "transit": {
+        "conjunction": "coloca foco imediato sobre",
+        "opposition": "traz contraste e perspectiva externa para",
+        "trine": "apoia e estabiliza",
+        "square": "pressiona",
+        "sextile": "abre uma oportunidade prática para",
+        "quincunx": "pede pequenos ajustes em torno de"
+      },
+      "progression": {
+        "conjunction": "internaliza e concentra",
+        "opposition": "desenvolve consciência por contraste com",
+        "trine": "amadurece suavemente junto de",
+        "square": "impulsiona crescimento por tensão com",
+        "sextile": "desenvolve gradualmente",
+        "quincunx": "refina hábitos em torno de"
+      },
+      "synastry": {
+        "conjunction": "amplifica fortemente",
+        "opposition": "encontra e polariza",
+        "trine": "flui com facilidade com",
+        "square": "cria atrito com",
+        "sextile": "coopera de forma construtiva com",
+        "quincunx": "precisa de ajuste com"
+      }
+    }
+  },
+  "techniques": {
+    "nav": {
+      "profections": "Profecções",
+      "solar_arc": "Arco Solar",
+      "lunar_return": "Rev. Lunar"
+    },
+    "profections": {
+      "title": "Profecção anual",
+      "subtitle": "Foco temporal para {name}",
+      "date": "Data da profecção",
+      "age": "Idade",
+      "house": "Casa",
+      "sign": "Signo",
+      "lord": "Senhor do tempo",
+      "cycle": "Ciclo {cycle} pelas casas"
+    },
+    "solar_arc": {
+      "date": "Data do arco solar",
+      "arc": "Arco solar",
+      "positions": "Posições por arco solar"
+    },
+    "lunar_return": {
+      "date": "Data da revolução lunar",
+      "exact": "Retorno exato",
+      "positions": "Posições da revolução lunar"
+    }
+  },
   "summary": {
     "sun_in":   "Sol em {sign} na casa {house}",
     "moon_in":  "Lua em {sign} na casa {house}",
@@ -240,7 +382,40 @@
     "tropical": "Tropical",
     "sidereal": "Sideral (Lahiri)",
     "sky_bg": "Fundo estelar (WebGL)",
+    "aspect_options": "Opções de aspectos",
+    "aspect_set": "Conjunto de aspectos",
+    "orb_width": "Largura do orbe",
+    "applying_only": "Mostrar apenas aspectos aplicativos",
+    "include_modern_planets": "Incluir planetas modernos e pontos",
+    "aspect_sets": {
+      "all": "Maiores + quincúncio",
+      "major": "Apenas aspectos maiores"
+    },
+    "orb_scales": {
+      "tight": "Fechado",
+      "standard": "Padrão",
+      "wide": "Amplo"
+    },
     "reset": "Apagar dados locais"
+  },
+  "export": {
+    "backup": {
+      "title": "Backup",
+      "export_json": "Exportar JSON",
+      "import_json": "Importar JSON",
+      "import_confirm": "Substituir mapas salvos e configurações por este backup?",
+      "exported": "Backup baixado.",
+      "imported": "Backup importado.",
+      "invalid": "Este arquivo de backup não pôde ser importado."
+    },
+    "chart": {
+      "svg": "SVG",
+      "png": "PNG",
+      "png_working": "PNG...",
+      "svg_ready": "SVG baixado.",
+      "png_ready": "PNG baixado.",
+      "failed": "Falha ao exportar o mapa."
+    }
   },
   "common": {
     "now":    "Agora",
