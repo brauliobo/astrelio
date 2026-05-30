@@ -8,6 +8,8 @@ import { moonPhaseLighting, moonPhaseLitPoints } from './moonPhase.js'
 const STAR_COUNT = 520
 const CHART_SELECTOR = '[data-testid="chart-wheel-svg"]'
 const SKY_ASTERISMS_URL = '/data/sky-asterisms.generated.json'
+const ASTERISM_LONGITUDE_SPREAD = 1.55
+const ASTERISM_LATITUDE_SPREAD = 1.85
 
 export const SKY_PLANETS = [
   { name: 'Sun', color: '#f6c453', radius: 13, photo: 'solar', image: '/planets/sun.jpg', texture: ['#fff7ad', '#f6c453', '#b45309'] },
@@ -144,6 +146,44 @@ const angularDistance = (a, b) => {
   return Math.min(distance, 360 - distance)
 }
 
+const signedAngularDistance = (longitude, origin) => {
+  const distance = norm360(longitude - origin)
+  return distance > 180 ? distance - 360 : distance
+}
+
+const circularMean = values => {
+  if (!values.length) return 0
+  const vector = values.reduce((sum, value) => {
+    const radians = value * Math.PI / 180
+    sum.x += Math.cos(radians)
+    sum.y += Math.sin(radians)
+    return sum
+  }, { x: 0, y: 0 })
+  return norm360(Math.atan2(vector.y, vector.x) * 180 / Math.PI)
+}
+
+const asterismProjection = (stars = []) => {
+  const validStars = stars.filter(star => Number.isFinite(star?.lon) && Number.isFinite(star?.lat))
+  if (!validStars.length) return null
+  return {
+    centerLon: circularMean(validStars.map(star => star.lon)),
+    centerLat: validStars.reduce((sum, star) => sum + star.lat, 0) / validStars.length,
+  }
+}
+
+const distortAsterismStar = (star, projection) => {
+  if (!projection) return star
+  return {
+    ...star,
+    lon: norm360(projection.centerLon + signedAngularDistance(star.lon, projection.centerLon) * ASTERISM_LONGITUDE_SPREAD),
+    lat: clamp(
+      projection.centerLat + (star.lat - projection.centerLat) * ASTERISM_LATITUDE_SPREAD,
+      -82,
+      82
+    ),
+  }
+}
+
 export const skyLongitudeForHumanDesignLongitude = longitude =>
   norm360(270 - mandalaAngleForActivation(activationFromLongitude(longitude)))
 
@@ -266,15 +306,16 @@ const drawEnvironment = (ctx, bounds, mode, wheelShift, palette) => {
   }
 }
 
-const projectAsterismStar = (star, bounds, mode, wheelShift) => {
-  const latRange = Math.min(76, bounds.skyRadius * 0.17)
-  const baseRadius = Math.max(bounds.chartRadius * 1.34, bounds.skyRadius * 0.68)
-  const radius = clamp(baseRadius + star.lat * latRange / 90, bounds.chartRadius * 1.16, bounds.skyRadius * 0.92)
-  const longitude = skyLongitudeForPosition({ longitude: star.lon, mode, wheelShift })
+const projectAsterismStar = (star, bounds, mode, wheelShift, projection = null) => {
+  const projectedStar = distortAsterismStar(star, projection)
+  const latRange = Math.min(132, bounds.skyRadius * 0.30)
+  const baseRadius = Math.max(bounds.chartRadius * 1.26, bounds.skyRadius * 0.62)
+  const radius = clamp(baseRadius + projectedStar.lat * latRange / 90, bounds.chartRadius * 1.08, bounds.skyRadius * 0.97)
+  const longitude = skyLongitudeForPosition({ longitude: projectedStar.lon, mode, wheelShift })
   return {
     ...polarPoint(bounds.cx, bounds.cy, radius, longitude),
     longitude,
-    mag: star.mag,
+    mag: projectedStar.mag,
   }
 }
 
@@ -299,10 +340,10 @@ const affineTransformForAnchors = (sourceAnchors, targetAnchors) => {
   return { a, b, c, d, e, f }
 }
 
-const drawAnchoredAsterismImage = (ctx, image, imageMeta, bounds, mode, wheelShift, palette) => {
+const drawAnchoredAsterismImage = (ctx, image, imageMeta, bounds, mode, wheelShift, palette, projection) => {
   if (!image?.complete || image.naturalWidth <= 0 || !imageMeta?.anchors?.length) return false
   const sourceAnchors = imageMeta.anchors.map(anchor => ({ x: anchor.pos[0], y: anchor.pos[1] }))
-  const targetAnchors = imageMeta.anchors.map(anchor => projectAsterismStar(anchor, bounds, mode, wheelShift))
+  const targetAnchors = imageMeta.anchors.map(anchor => projectAsterismStar(anchor, bounds, mode, wheelShift, projection))
   const transform = affineTransformForAnchors(sourceAnchors, targetAnchors)
   if (!transform) return false
 
@@ -339,12 +380,16 @@ const drawAsterisms = (ctx, bounds, mode, wheelShift, palette, skyData, asterism
 
   const drawnImages = new Set()
   for (const asterism of skyData.asterisms) {
-    const projectedByHip = new Map(asterism.stars.map(star => [star.hip, projectAsterismStar(star, bounds, mode, wheelShift)]))
+    const projection = asterismProjection([
+      ...asterism.stars,
+      ...(asterism.image?.anchors || []),
+    ])
+    const projectedByHip = new Map(asterism.stars.map(star => [star.hip, projectAsterismStar(star, bounds, mode, wheelShift, projection)]))
     const points = [...projectedByHip.values()]
     const imageSrc = asterism.image?.src || asterism.image
     if (imageSrc && !drawnImages.has(imageSrc)) {
       const image = asterismImages?.get(imageSrc)
-      const drewAnchoredImage = drawAnchoredAsterismImage(ctx, image, asterism.image, bounds, mode, wheelShift, palette)
+      const drewAnchoredImage = drawAnchoredAsterismImage(ctx, image, asterism.image, bounds, mode, wheelShift, palette, projection)
       if (!drewAnchoredImage) drawFallbackAsterismImage(ctx, image, points, palette)
       drawnImages.add(imageSrc)
     }
