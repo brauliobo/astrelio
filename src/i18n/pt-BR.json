@@ -75,7 +75,13 @@
     "title": "Relatório natal de {name}",
     "open": "Relatório",
     "back": "Voltar ao mapa",
-    "print": "Imprimir / PDF"
+    "print": "Imprimir / PDF",
+    "kicker": "Relatório tropical para impressão",
+    "system": "Sistema",
+    "wheel": "Roda",
+    "positions": "Listas de posições",
+    "aspectarian": "Aspectário",
+    "aspect_list": "Lista de aspectos"
   },
   "human_design": {
     "open": "Human Design",
@@ -85,6 +91,20 @@
     "authority": "Autoridade",
     "profile": "Perfil",
     "definition": "Definição",
+    "strategy": "Estratégia",
+    "incarnation_cross": "Cruz de encarnação",
+    "variables": "Variáveis",
+    "centers_title": "Centros",
+    "channels": "Canais",
+    "gates": "Portões",
+    "transits": "Trânsitos",
+    "team": "Equipe",
+    "geometry": "Geometria",
+    "cross_quarter": "Quarto",
+    "connection_theme": "Tema da conexão",
+    "open_centers": "Centros abertos",
+    "composite_channels": "Canais compostos",
+    "variable_notice": "As Variáveis dependem do horário exato de nascimento; use como camada de precisão após Estratégia e Autoridade.",
     "design": "Design",
     "personality": "Personalidade",
     "planet": "Planeta",
@@ -105,6 +125,58 @@
     "profile_title": "Perfil {profile}",
     "gate_title": "Portão {gate}",
     "open_circuitry": "Circuitaria aberta",
+    "gate_explorer": "Explorador de portões",
+    "gate_explorer_note": "Revise cada portão ativo, sua ênfase de linha, portões harmônicos e precisão por planeta.",
+    "search_gates": "Buscar portões",
+    "no_gate_results": "Nenhum portão corresponde à busca.",
+    "gate": "Portão",
+    "center": "Centro",
+    "harmonics": "Harmônicos",
+    "status": "Status",
+    "hanging_gate": "Portão pendente",
+    "defined_channel": "Canal definido",
+    "line_detail": "Detalhe de linha",
+    "planet_specific": "Sentido por planeta",
+    "layer": "Camada",
+    "code": "Código",
+    "longitude": "Longitude",
+    "gate_contact_summary": "Ativação em {center} com {count} contato(s) no mapa.",
+    "exaltation_lens": "Lente de exaltação / detrimento",
+    "metadata_pending": "Metadados verificados pendentes",
+    "exaltation_notice": "Notas de exaltação e detrimento aparecem aqui somente quando houver uma tabela de metadados verificada; nenhum comentário pago é copiado.",
+    "hanging_harmonics": "Harmônicos pendentes",
+    "no_hanging_harmonics": "Nenhum portão harmônico aberto para esta ativação.",
+    "circuit_stream": "Fluxo de circuitos",
+    "circuit_stream_note": "Canais definidos são agrupados por fluxo de circuito, com marcadores de amor e material apenas quando sustentados por metadados.",
+    "defined_streams": "Fluxos definidos",
+    "love_theme": "Tema de amor",
+    "material_theme": "Tema material",
+    "hanging_gates": "Portões pendentes",
+    "no_hanging_gates": "Nenhum portão pendente no mapa atual.",
+    "all_gate_rows": "Todas as linhas de portões",
+    "mandala_precision": "Precisão da mandala",
+    "mandala_precision_note": "Revisão técnica de portão, linha, cor, tom, base, longitude e progresso na roda.",
+    "mandala_progress": "Progresso na mandala",
+    "precision_unavailable": "Campos de precisão não estão disponíveis para este mapa.",
+    "personality_sun": "Sol da personalidade",
+    "personality_earth": "Terra da personalidade",
+    "design_sun": "Sol do design",
+    "design_earth": "Terra do design",
+    "cross_direction": "Direção da cruz",
+    "cross_direction_note": "Isto resume os quatro pontos Sol/Terra como metadados estruturais; o texto interpretativo permanece original e não determinístico.",
+    "cross_unavailable": "Dados da cruz de encarnação não estão disponíveis para este mapa.",
+    "tabs": {
+      "overview": "Visão geral",
+      "bodygraph": "Bodygraph",
+      "activations": "Ativações",
+      "centers": "Centros",
+      "channels": "Canais",
+      "gates": "Portões",
+      "variables": "Variáveis",
+      "cross": "Cruz",
+      "transits": "Trânsitos",
+      "team": "Equipe"
+    },
     "types": {
       "generator": "Gerador",
       "manifesting_generator": "Gerador Manifestante",
@@ -151,11 +223,16 @@
     },
     "insight_text": {
       "profile": "O perfil combina linhas conscientes e de design em um papel de vida recorrente.",
+      "strategy": "A estratégia mantém as decisões ligadas à mecânica do tipo em vez da pressão mental.",
       "definition_count": "{centers} centros e {channels} canais definidos.",
       "circuits": "A circuitaria mostra se a definição tende a temas individuais, coletivos ou tribais.",
+      "centers": "{defined} centros estão definidos e {open} permanecem abertos para aprendizado contextual.",
+      "incarnation_cross": "Quarto {quarter}; portões {gates}. Isto enquadra o eixo Sol/Terra como padrão de tema de vida.",
+      "variable": "Orientação {orientation}, cor {color}, tom {tone}, base {base}. Trate isto como uma camada avançada de calibração corpo/mente.",
       "gate_both": "Ativo em personalidade e design.",
       "gate_personality": "Ativação consciente/de personalidade.",
       "gate_design": "Ativação de design/corpo.",
+      "gate_multiple": "{count} ativações concentram este portão pelo centro {center}.",
       "types": {
         "generator": "A energia sacral consistente é central; a satisfação cresce por meio de resposta clara.",
         "manifesting_generator": "Resposta sacral e movimento rápido se combinam; a clareza melhora quando a ação segue a resposta.",
@@ -182,7 +259,8 @@
       "companionship_title": "Definição familiar",
       "companionship_text": "{count} canais são compartilhados.",
       "companionship_empty": "Canais compartilhados não são o principal padrão de vínculo aqui.",
-      "shared_centers_empty": "Os mapas enfatizam centros diferentes."
+      "shared_centers_empty": "Os mapas enfatizam centros diferentes.",
+      "connection_theme_text": "O tema composto é {theme}: primeiro centros definidos, depois centros abertos."
     }
   },
   "vedic": {
@@ -293,6 +371,22 @@
     "transit_orbit": "Trânsitos",
     "aspect_grid_natal": "Grade de aspectos natal",
     "aspect_grid_comparison": "Grade de aspectos",
+    "aspect_legend": "Aspectos",
+    "motion_legend": "Movimento",
+    "aspect_filters": {
+      "label": "Filtro da matriz de aspectos",
+      "major": "Maiores",
+      "all": "Todos",
+      "applying": "Aplicando",
+      "exact": "Exatos"
+    },
+    "aspect_tooltip": {
+      "exact": "Exato"
+    },
+    "motion_markers": {
+      "retrograde": "Retrógrado",
+      "stationary": "Estacionário"
+    },
     "display_mode": "Exibição",
     "display_modes": {
       "clean": "Limpo",
@@ -312,7 +406,13 @@
     "element_balance": "Equilíbrio elemental",
     "modality_balance": "Ritmo modal",
     "house_emphasis": "Ênfase por casa",
+    "chart_ruler": "Regente do mapa",
+    "ruler_of_asc": "Regente de {sign} ascendendo",
+    "sect_hemispheres": "Seita + ênfase",
+    "sect_detail": "A seita favorece {benefic}; {malefic} carrega o papel maléfico ativo.",
+    "house_rulers": "Regentes das casas",
     "angularity": "Angularidade",
+    "dignity_basics": "Dignidades básicas",
     "retrogrades": "Retrógrados",
     "top_aspects": "Aspectos mais fortes",
     "no_angular": "Nenhum planeta a menos de 8° de um ângulo.",
@@ -327,6 +427,22 @@
       "cardinal": "Cardinal",
       "fixed": "Fixo",
       "mutable": "Mutável"
+    },
+    "hemispheres": {
+      "east": "Oriental",
+      "west": "Ocidental",
+      "north": "Norte",
+      "south": "Sul"
+    },
+    "sect_types": {
+      "day": "Mapa diurno",
+      "night": "Mapa noturno"
+    },
+    "dignities": {
+      "domicile": "domicílio",
+      "exaltation": "exaltação",
+      "detriment": "exílio",
+      "fall": "queda"
     },
     "angles": {
       "asc": "ASC",
@@ -351,6 +467,7 @@
     "dominant": "Ênfase em {aspect} · {count}",
     "applying_count": "{count} aplicando",
     "aspect_meta": "{a} {aspect} {b} · {orb}° · {motion}",
+    "transit_aspect_meta": "{a} {aspect} {b} · {orb}° · {motion} · casa {house} ativada",
     "groups": {
       "progression_slow_self": {
         "title": "Fundo dos planetas lentos",
@@ -578,7 +695,10 @@
     "Lilith":  "Lilith",
     "Ascendant": "Ascendente",
     "Midheaven": "Meio do Céu",
-    "Fortune": "Fortuna"
+    "Fortune": "Fortuna",
+    "Spirit": "Espírito",
+    "Vertex": "Vertex",
+    "EastPoint": "Ponto Leste"
   },
   "aspects": {
     "conjunction": "Conjunção",
@@ -604,6 +724,11 @@
     "ayanamsa": "Ayanamsa",
     "tropical": "Tropical",
     "sidereal": "Sideral (Lahiri)",
+    "node_mode": "Nodo lunar",
+    "node_modes": {
+      "mean": "Nodo médio",
+      "true": "Nodo verdadeiro"
+    },
     "sky_bg": "Fundo estelar (WebGL)",
     "aspect_options": "Opções de aspectos",
     "aspect_set": "Conjunto de aspectos",

@@ -75,7 +75,13 @@
     "title": "Natal report for {name}",
     "open": "Report",
     "back": "Back to chart",
-    "print": "Print / PDF"
+    "print": "Print / PDF",
+    "kicker": "Tropical print report",
+    "system": "System",
+    "wheel": "Wheel",
+    "positions": "Position lists",
+    "aspectarian": "Aspectarian",
+    "aspect_list": "Aspect list"
   },
   "human_design": {
     "open": "Human Design",
@@ -85,6 +91,20 @@
     "authority": "Authority",
     "profile": "Profile",
     "definition": "Definition",
+    "strategy": "Strategy",
+    "incarnation_cross": "Incarnation Cross",
+    "variables": "Variables",
+    "centers_title": "Centers",
+    "channels": "Channels",
+    "gates": "Gates",
+    "transits": "Transits",
+    "team": "Team",
+    "geometry": "Geometry",
+    "cross_quarter": "Quarter",
+    "connection_theme": "Connection theme",
+    "open_centers": "Open centers",
+    "composite_channels": "Composite channels",
+    "variable_notice": "Variables depend on exact birth time; use them as a precision layer after Strategy and Authority.",
     "design": "Design",
     "personality": "Personality",
     "planet": "Planet",
@@ -105,6 +125,58 @@
     "profile_title": "Profile {profile}",
     "gate_title": "Gate {gate}",
     "open_circuitry": "Open circuitry",
+    "gate_explorer": "Gate explorer",
+    "gate_explorer_note": "Review each active gate, its line emphasis, harmonic gates, and planet-specific precision.",
+    "search_gates": "Search gates",
+    "no_gate_results": "No gates match this search.",
+    "gate": "Gate",
+    "center": "Center",
+    "harmonics": "Harmonics",
+    "status": "Status",
+    "hanging_gate": "Hanging gate",
+    "defined_channel": "Defined channel",
+    "line_detail": "Line detail",
+    "planet_specific": "Planet-specific meaning",
+    "layer": "Layer",
+    "code": "Code",
+    "longitude": "Longitude",
+    "gate_contact_summary": "{center} activation with {count} chart contact(s).",
+    "exaltation_lens": "Exaltation / detriment lens",
+    "metadata_pending": "Verified metadata pending",
+    "exaltation_notice": "Exaltation and detriment notes appear here only when a verified metadata table is available; no paid commentary is copied.",
+    "hanging_harmonics": "Hanging harmonics",
+    "no_hanging_harmonics": "No open harmonic gates for this activation.",
+    "circuit_stream": "Circuit stream",
+    "circuit_stream_note": "Defined channels are grouped by circuit stream, with love and material tags only when backed by metadata.",
+    "defined_streams": "Defined streams",
+    "love_theme": "Love theme",
+    "material_theme": "Material theme",
+    "hanging_gates": "Hanging gates",
+    "no_hanging_gates": "No hanging gates in the current chart.",
+    "all_gate_rows": "All gate rows",
+    "mandala_precision": "Mandala precision",
+    "mandala_precision_note": "Technical gate, line, color, tone, base, longitude, and wheel progress for audit-style review.",
+    "mandala_progress": "Mandala progress",
+    "precision_unavailable": "Precision fields are not available for this chart.",
+    "personality_sun": "Personality Sun",
+    "personality_earth": "Personality Earth",
+    "design_sun": "Design Sun",
+    "design_earth": "Design Earth",
+    "cross_direction": "Cross direction",
+    "cross_direction_note": "This summarizes the four Sun/Earth anchors as structural metadata; interpretation text remains original and non-deterministic.",
+    "cross_unavailable": "Incarnation cross data is not available for this chart.",
+    "tabs": {
+      "overview": "Overview",
+      "bodygraph": "Bodygraph",
+      "activations": "Activations",
+      "centers": "Centers",
+      "channels": "Channels",
+      "gates": "Gates",
+      "variables": "Variables",
+      "cross": "Cross",
+      "transits": "Transits",
+      "team": "Team"
+    },
     "types": {
       "generator": "Generator",
       "manifesting_generator": "Manifesting Generator",
@@ -151,11 +223,16 @@
     },
     "insight_text": {
       "profile": "Profile blends conscious and design lines into a recurring life role.",
+      "strategy": "Strategy keeps decisions tied to the mechanics of the type instead of mental pressure.",
       "definition_count": "{centers} centers and {channels} channels are defined.",
       "circuits": "Circuitry shows whether definition tends toward individual, collective, or tribal themes.",
+      "centers": "{defined} centers are defined and {open} remain open for contextual learning.",
+      "incarnation_cross": "Quarter {quarter}; gates {gates}. This frames the Sun/Earth axis as a life-theme pattern.",
+      "variable": "{orientation} orientation, color {color}, tone {tone}, base {base}. Treat this as an advanced body/mind calibration layer.",
       "gate_both": "Active in both personality and design.",
       "gate_personality": "Conscious/personality activation.",
       "gate_design": "Design/body activation.",
+      "gate_multiple": "{count} activations concentrate this gate through the {center} center.",
       "types": {
         "generator": "Consistent sacral energy is central; satisfaction grows through clear response.",
         "manifesting_generator": "Sacral response and fast movement combine; clarity improves when action follows response.",
@@ -182,7 +259,8 @@
       "companionship_title": "Familiar definition",
       "companionship_text": "{count} channels are shared.",
       "companionship_empty": "Shared channels are not the main bond pattern here.",
-      "shared_centers_empty": "The charts emphasize different centers."
+      "shared_centers_empty": "The charts emphasize different centers.",
+      "connection_theme_text": "The composite theme is {theme}: defined centers first, open centers second."
     }
   },
   "vedic": {
@@ -293,6 +371,22 @@
     "transit_orbit": "Transits",
     "aspect_grid_natal": "Natal aspect grid",
     "aspect_grid_comparison": "Aspect grid",
+    "aspect_legend": "Aspects",
+    "motion_legend": "Motion",
+    "aspect_filters": {
+      "label": "Aspect matrix filter",
+      "major": "Major",
+      "all": "All",
+      "applying": "Applying",
+      "exact": "Exact"
+    },
+    "aspect_tooltip": {
+      "exact": "Exact"
+    },
+    "motion_markers": {
+      "retrograde": "Retrograde",
+      "stationary": "Stationary"
+    },
     "display_mode": "Display",
     "display_modes": {
       "clean": "Clean",
@@ -312,7 +406,13 @@
     "element_balance": "Element balance",
     "modality_balance": "Modality rhythm",
     "house_emphasis": "House emphasis",
+    "chart_ruler": "Chart ruler",
+    "ruler_of_asc": "Ruler of {sign} rising",
+    "sect_hemispheres": "Sect + emphasis",
+    "sect_detail": "Sect favors {benefic}; {malefic} carries the active malefic role.",
+    "house_rulers": "House rulers",
     "angularity": "Angularity",
+    "dignity_basics": "Dignity basics",
     "retrogrades": "Retrogrades",
     "top_aspects": "Strongest aspects",
     "no_angular": "No planets within 8° of an angle.",
@@ -327,6 +427,22 @@
       "cardinal": "Cardinal",
       "fixed": "Fixed",
       "mutable": "Mutable"
+    },
+    "hemispheres": {
+      "east": "Eastern",
+      "west": "Western",
+      "north": "Northern",
+      "south": "Southern"
+    },
+    "sect_types": {
+      "day": "Day chart",
+      "night": "Night chart"
+    },
+    "dignities": {
+      "domicile": "domicile",
+      "exaltation": "exaltation",
+      "detriment": "detriment",
+      "fall": "fall"
     },
     "angles": {
       "asc": "ASC",
@@ -351,6 +467,7 @@
     "dominant": "{aspect} emphasis · {count}",
     "applying_count": "{count} applying",
     "aspect_meta": "{a} {aspect} {b} · {orb}° · {motion}",
+    "transit_aspect_meta": "{a} {aspect} {b} · {orb}° · {motion} · house {house} activated",
     "groups": {
       "progression_slow_self": {
         "title": "Slow-planet background",
@@ -578,7 +695,10 @@
     "Lilith":  "Lilith",
     "Ascendant": "Ascendant",
     "Midheaven": "Midheaven",
-    "Fortune": "Fortune"
+    "Fortune": "Fortune",
+    "Spirit": "Spirit",
+    "Vertex": "Vertex",
+    "EastPoint": "East Point"
   },
   "aspects": {
     "conjunction": "Conjunction",
@@ -604,6 +724,11 @@
     "ayanamsa": "Ayanamsa",
     "tropical": "Tropical",
     "sidereal": "Sidereal (Lahiri)",
+    "node_mode": "Lunar node",
+    "node_modes": {
+      "mean": "Mean node",
+      "true": "True node"
+    },
     "sky_bg": "Star background (WebGL)",
     "aspect_options": "Aspect options",
     "aspect_set": "Aspect set",

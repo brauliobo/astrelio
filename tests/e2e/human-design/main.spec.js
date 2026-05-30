@@ -17,10 +17,17 @@ test.describe('Human Design', () => {
     await expect(page.getByTestId('hd-profile')).toBeVisible()
     await expect(page.getByTestId('bodygraph-chart')).toBeVisible()
     await expect(page.getByTestId('rave-mandala')).toBeVisible()
+    await expect(page.getByTestId('human-design-tabs')).toBeVisible()
+    await expect(page.getByTestId('hd-variable-arrows')).toBeVisible()
+    await expect(page.getByTestId('hd-variable-summary')).toBeVisible()
     await expect(page.getByTestId('mandala-gate')).toHaveCount(64)
     await expect(page.locator('[data-testid="mandala-gate"][data-active="true"]').first()).toBeVisible()
     await expect(page.getByTestId('human-design-insights')).toBeVisible()
     await expect(page.getByTestId('human-design-activation-table')).toBeVisible()
+
+    await page.getByTestId('hd-tab-transits').click()
+    await expect(page.getByTestId('hd-transit-panel')).toBeVisible()
+    await page.getByTestId('hd-transit-now').click()
   })
 
   test('opens Human Design from the natal map workspace', async ({ page }) => {
@@ -50,9 +57,9 @@ test.describe('Human Design', () => {
 
     await page.getByTestId('theme-toggle').click()
     await expect.poll(() => page.evaluate(() => document.documentElement.dataset.theme)).toBe('light')
+    await expect(page.getByTestId('rave-mandala')).toHaveAttribute('data-theme', 'light')
 
-    const lightFill = await activeGate.evaluate(el => getComputedStyle(el).fill)
-    expect(lightFill).not.toBe(darkFill)
+    await expect.poll(() => activeGate.evaluate(el => getComputedStyle(el).fill)).not.toBe(darkFill)
   })
 
   test('switches relationships from astrology synastry to Human Design connection', async ({ page }) => {
@@ -61,6 +68,7 @@ test.describe('Human Design', () => {
 
     await expect(page.getByTestId('human-design-connection')).toBeVisible()
     await expect(page.getByTestId('human-design-connection-details')).toBeVisible()
+    await expect(page.getByTestId('human-design-connection-theme')).toBeVisible()
     await expect(page.getByTestId('bodygraph-chart')).toHaveCount(2)
   })
 })

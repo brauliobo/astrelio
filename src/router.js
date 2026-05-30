@@ -38,6 +38,10 @@ const takeGitHubPagesRedirect = () => {
 }
 
 router.beforeEach((to) => {
+  if (to.path === '/' && typeof window !== 'undefined' && window.location.hash.startsWith('#/')) {
+    return window.location.hash.slice(1)
+  }
+
   const redirect = takeGitHubPagesRedirect()
   if (redirect && redirect !== to.fullPath) return redirect
   return true

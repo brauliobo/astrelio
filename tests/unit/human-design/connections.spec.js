@@ -17,6 +17,10 @@ describe('Human Design connections', () => {
 
     expect(connection.electromagnetic).toEqual(['1-8'])
     expect(connection.sharedCenters).toEqual([])
+    expect(connection.connectionTheme).toBe('2-7')
+    expect(connection.compositeChannels).toEqual([
+      expect.objectContaining({ channel: '1-8', name: 'Inspiration' }),
+    ])
   })
 
   it('classifies shared, compromise, and dominance channels', () => {
@@ -29,5 +33,6 @@ describe('Human Design connections', () => {
     expect(connection.companionship).toEqual(['1-8'])
     expect(connection.compromise).toEqual([{ channel: '13-33', owner: 'a' }])
     expect(connection.dominance).toEqual([])
+    expect(connection.openCenters).toContain('Head')
   })
 })

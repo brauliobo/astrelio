@@ -30,6 +30,7 @@ export const polar = (radius, angle, center = wheelCenter) => {
 export const mandalaIndexForGate = gate => MANDALA_GATE_ORDER.indexOf(Number(gate))
 
 export const mandalaAngleForActivation = (activation = {}) => {
+  if (typeof activation.longitude === 'number') return mandalaAngleForLongitude(activation.longitude)
   const index = mandalaIndexForGate(activation.gate)
   if (index < 0) return Number.NaN
   const lineOffset = ((activation.line || 1) - 0.5) / 6

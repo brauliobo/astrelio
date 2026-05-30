@@ -314,6 +314,9 @@ const activationChanged = (left, right, level = 'line') => {
   if (!left || !right) return false
   if (left.gate !== right.gate) return true
   if (level === 'gate') return false
+  if (level === 'base') return left.base !== right.base
+  if (level === 'tone') return left.tone !== right.tone || left.base !== right.base
+  if (level === 'color') return left.color !== right.color || left.tone !== right.tone || left.base !== right.base
   return left.line !== right.line
 }
 
@@ -321,12 +324,19 @@ const findNextActivationChange = ({ startJd, lat, lon, planet, level = 'line' })
   const start = transitChartForJd(startJd, lat, lon).personality[planet]
   if (!start) return null
 
-  let step = level === 'gate' ? 1 : 1 / 12
+  let step = {
+    gate: 1,
+    line: 1 / 12,
+    color: 1 / 72,
+    tone: 1 / 288,
+    base: 1 / 720,
+  }[level] || 1 / 12
   let cursor = startJd + step
   let current = transitChartForJd(cursor, lat, lon).personality[planet]
   let guard = 0
 
-  while (!activationChanged(start, current, level) && guard < 240) {
+  const maxGuards = level === 'gate' ? 480 : 720
+  while (!activationChanged(start, current, level) && guard < maxGuards) {
     cursor += step
     current = transitChartForJd(cursor, lat, lon).personality[planet]
     guard += 1
@@ -388,7 +398,9 @@ export const humanDesignTransitConnection = (natalChart, transitChart, { lat = n
         lineDetail: lineLibraryEntry(activation.gate, activation.line),
         mandala: mandalaDegreeDetailForActivation(activation),
       })),
-    nextChanges: HD_PLANETS.map(planet => findNextActivationChange({ startJd, lat, lon, planet }))
+    nextChanges: ['line', 'gate'].flatMap(level =>
+      HD_PLANETS.map(planet => findNextActivationChange({ startJd, lat, lon, planet, level }))
+    )
       .filter(Boolean)
       .map(change => ({
         ...change,
@@ -396,8 +408,7 @@ export const humanDesignTransitConnection = (natalChart, transitChart, { lat = n
         toCode: activationCode(change.to),
         fromLine: lineLibraryEntry(change.from.gate, change.from.line),
         toLine: lineLibraryEntry(change.to.gate, change.to.line),
-      }))
-      .filter(Boolean),
+      })),
     nextLineChanges: HD_PLANETS.map(planet => findNextActivationChange({ startJd, lat, lon, planet, level: 'line' }))
       .filter(Boolean)
       .map(change => ({
@@ -416,6 +427,16 @@ export const humanDesignTransitConnection = (natalChart, transitChart, { lat = n
         fromGate: gateLibraryEntry(change.from.gate),
         toGate: gateLibraryEntry(change.to.gate),
       })),
+    nextColorToneBaseChanges: ['color', 'tone', 'base'].flatMap(level =>
+      HD_PLANETS.map(planet => findNextActivationChange({ startJd, lat, lon, planet, level }))
+    )
+      .filter(Boolean)
+      .map(change => ({
+        ...change,
+        fromCode: activationCode(change.from),
+        toCode: activationCode(change.to),
+      })),
+    todayThemes: sortedUnique([...transitGates]).map(gate => gateLibraryEntry(gate).summary),
   }
 }
 

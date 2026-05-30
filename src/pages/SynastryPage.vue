@@ -30,6 +30,9 @@ const hdConnection = computed(() => modalityConnection('humanDesign', hdChartA.v
 const sharedCenterLabel = computed(() =>
   hdConnection.value?.sharedCenters?.length ? humanDesignListLabel(t, 'center', hdConnection.value.sharedCenters) : '—'
 )
+const openCenterLabel = computed(() =>
+  hdConnection.value?.openCenters?.length ? humanDesignListLabel(t, 'center', hdConnection.value.openCenters) : '—'
+)
 
 const compareWith = ref(session.comparePersonId)
 const relationshipModality = ref('astrology')
@@ -92,7 +95,19 @@ section.synastry-page(data-testid='synastry-page')
         h2.text-sm.font-semibold.text-slate-100.mb-3 {{ t('human_design.connection') }}
         .grid.gap-3(class='md:grid-cols-2')
           p.text-xs.text-slate-400 {{ t('human_design.shared_centers') }}: {{ sharedCenterLabel }}
+          p.text-xs.text-slate-400 {{ t('human_design.open_centers') }}: {{ openCenterLabel }}
+          p.text-xs.text-slate-400(data-testid='human-design-connection-theme') {{ t('human_design.connection_theme') }}: {{ hdConnection.connectionTheme }}
           p.text-xs.text-slate-400 {{ t('human_design.electromagnetic') }}: {{ hdConnection.electromagnetic.join(', ') || '—' }}
           p.text-xs.text-slate-400 {{ t('human_design.companionship') }}: {{ hdConnection.companionship.join(', ') || '—' }}
           p.text-xs.text-slate-400 {{ t('human_design.compromise') }}: {{ hdConnection.compromise.map(item => item.channel).join(', ') || '—' }}
+      .ui-panel.mt-6(v-if='hdConnection')
+        h2.text-sm.font-semibold.text-slate-100.mb-3 {{ t('human_design.composite_channels') }}
+        .grid.gap-2(class='md:grid-cols-2')
+          .rounded.border.p-2.text-xs(
+            v-for='channel in hdConnection.compositeChannels'
+            :key='channel.channel'
+            class='border-white/10 bg-white/5'
+          )
+            .text-slate-100 {{ channel.channel }} · {{ channel.name }}
+            .text-slate-400 {{ channel.centers.join(' / ') }}
 </template>

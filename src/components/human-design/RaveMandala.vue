@@ -43,6 +43,20 @@ const gates = computed(() =>
     }
   })
 )
+const activeMarkers = computed(() =>
+  (props.chart.details?.activations || [])
+    .filter(activation => activation.mandala)
+    .map(activation => {
+      const point = polar(outer - 26, activation.mandala.raveLongitude)
+      return {
+        key: `${activation.layer}-${activation.planet}-${activation.code}`,
+        ...point,
+        layer: activation.layer,
+        planet: activation.planet,
+        code: activation.code,
+      }
+    })
+)
 </script>
 
 <template lang="pug">
@@ -77,6 +91,18 @@ const gates = computed(() =>
         :data-active='String(item.active)'
         data-testid='mandala-gate'
       ) {{ item.gate }}
+    g(data-testid='mandala-precision-markers')
+      circle(
+        v-for='marker in activeMarkers'
+        :key='marker.key'
+        :cx='marker.x'
+        :cy='marker.y'
+        r='3.5'
+        :fill='marker.layer === "personality" ? "#f59e0b" : "#38bdf8"'
+        stroke='#0f172a'
+        stroke-width='1'
+      )
+        title {{ marker.planet }} {{ marker.code }}
     circle(:cx='center' :cy='center' r='124' :fill='palette.mandalaCenter' :stroke='palette.mandalaStroke')
     text(:x='center' :y='center - 10' text-anchor='middle' :fill='palette.mandalaText' font-size='18' font-weight='700') {{ humanDesignValueLabel(t, 'type', chart.type) }}
     text(:x='center' :y='center + 18' text-anchor='middle' :fill='palette.mandalaMuted' font-size='12') {{ chart.profile }} · {{ humanDesignValueLabel(t, 'authority', chart.authority) }}
