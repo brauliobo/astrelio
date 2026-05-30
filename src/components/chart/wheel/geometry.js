@@ -26,6 +26,7 @@ export const ASPECT_COLORS = {
 
 export const PLANET_SYMBOLS = {
   Sun: '☉',
+  Earth: '⊕',
   Moon: '☽',
   Mercury: '☿',
   Venus: '♀',
