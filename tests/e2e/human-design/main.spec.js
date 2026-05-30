@@ -71,4 +71,20 @@ test.describe('Human Design', () => {
     await expect(page.getByTestId('human-design-connection-theme')).toBeVisible()
     await expect(page.getByTestId('bodygraph-chart')).toHaveCount(2)
   })
+
+  test('renders Human Design correlations workspace when the UI exposes it', async ({ page }) => {
+    await page.goto('/#/human-design')
+    await expect(page.getByTestId('human-design-page')).toBeVisible()
+
+    const correlationsTab = page.getByTestId('hd-tab-correlations')
+    if (await correlationsTab.count() === 0) {
+      test.skip(true, 'Human Design correlations tab is not implemented in the UI yet')
+    }
+
+    await correlationsTab.click()
+    await expect(page.getByTestId('hd-correlations-panel')).toBeVisible()
+    await expect(page.getByTestId('hd-correlation-event-diary')).toBeVisible()
+    await expect(page.getByTestId('hd-correlation-transit-clusters')).toBeVisible()
+    await expect(page.getByTestId('hd-correlation-astrology-bridge')).toBeVisible()
+  })
 })
