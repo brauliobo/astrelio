@@ -7,6 +7,7 @@ import { moonPhaseLighting, moonPhaseLitPoints } from './moonPhase.js'
 
 const STAR_COUNT = 520
 const CHART_SELECTOR = '[data-testid="chart-wheel-svg"]'
+const SKY_ASTERISMS_URL = '/data/sky-asterisms.generated.json'
 
 export const SKY_PLANETS = [
   { name: 'Sun', color: '#f6c453', radius: 13, photo: 'solar', image: '/planets/sun.jpg', texture: ['#fff7ad', '#f6c453', '#b45309'] },
@@ -60,6 +61,10 @@ const skyPalette = (theme = 'dark') => {
     label: light ? '#1e3a5f' : '#e0f2fe',
     axis: light ? '#b45309' : '#f97316',
     axisLabel: light ? '#92400e' : '#fed7aa',
+    asterismLine: light ? '#17436f' : '#e0f2fe',
+    asterismStar: light ? '#0f5ea8' : '#bfdbfe',
+    asterismImageAlpha: light ? 0.22 : 0.26,
+    planetLink: light ? '#7c2d12' : '#fde68a',
     planetLabelAlpha: light ? 0.76 : 0.40,
   }
 }
@@ -103,12 +108,40 @@ const loadPlanetImages = (schedule) => {
   }))
 }
 
+const loadSkyAsterisms = async () => {
+  if (typeof fetch === 'undefined') return null
+  try {
+    const response = await fetch(SKY_ASTERISMS_URL)
+    if (!response.ok) return null
+    return response.json()
+  } catch {
+    return null
+  }
+}
+
+const loadAsterismImages = (skyData, schedule) => {
+  if (typeof Image === 'undefined' || !skyData?.asterisms?.length) return new Map()
+  const urls = [...new Set(skyData.asterisms.map(item => item.image?.src || item.image).filter(Boolean))]
+  return new Map(urls.map((url) => {
+    const image = new Image()
+    image.decoding = 'async'
+    image.onload = schedule
+    image.src = url
+    return [url, image]
+  }))
+}
+
 const polarPoint = (cx, cy, radius, longitude) => {
   const angle = (180 - longitude) * Math.PI / 180
   return {
     x: cx + radius * Math.cos(angle),
     y: cy + radius * Math.sin(angle),
   }
+}
+
+const angularDistance = (a, b) => {
+  const distance = Math.abs(norm360(a - b))
+  return Math.min(distance, 360 - distance)
 }
 
 export const skyLongitudeForHumanDesignLongitude = longitude =>
@@ -231,6 +264,158 @@ const drawEnvironment = (ctx, bounds, mode, wheelShift, palette) => {
     ctx.fillText(axis.label, text.x, text.y)
     ctx.restore()
   }
+}
+
+const projectAsterismStar = (star, bounds, mode, wheelShift) => {
+  const latRange = Math.min(76, bounds.skyRadius * 0.17)
+  const baseRadius = Math.max(bounds.chartRadius * 1.34, bounds.skyRadius * 0.68)
+  const radius = clamp(baseRadius + star.lat * latRange / 90, bounds.chartRadius * 1.16, bounds.skyRadius * 0.92)
+  const longitude = skyLongitudeForPosition({ longitude: star.lon, mode, wheelShift })
+  return {
+    ...polarPoint(bounds.cx, bounds.cy, radius, longitude),
+    longitude,
+    mag: star.mag,
+  }
+}
+
+const affineTransformForAnchors = (sourceAnchors, targetAnchors) => {
+  if (sourceAnchors.length < 3 || targetAnchors.length < 3) return null
+  const [p0, p1, p2] = sourceAnchors
+  const [q0, q1, q2] = targetAnchors
+  const p10 = { x: p1.x - p0.x, y: p1.y - p0.y }
+  const p20 = { x: p2.x - p0.x, y: p2.y - p0.y }
+  const q10 = { x: q1.x - q0.x, y: q1.y - q0.y }
+  const q20 = { x: q2.x - q0.x, y: q2.y - q0.y }
+  const determinant = p10.x * p20.y - p20.x * p10.y
+  if (Math.abs(determinant) < 0.01) return null
+
+  const a = (q10.x * p20.y - q20.x * p10.y) / determinant
+  const b = (q10.y * p20.y - q20.y * p10.y) / determinant
+  const c = (-q10.x * p20.x + q20.x * p10.x) / determinant
+  const d = (-q10.y * p20.x + q20.y * p10.x) / determinant
+  const e = q0.x - a * p0.x - c * p0.y
+  const f = q0.y - b * p0.x - d * p0.y
+
+  return { a, b, c, d, e, f }
+}
+
+const drawAnchoredAsterismImage = (ctx, image, imageMeta, bounds, mode, wheelShift, palette) => {
+  if (!image?.complete || image.naturalWidth <= 0 || !imageMeta?.anchors?.length) return false
+  const sourceAnchors = imageMeta.anchors.map(anchor => ({ x: anchor.pos[0], y: anchor.pos[1] }))
+  const targetAnchors = imageMeta.anchors.map(anchor => projectAsterismStar(anchor, bounds, mode, wheelShift))
+  const transform = affineTransformForAnchors(sourceAnchors, targetAnchors)
+  if (!transform) return false
+
+  ctx.save()
+  ctx.globalAlpha = palette.asterismImageAlpha
+  ctx.transform(transform.a, transform.b, transform.c, transform.d, transform.e, transform.f)
+  ctx.drawImage(image, 0, 0, imageMeta.size?.[0] || image.naturalWidth, imageMeta.size?.[1] || image.naturalHeight)
+  ctx.restore()
+  return true
+}
+
+const drawFallbackAsterismImage = (ctx, image, points, palette) => {
+  if (!image?.complete || image.naturalWidth <= 0 || points.length < 2) return
+  const xs = points.map(point => point.x)
+  const ys = points.map(point => point.y)
+  const minX = Math.min(...xs)
+  const maxX = Math.max(...xs)
+  const minY = Math.min(...ys)
+  const maxY = Math.max(...ys)
+  const span = Math.max(maxX - minX, maxY - minY)
+  const size = clamp(span * 1.55, 54, 128)
+  const cx = (minX + maxX) / 2
+  const cy = (minY + maxY) / 2
+
+  ctx.save()
+  ctx.globalAlpha = palette.asterismImageAlpha
+  ctx.drawImage(image, cx - size / 2, cy - size / 2, size, size)
+  ctx.restore()
+}
+
+const drawAsterisms = (ctx, bounds, mode, wheelShift, palette, skyData, asterismImages) => {
+  const starPoints = []
+  if (!skyData?.asterisms?.length) return starPoints
+
+  const drawnImages = new Set()
+  for (const asterism of skyData.asterisms) {
+    const projectedByHip = new Map(asterism.stars.map(star => [star.hip, projectAsterismStar(star, bounds, mode, wheelShift)]))
+    const points = [...projectedByHip.values()]
+    const imageSrc = asterism.image?.src || asterism.image
+    if (imageSrc && !drawnImages.has(imageSrc)) {
+      const image = asterismImages?.get(imageSrc)
+      const drewAnchoredImage = drawAnchoredAsterismImage(ctx, image, asterism.image, bounds, mode, wheelShift, palette)
+      if (!drewAnchoredImage) drawFallbackAsterismImage(ctx, image, points, palette)
+      drawnImages.add(imageSrc)
+    }
+
+    ctx.save()
+    ctx.strokeStyle = palette.asterismLine
+    ctx.lineCap = 'round'
+    ctx.lineJoin = 'round'
+    for (const line of asterism.lines) {
+      for (let index = 1; index < line.length; index += 1) {
+        const a = projectedByHip.get(line[index - 1])
+        const b = projectedByHip.get(line[index])
+        if (!a || !b || angularDistance(a.longitude, b.longitude) > 118) continue
+        ctx.globalAlpha = 0.42
+        ctx.lineWidth = 1.08
+        ctx.beginPath()
+        ctx.moveTo(a.x, a.y)
+        ctx.lineTo(b.x, b.y)
+        ctx.stroke()
+      }
+    }
+    ctx.restore()
+
+    ctx.save()
+    ctx.fillStyle = palette.asterismStar
+    for (const point of points) {
+      const strength = clamp(1 - (point.mag - 1) / 5.8, 0.18, 0.86)
+      ctx.globalAlpha = 0.30 + strength * 0.34
+      ctx.beginPath()
+      ctx.arc(point.x, point.y, 1.15 + strength * 1.75, 0, Math.PI * 2)
+      ctx.fill()
+      starPoints.push(point)
+    }
+    ctx.restore()
+  }
+
+  return starPoints
+}
+
+export const planetStarLinks = (planetPoints, starPoints, maxDistance) =>
+  planetPoints
+    .map((planet) => {
+      let closest = null
+      let distance = Infinity
+      for (const star of starPoints) {
+        const nextDistance = Math.hypot(planet.x - star.x, planet.y - star.y)
+        if (nextDistance < distance) {
+          distance = nextDistance
+          closest = star
+        }
+      }
+      return closest && distance <= maxDistance ? { planet, star: closest, distance } : null
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.distance - b.distance)
+    .slice(0, 6)
+
+const drawPlanetStarLinks = (ctx, planetPoints, starPoints, bounds, palette) => {
+  const links = planetStarLinks(planetPoints, starPoints, bounds.skyRadius * 0.26)
+  ctx.save()
+  ctx.strokeStyle = palette.planetLink
+  ctx.lineWidth = 0.62
+  ctx.setLineDash([2, 8])
+  for (const link of links) {
+    ctx.globalAlpha = 0.075
+    ctx.beginPath()
+    ctx.moveTo(link.star.x, link.star.y)
+    ctx.lineTo(link.planet.x, link.planet.y)
+    ctx.stroke()
+  }
+  ctx.restore()
 }
 
 const drawPlanet = (ctx, cx, cy, radius, shiftedLongitude, planet, label, image = null, palette = skyPalette()) => {
@@ -460,6 +645,8 @@ export const createSkyScene = (canvas, options = {}) => {
   const pulse = window.setInterval(() => schedule(), 1000)
   let chart = null
   let planetImages = null
+  let skyData = null
+  let asterismImages = null
 
   const resize = () => {
     const pixelRatio = Math.min(window.devicePixelRatio || 1, 2)
@@ -506,10 +693,25 @@ export const createSkyScene = (canvas, options = {}) => {
     ctx.restore()
 
     drawEnvironment(ctx, bounds, context.mode, wheelShift, palette)
+    const asterismPoints = drawAsterisms(ctx, bounds, context.mode, wheelShift, palette, skyData, asterismImages)
 
     const planetRadius = Math.max(bounds.chartRadius * 1.42, bounds.skyRadius * 0.78)
     const byName = new Map((chart?.positions || []).map(item => [item.name, item]))
     const moonPhaseFraction = moonPhaseFractionFromPositions(byName)
+    const planetPoints = SKY_PLANETS
+      .map((planet) => {
+        const position = byName.get(planet.name)
+        if (!position) return null
+        const longitude = skyLongitudeForPosition({ longitude: position.longitude, mode: context.mode, wheelShift })
+        return {
+          ...polarPoint(bounds.cx, bounds.cy, planetRadius, longitude),
+          name: planet.name,
+        }
+      })
+      .filter(Boolean)
+
+    drawPlanetStarLinks(ctx, planetPoints, asterismPoints, bounds, palette)
+
     for (const planet of SKY_PLANETS) {
       const position = byName.get(planet.name)
       if (!position) continue
@@ -546,6 +748,11 @@ export const createSkyScene = (canvas, options = {}) => {
 
   resize()
   planetImages = loadPlanetImages(schedule)
+  loadSkyAsterisms().then((data) => {
+    skyData = data
+    asterismImages = loadAsterismImages(data, schedule)
+    schedule()
+  })
   recalc()
   schedule()
   window.addEventListener('resize', schedule)
