@@ -69,8 +69,8 @@ const isComparison = computed(() => Boolean(props.comparison && props.comparison
 const gridStyle = computed(() => ({
   '--aspect-column-count': matrix.value.columns.length,
   gridTemplateColumns: isComparison.value
-    ? `minmax(1rem, 1.2rem) repeat(${matrix.value.columns.length}, minmax(1.42rem, 1.86rem)) minmax(1rem, 1.2rem)`
-    : `minmax(1rem, 1.2rem) repeat(${matrix.value.columns.length}, minmax(1.42rem, 1.86rem))`,
+    ? `repeat(${matrix.value.columns.length + 2}, minmax(1.42rem, 1.86rem))`
+    : `repeat(${matrix.value.columns.length + 1}, minmax(1.42rem, 1.86rem))`,
 }))
 const title = computed(() => isComparison.value ? t('chart.aspect_grid_comparison') : t('chart.aspect_grid_natal'))
 const subtitle = computed(() => {
