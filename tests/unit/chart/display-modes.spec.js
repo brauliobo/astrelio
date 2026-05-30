@@ -178,8 +178,8 @@ describe('chart display modes', () => {
 
     expect(sun.attributes('font-size')).toBe(venus.attributes('font-size'))
     expect(sun.attributes('font-size')).toBe(mars.attributes('font-size'))
-    expect(venus.attributes('transform')).toContain('scale(1.2)')
-    expect(mars.attributes('transform')).toContain('scale(1.2)')
+    expect(venus.attributes('transform')).toContain('scale(1.35 1.18)')
+    expect(mars.attributes('transform')).toContain('scale(1.35 1.18)')
   })
 
   it('renders planet positions without exact-point leader marks', () => {

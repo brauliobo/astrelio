@@ -12,19 +12,25 @@ const props = defineProps({
   weight: { type: [Number, String], default: 700 },
   anchor: { type: String, default: 'middle' },
   baseline: { type: String, default: 'middle' },
-  scale: { type: Number, default: 1 },
+  scale: { type: [Number, Object], default: 1 },
 })
 
 const symbol = computed(() => PLANET_SYMBOLS[props.reference] || props.reference.slice(0, 2))
-const svgTransform = computed(() => props.scale === 1
+const scaleXY = computed(() => {
+  if (typeof props.scale === 'number') return { x: props.scale, y: props.scale }
+  return { x: props.scale?.x ?? 1, y: props.scale?.y ?? 1 }
+})
+const isUnscaled = computed(() => scaleXY.value.x === 1 && scaleXY.value.y === 1)
+const svgTransform = computed(() => isUnscaled.value
   ? null
-  : `translate(${props.x} ${props.y}) scale(${props.scale}) translate(${-props.x} ${-props.y})`
+  : `translate(${props.x} ${props.y}) scale(${scaleXY.value.x} ${scaleXY.value.y}) translate(${-props.x} ${-props.y})`
 )
 const htmlStyle = computed(() => ({
   '--glyph-size': `${props.size}px`,
   '--glyph-color': props.color,
   '--glyph-weight': props.weight,
-  '--glyph-scale': props.scale,
+  '--glyph-scale-x': scaleXY.value.x,
+  '--glyph-scale-y': scaleXY.value.y,
 }))
 </script>
 
@@ -58,6 +64,6 @@ span(v-else class='celestial-glyph' :style='htmlStyle') {{ symbol }}
   font-weight: var(--glyph-weight);
   min-width: 1.25em;
   place-items: center;
-  transform: scale(var(--glyph-scale));
+  transform: scale(var(--glyph-scale-x), var(--glyph-scale-y));
 }
 </style>

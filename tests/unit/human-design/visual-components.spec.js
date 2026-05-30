@@ -123,10 +123,10 @@ describe('Human Design visual components', () => {
 
     expect(wrapper.findAll('.celestial-glyph-svg').every(glyph => glyph.attributes('font-size') === '28')).toBe(true)
     expect(wrapper.get('[data-planet="Sun"]').attributes('transform')).toBeUndefined()
-    expect(wrapper.get('[data-planet="Mercury"]').attributes('transform')).toContain('scale(1.2)')
-    expect(wrapper.get('[data-planet="Venus"]').attributes('transform')).toContain('scale(1.2)')
-    expect(wrapper.get('[data-planet="Mars"]').attributes('transform')).toContain('scale(1.2)')
-    expect(wrapper.get('[data-planet="Pluto"]').attributes('transform')).toBeUndefined()
+    expect(wrapper.get('[data-planet="Mercury"]').attributes('transform')).toContain('scale(1.42 1.08)')
+    expect(wrapper.get('[data-planet="Venus"]').attributes('transform')).toContain('scale(1.35 1.18)')
+    expect(wrapper.get('[data-planet="Mars"]').attributes('transform')).toContain('scale(1.35 1.18)')
+    expect(wrapper.get('[data-planet="Pluto"]').attributes('transform')).toContain('scale(0.96 1)')
   })
 
   it('splits a design and personality gate into true half fills', () => {

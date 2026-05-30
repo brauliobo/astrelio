@@ -62,24 +62,24 @@ export const PLANET_COLORS = {
 // Georgia renders planet symbols with uneven visible proportions. These factors
 // normalize narrow symbols without letting height dominate the wheel.
 export const PLANET_GLYPH_SCALE = {
-  Sun: 1,
-  Earth: 1.071,
-  Moon: 1,
-  Mercury: 1.2,
-  Venus: 1.2,
-  Mars: 1.2,
-  Jupiter: 1,
-  Saturn: 1,
-  Uranus: 1,
-  Neptune: 1,
-  Pluto: 1,
-  NorthNode: 1.011,
-  SouthNode: 1.011,
-  Lilith: 1.2,
-  Chiron: 1.2,
+  Sun: { x: 1, y: 1 },
+  Earth: { x: 1.07, y: 1 },
+  Moon: { x: 1, y: 1 },
+  Mercury: { x: 1.42, y: 1.08 },
+  Venus: { x: 1.35, y: 1.18 },
+  Mars: { x: 1.35, y: 1.18 },
+  Jupiter: { x: 1, y: 1 },
+  Saturn: { x: 1, y: 1 },
+  Uranus: { x: 1, y: 1 },
+  Neptune: { x: 1, y: 1 },
+  Pluto: { x: 0.96, y: 1 },
+  NorthNode: { x: 1.01, y: 1 },
+  SouthNode: { x: 1.01, y: 1 },
+  Lilith: { x: 1.3, y: 1.12 },
+  Chiron: { x: 1.3, y: 1.12 },
 }
 
-export const planetGlyphScale = planet => PLANET_GLYPH_SCALE[planet] || 1
+export const planetGlyphScale = planet => PLANET_GLYPH_SCALE[planet] || { x: 1, y: 1 }
 
 const PLANET_ORDER = new Map(Object.keys(PLANET_SYMBOLS).map((name, index) => [name, index]))
 const PLANET_CLUSTER_GAP = 10.5

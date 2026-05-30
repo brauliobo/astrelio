@@ -41,9 +41,9 @@ const glyphs = computed(() =>
       showDegreeLabel: item.showDegreeLabel !== false,
       fontSize: props.mapIndex === 0 ? 22 : 17,
       glyphScale,
-      glyphTransform: glyphScale === 1
+      glyphTransform: glyphScale.x === 1 && glyphScale.y === 1
         ? null
-        : `translate(${glyph.x} ${glyph.y}) scale(${glyphScale}) translate(${-glyph.x} ${-glyph.y})`,
+        : `translate(${glyph.x} ${glyph.y}) scale(${glyphScale.x} ${glyphScale.y}) translate(${-glyph.x} ${-glyph.y})`,
     }
   })
 )
