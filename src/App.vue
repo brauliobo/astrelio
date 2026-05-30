@@ -14,19 +14,33 @@ const people = usePeopleStore()
 const session = useSessionStore()
 const activePerson = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
 const SkyBackground = defineAsyncComponent(() => import('./components/sky/SkyBackground.vue'))
+const personPath = computed(() => activePerson.value ? `/person/${activePerson.value.id}` : '/')
 
 const links = computed(() => [
-  { to: '/',             label: t('nav.home'),         id: 'home' },
-  { to: '/natal',        label: t('nav.natal'),        id: 'natal' },
-  { to: '/transits',     label: t('nav.transits'),     id: 'transits' },
-  { to: '/progressions', label: t('nav.progressions'), id: 'progressions' },
-  { to: '/solar-return', label: t('nav.solar_return'), id: 'solar-return' },
-  { to: '/profections',  label: t('techniques.nav.profections'), id: 'profections' },
-  { to: '/solar-arc',    label: t('techniques.nav.solar_arc'), id: 'solar-arc' },
-  { to: '/lunar-return', label: t('techniques.nav.lunar_return'), id: 'lunar-return' },
-  { to: '/synastry',     label: t('nav.synastry'),     id: 'synastry' },
-  { to: '/settings',     label: t('nav.settings'),     id: 'settings' }
+  { to: '/',                 label: t('nav.home'),     id: 'home' },
+  { to: '/natal',            label: t('nav.map'),      id: 'natal' },
+  { to: '/timing/transits',  label: t('nav.timing'),   id: 'timing' },
+  { to: '/synastry',         label: t('nav.relations'), id: 'synastry' },
+  { to: personPath.value,    label: t('nav.library'),  id: 'library' },
+  { to: '/settings',         label: t('nav.settings'), id: 'settings' }
 ])
+
+const contextItems = computed(() => {
+  const presetKey = settings.activePreset || 'custom'
+  const items = [
+    { key: 'system', label: t('context.system'), value: `${t(`settings.${settings.zodiac}`)} · ${t(`houses.${settings.houseSystem}`)}` },
+    { key: 'aspects', label: t('context.aspects'), value: t(`settings.presets.${presetKey}`) },
+  ]
+
+  if (activePerson.value) {
+    items.unshift(
+      { key: 'person', label: t('context.chart'), value: activePerson.value.name },
+      { key: 'birth', label: t('context.birth'), value: `${activePerson.value.isoLocal} · ${activePerson.value.placeLabel}` }
+    )
+  }
+
+  return items
+})
 </script>
 
 <template lang="pug">
@@ -50,6 +64,18 @@ const links = computed(() => [
         :data-testid='`nav-${l.id}`'
         class='hover:text-white'
       ) {{ l.label }}
+    .border-t(class='border-white/5')
+      .mx-auto.max-w-6xl.px-4.py-2.flex.items-center.gap-2.overflow-x-auto(
+        data-testid='chart-context-bar'
+      )
+        .rounded-full.px-2.py-1.text-xs.whitespace-nowrap(
+          v-for='item in contextItems'
+          :key='item.key'
+          class='bg-white/5'
+          :data-testid='`context-${item.key}`'
+        )
+          span.text-slate-500 {{ item.label }}
+          span.text-slate-300.ml-1 {{ item.value }}
   main.relative.z-10.flex-1
     .mx-auto.max-w-6xl.px-4.py-6
       RouterView

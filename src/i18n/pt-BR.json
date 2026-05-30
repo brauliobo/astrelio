@@ -6,11 +6,21 @@
   "nav": {
     "home": "Início",
     "natal": "Mapa Natal",
+    "map": "Mapa",
+    "timing": "Tempo",
+    "relations": "Relações",
+    "library": "Biblioteca",
     "transits": "Trânsitos",
     "progressions": "Progressões",
     "solar_return": "Rev. Solar",
     "synastry": "Sinastria",
     "settings": "Configurações"
+  },
+  "context": {
+    "chart": "Mapa",
+    "birth": "Nascimento",
+    "system": "Sistema",
+    "aspects": "Preset"
   },
   "home": {
     "heading": "Seus mapas",
@@ -301,6 +311,13 @@
       "solar_arc": "Arco Solar",
       "lunar_return": "Rev. Lunar"
     },
+    "workspace": {
+      "title": "Tempo",
+      "subtitle": "Trânsitos, progressões, retornos, profecções e direções em uma só área.",
+      "technique": "Técnica",
+      "chart": "Mapa",
+      "evidence": "Evidência"
+    },
     "profections": {
       "title": "Profecção anual",
       "subtitle": "Foco temporal para {name}",
@@ -402,6 +419,17 @@
     "orb_width": "Largura do orbe",
     "applying_only": "Mostrar apenas aspectos aplicativos",
     "include_modern_planets": "Incluir planetas modernos e pontos",
+    "preset": "Preset",
+    "presets": {
+      "custom": "Personalizado",
+      "simple": "Leitura simples",
+      "traditional": "Tradicional",
+      "modern": "Moderna",
+      "technical": "Técnica",
+      "print": "Impressão"
+    },
+    "core_settings": "Essenciais",
+    "advanced_settings": "Avançadas",
     "aspect_sets": {
       "all": "Maiores + quincúncio",
       "major": "Apenas aspectos maiores"

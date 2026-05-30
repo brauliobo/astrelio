@@ -8,11 +8,11 @@ test.describe('Home', () => {
     await page.goto('/')
     await expect(page.getByTestId('brand')).toHaveText('Astrelio')
     await expect(page.getByTestId('nav-natal')).toBeVisible()
-    await expect(page.getByTestId('nav-transits')).toBeVisible()
-    await expect(page.getByTestId('nav-progressions')).toBeVisible()
-    await expect(page.getByTestId('nav-solar-return')).toBeVisible()
+    await expect(page.getByTestId('nav-timing')).toBeVisible()
     await expect(page.getByTestId('nav-synastry')).toBeVisible()
+    await expect(page.getByTestId('nav-library')).toBeVisible()
     await expect(page.getByTestId('nav-settings')).toBeVisible()
+    await expect(page.getByTestId('chart-context-bar')).toBeVisible()
   })
 
   test('shows empty state when no person saved', async ({ page }) => {
@@ -67,7 +67,7 @@ test.describe('Home', () => {
     await page.getByTestId('btn-submit').click()
     await expect(page).toHaveURL(/\/natal/)
     await page.goto('/')
-    await expect(page.getByText(/Cópia de Edited chart|Copy of Edited chart/)).toBeVisible()
+    await expect(page.locator('[data-testid^="person-name-"]').filter({ hasText: /Cópia de Edited chart|Copy of Edited chart/ })).toBeVisible()
 
     await page.getByTestId(`delete-${SECOND_PERSON.id}`).click()
     await page.getByTestId(`delete-${SECOND_PERSON.id}`).click()

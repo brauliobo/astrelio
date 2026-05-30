@@ -42,7 +42,7 @@ test.describe('Person detail', () => {
     await page.getByTestId('person-open-report').click()
     await expect(page).toHaveURL(/\/report/)
     await expect(page.getByTestId('report-page')).toBeVisible()
-    await expect(page.getByText(SECOND_PERSON.name)).toBeVisible()
+    await expect(page.getByRole('heading', { name: new RegExp(SECOND_PERSON.name) })).toBeVisible()
 
     await page.goto(`/#/person/${SECOND_PERSON.id}`)
     await page.getByTestId('person-delete').click()

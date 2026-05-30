@@ -38,6 +38,6 @@ test.describe('Onboarding flow', () => {
 
     await expect(page).toHaveURL(/\/natal/)
     await page.goto('/')
-    await expect(page.getByText('Reloaded')).toBeVisible()
+    await expect(page.locator('[data-testid^="person-name-"]').filter({ hasText: 'Reloaded' })).toBeVisible()
   })
 })

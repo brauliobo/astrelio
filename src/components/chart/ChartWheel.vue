@@ -10,6 +10,9 @@ import ZodiacRing from './wheel/ZodiacRing.vue'
 import { VIEWBOX_SIZE, mapsFromProps, norm360 } from './wheel/geometry.js'
 
 const displayModes = ['clean', 'aspects', 'detailed', 'print']
+const zoomMin = 0.85
+const zoomMax = 1.6
+const zoomStep = 0.15
 const modeSettings = {
   clean: {
     degrees: false,
@@ -54,6 +57,7 @@ const sharedHoverHighlight = ref(null)
 const sharedPinnedHighlight = ref(null)
 const localDisplayMode = ref('')
 const isSmallScreen = ref(false)
+const zoomLevel = ref(1)
 const chartHighlightEvent = 'astrelio-chart-highlight'
 let smallScreenQuery = null
 
@@ -84,6 +88,17 @@ const style = computed(() => ({
   width: `${props.size}px`,
   maxWidth: '100%',
 }))
+const zoomViewBox = computed(() => {
+  const viewSize = VIEWBOX_SIZE / zoomLevel.value
+  const offset = (VIEWBOX_SIZE - viewSize) / 2
+  return [offset, offset, viewSize, viewSize]
+    .map(value => Number(value.toFixed(3)))
+    .join(' ')
+})
+const zoomPercent = computed(() => `${Math.round(zoomLevel.value * 100)}%`)
+const isZoomMin = computed(() => zoomLevel.value <= zoomMin)
+const isZoomMax = computed(() => zoomLevel.value >= zoomMax)
+const isZoomDefault = computed(() => zoomLevel.value === 1)
 const displayAttributes = computed(() => ({
   'data-chart-mode': activeDisplayMode.value,
   'data-show-degrees': String(displayOptions.value.degrees),
@@ -155,6 +170,36 @@ const selectDisplayMode = (mode) => {
   emit('update:display-mode', normalizedMode)
 }
 
+const setZoom = (value) => {
+  const clamped = Math.min(zoomMax, Math.max(zoomMin, value))
+  zoomLevel.value = Number(clamped.toFixed(2))
+}
+
+const zoomIn = () => {
+  setZoom(zoomLevel.value + zoomStep)
+}
+
+const zoomOut = () => {
+  setZoom(zoomLevel.value - zoomStep)
+}
+
+const resetZoom = () => {
+  zoomLevel.value = 1
+}
+
+const onWheelKeydown = (event) => {
+  if (event.key === '+' || event.key === '=') {
+    event.preventDefault()
+    zoomIn()
+  } else if (event.key === '-' || event.key === '_') {
+    event.preventDefault()
+    zoomOut()
+  } else if (event.key === '0') {
+    event.preventDefault()
+    resetZoom()
+  }
+}
+
 watch(() => props.displayMode, () => {
   localDisplayMode.value = ''
 })
@@ -193,44 +238,116 @@ onBeforeUnmount(() => {
     :modes='displayModes'
     @update:model-value='selectDisplayMode'
   )
-  svg(
+  .chart-wheel-stage.relative.aspect-square.overflow-hidden.rounded-md(
     v-if='baseChart'
-    class='block h-auto w-full aspect-square'
-    :viewBox='`0 0 ${VIEWBOX_SIZE} ${VIEWBOX_SIZE}`'
-    role='img'
-    data-testid='chart-wheel-svg'
+    role='group'
+    tabindex='0'
+    aria-label='Chart wheel'
+    :data-zoom='zoomLevel.toFixed(2)'
+    @keydown='onWheelKeydown'
   )
-    WheelFrame
-    ChartMap(
-      v-for='(map, index) in displayMaps'
-      :key='map.id'
-      :map='map'
-      :index='index'
-      :count='displayMaps.length'
-      :wheel-shift='wheelShift'
-      :highlighted-bodies='activeBodies'
-      :highlighted-aspect-key='activeAspectKey'
-      :aspect-options='aspectOptions'
-      @highlight='setHoverHighlight'
-      @clear-highlight='clearHoverHighlight'
-      @toggle-highlight='togglePinnedHighlight'
+    .chart-zoom-controls.absolute.right-2.top-2.z-20.flex.items-center.gap-1.rounded-md.border.p-1.shadow-sm.backdrop-blur-sm(
+      aria-label='Chart zoom controls'
+      class='border-slate-900/10 bg-white/90'
     )
-    ZodiacRing(:wheel-shift='wheelShift')
-    TickRing(:wheel-shift='wheelShift')
-    AngleMarkers(
-      v-if='displayMaps[0]?.showAngles'
+      button.chart-zoom-button(
+        type='button'
+        data-testid='chart-zoom-out'
+        aria-label='Zoom out'
+        :disabled='isZoomMin'
+        @click='zoomOut'
+      ) -
+      button.chart-zoom-button.chart-zoom-button--reset(
+        type='button'
+        data-testid='chart-zoom-reset'
+        aria-label='Reset zoom'
+        :disabled='isZoomDefault'
+        @click='resetZoom'
+      ) {{ zoomPercent }}
+      button.chart-zoom-button(
+        type='button'
+        data-testid='chart-zoom-in'
+        aria-label='Zoom in'
+        :disabled='isZoomMax'
+        @click='zoomIn'
+      ) +
+    svg(
+      class='block h-full w-full'
+      :viewBox='zoomViewBox'
+      role='img'
+      data-testid='chart-wheel-svg'
+    )
+      WheelFrame
+      ChartMap(
+        v-for='(map, index) in displayMaps'
+        :key='map.id'
+        :map='map'
+        :index='index'
+        :count='displayMaps.length'
+        :wheel-shift='wheelShift'
+        :highlighted-bodies='activeBodies'
+        :highlighted-aspect-key='activeAspectKey'
+        :aspect-options='aspectOptions'
+        @highlight='setHoverHighlight'
+        @clear-highlight='clearHoverHighlight'
+        @toggle-highlight='togglePinnedHighlight'
+      )
+      ZodiacRing(:wheel-shift='wheelShift')
+      TickRing(:wheel-shift='wheelShift')
+      AngleMarkers(
+        v-if='displayMaps[0]?.showAngles'
+        :chart='baseChart'
+        :wheel-shift='wheelShift'
+      )
+    ChartSelectionSummary(
+      v-if='activeBodies.length || activeAspectKey'
       :chart='baseChart'
-      :wheel-shift='wheelShift'
+      :bodies='activeBodies'
+      :aspect-key='activeAspectKey'
     )
-  ChartSelectionSummary(
-    v-if='baseChart && (activeBodies.length || activeAspectKey)'
-    :chart='baseChart'
-    :bodies='activeBodies'
-    :aspect-key='activeAspectKey'
-  )
 </template>
 
 <style>
+.chart-wheel-stage:focus-visible {
+  outline: 2px solid rgb(14 165 233 / 0.8);
+  outline-offset: 3px;
+}
+
+.chart-zoom-button {
+  align-items: center;
+  border-radius: 0.25rem;
+  color: rgb(15 23 42);
+  display: inline-flex;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  height: 2rem;
+  justify-content: center;
+  line-height: 1;
+  min-width: 2rem;
+  padding: 0 0.5rem;
+}
+
+.chart-zoom-button--reset {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  min-width: 2.875rem;
+}
+
+.chart-zoom-button:hover:not(:disabled),
+.chart-zoom-button:focus-visible {
+  background: rgb(226 232 240 / 0.9);
+}
+
+.chart-zoom-button:focus-visible {
+  outline: 2px solid rgb(14 165 233 / 0.8);
+  outline-offset: 1px;
+}
+
+.chart-zoom-button:disabled {
+  color: rgb(100 116 139 / 0.45);
+  cursor: default;
+}
+
 .chart-wheel[data-show-degrees="false"] [data-testid="planet-layer"] g[data-planet] text:not([data-role="symbol"]) {
   display: none;
 }

@@ -127,4 +127,40 @@ describe('chart interactions', () => {
     expect(wrapper.get('[data-testid="planet-glyph-Sun"]').attributes('data-highlight')).toBe('idle')
     expect(wrapper.find('[data-testid="chart-selection-summary"]').exists()).toBe(false)
   })
+
+  it('zooms the wheel with compact controls without resizing the chart frame', async () => {
+    const wrapper = mount(ChartWheel, {
+      props: { natal: chart },
+      global: {
+        plugins: [createI18n({ legacy: false, locale: 'en', messages })],
+      },
+    })
+    const stage = wrapper.get('[data-testid="chart-wheel"]').get('.chart-wheel-stage')
+    const svg = wrapper.get('[data-testid="chart-wheel-svg"]')
+    const initialViewBox = svg.attributes('viewBox')
+
+    await wrapper.get('[data-testid="chart-zoom-in"]').trigger('click')
+    await nextTick()
+
+    expect(stage.attributes('data-zoom')).toBe('1.15')
+    expect(svg.attributes('viewBox')).not.toBe(initialViewBox)
+    expect(wrapper.get('[data-testid="chart-zoom-reset"]').text()).toBe('115%')
+
+    await wrapper.get('[data-testid="chart-zoom-out"]').trigger('click')
+    await nextTick()
+
+    expect(stage.attributes('data-zoom')).toBe('1.00')
+    expect(svg.attributes('viewBox')).toBe(initialViewBox)
+
+    await stage.trigger('keydown', { key: '+' })
+    await nextTick()
+
+    expect(stage.attributes('data-zoom')).toBe('1.15')
+
+    await wrapper.get('[data-testid="chart-zoom-reset"]').trigger('click')
+    await nextTick()
+
+    expect(stage.attributes('data-zoom')).toBe('1.00')
+    expect(svg.attributes('viewBox')).toBe(initialViewBox)
+  })
 })

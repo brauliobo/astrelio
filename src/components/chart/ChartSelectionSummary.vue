@@ -76,15 +76,18 @@ const hasSummary = computed(() =>
 </script>
 
 <template lang="pug">
-.chart-selection-summary.pointer-events-none.absolute.z-10.w-48.rounded-md.border.px-3.py-2.text-center.shadow-lg.backdrop-blur-sm(
+.chart-selection-summary.pointer-events-none.absolute.inset-x-2.bottom-2.z-10.rounded-md.border.px-3.py-2.shadow-lg.backdrop-blur-sm(
   v-if='hasSummary'
-  class='left-1/2 top-1/2 max-w-[44%] -translate-x-1/2 -translate-y-1/2 border-slate-900/10 bg-slate-950/80 text-slate-100'
+  class='border-slate-900/10 bg-slate-950/85 text-slate-100 sm:inset-x-4'
   data-testid='chart-selection-summary'
   :data-selection-kind='aspect ? "aspect" : "planet"'
 )
-  .text-xs.font-semibold.leading-tight {{ title }}
-  .mt-1(v-if='aspect' class='space-y-0.5')
-    .text-xs.leading-tight.text-slate-300(
+  .chart-selection-summary__title.text-xs.font-semibold.leading-snug {{ title }}
+  .mt-1.grid(
+    v-if='aspect'
+    class='gap-0.5'
+  )
+    .chart-selection-summary__line.text-xs.leading-snug.text-slate-300(
       v-for='placement in placements'
       :key='placement.name'
       :data-selection-body='placement.name'
@@ -92,3 +95,15 @@ const hasSummary = computed(() =>
       span.font-medium.text-slate-100 {{ placement.label }}
       template(v-if='placement.detail') {{ ' ' }}{{ placement.detail }}
 </template>
+
+<style scoped>
+.chart-selection-summary {
+  max-height: 6.75rem;
+  overflow: hidden;
+}
+
+.chart-selection-summary__title,
+.chart-selection-summary__line {
+  overflow-wrap: anywhere;
+}
+</style>

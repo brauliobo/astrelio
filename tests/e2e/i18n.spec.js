@@ -6,15 +6,16 @@ test.describe('i18n', () => {
     await seedSettings(page, 'en')
     await page.goto('/')
     await expect(page.getByTestId('nav-home')).toHaveText('Home')
-    await expect(page.getByTestId('nav-natal')).toHaveText('Natal')
-    await expect(page.getByTestId('nav-transits')).toHaveText('Transits')
+    await expect(page.getByTestId('nav-natal')).toHaveText('Map')
+    await expect(page.getByTestId('nav-timing')).toHaveText('Timing')
   })
 
   test('pt-BR locale loads Portuguese nav', async ({ page }) => {
     await seedSettings(page, 'pt-BR')
     await page.goto('/')
     await expect(page.getByTestId('nav-home')).toHaveText('Início')
-    await expect(page.getByTestId('nav-natal')).toHaveText('Mapa Natal')
+    await expect(page.getByTestId('nav-natal')).toHaveText('Mapa')
+    await expect(page.getByTestId('nav-timing')).toHaveText('Tempo')
   })
 
   test('Sun planet label translates between locales', async ({ page }) => {

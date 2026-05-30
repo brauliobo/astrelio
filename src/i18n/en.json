@@ -6,11 +6,21 @@
   "nav": {
     "home": "Home",
     "natal": "Natal",
+    "map": "Map",
+    "timing": "Timing",
+    "relations": "Relationships",
+    "library": "Library",
     "transits": "Transits",
     "progressions": "Progressions",
     "solar_return": "Solar Return",
     "synastry": "Synastry",
     "settings": "Settings"
+  },
+  "context": {
+    "chart": "Chart",
+    "birth": "Birth",
+    "system": "System",
+    "aspects": "Preset"
   },
   "home": {
     "heading": "Your charts",
@@ -301,6 +311,13 @@
       "solar_arc": "Solar Arc",
       "lunar_return": "Lunar Return"
     },
+    "workspace": {
+      "title": "Timing",
+      "subtitle": "Transits, progressions, returns, profections, and directions in one workspace.",
+      "technique": "Technique",
+      "chart": "Chart",
+      "evidence": "Evidence"
+    },
     "profections": {
       "title": "Annual profection",
       "subtitle": "Timing focus for {name}",
@@ -402,6 +419,17 @@
     "orb_width": "Orb width",
     "applying_only": "Show applying aspects only",
     "include_modern_planets": "Include modern planets and points",
+    "preset": "Preset",
+    "presets": {
+      "custom": "Custom",
+      "simple": "Simple reading",
+      "traditional": "Traditional",
+      "modern": "Modern",
+      "technical": "Technical",
+      "print": "Print"
+    },
+    "core_settings": "Core",
+    "advanced_settings": "Advanced",
     "aspect_sets": {
       "all": "Major + quincunx",
       "major": "Major aspects only"
