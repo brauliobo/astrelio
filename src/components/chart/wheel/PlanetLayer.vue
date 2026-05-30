@@ -5,6 +5,9 @@ import { PLANET_COLORS, PLANET_SYMBOLS, WHEEL_RADII, degreeLabel } from './geome
 const props = defineProps({
   placements: { type: Array, required: true },
   color: { type: String, default: 'var(--chart-ink)' },
+  symbols: { type: Object, default: null },
+  colors: { type: Object, default: null },
+  labels: { type: Object, default: null },
   mapIndex: { type: Number, default: 0 },
   highlightedBodies: { type: Array, default: () => [] },
 })
@@ -19,8 +22,11 @@ const glyphs = computed(() =>
     const glyph = item.glyphPoint || item.point
     const label = item.labelPoint || { x: glyph.x + 10, y: glyph.y - 9 }
     const retrograde = item.retrogradePoint || { x: glyph.x + 10, y: glyph.y + 7 }
-    const color = props.mapIndex === 0 ? PLANET_COLORS[item.planet.name] || props.color : props.color
+    const symbols = props.symbols || PLANET_SYMBOLS
+    const colors = props.colors || PLANET_COLORS
+    const color = props.mapIndex === 0 ? colors[item.planet.name] || props.color : props.color
     const labelColor = props.mapIndex === 0 ? 'var(--chart-ink)' : props.color
+    const name = props.labels?.[item.planet.name] || item.planet.displayName || item.planet.name
     return {
       ...item,
       exact,
@@ -30,7 +36,8 @@ const glyphs = computed(() =>
       color,
       labelColor,
       labelAnchor: item.labelAnchor || 'middle',
-      symbol: PLANET_SYMBOLS[item.planet.name],
+      name,
+      symbol: symbols[item.planet.name],
       degree: degreeLabel(item.planet.longitude),
       showDegreeLabel: item.showDegreeLabel !== false,
       fontSize: item.planet.name === 'Sun' && props.mapIndex === 0 ? 24 : props.mapIndex === 0 ? 21 : 17,
@@ -54,7 +61,7 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
     :data-planet='item.planet.name'
     :data-testid='`planet-glyph-${item.planet.name}`'
     :data-highlight='glyphHighlightState(item.planet.name)'
-    :aria-label='`${item.planet.name} ${item.degree} degrees`'
+    :aria-label='`${item.name} ${item.degree} degrees`'
     :aria-pressed='highlightedBodySet.has(item.planet.name)'
     role='button'
     tabindex='0'
@@ -68,7 +75,7 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
     @keydown.enter.prevent='$emit("toggle-highlight", highlightPayload(item.planet.name))'
     @keydown.space.prevent='$emit("toggle-highlight", highlightPayload(item.planet.name))'
   )
-    title {{ item.planet.name }} {{ item.degree }}°
+    title {{ item.name }} {{ item.degree }}°
     circle.planet-hit-target(
       :cx='item.glyph.x'
       :cy='item.glyph.y'

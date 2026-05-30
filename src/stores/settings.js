@@ -74,7 +74,14 @@ export const useSettingsStore = defineStore('settings', {
     aspectSet:   'all',
     orbScale:    1,
     applyingOnly: false,
-    includeModernPlanets: true
+    includeModernPlanets: true,
+    vedic: {
+      ayanamsha: 'lahiri',
+      houseMode: 'whole_sign',
+      nodeMode: 'mean',
+      includeModernPlanets: false,
+      interpretationStyle: 'classical'
+    }
   }),
   getters: {
     activePreset: (state) =>
@@ -98,6 +105,12 @@ export const useSettingsStore = defineStore('settings', {
       this.orbScale ??= 1
       this.applyingOnly ??= false
       this.includeModernPlanets ??= true
+      this.vedic ??= {}
+      this.vedic.ayanamsha ||= 'lahiri'
+      this.vedic.houseMode ||= 'whole_sign'
+      this.vedic.nodeMode ||= 'mean'
+      this.vedic.includeModernPlanets ??= false
+      this.vedic.interpretationStyle ||= 'classical'
       if (!['dark', 'light'].includes(this.theme)) this.theme = 'dark'
     },
     setTheme(theme) {

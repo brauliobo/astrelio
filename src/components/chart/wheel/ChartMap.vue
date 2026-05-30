@@ -19,7 +19,7 @@ defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 
 const band = computed(() => planetBandFor(props.map, props.index, props.count))
 const placements = computed(() =>
-  planetPlacements(props.map.chart, props.wheelShift, band.value)
+  planetPlacements(props.map.chart, props.wheelShift, band.value, props.map.planetSymbols || undefined)
 )
 </script>
 
@@ -46,6 +46,9 @@ g(:data-chart-map='map.id')
     :placements='placements'
     :color='map.color'
     :map-index='index'
+    :symbols='map.planetSymbols'
+    :colors='map.planetColors'
+    :labels='map.planetLabels'
     :highlighted-bodies='highlightedBodies'
     @highlight='$emit("highlight", $event)'
     @clear-highlight='$emit("clear-highlight")'

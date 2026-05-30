@@ -36,6 +36,7 @@ describe('Human Design visual components', () => {
 
     expect(wrapper.get('[data-testid="modality-switch"]').attributes('aria-label')).toBe('Alternar modalidade')
     expect(wrapper.get('[data-testid="modality-astrology"]').text()).toBe('Astrologia')
+    expect(wrapper.get('[data-testid="modality-vedic"]').text()).toBe('Védica')
     expect(wrapper.get('[data-testid="modality-human-design"]').text()).toBe('Human Design')
     expect(ptBR.planets.Earth).toBe('Terra')
   })

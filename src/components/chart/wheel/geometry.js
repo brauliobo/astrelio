@@ -123,6 +123,9 @@ export const chartToMap = (chart, index = 0, options = {}) => ({
   showAspects: options.showAspects ?? index === 0,
   showAngles: options.showAngles ?? index === 0,
   planetBand: options.planetBand || null,
+  planetSymbols: options.planetSymbols || null,
+  planetColors: options.planetColors || null,
+  planetLabels: options.planetLabels || null,
 })
 
 export const mapsFromProps = ({ natal, overlay, charts }) => {
@@ -161,9 +164,9 @@ export const planetBandFor = (map, index, count) => {
   return { inner, outer }
 }
 
-export const clusteredPlanets = (positions) => {
+export const clusteredPlanets = (positions, symbols = PLANET_SYMBOLS) => {
   const sorted = positions
-    .filter(p => PLANET_SYMBOLS[p.name])
+    .filter(p => symbols[p.name])
     .map(p => ({ ...p, longitude: norm360(p.longitude) }))
     .sort((a, b) =>
       a.longitude - b.longitude ||
@@ -253,9 +256,9 @@ const labelPlacement = (glyphPoint, glyphLongitude) => {
   }
 }
 
-export const planetPlacements = (chart, wheelShift, band) => {
+export const planetPlacements = (chart, wheelShift, band, symbols = PLANET_SYMBOLS) => {
   const placements = []
-  for (const cluster of clusteredPlanets(chart.positions || [])) {
+  for (const cluster of clusteredPlanets(chart.positions || [], symbols)) {
     const glyphLongitudes = visualLongitudesForCluster(cluster)
     cluster.forEach((planet, index) => {
       const radius = radiusForClusterIndex(index, cluster.length, band)

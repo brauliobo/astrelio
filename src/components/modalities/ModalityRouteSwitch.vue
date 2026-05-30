@@ -12,6 +12,7 @@ const { t } = useI18n()
 
 const switchItems = computed(() => props.items || [
   { id: 'astrology', label: t('modalities.astrology'), to: '/natal', testId: 'modality-astrology' },
+  { id: 'vedic', label: t('modalities.vedic'), to: '/vedic', testId: 'modality-vedic' },
   { id: 'humanDesign', label: t('modalities.human_design'), to: '/human-design', testId: 'modality-human-design' },
 ])
 </script>

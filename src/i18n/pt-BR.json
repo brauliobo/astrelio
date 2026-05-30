@@ -24,6 +24,7 @@
   },
   "modalities": {
     "astrology": "Astrologia",
+    "vedic": "Védica",
     "human_design": "Human Design",
     "switch_aria": "Alternar modalidade"
   },
@@ -182,6 +183,75 @@
       "companionship_text": "{count} canais são compartilhados.",
       "companionship_empty": "Canais compartilhados não são o principal padrão de vínculo aqui.",
       "shared_centers_empty": "Os mapas enfatizam centros diferentes."
+    }
+  },
+  "vedic": {
+    "title": "Astrologia védica de {name}",
+    "loading": "Carregando Swiss Ephemeris...",
+    "lagna": "Lagna",
+    "moon_rasi": "Rasi da Lua",
+    "sun_rasi": "Rasi do Sol",
+    "active_dasha": "Dasha ativo",
+    "ayanamsha": "Ayanamsha",
+    "house_mode": "Modo de casas",
+    "node_mode": "Nodos",
+    "rasi_positions": "Posições no Rasi",
+    "navamsa": "Navamsa",
+    "vimshottari": "Dashas Vimshottari",
+    "ayanamshas": {
+      "lahiri": "Lahiri",
+      "raman": "Raman",
+      "krishnamurti": "Krishnamurti",
+      "fagan_bradley": "Fagan-Bradley"
+    },
+    "house_modes": {
+      "whole_sign": "Rasi por signo inteiro",
+      "equal": "Bhava igual",
+      "bhava": "Bhava"
+    },
+    "node_modes": {
+      "mean": "Rahu/Ketu médios",
+      "true": "Rahu/Ketu verdadeiros"
+    },
+    "dasha_lords": {
+      "ketu": "Ketu",
+      "venus": "Vênus",
+      "sun": "Sol",
+      "moon": "Lua",
+      "mars": "Marte",
+      "rahu": "Rahu",
+      "jupiter": "Júpiter",
+      "saturn": "Saturno",
+      "mercury": "Mercúrio"
+    },
+    "nakshatras": {
+      "ashwini": "Ashwini",
+      "bharani": "Bharani",
+      "krittika": "Krittika",
+      "rohini": "Rohini",
+      "mrigashira": "Mrigashira",
+      "ardra": "Ardra",
+      "punarvasu": "Punarvasu",
+      "pushya": "Pushya",
+      "ashlesha": "Ashlesha",
+      "magha": "Magha",
+      "purva_phalguni": "Purva Phalguni",
+      "uttara_phalguni": "Uttara Phalguni",
+      "hasta": "Hasta",
+      "chitra": "Chitra",
+      "swati": "Swati",
+      "vishakha": "Vishakha",
+      "anuradha": "Anuradha",
+      "jyeshtha": "Jyeshtha",
+      "mula": "Mula",
+      "purva_ashadha": "Purva Ashadha",
+      "uttara_ashadha": "Uttara Ashadha",
+      "shravana": "Shravana",
+      "dhanishta": "Dhanishta",
+      "shatabhisha": "Shatabhisha",
+      "purva_bhadrapada": "Purva Bhadrapada",
+      "uttara_bhadrapada": "Uttara Bhadrapada",
+      "revati": "Revati"
     }
   },
   "form": {

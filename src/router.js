@@ -4,6 +4,7 @@ const routes = [
   { path: '/',             component: () => import('./pages/HomePage.vue'),         name: 'home' },
   { path: '/person/:id',   component: () => import('./pages/PersonPage.vue'),       name: 'person' },
   { path: '/natal',        component: () => import('./pages/NatalPage.vue'),        name: 'natal' },
+  { path: '/vedic',        component: () => import('./pages/VedicPage.vue'),        name: 'vedic' },
   { path: '/human-design', component: () => import('./pages/HumanDesignPage.vue'),  name: 'human-design' },
   { path: '/report',       component: () => import('./pages/ReportPage.vue'),       name: 'report' },
   { path: '/timing/:technique?', component: () => import('./pages/TimingPage.vue'), name: 'timing' },

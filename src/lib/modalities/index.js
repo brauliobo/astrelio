@@ -6,6 +6,7 @@ import { natalInterpretationSections } from '../astro/interpretations.js'
 import { buildHumanDesignChart } from '../human-design/bodygraph.js'
 import { humanDesignConnection } from '../human-design/connections.js'
 import { humanDesignConnectionInsights, humanDesignInterpretationSections } from '../human-design/interpretations.js'
+import { buildVedicChart } from '../vedic/chart.js'
 
 /**
  * Modality adapters keep product surfaces decoupled from calculation engines.
@@ -36,6 +37,12 @@ export const modalities = {
     interpretation: humanDesignInterpretationSections,
     connection: humanDesignConnection,
     connectionInsights: humanDesignConnectionInsights,
+  },
+  vedic: {
+    id: 'vedic',
+    chart: buildVedicChart,
+    interpretation: () => [],
+    connection: () => ({ aspects: [] }),
   },
 }
 

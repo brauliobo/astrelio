@@ -4,6 +4,7 @@ import ChartSelectionSummary from './ChartSelectionSummary.vue'
 import ChartDisplayMode from './ChartDisplayMode.vue'
 import AngleMarkers from './wheel/AngleMarkers.vue'
 import ChartMap from './wheel/ChartMap.vue'
+import NakshatraRing from './wheel/NakshatraRing.vue'
 import TickRing from './wheel/TickRing.vue'
 import WheelFrame from './wheel/WheelFrame.vue'
 import ZodiacRing from './wheel/ZodiacRing.vue'
@@ -48,6 +49,8 @@ const props = defineProps({
   aspectOptions: { type: Object, default: () => ({}) },
   displayMode: { type: String, default: 'auto' },
   showModeControls: { type: Boolean, default: true },
+  zodiacSymbols: { type: Array, default: null },
+  showNakshatraRing: { type: Boolean, default: false },
 })
 const emit = defineEmits(['highlight', 'clear-highlight', 'toggle-highlight', 'update:display-mode'])
 
@@ -277,6 +280,7 @@ onBeforeUnmount(() => {
       data-testid='chart-wheel-svg'
     )
       WheelFrame
+      NakshatraRing(v-if='showNakshatraRing' :wheel-shift='wheelShift')
       ChartMap(
         v-for='(map, index) in displayMaps'
         :key='map.id'
@@ -291,7 +295,7 @@ onBeforeUnmount(() => {
         @clear-highlight='clearHoverHighlight'
         @toggle-highlight='togglePinnedHighlight'
       )
-      ZodiacRing(:wheel-shift='wheelShift')
+      ZodiacRing(:wheel-shift='wheelShift' :symbols='zodiacSymbols || undefined')
       TickRing(:wheel-shift='wheelShift')
       AngleMarkers(
         v-if='displayMaps[0]?.showAngles'

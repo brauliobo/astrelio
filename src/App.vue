@@ -18,6 +18,7 @@ const SkyBackground = defineAsyncComponent(() => import('./components/sky/SkyBac
 const personPath = computed(() => activePerson.value ? `/person/${activePerson.value.id}` : '/')
 const skyMode = computed(() => route.path === '/human-design' ? 'humanDesign' : 'astrology')
 const activeTheme = computed(() => settings.theme === 'light' ? 'light' : 'dark')
+const isVedicRoute = computed(() => route.path === '/vedic')
 const toggleThemeLabel = computed(() =>
   activeTheme.value === 'light' ? 'Switch to dark mode' : 'Switch to light mode'
 )
@@ -46,7 +47,13 @@ const links = computed(() => [
 const contextItems = computed(() => {
   const presetKey = settings.activePreset || 'custom'
   const items = [
-    { key: 'system', label: t('context.system'), value: `${t(`settings.${settings.zodiac}`)} · ${t(`houses.${settings.houseSystem}`)}` },
+    {
+      key: 'system',
+      label: t('context.system'),
+      value: isVedicRoute.value
+        ? `${t('modalities.vedic')} · ${t(`vedic.ayanamshas.${settings.vedic.ayanamsha}`)}`
+        : `${t(`settings.${settings.zodiac}`)} · ${t(`houses.${settings.houseSystem}`)}`,
+    },
     { key: 'aspects', label: t('context.aspects'), value: t(`settings.presets.${presetKey}`) },
   ]
 
