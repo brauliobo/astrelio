@@ -1,23 +1,31 @@
 import { norm360, signIndex } from '../astro/zodiac.js'
 import { localToJdUt, offsetMinutesForPerson } from '../astro/timezones.js'
+import {
+  SWISS_BODY,
+  setSwissAyanamsha,
+  swiss,
+  swissFlags,
+  swissHouses,
+  swissJulday,
+  swissPosition,
+} from '../astro/swisseph.js'
 import { VEDIC_BODY_LABELS } from './constants.js'
 import { nakshatraOf, navamsaPlacements, vimshottariDashas } from './derivations.js'
-import { getSwissEph, setAyanamsha, siderealFlags } from './swisseph.js'
 
 const BODY_KEYS = [
-  ['Sun', 'SE_SUN'],
-  ['Moon', 'SE_MOON'],
-  ['Mercury', 'SE_MERCURY'],
-  ['Venus', 'SE_VENUS'],
-  ['Mars', 'SE_MARS'],
-  ['Jupiter', 'SE_JUPITER'],
-  ['Saturn', 'SE_SATURN'],
+  ['Sun', SWISS_BODY.Sun],
+  ['Moon', SWISS_BODY.Moon],
+  ['Mercury', SWISS_BODY.Mercury],
+  ['Venus', SWISS_BODY.Venus],
+  ['Mars', SWISS_BODY.Mars],
+  ['Jupiter', SWISS_BODY.Jupiter],
+  ['Saturn', SWISS_BODY.Saturn],
 ]
 
 const MODERN_BODY_KEYS = [
-  ['Uranus', 'SE_URANUS'],
-  ['Neptune', 'SE_NEPTUNE'],
-  ['Pluto', 'SE_PLUTO'],
+  ['Uranus', SWISS_BODY.Uranus],
+  ['Neptune', SWISS_BODY.Neptune],
+  ['Pluto', SWISS_BODY.Pluto],
 ]
 
 const HOUSES = {
@@ -28,8 +36,8 @@ const HOUSES = {
 
 const jdToDate = (jd) => new Date((jd - 2440587.5) * 86_400_000)
 
-const positionFor = (swe, jd, name, body, flags) => {
-  const position = swe.calc_ut(jd, body, flags)
+const positionFor = (jd, name, body, flags) => {
+  const position = swissPosition(body, jd, flags)
   return {
     name,
     displayName: VEDIC_BODY_LABELS[name] || name,
@@ -42,9 +50,9 @@ const positionFor = (swe, jd, name, body, flags) => {
   }
 }
 
-const siderealHouses = (swe, jd, lat, lon, houseMode) => {
+const siderealHouses = (jd, lat, lon, houseMode) => {
   const hsys = HOUSES[houseMode] || HOUSES.whole_sign
-  const houses = swe.houses_ex(jd, swe.SEFLG_SIDEREAL, lat, lon, hsys)
+  const houses = swissHouses(jd, lat, lon, hsys, swiss.SEFLG_SIDEREAL)
   const ascendant = norm360(houses.ascmc[0])
   const mc = norm360(houses.ascmc[1])
   const cusps = Array.from(houses.cusps).slice(1, 13).map(norm360)
@@ -64,21 +72,20 @@ const siderealHouses = (swe, jd, lat, lon, houseMode) => {
 export const buildVedicChart = async (person, settings = {}) => {
   if (!person) return null
 
-  const swe = await getSwissEph()
   const ayanamsha = settings.ayanamsha || 'lahiri'
   const houseMode = settings.houseMode || 'whole_sign'
   const nodeMode = settings.nodeMode === 'true' ? 'true' : 'mean'
   const includeModernPlanets = !!settings.includeModernPlanets
   const jdUt = localToJdUt(person.isoLocal, offsetMinutesForPerson(person))
 
-  setAyanamsha(swe, ayanamsha)
-  const flags = siderealFlags(swe)
+  setSwissAyanamsha(ayanamsha)
+  const flags = swissFlags({ sidereal: true })
   const positions = BODY_KEYS
     .concat(includeModernPlanets ? MODERN_BODY_KEYS : [])
-    .map(([name, constant]) => positionFor(swe, jdUt, name, swe[constant], flags))
+    .map(([name, body]) => positionFor(jdUt, name, body, flags))
 
-  const nodeBody = nodeMode === 'true' ? swe.SE_TRUE_NODE : swe.SE_MEAN_NODE
-  const rahu = positionFor(swe, jdUt, 'NorthNode', nodeBody, flags)
+  const nodeBody = nodeMode === 'true' ? SWISS_BODY.NorthNodeTrue : SWISS_BODY.NorthNodeMean
+  const rahu = positionFor(jdUt, 'NorthNode', nodeBody, flags)
   const ketu = {
     ...rahu,
     name: 'SouthNode',
@@ -90,14 +97,9 @@ export const buildVedicChart = async (person, settings = {}) => {
   }
   positions.push(rahu, ketu)
 
-  const houses = siderealHouses(swe, jdUt, person.lat, person.lon, houseMode)
+  const houses = siderealHouses(jdUt, person.lat, person.lon, houseMode)
   const moon = positions.find(position => position.name === 'Moon')
-  const targetJd = swe.julday(
-    new Date().getUTCFullYear(),
-    new Date().getUTCMonth() + 1,
-    new Date().getUTCDate(),
-    new Date().getUTCHours() + new Date().getUTCMinutes() / 60
-  )
+  const targetJd = swissJulday()
   const dashas = moon ? vimshottariDashas(moon.longitude, jdUt, targetJd) : null
 
   return {
@@ -108,7 +110,7 @@ export const buildVedicChart = async (person, settings = {}) => {
     lon: person.lon,
     zodiac: 'sidereal',
     ayanamsha,
-    ayanamshaValue: swe.get_ayanamsa_ut(jdUt),
+    ayanamshaValue: swiss.get_ayanamsa_ut(jdUt),
     houseSystem: houseMode,
     nodeMode,
     ascendant: houses.ascendant,

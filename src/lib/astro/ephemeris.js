@@ -1,30 +1,26 @@
-import SwissEph from 'swisseph-wasm'
 import { norm360, toSidereal } from './zodiac.js'
 import { calcHouses } from './houses.js'
-
-const swiss = new SwissEph()
-await swiss.initSwissEph()
-const SWISS_FLAGS = swiss.SEFLG_SWIEPH | swiss.SEFLG_SPEED
+import { SWISS_BODY, SWISS_FLAGS, swissPosition } from './swisseph.js'
 
 // VegaPlus-style charts use Swiss Ephemeris longitudes; keep displayed bodies
 // on this source so Pluto and minor points are not mixed across references.
 const BODIES = [
-  { name: 'Sun',     body: swiss.SE_SUN },
-  { name: 'Moon',    body: swiss.SE_MOON },
-  { name: 'Mercury', body: swiss.SE_MERCURY },
-  { name: 'Venus',   body: swiss.SE_VENUS },
-  { name: 'Mars',    body: swiss.SE_MARS },
-  { name: 'Jupiter', body: swiss.SE_JUPITER },
-  { name: 'Saturn',  body: swiss.SE_SATURN },
-  { name: 'Uranus',  body: swiss.SE_URANUS },
-  { name: 'Neptune', body: swiss.SE_NEPTUNE },
-  { name: 'Pluto',   body: swiss.SE_PLUTO }
+  { name: 'Sun',     body: SWISS_BODY.Sun },
+  { name: 'Moon',    body: SWISS_BODY.Moon },
+  { name: 'Mercury', body: SWISS_BODY.Mercury },
+  { name: 'Venus',   body: SWISS_BODY.Venus },
+  { name: 'Mars',    body: SWISS_BODY.Mars },
+  { name: 'Jupiter', body: SWISS_BODY.Jupiter },
+  { name: 'Saturn',  body: SWISS_BODY.Saturn },
+  { name: 'Uranus',  body: SWISS_BODY.Uranus },
+  { name: 'Neptune', body: SWISS_BODY.Neptune },
+  { name: 'Pluto',   body: SWISS_BODY.Pluto }
 ]
 
 const sidereal = (lon, jd, mode) => mode === 'sidereal' ? toSidereal(lon, jd) : lon
 
 const swissPoint = (name, body, jd, mode) => {
-  const result = swiss.calc_ut(jd, body, SWISS_FLAGS)
+  const result = swissPosition(body, jd, SWISS_FLAGS)
   const speed = result[3]
   return {
     name,
@@ -53,7 +49,7 @@ export const computeChart = (
   const positions = BODIES.map(({ name, body }) => swissPoint(name, body, jdUt, opts.zodiac))
   const northNode = swissPoint(
     'NorthNode',
-    opts.nodeMode === 'true' ? swiss.SE_TRUE_NODE : swiss.SE_MEAN_NODE,
+    opts.nodeMode === 'true' ? SWISS_BODY.NorthNodeTrue : SWISS_BODY.NorthNodeMean,
     jdUt,
     opts.zodiac
   )
@@ -65,8 +61,8 @@ export const computeChart = (
   })
   // VegaPlus uses Swiss Ephemeris mean lunar apogee for Lilith; the old local
   // formula tracked the perigee/opposite point, placing Lilith about 180° off.
-  positions.push(swissPoint('Lilith', swiss.SE_MEAN_APOG, jdUt, opts.zodiac))
-  positions.push(swissPoint('Chiron', swiss.SE_CHIRON, jdUt, opts.zodiac))
+  positions.push(swissPoint('Lilith', SWISS_BODY.Lilith, jdUt, opts.zodiac))
+  positions.push(swissPoint('Chiron', SWISS_BODY.Chiron, jdUt, opts.zodiac))
 
   const houses = calcHouses(opts.houseSystem, jdUt, lat, lon)
   return {
@@ -83,8 +79,8 @@ export const computeChart = (
 }
 
 export const moonPhaseFraction = (jdUt) => {
-  const sun = swissPoint('Sun', swiss.SE_SUN, jdUt, 'tropical').longitude
-  const moon = swissPoint('Moon', swiss.SE_MOON, jdUt, 'tropical').longitude
+  const sun = swissPoint('Sun', SWISS_BODY.Sun, jdUt, 'tropical').longitude
+  const moon = swissPoint('Moon', SWISS_BODY.Moon, jdUt, 'tropical').longitude
   return norm360(moon - sun) / 360
 }
 
@@ -101,4 +97,4 @@ export const moonPhaseLabel = (jdUt) => {
 }
 
 export const sunLongitude = (jdUt) =>
-  swissPoint('Sun', swiss.SE_SUN, jdUt, 'tropical').longitude
+  swissPoint('Sun', SWISS_BODY.Sun, jdUt, 'tropical').longitude
