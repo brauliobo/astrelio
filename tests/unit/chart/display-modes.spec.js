@@ -255,13 +255,15 @@ describe('chart display modes', () => {
     expect(sun.get('circle').classes()).toContain('planet-hit-target')
   })
 
-  it('keeps aspect lines bounded to the central aspect circle', () => {
+  it('extends aspect lines to the rendered planet glyph lane', () => {
     const wrapper = mountWheel()
     const aspectLine = wrapper.get('[data-aspect="Sun-Mars-sextile"]')
     const endpointDistance = (x, y) =>
       Math.hypot(Number(x) - CENTER, Number(y) - CENTER)
 
-    expect(endpointDistance(aspectLine.attributes('x1'), aspectLine.attributes('y1'))).toBeCloseTo(WHEEL_RADII.aspect, 4)
-    expect(endpointDistance(aspectLine.attributes('x2'), aspectLine.attributes('y2'))).toBeCloseTo(WHEEL_RADII.aspect, 4)
+    expect(endpointDistance(aspectLine.attributes('x1'), aspectLine.attributes('y1'))).toBeGreaterThan(WHEEL_RADII.aspect)
+    expect(endpointDistance(aspectLine.attributes('x2'), aspectLine.attributes('y2'))).toBeGreaterThan(WHEEL_RADII.aspect)
+    expect(endpointDistance(aspectLine.attributes('x1'), aspectLine.attributes('y1'))).toBeLessThan(WHEEL_RADII.houseOuter)
+    expect(endpointDistance(aspectLine.attributes('x2'), aspectLine.attributes('y2'))).toBeLessThan(WHEEL_RADII.houseOuter)
   })
 })

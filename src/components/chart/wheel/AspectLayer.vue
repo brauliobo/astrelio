@@ -18,6 +18,7 @@ const props = defineProps({
   highlightedBodies: { type: Array, default: () => [] },
   highlightedAspectKey: { type: String, default: '' },
   aspectOptions: { type: Object, default: () => ({}) },
+  placements: { type: Array, default: () => [] },
 })
 defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 
@@ -29,7 +30,7 @@ const aspectColor = (type) => {
 }
 
 const lines = computed(() =>
-  naturalAspectLines(props.chart, props.wheelShift, undefined, [], props.aspectOptions)
+  naturalAspectLines(props.chart, props.wheelShift, undefined, props.placements, props.aspectOptions)
     .map(line => ({
       ...line,
       color: aspectColor(line.aspect.type),

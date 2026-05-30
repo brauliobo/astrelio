@@ -27,7 +27,12 @@ npm run test       # Vitest
 npm run e2e        # Playwright (auto-builds + serves preview)
 npm run build      # production build
 GITHUB_PAGES=1 npm run build   # build with /astrelio/ base path
+npm run smoke:dev  # Vite dev-server smoke check for /#/human-design
 ```
+
+CI uses `npm ci`, so keep `package-lock.json` in sync with dependency changes. Restart `npm run dev` after installing dependencies so Vite does not hold stale module paths.
+
+`dist/` is ignored and should stay local. If static GitHub Pages files must be committed manually, build/copy them into `docs/` and commit that directory instead.
 
 ## Repository layout
 
@@ -56,6 +61,8 @@ tests/
 ## Deploy
 
 Push to `main`. The workflow builds with `GITHUB_PAGES=1` so Vite's `base` resolves to `/astrelio/`, then deploys via `actions/deploy-pages@v4`. Repo Settings → Pages → Source = "GitHub Actions".
+
+Do not commit generated `dist/` output for deploys. Use `docs/` only for an explicitly requested static Pages artifact.
 
 For a custom domain, drop a `CNAME` file into `public/` and remove the `base` override in `vite.config.js`.
 

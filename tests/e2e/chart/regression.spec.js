@@ -61,7 +61,21 @@ test.describe('Chart regressions', () => {
     const reachesGlyph = await page.evaluate(() => {
       const svg = document.querySelector('[data-testid="chart-wheel"] svg')
       const line = svg.querySelector('[data-aspect="Sun-Uranus-sextile"]')
-      const sun = svg.querySelector('g[data-planet="Sun"] [data-role="symbol"]').getBBox()
+      const symbol = svg.querySelector('g[data-planet="Sun"] [data-role="symbol"]')
+      const sunBox = symbol.getBBox()
+      const matrix = symbol.transform.baseVal.consolidate().matrix
+      const corners = [
+        new DOMPoint(sunBox.x, sunBox.y),
+        new DOMPoint(sunBox.x + sunBox.width, sunBox.y),
+        new DOMPoint(sunBox.x, sunBox.y + sunBox.height),
+        new DOMPoint(sunBox.x + sunBox.width, sunBox.y + sunBox.height),
+      ].map(point => point.matrixTransform(matrix))
+      const sun = {
+        x: Math.min(...corners.map(point => point.x)),
+        y: Math.min(...corners.map(point => point.y)),
+        width: Math.max(...corners.map(point => point.x)) - Math.min(...corners.map(point => point.x)),
+        height: Math.max(...corners.map(point => point.y)) - Math.min(...corners.map(point => point.y)),
+      }
       const x1 = Number(line.getAttribute('x1'))
       const y1 = Number(line.getAttribute('y1'))
       return x1 >= sun.x && x1 <= sun.x + sun.width && y1 >= sun.y && y1 <= sun.y + sun.height

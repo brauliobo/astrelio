@@ -39,6 +39,7 @@ g(:data-chart-map='map.id')
     :highlighted-bodies='highlightedBodies'
     :highlighted-aspect-key='highlightedAspectKey'
     :aspect-options='aspectOptions'
+    :placements='placements'
     @highlight='$emit("highlight", $event)'
     @clear-highlight='$emit("clear-highlight")'
     @toggle-highlight='$emit("toggle-highlight", $event)'

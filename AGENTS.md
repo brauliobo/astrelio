@@ -17,6 +17,14 @@
 
 - Prefer targeted checks for focused UI changes. For chart or Human Design visual tweaks, run the affected unit specs and screenshot checks first.
 - Avoid full `npm run lint` unless the change spans many files, touches shared syntax/config, or the user asks for a full lint pass; use focused tests for specific changed files instead.
+- GitHub Actions uses `npm ci`; when `package.json` dependencies change, update `package-lock.json` in the same change.
+- If dependency installation changes while a Vite dev server is running, restart the dev server before debugging browser overlay errors.
+
+## Static GitHub Pages
+
+- Do not commit generated `dist/` output. `dist/` is a local build directory and remains ignored.
+- When the user explicitly asks for committed static GitHub Pages output, build and commit `docs/` instead of `dist/`.
+- For the repository workflow, keep GitHub Actions Pages deployment as the default unless the user explicitly asks for a committed static artifact.
 
 ## UX Structure
 
