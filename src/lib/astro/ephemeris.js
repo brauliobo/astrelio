@@ -1,80 +1,39 @@
-import { Body, Ecliptic, EclipticGeoMoon, GeoVector, MakeTime } from 'astronomy-engine'
+import SwissEph from 'swisseph-wasm'
 import { norm360, toSidereal } from './zodiac.js'
 import { calcHouses } from './houses.js'
 
+const swiss = new SwissEph()
+await swiss.initSwissEph()
+const SWISS_FLAGS = swiss.SEFLG_SWIEPH | swiss.SEFLG_SPEED
+
+// VegaPlus-style charts use Swiss Ephemeris longitudes; keep displayed bodies
+// on this source so Pluto and minor points are not mixed across references.
 const BODIES = [
-  { name: 'Sun',     body: Body.Sun },
-  { name: 'Moon',    body: Body.Moon },
-  { name: 'Mercury', body: Body.Mercury },
-  { name: 'Venus',   body: Body.Venus },
-  { name: 'Mars',    body: Body.Mars },
-  { name: 'Jupiter', body: Body.Jupiter },
-  { name: 'Saturn',  body: Body.Saturn },
-  { name: 'Uranus',  body: Body.Uranus },
-  { name: 'Neptune', body: Body.Neptune },
-  { name: 'Pluto',   body: Body.Pluto }
+  { name: 'Sun',     body: swiss.SE_SUN },
+  { name: 'Moon',    body: swiss.SE_MOON },
+  { name: 'Mercury', body: swiss.SE_MERCURY },
+  { name: 'Venus',   body: swiss.SE_VENUS },
+  { name: 'Mars',    body: swiss.SE_MARS },
+  { name: 'Jupiter', body: swiss.SE_JUPITER },
+  { name: 'Saturn',  body: swiss.SE_SATURN },
+  { name: 'Uranus',  body: swiss.SE_URANUS },
+  { name: 'Neptune', body: swiss.SE_NEPTUNE },
+  { name: 'Pluto',   body: swiss.SE_PLUTO }
 ]
 
-const jdToDate = (jd) => new Date((jd - 2440587.5) * 86_400_000)
-
-const eclipticLon = (body, jd) => {
-  const t   = MakeTime(jdToDate(jd))
-  const v   = GeoVector(body, t, true)
-  const ecl = Ecliptic(v)
-  return { lon: norm360(ecl.elon), lat: ecl.elat }
-}
-
-const speedDegPerDay = (body, jd) => {
-  const dt = 1 / 1440
-  const a  = eclipticLon(body, jd - dt).lon
-  const b  = eclipticLon(body, jd + dt).lon
-  let d    = b - a
-  if (d > 180)  d -= 360
-  if (d < -180) d += 360
-  return d / (2 * dt)
-}
-
-const meanNode = (jd) => {
-  const T = (jd - 2451545) / 36525
-  return norm360(125.0445479 - 1934.1362891 * T + 0.0020754 * T * T)
-}
-
-const moonEclipticVector = (jd) => {
-  const { lon, lat, dist } = EclipticGeoMoon(jdToDate(jd))
-  const lonRad = lon * Math.PI / 180
-  const latRad = lat * Math.PI / 180
-  const radius = dist * Math.cos(latRad)
-  return [
-    radius * Math.cos(lonRad),
-    radius * Math.sin(lonRad),
-    dist * Math.sin(latRad),
-  ]
-}
-
-const trueNode = (jd) => {
-  const dt = 1 / 1440
-  const r = moonEclipticVector(jd)
-  const prev = moonEclipticVector(jd - dt)
-  const next = moonEclipticVector(jd + dt)
-  const v = [
-    (next[0] - prev[0]) / (2 * dt),
-    (next[1] - prev[1]) / (2 * dt),
-    (next[2] - prev[2]) / (2 * dt),
-  ]
-  const h = [
-    r[1] * v[2] - r[2] * v[1],
-    r[2] * v[0] - r[0] * v[2],
-    r[0] * v[1] - r[1] * v[0],
-  ]
-  return norm360(Math.atan2(h[0], -h[1]) * 180 / Math.PI)
-}
-
-const meanLilith = (jd) => {
-  const T = (jd - 2451545) / 36525
-  return norm360(83.353 + 4069.013711 * T)
-}
-
 const sidereal = (lon, jd, mode) => mode === 'sidereal' ? toSidereal(lon, jd) : lon
+
+const swissPoint = (name, body, jd, mode) => {
+  const result = swiss.calc_ut(jd, body, SWISS_FLAGS)
+  const speed = result[3]
+  return {
+    name,
+    longitude: sidereal(result[0], jd, mode),
+    latitude: result[1],
+    speed,
+    retrograde: speed < 0,
+  }
+}
 
 const siderealCusps = (houses, jd, mode, system) => {
   const ascendant = sidereal(houses.ascendant, jd, mode)
@@ -91,21 +50,23 @@ export const computeChart = (
   lon,
   opts = { zodiac: 'tropical', houseSystem: 'placidus' }
 ) => {
-  const positions = BODIES.map(({ name, body }) => {
-    const e = eclipticLon(body, jdUt)
-    const s = speedDegPerDay(body, jdUt)
-    return {
-      name,
-      longitude:  sidereal(e.lon, jdUt, opts.zodiac),
-      latitude:   e.lat,
-      speed:      s,
-      retrograde: s < 0
-    }
+  const positions = BODIES.map(({ name, body }) => swissPoint(name, body, jdUt, opts.zodiac))
+  const northNode = swissPoint(
+    'NorthNode',
+    opts.nodeMode === 'true' ? swiss.SE_TRUE_NODE : swiss.SE_MEAN_NODE,
+    jdUt,
+    opts.zodiac
+  )
+  positions.push(northNode)
+  positions.push({
+    ...northNode,
+    name: 'SouthNode',
+    longitude: norm360(northNode.longitude + 180),
   })
-  const node = opts.nodeMode === 'true' ? trueNode(jdUt) : meanNode(jdUt)
-  positions.push({ name: 'NorthNode', longitude: sidereal(node, jdUt, opts.zodiac),                latitude: 0, speed: -0.053, retrograde: true })
-  positions.push({ name: 'SouthNode', longitude: sidereal(norm360(node + 180), jdUt, opts.zodiac), latitude: 0, speed: -0.053, retrograde: true })
-  positions.push({ name: 'Lilith',    longitude: sidereal(meanLilith(jdUt), jdUt, opts.zodiac),    latitude: 0, speed:  0.111, retrograde: false })
+  // VegaPlus uses Swiss Ephemeris mean lunar apogee for Lilith; the old local
+  // formula tracked the perigee/opposite point, placing Lilith about 180° off.
+  positions.push(swissPoint('Lilith', swiss.SE_MEAN_APOG, jdUt, opts.zodiac))
+  positions.push(swissPoint('Chiron', swiss.SE_CHIRON, jdUt, opts.zodiac))
 
   const houses = calcHouses(opts.houseSystem, jdUt, lat, lon)
   return {
@@ -122,8 +83,8 @@ export const computeChart = (
 }
 
 export const moonPhaseFraction = (jdUt) => {
-  const sun  = eclipticLon(Body.Sun,  jdUt).lon
-  const moon = eclipticLon(Body.Moon, jdUt).lon
+  const sun = swissPoint('Sun', swiss.SE_SUN, jdUt, 'tropical').longitude
+  const moon = swissPoint('Moon', swiss.SE_MOON, jdUt, 'tropical').longitude
   return norm360(moon - sun) / 360
 }
 
@@ -139,4 +100,5 @@ export const moonPhaseLabel = (jdUt) => {
   return 'waning_c'
 }
 
-export const sunLongitude = (jdUt) => eclipticLon(Body.Sun, jdUt).lon
+export const sunLongitude = (jdUt) =>
+  swissPoint('Sun', swiss.SE_SUN, jdUt, 'tropical').longitude

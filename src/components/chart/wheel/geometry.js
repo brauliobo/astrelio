@@ -39,6 +39,7 @@ export const PLANET_SYMBOLS = {
   NorthNode: '☊',
   SouthNode: '☋',
   Lilith: '⚸',
+  Chiron: '⚷',
 }
 
 export const PLANET_COLORS = {
@@ -55,6 +56,7 @@ export const PLANET_COLORS = {
   NorthNode: 'var(--chart-ink)',
   SouthNode: 'var(--chart-ink)',
   Lilith: 'var(--chart-ink)',
+  Chiron: 'var(--chart-ink)',
 }
 
 const PLANET_ORDER = new Map(Object.keys(PLANET_SYMBOLS).map((name, index) => [name, index]))

@@ -11,10 +11,10 @@ const REF = {
 }
 
 describe('ephemeris', () => {
-  it('computes a complete chart with 13 bodies', () => {
+  it('computes a complete chart with 14 bodies', () => {
     const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
     const c  = computeChart(jd, REF.lat, REF.lon)
-    expect(c.positions.length).toBe(13)
+    expect(c.positions.length).toBe(14)
     expect(c.cusps.length).toBe(12)
     expect(c.ascendant).toBeGreaterThanOrEqual(0)
     expect(c.ascendant).toBeLessThan(360)
@@ -39,19 +39,20 @@ describe('ephemeris', () => {
     const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
     const c = computeChart(jd, REF.lat, REF.lon, { zodiac: 'tropical', houseSystem: 'placidus' })
     const expected = {
-      Sun: 323.822996,
-      Moon: 9.878684,
-      Mercury: 332.944920,
-      Venus: 329.633898,
-      Mars: 246.198046,
-      Jupiter: 328.118930,
-      Saturn: 248.714562,
-      Uranus: 261.582875,
-      Neptune: 275.032481,
-      Pluto: 217.358675,
-      NorthNode: 33.555114,
-      SouthNode: 213.555114,
-      Lilith: 238.463638,
+      Sun: 323.823130,
+      Moon: 9.878768,
+      Mercury: 332.945117,
+      Venus: 329.633951,
+      Mars: 246.198763,
+      Jupiter: 328.119011,
+      Saturn: 248.713407,
+      Uranus: 261.584523,
+      Neptune: 275.034745,
+      Pluto: 217.357843,
+      NorthNode: 33.552883,
+      SouthNode: 213.552883,
+      Lilith: 58.373303,
+      Chiron: 69.243221,
     }
 
     for (const [name, longitude] of Object.entries(expected)) {

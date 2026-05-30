@@ -30,6 +30,7 @@ export const PLANET_WEIGHTS = {
   NorthNode: 1,
   SouthNode: 1,
   Lilith: 1,
+  Chiron: 1,
 }
 
 const countKeys = (keys) => Object.fromEntries(keys.map(key => [key, 0]))
