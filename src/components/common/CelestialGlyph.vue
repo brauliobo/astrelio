@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { PLANET_SYMBOLS } from '../chart/wheel/geometry.js'
-import { PLANET_GLYPH_RENDERER, PLANET_GLYPH_VIEWBOX_SIZE, planetGlyphSvg } from './planetGlyphs.js'
+import { PLANET_GLYPH_VIEWBOX_SIZE, normalizePlanetGlyphRenderer, planetGlyphSvg } from './planetGlyphs.js'
 
 const props = defineProps({
   reference: { type: String, required: true },
@@ -18,14 +18,18 @@ const props = defineProps({
   renderer: { type: String, default: null },
 })
 
-const symbol = computed(() => props.symbol || PLANET_SYMBOLS[props.reference] || props.reference.slice(0, 2))
+const activeRenderer = computed(() => normalizePlanetGlyphRenderer(props.renderer))
+const symbol = computed(() => {
+  if (activeRenderer.value === 'utf8') return PLANET_SYMBOLS[props.reference] || props.reference.slice(0, 2)
+  return props.symbol || PLANET_SYMBOLS[props.reference] || props.reference.slice(0, 2)
+})
 const svgMarkup = computed(() => planetGlyphSvg(props.reference))
 const scaleXY = computed(() => {
   if (typeof props.scale === 'number') return { x: props.scale, y: props.scale }
   return { x: props.scale?.x ?? 1, y: props.scale?.y ?? 1 }
 })
-const activeRenderer = computed(() => props.renderer || PLANET_GLYPH_RENDERER)
 const useSvgGlyph = computed(() => props.mode === 'svg' && activeRenderer.value === 'svg' && svgMarkup.value)
+const useHtmlSvgGlyph = computed(() => props.mode !== 'svg' && activeRenderer.value === 'svg' && svgMarkup.value)
 const isUnscaled = computed(() => scaleXY.value.x === 1 && scaleXY.value.y === 1)
 const svgTransform = computed(() => isUnscaled.value
   ? null
@@ -65,6 +69,12 @@ text(
   :transform='svgTransform'
   class='celestial-glyph-svg'
 ) {{ symbol }}
+span(
+  v-else-if='useHtmlSvgGlyph'
+  class='celestial-glyph celestial-glyph-icon-html'
+  :style='htmlStyle'
+)
+  svg.celestial-glyph-icon-mark(viewBox='0 0 12 12' aria-hidden='true' v-html='svgMarkup')
 span(v-else class='celestial-glyph' :style='htmlStyle') {{ symbol }}
 </template>
 
@@ -87,5 +97,16 @@ span(v-else class='celestial-glyph' :style='htmlStyle') {{ symbol }}
 
 .celestial-glyph-icon {
   color: var(--glyph-color);
+}
+
+.celestial-glyph-icon-html {
+  min-width: var(--glyph-size);
+}
+
+.celestial-glyph-icon-mark {
+  display: block;
+  height: var(--glyph-size);
+  overflow: visible;
+  width: var(--glyph-size);
 }
 </style>

@@ -54,5 +54,5 @@ section.human-design-page(data-testid='human-design-page')
       )
 
     InsightPanel(:chart='chart')
-    ActivationTable(:chart='chart')
+    ActivationTable(:chart='chart' :glyph-renderer='settings.planetGlyphRenderer')
 </template>

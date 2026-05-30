@@ -12,6 +12,7 @@ const props = defineProps({
   hover: { type: Object, default: null },
   centered: { type: Boolean, default: false },
   visualTheme: { type: String, default: 'dark' },
+  glyphRenderer: { type: String, default: null },
 })
 
 const emit = defineEmits(['hover', 'leave'])
@@ -36,6 +37,7 @@ const hasHover = computed(() => Boolean(props.hover))
     :key='`${side}-${row.planet}`'
     :row='row'
     :side='side'
+    :glyph-renderer='glyphRenderer'
     :highlighted='isHighlighted(row)'
     :dimmed='hasHover && !isHighlighted(row)'
     @hover='emit("hover", $event)'

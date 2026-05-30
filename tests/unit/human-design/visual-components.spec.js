@@ -2,6 +2,8 @@ import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
 import { describe, expect, it } from 'vitest'
 import ModalityRouteSwitch from '../../../src/components/modalities/ModalityRouteSwitch.vue'
+import ActivationColumns from '../../../src/components/human-design/ActivationColumns.vue'
+import ActivationTable from '../../../src/components/human-design/ActivationTable.vue'
 import BodygraphGates from '../../../src/components/human-design/BodygraphGates.vue'
 import InsightPanel from '../../../src/components/human-design/InsightPanel.vue'
 import IChingRing from '../../../src/components/human-design/IChingRing.vue'
@@ -129,6 +131,34 @@ describe('Human Design visual components', () => {
     expect(wrapper.get('[data-planet="Mercury"]').attributes('transform')).toContain('scale(5.133333333333334 2.3333333333333335)')
     expect(wrapper.get('[data-planet="Venus"]').attributes('transform')).toContain('scale(3.4533333333333336 2.4033333333333338)')
     expect(wrapper.get('[data-planet="Mars"]').attributes('transform')).toContain('scale(2.2866666666666666 2.2866666666666666)')
+  })
+
+  it('uses the shared glyph renderer for Human Design side columns and activation tables', () => {
+    const chart = {
+      personality: {
+        Moon: { planet: 'Moon', gate: 21, line: 1, color: 3, tone: 3, base: 3 },
+        Mercury: { planet: 'Mercury', gate: 55, line: 4, color: 1, tone: 1, base: 2 },
+      },
+      design: {
+        Venus: { planet: 'Venus', gate: 30, line: 6, color: 3, tone: 6, base: 1 },
+      },
+    }
+    const column = mount(ActivationColumns, {
+      props: {
+        chart,
+        side: 'personality',
+        glyphRenderer: 'svg',
+      },
+      global: { plugins: [i18n('en')] },
+    })
+    const table = mount(ActivationTable, {
+      props: { chart, glyphRenderer: 'svg' },
+      global: { plugins: [i18n('en')] },
+    })
+
+    expect(column.findAll('.celestial-glyph-icon-html path').length).toBeGreaterThan(0)
+    expect(column.text()).not.toContain('☿')
+    expect(table.findAll('.celestial-glyph-icon-html path').length).toBeGreaterThan(0)
   })
 
   it('splits a design and personality gate into true half fills', () => {

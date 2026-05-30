@@ -5,6 +5,7 @@ import CelestialGlyph from '../common/CelestialGlyph.vue'
 defineProps({
   row: { type: Object, required: true },
   side: { type: String, required: true },
+  glyphRenderer: { type: String, default: null },
   highlighted: { type: Boolean, default: false },
   dimmed: { type: Boolean, default: false },
 })
@@ -20,12 +21,12 @@ const emit = defineEmits(['hover', 'leave'])
 )
   template(v-if='side === "design"')
     span.activation-glyph
-      CelestialGlyph(:reference='row.planet' :size='20' :weight='700')
+      CelestialGlyph(:reference='row.planet' :renderer='glyphRenderer' :size='20' :weight='700')
     span.activation-code {{ activationCode(row.activation) }}
   template(v-else)
     span.activation-code {{ activationCode(row.activation) }}
     span.activation-glyph
-      CelestialGlyph(:reference='row.planet' :size='20' :weight='700')
+      CelestialGlyph(:reference='row.planet' :renderer='glyphRenderer' :size='20' :weight='700')
 </template>
 
 <style scoped>
@@ -54,6 +55,7 @@ const emit = defineEmits(['hover', 'leave'])
 
 .activation-glyph {
   display: grid;
+  min-width: 24px;
   place-items: center;
 }
 

@@ -29,6 +29,7 @@ const clearHover = () => { hover.value = null }
       :hover='hover'
       centered
       :visual-theme='visualTheme'
+      :glyph-renderer='planetGlyphRenderer'
       @hover='setHover'
       @leave='clearHover'
     )
@@ -70,6 +71,7 @@ const clearHover = () => { hover.value = null }
       :hover='hover'
       centered
       :visual-theme='visualTheme'
+      :glyph-renderer='planetGlyphRenderer'
       @hover='setHover'
       @leave='clearHover'
     )

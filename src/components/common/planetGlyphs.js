@@ -14,13 +14,16 @@ import sunSvg from '../../assets/glyphs/planetary/sun.svg?raw'
 import uranusSvg from '../../assets/glyphs/planetary/uranus.svg?raw'
 import venusSvg from '../../assets/glyphs/planetary/venus.svg?raw'
 
-const RENDERERS = new Set(['svg', 'utf8'])
+const RENDERERS = new Set(['svg', 'utf8', 'text'])
 
 export const PLANET_GLYPH_VIEWBOX_SIZE = 12
 
 export const PLANET_GLYPH_RENDERER = RENDERERS.has(import.meta.env.VITE_PLANET_GLYPH_RENDERER)
   ? import.meta.env.VITE_PLANET_GLYPH_RENDERER
   : 'svg'
+
+export const normalizePlanetGlyphRenderer = renderer =>
+  RENDERERS.has(renderer) ? renderer : PLANET_GLYPH_RENDERER
 
 const innerSvg = raw => raw
   .replace(/^[\s\S]*?<svg\b[^>]*>/i, '')
