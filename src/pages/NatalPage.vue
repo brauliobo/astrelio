@@ -39,6 +39,11 @@ section.natal-page(data-testid='natal-page')
         class='bg-opacity-5 hover:bg-opacity-10 hover:text-white'
         data-testid='open-report'
       ) {{ t('report.open') }}
+      RouterLink.rounded.bg-white.px-3.py-2.text-sm.text-slate-300(
+        to='/human-design'
+        class='bg-opacity-5 hover:bg-opacity-10 hover:text-white'
+        data-testid='open-human-design'
+      ) {{ t('human_design.open') }}
     .grid.gap-6(class='lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]')
       .ui-panel
         ChartWheel(:natal='chart' :aspect-options='settings.aspectOptions' v-if='chart')

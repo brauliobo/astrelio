@@ -22,6 +22,10 @@
     "system": "Sistema",
     "aspects": "Preset"
   },
+  "modalities": {
+    "astrology": "Astrologia",
+    "human_design": "Human Design"
+  },
   "home": {
     "heading": "Seus mapas",
     "empty": "Nenhum mapa salvo ainda. Crie o primeiro abaixo.",
@@ -70,6 +74,20 @@
     "open": "Relatório",
     "back": "Voltar ao mapa",
     "print": "Imprimir / PDF"
+  },
+  "human_design": {
+    "open": "Human Design",
+    "title": "Human Design de {name}",
+    "subtitle": "Bodygraph, mandala rave, ativações e interpretação concisa a partir dos mesmos dados de nascimento.",
+    "type": "Tipo",
+    "authority": "Autoridade",
+    "profile": "Perfil",
+    "definition": "Definição",
+    "connection": "Conexão em Human Design",
+    "shared_centers": "Centros compartilhados",
+    "electromagnetic": "Eletromagnéticos",
+    "companionship": "Companheirismo",
+    "compromise": "Compromisso"
   },
   "form": {
     "name": "Nome",

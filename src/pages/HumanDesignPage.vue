@@ -1,0 +1,56 @@
+<script setup>
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { usePeopleStore } from '../stores/people.js'
+import { useSessionStore } from '../stores/session.js'
+import { modalityChart } from '../lib/modalities/index.js'
+import BodygraphChart from '../components/human-design/BodygraphChart.vue'
+import HumanDesignActivationTable from '../components/human-design/HumanDesignActivationTable.vue'
+import HumanDesignInsightPanel from '../components/human-design/HumanDesignInsightPanel.vue'
+import RaveMandala from '../components/human-design/RaveMandala.vue'
+
+const { t } = useI18n()
+const people = usePeopleStore()
+const session = useSessionStore()
+
+const person = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
+const chart = computed(() => modalityChart('humanDesign', person.value))
+const summaryRows = computed(() => chart.value ? [
+  { label: t('human_design.type'), value: chart.value.type, testId: 'hd-type' },
+  { label: t('human_design.authority'), value: chart.value.authority, testId: 'hd-authority' },
+  { label: t('human_design.profile'), value: chart.value.profile, testId: 'hd-profile' },
+  { label: t('human_design.definition'), value: chart.value.definition, testId: 'hd-definition' },
+] : [])
+</script>
+
+<template lang="pug">
+section.human-design-page(data-testid='human-design-page')
+  div(v-if='!person')
+    p.text-slate-400 {{ t('chart.select_chart') }}
+  div.grid.gap-6(v-else-if='chart')
+    .flex.flex-wrap.items-start.justify-between.gap-3
+      div
+        h1.text-2xl.font-semibold.text-slate-100 {{ t('human_design.title', { name: person.name }) }}
+        p.text-xs.text-slate-400.mt-1 {{ t('human_design.subtitle') }}
+      .flex.flex-wrap.gap-2
+        span.rounded-full.px-2.py-1.text-xs.text-slate-300(class='bg-white/5') {{ t('modalities.human_design') }}
+        span.rounded-full.px-2.py-1.text-xs.text-slate-300(class='bg-white/5') {{ t('modalities.astrology') }}
+
+    .grid.gap-3(class='sm:grid-cols-2 lg:grid-cols-4')
+      .rounded.border.p-3(
+        v-for='row in summaryRows'
+        :key='row.testId'
+        class='border-white/10 bg-white/5'
+      )
+        .text-xs.uppercase.tracking-wide.text-slate-500 {{ row.label }}
+        .mt-1.text-lg.font-semibold.text-slate-100(:data-testid='row.testId') {{ row.value }}
+
+    .grid.gap-6(class='xl:grid-cols-[minmax(320px,0.85fr)_minmax(0,1fr)]')
+      .ui-panel
+        BodygraphChart(:chart='chart')
+      .ui-panel
+        RaveMandala(:chart='chart')
+
+    HumanDesignInsightPanel(:chart='chart')
+    HumanDesignActivationTable(:chart='chart')
+</template>

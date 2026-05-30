@@ -4,11 +4,12 @@ import { useI18n } from 'vue-i18n'
 import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
 import { useSettingsStore } from '../stores/settings.js'
-import { useNatalChart } from '../composables/useChart.js'
-import { synastryAspects } from '../lib/astro/synastry.js'
+import { modalityChart, modalityConnection } from '../lib/modalities/index.js'
 import Biwheel from '../components/chart/Biwheel.vue'
 import AspectTable from '../components/chart/AspectTable.vue'
 import ComparisonInsightPanel from '../components/chart/ComparisonInsightPanel.vue'
+import BodygraphChart from '../components/human-design/BodygraphChart.vue'
+import HumanDesignInsightPanel from '../components/human-design/HumanDesignInsightPanel.vue'
 
 const { t }    = useI18n()
 const people   = usePeopleStore()
@@ -18,12 +19,16 @@ const settings = useSettingsStore()
 const personA = computed(() => people.byId(session.activePersonId)  || people.sorted[0] || null)
 const personB = computed(() => people.byId(session.comparePersonId) || people.sorted[1] || null)
 
-const chartA = useNatalChart(personA, settings)
-const chartB = useNatalChart(personB, settings)
+const chartA = computed(() => modalityChart('astrology', personA.value, settings))
+const chartB = computed(() => modalityChart('astrology', personB.value, settings))
+const hdChartA = computed(() => modalityChart('humanDesign', personA.value))
+const hdChartB = computed(() => modalityChart('humanDesign', personB.value))
 
-const aspects = computed(() => chartA.value && chartB.value ? synastryAspects(chartA.value, chartB.value, settings.aspectOptions) : [])
+const aspects = computed(() => modalityConnection('astrology', chartA.value, chartB.value, settings).aspects)
+const hdConnection = computed(() => modalityConnection('humanDesign', hdChartA.value, hdChartB.value))
 
 const compareWith = ref(session.comparePersonId)
+const relationshipModality = ref('astrology')
 const onChange = (e) => { session.setCompare(e.target.value); compareWith.value = e.target.value }
 </script>
 
@@ -41,10 +46,43 @@ section.synastry-page(data-testid='synastry-page')
       )
         option(value='' :selected='!compareWith') —
         option(v-for='p in people.sorted' :key='p.id' :value='p.id' :selected='p.id === compareWith') {{ p.name }}
-    ComparisonInsightPanel.mb-6(:aspects='aspects' mode='synastry')
-    .grid.gap-6(class='lg:grid-cols-2')
-      .ui-panel
-        Biwheel(:natal='chartA' :overlay='chartB' :aspect-options='settings.aspectOptions' v-if='chartA && chartB')
-      .ui-panel(v-if='aspects.length')
-        AspectTable(:aspects='aspects')
+    .inline-flex.flex-wrap.gap-1.rounded-lg.border.p-1.mb-4(class='border-white/10 bg-white/5' data-testid='relationship-modality-switch')
+      button.rounded-md.px-3.text-xs.font-medium(
+        class='py-1.5'
+        type='button'
+        :class='relationshipModality === "astrology" ? "bg-amber-300 text-slate-950" : "text-slate-300 hover:bg-white/10"'
+        @click='relationshipModality = "astrology"'
+        data-testid='relationship-modality-astrology'
+      ) {{ t('modalities.astrology') }}
+      button.rounded-md.px-3.text-xs.font-medium(
+        class='py-1.5'
+        type='button'
+        :class='relationshipModality === "humanDesign" ? "bg-amber-300 text-slate-950" : "text-slate-300 hover:bg-white/10"'
+        @click='relationshipModality = "humanDesign"'
+        data-testid='relationship-modality-human-design'
+      ) {{ t('modalities.human_design') }}
+
+    template(v-if='relationshipModality === "astrology"')
+      ComparisonInsightPanel.mb-6(:aspects='aspects' mode='synastry')
+      .grid.gap-6(class='lg:grid-cols-2')
+        .ui-panel
+          Biwheel(:natal='chartA' :overlay='chartB' :aspect-options='settings.aspectOptions' v-if='chartA && chartB')
+        .ui-panel(v-if='aspects.length')
+          AspectTable(:aspects='aspects')
+    template(v-else)
+      HumanDesignInsightPanel.mb-6(:connection='hdConnection' v-if='hdConnection')
+      .grid.gap-6(class='lg:grid-cols-2' data-testid='human-design-connection')
+        .ui-panel(v-if='hdChartA')
+          h2.text-sm.font-semibold.text-slate-100.mb-3 {{ personA.name }}
+          BodygraphChart(:chart='hdChartA')
+        .ui-panel(v-if='hdChartB')
+          h2.text-sm.font-semibold.text-slate-100.mb-3 {{ personB?.name }}
+          BodygraphChart(:chart='hdChartB')
+      .ui-panel.mt-6(v-if='hdConnection' data-testid='human-design-connection-details')
+        h2.text-sm.font-semibold.text-slate-100.mb-3 {{ t('human_design.connection') }}
+        .grid.gap-3(class='md:grid-cols-2')
+          p.text-xs.text-slate-400 {{ t('human_design.shared_centers') }}: {{ hdConnection.sharedCenters.join(', ') || '—' }}
+          p.text-xs.text-slate-400 {{ t('human_design.electromagnetic') }}: {{ hdConnection.electromagnetic.join(', ') || '—' }}
+          p.text-xs.text-slate-400 {{ t('human_design.companionship') }}: {{ hdConnection.companionship.join(', ') || '—' }}
+          p.text-xs.text-slate-400 {{ t('human_design.compromise') }}: {{ hdConnection.compromise.map(item => item.channel).join(', ') || '—' }}
 </template>

@@ -22,6 +22,10 @@
     "system": "System",
     "aspects": "Preset"
   },
+  "modalities": {
+    "astrology": "Astrology",
+    "human_design": "Human Design"
+  },
   "home": {
     "heading": "Your charts",
     "empty": "No charts saved yet. Create your first one below.",
@@ -70,6 +74,20 @@
     "open": "Report",
     "back": "Back to chart",
     "print": "Print / PDF"
+  },
+  "human_design": {
+    "open": "Human Design",
+    "title": "Human Design for {name}",
+    "subtitle": "Bodygraph, rave mandala, activations, and concise interpretation from the same birth data.",
+    "type": "Type",
+    "authority": "Authority",
+    "profile": "Profile",
+    "definition": "Definition",
+    "connection": "Human Design connection",
+    "shared_centers": "Shared centers",
+    "electromagnetic": "Electromagnetic",
+    "companionship": "Companionship",
+    "compromise": "Compromise"
   },
   "form": {
     "name": "Name",

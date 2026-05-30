@@ -101,6 +101,11 @@ const openReport = () => {
   router.push({ name: 'report' })
 }
 
+const openHumanDesign = () => {
+  activate()
+  router.push({ name: 'human-design' })
+}
+
 watch(person, (next) => {
   editing.value = false
   confirmingDelete.value = false
@@ -141,6 +146,12 @@ section.person-page(data-testid='person-page')
           @click='openReport'
           data-testid='person-open-report'
         ) {{ t('person.open_report') }}
+        button.rounded.px-3.py-2.text-sm.text-slate-300(
+          type='button'
+          class='bg-white/5 hover:bg-white/10 hover:text-white'
+          @click='openHumanDesign'
+          data-testid='person-open-human-design'
+        ) {{ t('human_design.open') }}
     .grid.gap-6(class='lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.7fr)]')
       .ui-panel
         .flex.items-center.justify-between.gap-3.mb-4
