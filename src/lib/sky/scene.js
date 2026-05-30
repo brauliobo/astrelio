@@ -65,7 +65,7 @@ const skyPalette = (theme = 'dark') => {
     axisLabel: light ? '#92400e' : '#fed7aa',
     asterismLine: light ? '#17436f' : '#e0f2fe',
     asterismStar: light ? '#0f5ea8' : '#bfdbfe',
-    asterismImageAlpha: light ? 0.22 : 0.26,
+    asterismImageAlpha: light ? 0.10 : 0.12,
     planetLink: light ? '#7c2d12' : '#fde68a',
     planetLabelAlpha: light ? 0.76 : 0.40,
   }
@@ -403,8 +403,8 @@ const drawAsterisms = (ctx, bounds, mode, wheelShift, palette, skyData, asterism
         const a = projectedByHip.get(line[index - 1])
         const b = projectedByHip.get(line[index])
         if (!a || !b || angularDistance(a.longitude, b.longitude) > 118) continue
-        ctx.globalAlpha = 0.42
-        ctx.lineWidth = 1.08
+        ctx.globalAlpha = 0.20
+        ctx.lineWidth = 0.86
         ctx.beginPath()
         ctx.moveTo(a.x, a.y)
         ctx.lineTo(b.x, b.y)
@@ -417,7 +417,7 @@ const drawAsterisms = (ctx, bounds, mode, wheelShift, palette, skyData, asterism
     ctx.fillStyle = palette.asterismStar
     for (const point of points) {
       const strength = clamp(1 - (point.mag - 1) / 5.8, 0.18, 0.86)
-      ctx.globalAlpha = 0.30 + strength * 0.34
+      ctx.globalAlpha = 0.16 + strength * 0.20
       ctx.beginPath()
       ctx.arc(point.x, point.y, 1.15 + strength * 1.75, 0, Math.PI * 2)
       ctx.fill()
@@ -454,7 +454,7 @@ const drawPlanetStarLinks = (ctx, planetPoints, starPoints, bounds, palette) => 
   ctx.lineWidth = 0.62
   ctx.setLineDash([2, 8])
   for (const link of links) {
-    ctx.globalAlpha = 0.075
+    ctx.globalAlpha = 0.045
     ctx.beginPath()
     ctx.moveTo(link.star.x, link.star.y)
     ctx.lineTo(link.planet.x, link.planet.y)
