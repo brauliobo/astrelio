@@ -24,7 +24,7 @@ const sectors = computed(() =>
 </script>
 
 <template lang="pug">
-g(data-testid='zodiac-ring')
+g(data-testid='zodiac-ring' pointer-events='none')
   WheelArc(
     v-for='sector in sectors'
     :key='sector.index'

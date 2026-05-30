@@ -8,6 +8,7 @@ const props = defineProps({
   chart: { type: Object, required: true },
   aspects: { type: Array, default: () => [] },
   phaseLabel: { type: String, default: '' },
+  panel: { type: String, default: 'full' },
 })
 
 const { t, tm } = useI18n()
@@ -59,25 +60,31 @@ const placementRows = computed(() => {
 
 const houseRows = computed(() => signature.value.houses.filter(row => row.value > 0).slice(0, 4))
 const featuredAspects = computed(() => topAspects(props.aspects, 4))
+const showPrimary = computed(() => props.panel !== 'right')
+const showDetails = computed(() => props.panel !== 'left')
+const placementGridClass = computed(() => props.panel === 'full' ? 'lg:grid-cols-4' : 'grid-cols-2')
+const balanceGridClass = computed(() => props.panel === 'full' ? 'lg:grid-cols-2' : '')
+const detailGridClass = computed(() => props.panel === 'full' ? 'lg:grid-cols-3' : '')
+const aspectGridClass = computed(() => props.panel === 'full' ? 'sm:grid-cols-2' : '')
 
 const pct = (share) => `${Math.round(share * 100)}%`
 </script>
 
 <template lang="pug">
-.chart-insight.ui-panel(data-testid='chart-insight')
-  .flex.flex-wrap.items-start.justify-between.gap-3.mb-4
+.chart-insight.ui-panel(data-testid='chart-insight' :data-panel='panel')
+  .flex.flex-wrap.items-start.justify-between.gap-3.mb-4(v-if='showPrimary')
     div
       h2.text-sm.font-semibold.text-slate-100 {{ t('analysis.title') }}
       p.text-xs.text-slate-400 {{ t('analysis.subtitle') }}
     .text-xs.text-slate-400.tabular-nums {{ t(`zodiac.${chart.zodiac}`) || chart.zodiac }}
-  .grid.gap-4(class='lg:grid-cols-4')
+  .grid.gap-4(v-if='showPrimary' :class='placementGridClass')
     .min-w-0(v-for='row in placementRows' :key='row.key' :data-testid='`insight-${row.key}`')
       .text-xs.uppercase.tracking-wide.text-slate-500 {{ row.label }}
       .mt-1.flex.items-baseline.gap-2
         .text-lg.font-semibold.text-slate-100.truncate {{ row.value }}
         .text-xs.text-slate-400.tabular-nums {{ row.degree }}
       .text-xs.text-slate-400.truncate {{ row.meta }}
-  .grid.gap-5.mt-5(class='lg:grid-cols-2')
+  .grid.gap-5.mt-5(v-if='showPrimary' :class='balanceGridClass')
     section
       h3.text-xs.font-semibold.text-slate-300.mb-3 {{ t('analysis.element_balance') }}
       .grid.gap-2
@@ -94,7 +101,7 @@ const pct = (share) => `${Math.round(share * 100)}%`
           .h-2.rounded-full(class='bg-white/10')
             .h-2.rounded-full.bg-sky-300(:style='{ width: pct(row.share) }')
           .text-xs.text-right.text-slate-400.tabular-nums {{ pct(row.share) }}
-  .grid.gap-5.mt-5(class='lg:grid-cols-3')
+  .grid.gap-5(:class='[showPrimary ? "mt-5" : "", detailGridClass]' v-if='showDetails')
     section
       h3.text-xs.font-semibold.text-slate-300.mb-3 {{ t('analysis.house_emphasis') }}
       .flex.flex-wrap.gap-2
@@ -112,15 +119,15 @@ const pct = (share) => `${Math.round(share * 100)}%`
     section
       h3.text-xs.font-semibold.text-slate-300.mb-3 {{ t('analysis.retrogrades') }}
       .flex.flex-wrap.gap-2(v-if='signature.retrogrades.length')
-        span.rounded-full.px-2.py-1.text-xs.text-amber-200(
+        span.insight-retrograde-chip.rounded-full.px-2.py-1.text-xs(
           class='bg-white/5'
           v-for='name in signature.retrogrades'
           :key='name'
         ) {{ t(`planets.${name}`) }} ℞
       p.text-xs.text-slate-500(v-else) {{ t('analysis.no_retrogrades') }}
-  section.mt-5(v-if='featuredAspects.length')
+  section.mt-5(v-if='showDetails && featuredAspects.length')
     h3.text-xs.font-semibold.text-slate-300.mb-3 {{ t('analysis.top_aspects') }}
-    .grid.gap-2(class='sm:grid-cols-2')
+    .grid.gap-2(:class='aspectGridClass')
       .text-xs.text-slate-300(v-for='aspect in featuredAspects' :key='`${aspect.a}-${aspect.b}-${aspect.type}`')
         span.text-slate-100 {{ t(`planets.${aspect.a}`) }}
         span.text-slate-500  · 
@@ -130,3 +137,9 @@ const pct = (share) => `${Math.round(share * 100)}%`
         span.text-slate-500  · 
         span.tabular-nums {{ aspect.delta.toFixed(2) }}°
 </template>
+
+<style scoped>
+.insight-retrograde-chip {
+  color: var(--chart-retrograde-text);
+}
+</style>

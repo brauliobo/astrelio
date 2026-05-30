@@ -69,6 +69,14 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
     @keydown.space.prevent='$emit("toggle-highlight", highlightPayload(item.planet.name))'
   )
     title {{ item.planet.name }} {{ item.degree }}°
+    circle.planet-hit-target(
+      :cx='item.glyph.x'
+      :cy='item.glyph.y'
+      r='15'
+      fill='var(--chart-hit-target-fill)'
+      pointer-events='all'
+      :data-testid='`planet-hit-${item.planet.name}`'
+    )
     line(
       :x1='item.exact.x'
       :y1='item.exact.y'
@@ -120,6 +128,10 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
 </template>
 
 <style scoped>
+.planet-glyph-group {
+  pointer-events: bounding-box;
+}
+
 .planet-degree-label {
   opacity: 0;
   pointer-events: none;
@@ -135,5 +147,9 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
 
 .planet-retrograde-label {
   pointer-events: none;
+}
+
+.planet-hit-target {
+  stroke: none;
 }
 </style>

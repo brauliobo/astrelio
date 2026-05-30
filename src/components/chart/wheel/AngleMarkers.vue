@@ -13,9 +13,9 @@ const markers = computed(() => {
   if (asc == null || mc == null) return []
 
   return [
-    { key: 'asc', label: 'AS', longitude: asc, accent: '#b45309' },
+    { key: 'asc', label: 'AS', longitude: asc, accent: 'var(--chart-angle-accent)' },
     { key: 'desc', label: 'DS', longitude: asc + 180, accent: 'var(--chart-ink-muted)' },
-    { key: 'mc', label: 'MC', longitude: mc, accent: '#b45309' },
+    { key: 'mc', label: 'MC', longitude: mc, accent: 'var(--chart-angle-accent)' },
     { key: 'ic', label: 'IC', longitude: mc + 180, accent: 'var(--chart-ink-muted)' },
   ].map((marker) => {
     const longitude = norm360(marker.longitude + props.wheelShift)
@@ -30,7 +30,7 @@ const markers = computed(() => {
 </script>
 
 <template lang="pug">
-g(data-testid='angle-markers' font-family='"Inter", "Avenir Next", system-ui, sans-serif' font-size='11' font-weight='800' text-anchor='middle')
+g(data-testid='angle-markers' pointer-events='none' font-family='"Inter", "Avenir Next", system-ui, sans-serif' font-size='11' font-weight='800' text-anchor='middle')
   g(v-for='marker in markers' :key='marker.key')
     line(
       :x1='marker.inner.x'

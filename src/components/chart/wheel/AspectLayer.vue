@@ -3,19 +3,18 @@ import { computed } from 'vue'
 import { ASPECT_COLORS, naturalAspectLines } from './geometry.js'
 
 const ASPECT_LINE_STYLES = {
-  conjunction: { color: '#64748b', dasharray: '1 4', opacity: 0.26 },
-  opposition: { color: '#16a34a', dasharray: 'none', opacity: 0.36 },
-  trine: { color: '#0d9488', dasharray: 'none', opacity: 0.34 },
-  square: { color: '#dc2626', dasharray: '7 5', opacity: 0.32 },
-  sextile: { color: '#0284c7', dasharray: '4 5', opacity: 0.3 },
-  quincunx: { color: '#d97706', dasharray: '2 5 7 5', opacity: 0.28 },
+  conjunction: { color: 'var(--aspect-conjunction)', dasharray: '1 4', opacity: 0.26 },
+  opposition: { color: 'var(--aspect-opposition)', dasharray: 'none', opacity: 0.36 },
+  trine: { color: 'var(--aspect-trine)', dasharray: 'none', opacity: 0.34 },
+  square: { color: 'var(--aspect-square)', dasharray: '7 5', opacity: 0.32 },
+  sextile: { color: 'var(--aspect-sextile)', dasharray: '4 5', opacity: 0.3 },
+  quincunx: { color: 'var(--aspect-quincunx)', dasharray: '2 5 7 5', opacity: 0.28 },
 }
 
 const props = defineProps({
   chart: { type: Object, required: true },
   wheelShift: { type: Number, required: true },
   colors: { type: Object, default: () => ({}) },
-  placements: { type: Array, default: () => [] },
   highlightedBodies: { type: Array, default: () => [] },
   highlightedAspectKey: { type: String, default: '' },
   aspectOptions: { type: Object, default: () => ({}) },
@@ -30,7 +29,7 @@ const aspectColor = (type) => {
 }
 
 const lines = computed(() =>
-  naturalAspectLines(props.chart, props.wheelShift, undefined, props.placements, props.aspectOptions)
+  naturalAspectLines(props.chart, props.wheelShift, undefined, [], props.aspectOptions)
     .map(line => ({
       ...line,
       color: aspectColor(line.aspect.type),

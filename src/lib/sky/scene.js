@@ -28,13 +28,13 @@ const clamp = (value, min, max) =>
 const skyPalette = (theme = 'dark') => {
   const light = theme === 'light'
   return {
-    star: light ? '#475569' : '#e0f2fe',
-    starAlpha: light ? 0.34 : 1,
+    star: light ? '#1e3a5f' : '#e0f2fe',
+    starAlpha: light ? 0.58 : 1,
     baseStops: light
       ? [
-          'rgba(255,255,255,0.38)',
-          'rgba(203,213,225,0.11)',
-          'rgba(148,163,184,0.00)',
+          'rgba(96,165,250,0.16)',
+          'rgba(14,116,144,0.08)',
+          'rgba(37,99,235,0.00)',
         ]
       : [
           'rgba(15, 23, 42, 0.28)',
@@ -43,23 +43,23 @@ const skyPalette = (theme = 'dark') => {
         ],
     environmentStops: light
       ? [
-          'rgba(255,255,255,0.18)',
-          'rgba(148,163,184,0.08)',
-          'rgba(37,99,235,0.06)',
+          'rgba(56,189,248,0.12)',
+          'rgba(37,99,235,0.09)',
+          'rgba(15,23,42,0.07)',
         ]
       : [
           'rgba(15, 23, 42, 0.12)',
           'rgba(30, 41, 59, 0.11)',
           'rgba(125, 211, 252, 0.08)',
         ],
-    ring: light ? '#2563eb' : '#7dd3fc',
-    secondaryRing: light ? '#7c3aed' : '#c4b5fd',
+    ring: light ? '#0f5ea8' : '#7dd3fc',
+    secondaryRing: light ? '#6d28d9' : '#c4b5fd',
     accentRing: light ? '#b45309' : '#fbbf24',
-    grid: light ? '#334155' : '#dbeafe',
-    label: light ? '#334155' : '#e0f2fe',
+    grid: light ? '#1e3a5f' : '#dbeafe',
+    label: light ? '#1e3a5f' : '#e0f2fe',
     axis: light ? '#b45309' : '#f97316',
     axisLabel: light ? '#92400e' : '#fed7aa',
-    planetLabelAlpha: light ? 0.62 : 0.40,
+    planetLabelAlpha: light ? 0.76 : 0.40,
   }
 }
 

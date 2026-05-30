@@ -18,7 +18,7 @@ const chartMaps = (base, comparison) => [
   {
     id: 'base',
     chart: base,
-    color: '#111827',
+    color: 'var(--chart-ink)',
     showAspects: false,
     showHouseLabels: false,
     planetBand: { inner: 140, outer: 152, tickRadius: 153 },
@@ -26,7 +26,7 @@ const chartMaps = (base, comparison) => [
   {
     id: 'comparison',
     chart: comparison,
-    color: '#0f8f8f',
+    color: 'var(--chart-comparison-accent)',
     showHouses: false,
     showHouseLabels: false,
     showAspects: false,
@@ -71,10 +71,10 @@ const toggleHighlight = (payload) => {
       h2.text-sm.font-semibold.text-slate-200 {{ baseLabel }} / {{ comparisonLabel }}
       .flex.items-center.gap-4.text-xs
         .flex.items-center.gap-2
-          span.inline-block.h-2.w-6.rounded-full.bg-slate-900
+          span.inline-block.h-2.w-6.rounded-full(style='background: var(--chart-ink)')
           span.text-slate-300 {{ baseLabel }}
         .flex.items-center.gap-2
-          span.inline-block.h-2.w-6.rounded-full(style='background:#0f8f8f')
+          span.inline-block.h-2.w-6.rounded-full(style='background: var(--chart-comparison-accent)')
           span.text-slate-300 {{ comparisonLabel }}
     ChartWheel(
       :charts='chartMaps(base, comparison)'

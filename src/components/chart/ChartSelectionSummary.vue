@@ -78,7 +78,7 @@ const hasSummary = computed(() =>
 <template lang="pug">
 .chart-selection-summary.pointer-events-none.absolute.inset-x-2.bottom-2.z-10.rounded-md.border.px-3.py-2.shadow-lg.backdrop-blur-sm(
   v-if='hasSummary'
-  class='border-slate-900/10 bg-slate-950/85 text-slate-100 sm:inset-x-4'
+  class='sm:inset-x-4'
   data-testid='chart-selection-summary'
   :data-selection-kind='aspect ? "aspect" : "planet"'
 )
@@ -87,22 +87,32 @@ const hasSummary = computed(() =>
     v-if='aspect'
     class='gap-0.5'
   )
-    .chart-selection-summary__line.text-xs.leading-snug.text-slate-300(
+    .chart-selection-summary__line.text-xs.leading-snug(
       v-for='placement in placements'
       :key='placement.name'
       :data-selection-body='placement.name'
     )
-      span.font-medium.text-slate-100 {{ placement.label }}
+      span.chart-selection-summary__label.font-medium {{ placement.label }}
       template(v-if='placement.detail') {{ ' ' }}{{ placement.detail }}
 </template>
 
 <style scoped>
 .chart-selection-summary {
+  background: var(--chart-selection-bg);
+  border-color: var(--chart-selection-border);
+  color: var(--chart-selection-text);
   max-height: 6.75rem;
   overflow: hidden;
 }
 
-.chart-selection-summary__title,
+.chart-selection-summary__title {
+  color: var(--chart-selection-title);
+}
+
+.chart-selection-summary__label {
+  color: var(--chart-selection-title);
+}
+
 .chart-selection-summary__line {
   overflow-wrap: anywhere;
 }

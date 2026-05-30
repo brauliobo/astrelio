@@ -19,6 +19,7 @@ const labels = computed(() =>
 <template lang="pug">
 g(
   data-testid='house-numbers'
+  pointer-events='none'
   font-family='"Inter", "Avenir Next", system-ui, sans-serif'
   font-weight='700'
   font-size='11'

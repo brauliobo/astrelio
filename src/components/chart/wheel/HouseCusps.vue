@@ -35,7 +35,7 @@ const sectors = computed(() =>
 </script>
 
 <template lang="pug">
-g(data-testid='house-cusps')
+g(data-testid='house-cusps' pointer-events='none')
   WheelArc(
     v-for='sector in sectors'
     :key='`house-sector-${sector.index}`'

@@ -37,25 +37,29 @@ nav.modality-switch(:aria-label='t("modalities.switch_aria")' data-testid='modal
 
 .modality-switch__item {
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
-  color: #cbd5e1;
+  background: var(--modality-bg);
+  color: var(--modality-text);
   font-size: 0.75rem;
   line-height: 1rem;
   padding: 0.375rem 0.625rem;
   text-decoration: none;
-  transition: background 140ms ease, color 140ms ease, box-shadow 140ms ease;
+  transition: box-shadow 140ms ease;
 }
 
 .modality-switch__item:hover,
 .modality-switch__item:focus-visible {
-  background: rgba(255, 255, 255, 0.12);
-  color: #f8fafc;
+  background: var(--modality-bg-hover);
+  color: var(--modality-text-hover);
   outline: none;
 }
 
 .modality-switch__item.active {
-  background: rgba(255, 211, 105, 0.16);
-  color: #ffe08a;
-  box-shadow: inset 0 0 0 1px rgba(255, 211, 105, 0.22);
+  background: var(--modality-active-bg);
+  color: var(--modality-active-text) !important;
+  box-shadow: inset 0 0 0 1px var(--modality-active-ring);
+}
+
+:global(html[data-theme='light']) .modality-switch__item.active {
+  color: var(--app-accent-text) !important;
 }
 </style>

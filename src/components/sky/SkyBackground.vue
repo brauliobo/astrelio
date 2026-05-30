@@ -80,7 +80,7 @@ watch(() => [props.person, props.zodiac, props.houseSystem, props.mode, props.th
 }
 
 .sky-bg[data-theme='light'] {
-  background: radial-gradient(ellipse at center, #f8fbff 0%, #eaf2fa 54%, #dbe8f4 100%);
+  background: radial-gradient(ellipse at center, #eef8ff 0%, #d8ebf8 54%, #bcd9ec 100%);
 }
 
 .gradient-overlay {
@@ -93,7 +93,7 @@ watch(() => [props.person, props.zodiac, props.houseSystem, props.mode, props.th
 
 .sky-bg[data-theme='light'] .gradient-overlay {
   background:
-    radial-gradient(ellipse at center, rgba(255,255,255,0.62) 0%, rgba(238,245,251,0.72) 48%, rgba(224,235,246,0.92) 100%),
-    linear-gradient(180deg, rgba(248,251,255,0.64) 0%, rgba(238,245,251,0.74) 68%, rgba(229,239,248,0.96) 100%);
+    radial-gradient(ellipse at center, rgba(255,255,255,0.18) 0%, rgba(238,245,251,0.28) 48%, rgba(196,219,236,0.46) 100%),
+    linear-gradient(180deg, rgba(248,251,255,0.20) 0%, rgba(222,237,248,0.34) 68%, rgba(190,216,235,0.56) 100%);
 }
 </style>

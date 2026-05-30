@@ -27,7 +27,7 @@ const ticks = computed(() =>
 </script>
 
 <template lang="pug">
-g(data-testid='tick-ring')
+g(data-testid='tick-ring' pointer-events='none')
   line(
     v-for='tick in ticks'
     :key='tick.degree'

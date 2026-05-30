@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { detectLocale, normalizeLocale } from '../i18n/locales.js'
 
 export const SETTING_PRESETS = {
   simple: {
@@ -65,7 +66,7 @@ const matchesPreset = (state, preset) =>
 
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
-    locale:      'pt-BR',
+    locale:      detectLocale(),
     houseSystem: 'placidus',
     zodiac:      'tropical',
     skyEnabled:  true,
@@ -86,8 +87,13 @@ export const useSettingsStore = defineStore('settings', {
     })
   },
   actions: {
-    setLocale(l) { this.locale = l; localStorage.setItem('astrelio_locale', l) },
+    setLocale(l) {
+      const locale = normalizeLocale(l)
+      this.locale = locale
+      localStorage.setItem('astrelio_locale', locale)
+    },
     normalize() {
+      this.locale = normalizeLocale(this.locale)
       this.aspectSet ??= 'all'
       this.orbScale ??= 1
       this.applyingOnly ??= false

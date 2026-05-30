@@ -3,6 +3,7 @@ import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
 import { describe, expect, it, vi } from 'vitest'
 import ChartWheel from '../../src/components/chart/ChartWheel.vue'
+import { CENTER, WHEEL_RADII } from '../../src/components/chart/wheel/geometry.js'
 
 const messages = {
   en: {
@@ -113,5 +114,15 @@ describe('chart display modes', () => {
     expect(zodiacText.attributes('fill')).toBe('var(--chart-zodiac-text)')
     expect(houseSector.attributes('fill')).toBe('var(--chart-house-fill-a)')
     expect(planetLabel.attributes('fill')).toBe('var(--chart-ink)')
+  })
+
+  it('keeps aspect lines bounded to the central aspect circle', () => {
+    const wrapper = mountChartWheel()
+    const aspectLine = wrapper.get('[data-aspect="Sun-Mars-sextile"]')
+    const endpointDistance = (x, y) =>
+      Math.hypot(Number(x) - CENTER, Number(y) - CENTER)
+
+    expect(endpointDistance(aspectLine.attributes('x1'), aspectLine.attributes('y1'))).toBeCloseTo(WHEEL_RADII.aspect, 4)
+    expect(endpointDistance(aspectLine.attributes('x2'), aspectLine.attributes('y2'))).toBeCloseTo(WHEEL_RADII.aspect, 4)
   })
 })

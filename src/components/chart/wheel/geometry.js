@@ -17,11 +17,11 @@ export const WHEEL_RADII = {
 }
 
 export const ASPECT_COLORS = {
-  opposition: '#22c55e',
-  trine: '#22c55e',
-  square: '#f97316',
-  sextile: '#38bdf8',
-  quincunx: '#f59e0b',
+  opposition: 'var(--aspect-opposition)',
+  trine: 'var(--aspect-trine)',
+  square: 'var(--aspect-square)',
+  sextile: 'var(--aspect-sextile)',
+  quincunx: 'var(--aspect-quincunx)',
 }
 
 export const PLANET_SYMBOLS = {
@@ -42,7 +42,7 @@ export const PLANET_SYMBOLS = {
 }
 
 export const PLANET_COLORS = {
-  Sun: '#ff2d2d',
+  Sun: 'var(--chart-sun-color)',
   Moon: 'var(--chart-ink)',
   Mercury: 'var(--chart-ink)',
   Venus: 'var(--chart-ink)',
@@ -114,7 +114,7 @@ export const chartToMap = (chart, index = 0, options = {}) => ({
   id: options.id || chart?.id || `chart-${index}`,
   chart,
   label: options.label || '',
-  color: options.color || (index === 0 ? 'var(--chart-ink)' : '#334155'),
+  color: options.color || (index === 0 ? 'var(--chart-ink)' : 'var(--chart-overlay-ink)'),
   aspectColors: { ...ASPECT_COLORS, ...(options.aspectColors || {}) },
   showHouses: options.showHouses ?? index === 0,
   showHouseLabels: options.showHouseLabels ?? index === 0,
@@ -138,7 +138,7 @@ export const mapsFromProps = ({ natal, overlay, charts }) => {
   if (overlay) {
     maps.push(chartToMap(overlay, 1, {
       id: 'overlay',
-      color: '#0f766e',
+      color: 'var(--chart-overlay-accent)',
       showHouses: false,
       showHouseLabels: false,
       showAspects: false,

@@ -35,7 +35,6 @@ g(:data-chart-map='map.id')
     :chart='map.chart'
     :wheel-shift='wheelShift'
     :colors='map.aspectColors'
-    :placements='placements'
     :highlighted-bodies='highlightedBodies'
     :highlighted-aspect-key='highlightedAspectKey'
     :aspect-options='aspectOptions'

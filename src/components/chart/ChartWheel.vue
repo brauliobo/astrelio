@@ -248,7 +248,6 @@ onBeforeUnmount(() => {
   )
     .chart-zoom-controls.absolute.right-2.top-2.z-20.flex.items-center.gap-1.rounded-md.border.p-1.shadow-sm.backdrop-blur-sm(
       aria-label='Chart zoom controls'
-      class='border-slate-900/10 bg-white/90'
     )
       button.chart-zoom-button(
         type='button'
@@ -309,14 +308,14 @@ onBeforeUnmount(() => {
 
 <style>
 .chart-wheel-stage:focus-visible {
-  outline: 2px solid rgb(14 165 233 / 0.8);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
 }
 
 .chart-zoom-button {
   align-items: center;
   border-radius: 0.25rem;
-  color: rgb(15 23 42);
+  color: var(--chart-control-text);
   display: inline-flex;
   font-size: 0.8125rem;
   font-weight: 700;
@@ -327,6 +326,11 @@ onBeforeUnmount(() => {
   padding: 0 0.5rem;
 }
 
+.chart-zoom-controls {
+  background: var(--chart-control-bg);
+  border-color: var(--app-border);
+}
+
 .chart-zoom-button--reset {
   font-size: 0.6875rem;
   font-weight: 800;
@@ -335,16 +339,16 @@ onBeforeUnmount(() => {
 
 .chart-zoom-button:hover:not(:disabled),
 .chart-zoom-button:focus-visible {
-  background: rgb(226 232 240 / 0.9);
+  background: var(--chart-control-hover-bg);
 }
 
 .chart-zoom-button:focus-visible {
-  outline: 2px solid rgb(14 165 233 / 0.8);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 1px;
 }
 
 .chart-zoom-button:disabled {
-  color: rgb(100 116 139 / 0.45);
+  color: var(--chart-control-disabled-text);
   cursor: default;
 }
 
@@ -353,7 +357,7 @@ onBeforeUnmount(() => {
 }
 
 .chart-wheel[data-show-point-details="false"] [data-testid="planet-layer"] g[data-planet] > line,
-.chart-wheel[data-show-point-details="false"] [data-testid="planet-layer"] g[data-planet] > circle {
+.chart-wheel[data-show-point-details="false"] [data-testid="planet-layer"] g[data-planet] > circle:not(.planet-hit-target) {
   display: none;
 }
 

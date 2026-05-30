@@ -26,9 +26,24 @@
   --app-text-soft: rgb(203 213 225);
   --app-text-subtle: rgb(100 116 139);
   --app-hover-text: #ffffff;
+  --app-accent-text: #fde68a;
+  --focus-ring: rgb(14 165 233 / 0.8);
   --app-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  --modality-bg: rgb(255 255 255 / 0.06);
+  --modality-bg-hover: rgb(255 255 255 / 0.12);
+  --modality-text: rgb(203 213 225);
+  --modality-text-hover: rgb(248 250 252);
+  --modality-active-bg: rgb(255 211 105 / 0.16);
+  --modality-active-text: #fde68a;
+  --modality-active-ring: rgb(255 211 105 / 0.22);
   --chart-control-bg: rgb(255 255 255 / 0.9);
   --chart-control-text: rgb(15 23 42);
+  --chart-control-hover-bg: rgb(226 232 240 / 0.9);
+  --chart-control-disabled-text: rgb(100 116 139 / 0.45);
+  --chart-selection-bg: rgb(15 23 42 / 0.92);
+  --chart-selection-border: rgb(255 255 255 / 0.12);
+  --chart-selection-title: rgb(248 250 252);
+  --chart-selection-text: rgb(203 213 225);
   --chart-shadow-fill: #020617;
   --chart-zodiac-fill-a: #263653;
   --chart-zodiac-fill-b: #1d2a42;
@@ -48,7 +63,20 @@
   --chart-house-number-bg: #f8fafc;
   --chart-house-number-stroke: #64748b;
   --chart-angle-label-bg: #0f172a;
+  --chart-hit-target-fill: rgb(255 255 255 / 0.01);
   --chart-sun-stroke: #facc15;
+  --chart-retrograde-text: #fde68a;
+  --chart-angle-accent: #f59e0b;
+  --chart-sun-color: #ff4d4d;
+  --chart-overlay-ink: #94a3b8;
+  --chart-overlay-accent: #2dd4bf;
+  --chart-comparison-accent: #0f8f8f;
+  --aspect-conjunction: #94a3b8;
+  --aspect-opposition: #22c55e;
+  --aspect-trine: #14b8a6;
+  --aspect-square: #f87171;
+  --aspect-sextile: #38bdf8;
+  --aspect-quincunx: #f59e0b;
 }
 
 html[data-theme="light"] {
@@ -69,9 +97,24 @@ html[data-theme="light"] {
   --app-text-soft: rgb(51 65 85);
   --app-text-subtle: rgb(100 116 139);
   --app-hover-text: rgb(2 6 23);
+  --app-accent-text: #92400e;
+  --focus-ring: rgb(14 116 144 / 0.78);
   --app-shadow: 0 10px 30px rgba(15,23,42,0.12);
+  --modality-bg: rgb(255 255 255 / 0.68);
+  --modality-bg-hover: rgb(255 255 255 / 0.92);
+  --modality-text: rgb(71 85 105);
+  --modality-text-hover: rgb(15 23 42);
+  --modality-active-bg: rgb(254 243 199 / 0.96);
+  --modality-active-text: #92400e;
+  --modality-active-ring: rgb(217 119 6 / 0.38);
   --chart-control-bg: rgb(255 255 255 / 0.94);
   --chart-control-text: rgb(15 23 42);
+  --chart-control-hover-bg: rgb(226 232 240 / 0.9);
+  --chart-control-disabled-text: rgb(100 116 139 / 0.45);
+  --chart-selection-bg: rgb(255 255 255 / 0.94);
+  --chart-selection-border: rgb(15 23 42 / 0.14);
+  --chart-selection-title: rgb(15 23 42);
+  --chart-selection-text: rgb(51 65 85);
   --chart-shadow-fill: #0f172a;
   --chart-zodiac-fill-a: #f3f7fb;
   --chart-zodiac-fill-b: #e9eff6;
@@ -82,7 +125,7 @@ html[data-theme="light"] {
   --chart-frame-stroke: #0f172a;
   --chart-house-fill-a: #fcfdff;
   --chart-house-fill-b: #f3f6fa;
-  --chart-house-center: #101827;
+  --chart-house-center: #ffffff;
   --chart-cusp-angle: #0f172a;
   --chart-cusp-line: #64748b;
   --chart-ink: #111827;
@@ -91,7 +134,20 @@ html[data-theme="light"] {
   --chart-house-number-bg: #f8fafc;
   --chart-house-number-stroke: #cbd5e1;
   --chart-angle-label-bg: #fffaf0;
+  --chart-hit-target-fill: rgb(15 23 42 / 0.01);
   --chart-sun-stroke: #facc15;
+  --chart-retrograde-text: #92400e;
+  --chart-angle-accent: #b45309;
+  --chart-sun-color: #dc2626;
+  --chart-overlay-ink: #334155;
+  --chart-overlay-accent: #0f766e;
+  --chart-comparison-accent: #0f8f8f;
+  --aspect-conjunction: #64748b;
+  --aspect-opposition: #16a34a;
+  --aspect-trine: #0d9488;
+  --aspect-square: #dc2626;
+  --aspect-sextile: #0284c7;
+  --aspect-quincunx: #d97706;
 }
 
 html, body {
@@ -140,6 +196,28 @@ body {
   .theme-toggle:hover {
     background: var(--app-chip-hover);
     color: var(--app-hover-text);
+  }
+
+  .app-locale-select {
+    appearance: none;
+    background-color: var(--app-control);
+    background-image:
+      linear-gradient(45deg, transparent 50%, currentColor 50%),
+      linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-position:
+      calc(100% - 1rem) 50%,
+      calc(100% - 0.72rem) 50%;
+    background-repeat: no-repeat;
+    background-size: 0.28rem 0.28rem, 0.28rem 0.28rem;
+    border-color: var(--app-border);
+    color: var(--app-heading);
+    flex: 0 0 auto;
+    min-width: 4.25rem;
+  }
+
+  .app-locale-select:hover {
+    background-color: var(--app-chip-hover);
+    border-color: var(--app-border);
   }
 
   .theme-toggle__icon {
@@ -206,6 +284,17 @@ html[data-theme="light"] .text-slate-400 {
 
 html[data-theme="light"] .text-slate-500 {
   color: var(--app-text-subtle);
+}
+
+html[data-theme="light"] .text-amber-200,
+html[data-theme="light"] .text-amber-300 {
+  color: var(--app-accent-text);
+}
+
+html[data-theme="light"] .modality-switch .modality-switch__item.active {
+  background: var(--modality-active-bg);
+  color: var(--modality-active-text);
+  box-shadow: inset 0 0 0 1px var(--modality-active-ring);
 }
 
 html[data-theme="light"] .hover\:text-white:hover,

@@ -7,7 +7,7 @@ import { usePeopleStore } from './stores/people.js'
 import { useSessionStore } from './stores/session.js'
 import AppLogo from './components/AppLogo.vue'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const route = useRoute()
 const settings = useSettingsStore()
 settings.normalize()
@@ -21,6 +21,12 @@ const activeTheme = computed(() => settings.theme === 'light' ? 'light' : 'dark'
 const toggleThemeLabel = computed(() =>
   activeTheme.value === 'light' ? 'Switch to dark mode' : 'Switch to light mode'
 )
+const onLocale = (event) => {
+  settings.setLocale(event.target.value)
+  locale.value = settings.locale
+}
+
+locale.value = settings.locale
 
 watchEffect(() => {
   if (typeof document === 'undefined') return
@@ -79,6 +85,16 @@ const contextItems = computed(() => {
           :data-testid='`nav-${l.id}`'
           class='hover:text-white'
         ) {{ l.label }}
+      select.app-locale-select.h-8.rounded-full.border.text-xs.font-semibold.outline-none.transition(
+        class='px-3 pr-8'
+        :value='settings.locale'
+        aria-label='Language'
+        title='Language'
+        data-testid='locale-select'
+        @change='onLocale'
+      )
+        option(value='pt-BR') PT
+        option(value='en') EN
       button.theme-toggle(
         type='button'
         :aria-label='toggleThemeLabel'

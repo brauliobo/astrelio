@@ -36,10 +36,25 @@ section.natal-page(data-testid='natal-page')
         p.text-xs.text-slate-400 {{ person.isoLocal }} · {{ person.placeLabel }}
       .flex.flex-wrap.items-center.gap-2
         ModalityRouteSwitch(active='astrology')
-    .grid.gap-6(class='lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]')
-      .ui-panel
+    .grid.gap-6(class='xl:grid-cols-[minmax(220px,0.58fr)_minmax(460px,1fr)_minmax(220px,0.58fr)] xl:items-start')
+      ChartInsight.order-2(
+        class='xl:order-1'
+        :chart='chart'
+        :aspects='aspects'
+        :phase-label='phase'
+        panel='left'
+        v-if='chart'
+      )
+      .ui-panel.order-1(class='xl:order-2' data-testid='natal-chart-panel')
         ChartWheel(:natal='chart' :aspect-options='settings.aspectOptions' v-if='chart')
-      ChartInsight(:chart='chart' :aspects='aspects' :phase-label='phase' v-if='chart')
+      ChartInsight.order-3(
+        class='xl:order-3'
+        :chart='chart'
+        :aspects='aspects'
+        :phase-label='phase'
+        panel='right'
+        v-if='chart'
+      )
     InterpretationPanel.mt-6(:chart='chart' :aspects='aspects' v-if='chart')
     .grid.gap-6.mt-6(class='xl:grid-cols-[minmax(320px,0.8fr)_minmax(0,1fr)]')
       .ui-panel

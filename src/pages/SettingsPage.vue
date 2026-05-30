@@ -11,7 +11,7 @@ const people   = usePeopleStore()
 
 const onLocale = (e) => {
   settings.setLocale(e.target.value)
-  locale.value = e.target.value
+  locale.value = settings.locale
 }
 
 const houses = ['placidus', 'koch', 'porphyry', 'regiomontanus', 'equal', 'whole_sign']
