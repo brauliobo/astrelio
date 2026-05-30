@@ -9,7 +9,7 @@ import { useNatalChart } from '../composables/useChart.js'
 import { naturalAspects } from '../lib/astro/aspects.js'
 import { moonPhaseLabel } from '../lib/astro/ephemeris.js'
 import { birthHeaderForPerson } from '../lib/people/labels.js'
-import { hasPersonRouteQuery, natalRouteForPerson, personFromRouteQuery } from '../lib/people/routeQuery.js'
+import { hasPersonRouteQuery, natalRouteForPerson, personFromRouteQuery, samePersonRouteData } from '../lib/people/routeQuery.js'
 import Wheel from '../components/chart/Wheel.vue'
 import PlanetList from '../components/chart/PlanetList.vue'
 import AspectTable from '../components/chart/AspectTable.vue'
@@ -36,6 +36,15 @@ const birthHeader = computed(() => birthHeaderForPerson(person.value))
 watch(savedPerson, (next) => {
   if (!next || hasRoutePerson.value) return
   router.replace(natalRouteForPerson(next))
+}, { immediate: true })
+
+watch(routePerson, (next) => {
+  if (!hasRoutePerson.value || !next) return
+
+  const registered = people.list.find((candidate) => samePersonRouteData(candidate, next)) ||
+    people.add({ ...next, id: null, shared: false })
+
+  session.setActive(registered.id)
 }, { immediate: true })
 </script>
 

@@ -3,6 +3,7 @@ import {
   hasPersonRouteQuery,
   personFromRouteQuery,
   personToRouteQuery,
+  samePersonRouteData,
 } from '../../src/lib/people/routeQuery.js'
 
 describe('person route query', () => {
@@ -79,5 +80,29 @@ describe('person route query', () => {
       ianaZone: null,
       tzOffsetMinutes: -180,
     })
+  })
+
+  it('matches stored records to shared query records without using ids', () => {
+    const shared = personFromRouteQuery({
+      name: 'Ada',
+      place: 'São José dos Campos, SP - Brasil',
+      date: '1986-02-12',
+      time: '18:10',
+      lat: '-23.2237004',
+      lon: '-45.9009004',
+      zone: 'America/Sao_Paulo',
+      tz: '-120',
+    })
+
+    expect(samePersonRouteData({
+      id: 'saved-person',
+      name: 'Ada',
+      isoLocal: '1986-02-12T18:10',
+      placeLabel: 'São José dos Campos, SP - Brasil',
+      lat: -23.2237,
+      lon: -45.9009,
+      ianaZone: 'America/Sao_Paulo',
+      tzOffsetMinutes: -120,
+    }, shared)).toBe(true)
   })
 })

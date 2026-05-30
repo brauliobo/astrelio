@@ -27,6 +27,9 @@ const isValidCoordinate = (value, min, max) =>
 const cleanQuery = (query) =>
   Object.fromEntries(Object.entries(query).filter(([, value]) => value !== undefined && value !== ''))
 
+const coordinateMatches = (a, b) =>
+  Math.abs(Number(a) - Number(b)) < 0.000001
+
 export const hasPersonRouteQuery = (query = {}) =>
   QUERY_KEYS.some((key) => firstValue(query[key]) !== undefined)
 
@@ -52,6 +55,18 @@ export const natalRouteForPerson = (person) => ({
   name: 'natal',
   query: personToRouteQuery(person),
 })
+
+export const samePersonRouteData = (a, b) => {
+  if (!a || !b) return false
+
+  return a.name === b.name &&
+    a.isoLocal === b.isoLocal &&
+    a.placeLabel === b.placeLabel &&
+    coordinateMatches(a.lat, b.lat) &&
+    coordinateMatches(a.lon, b.lon) &&
+    (a.ianaZone || null) === (b.ianaZone || null) &&
+    Number(a.tzOffsetMinutes || 0) === Number(b.tzOffsetMinutes || 0)
+}
 
 export const personFromRouteQuery = (query = {}) => {
   const name = textValue(query, 'name')
