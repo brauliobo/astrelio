@@ -56,6 +56,6 @@ describe('Human Design wheel geometry', () => {
 
   it('uses photo texture specs for every sky planet while retaining halo colors', () => {
     expect(SKY_PLANETS).toHaveLength(10)
-    expect(SKY_PLANETS.every(planet => planet.photo && planet.texture?.length === 3 && planet.color)).toBe(true)
+    expect(SKY_PLANETS.every(planet => planet.photo && planet.image?.startsWith('/planets/') && planet.texture?.length === 3 && planet.color)).toBe(true)
   })
 })

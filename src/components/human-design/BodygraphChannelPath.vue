@@ -10,47 +10,65 @@ defineProps({
 const emit = defineEmits(['hover', 'leave'])
 
 const safeId = value => value.replace(/[^a-zA-Z0-9_-]/g, '-')
-const splitGradientId = pathId => `split-${safeId(pathId)}`
-const splitFill = pathId => `url(#${splitGradientId(pathId)})`
-const gradientVector = line => line.splitAxis === 'y'
-  ? { x1: '0%', y1: '0%', x2: '0%', y2: '100%' }
-  : { x1: '0%', y1: '0%', x2: '100%', y2: '0%' }
+const clipId = (pathId, part) => `clip-${safeId(pathId)}-${safeId(part)}`
+const splitRect = (line, index) => {
+  const bounds = line.splitBounds || { x: 0, y: 0, width: 0, height: 0, midX: 0, midY: 0 }
+  const pad = 8
+  if (line.splitAxis === 'y') {
+    return {
+      x: bounds.x - pad,
+      y: index === 0 ? bounds.y - pad : bounds.midY,
+      width: bounds.width + (pad * 2),
+      height: (bounds.height / 2) + pad,
+    }
+  }
+  return {
+    x: index === 0 ? bounds.x - pad : bounds.midX,
+    y: bounds.y - pad,
+    width: (bounds.width / 2) + pad,
+    height: bounds.height + (pad * 2),
+  }
+}
 </script>
 
 <template lang="pug">
 g
-  defs(v-if='line.parts?.length > 1')
-    linearGradient(
-      :id='splitGradientId(pathId)'
-      :x1='gradientVector(line).x1'
-      :y1='gradientVector(line).y1'
-      :x2='gradientVector(line).x2'
-      :y2='gradientVector(line).y2'
-      data-testid='bodygraph-split-gradient'
+  defs(v-if='line.parts?.length > 1 && line.splitBounds')
+    clipPath(
+      v-for='(part, index) in line.parts'
+      :key='part.key'
+      :id='clipId(pathId, part.key)'
+      data-testid='bodygraph-split-clip'
       :data-gate='line.gate || null'
+      :data-axis='line.splitAxis'
     )
-      stop(offset='0%' :stop-color='line.parts[0].fill')
-      stop(offset='49.5%' :stop-color='line.parts[0].fill')
-      stop(offset='50.5%' :stop-color='line.parts[1].fill')
-      stop(offset='100%' :stop-color='line.parts[1].fill')
-  path(
-    v-if='line.parts?.length > 1'
-    :d='line.d'
-    :fill='splitFill(pathId)'
-    :fill-opacity='dimmed ? 0.08 : highlighted ? 1 : line.opacity'
-    stroke='none'
-    stroke-width='0'
-    :data-channel='line.channel'
-    :data-gate='line.gate || null'
-    :data-defined='String(line.defined)'
-    :data-tone='line.tone || null'
-    :data-parts='line.parts.map(part => part.key).join(",")'
-    data-testid='bodygraph-defined-channel'
-    class='channel-path'
-    :class='{ highlighted }'
-    @pointerenter='emit("hover", line.channel)'
-    @pointerleave='emit("leave")'
-  )
+      rect(
+        :x='splitRect(line, index).x'
+        :y='splitRect(line, index).y'
+        :width='splitRect(line, index).width'
+        :height='splitRect(line, index).height'
+      )
+  template(v-if='line.parts?.length > 1 && line.splitBounds')
+    path(
+      v-for='part in line.parts'
+      :key='part.key'
+      :d='line.d'
+      :fill='part.fill'
+      :fill-opacity='dimmed ? 0.08 : highlighted ? 1 : line.opacity'
+      stroke='none'
+      stroke-width='0'
+      :clip-path='`url(#${clipId(pathId, part.key)})`'
+      :data-channel='line.channel'
+      :data-gate='line.gate || null'
+      :data-defined='String(line.defined)'
+      :data-tone='line.tone || null'
+      :data-part='part.key'
+      data-testid='bodygraph-defined-channel'
+      class='channel-path'
+      :class='{ highlighted }'
+      @pointerenter='emit("hover", line.channel)'
+      @pointerleave='emit("leave")'
+    )
   path(
     v-else
     :d='line.d'

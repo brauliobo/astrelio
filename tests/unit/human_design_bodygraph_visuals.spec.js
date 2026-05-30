@@ -28,8 +28,8 @@ const definedGatePath = (wrapper, gate) =>
   definedPaths(wrapper).find(path => Number(path.attributes('data-gate')) === gate)
 const definedGateParts = (wrapper, gate) =>
   definedPaths(wrapper).filter(path => Number(path.attributes('data-gate')) === gate)
-const gateSplitGradient = (wrapper, gate) =>
-  wrapper.find(`[data-testid="bodygraph-split-gradient"][data-gate="${gate}"]`)
+const gateSplitClips = (wrapper, gate) =>
+  wrapper.findAll(`[data-testid="bodygraph-split-clip"][data-gate="${gate}"]`)
 const definedGates = wrapper =>
   definedPaths(wrapper).map(path => Number(path.attributes('data-gate'))).sort((a, b) => a - b)
 
@@ -127,9 +127,8 @@ describe('Human Design bodygraph visual painting', () => {
     }))
 
     const gate10 = definedGatePath(wrapper, 10)
-    expect(gate10.attributes('fill')).toMatch(/^url\(#split-/)
-    expect(gateSplitGradient(wrapper, 10).findAll('stop').map(stop => stop.attributes('stop-color')))
-      .toEqual(['#dd4f52', '#dd4f52', '#f8fafc', '#f8fafc'])
+    expect(gate10.attributes('fill')).toBe('#dd4f52')
+    expect(definedGateParts(wrapper, 10).map(path => path.attributes('fill'))).toEqual(['#dd4f52', '#f8fafc'])
     expect(definedGatePath(wrapper, 34).attributes('fill')).toBe('#dd4f52')
     expect(basePaths(wrapper).filter(path => path.attributes('fill') === '#111111')).toHaveLength(0)
   })
@@ -142,9 +141,8 @@ describe('Human Design bodygraph visual painting', () => {
     }), { visualTheme: 'light' })
 
     const gate28 = definedGatePath(wrapper, 28)
-    expect(gate28.attributes('fill')).toMatch(/^url\(#split-/)
-    expect(gateSplitGradient(wrapper, 28).findAll('stop').map(stop => stop.attributes('stop-color')))
-      .toEqual(['#dd4f52', '#dd4f52', '#111111', '#111111'])
+    expect(gate28.attributes('fill')).toBe('#dd4f52')
+    expect(definedGateParts(wrapper, 28).map(path => path.attributes('fill'))).toEqual(['#dd4f52', '#111111'])
     expect(definedGatePath(wrapper, 38).attributes('fill')).toBe('#dd4f52')
   })
 
@@ -154,24 +152,19 @@ describe('Human Design bodygraph visual painting', () => {
       designGates: [28, 38],
       personalityGates: [28],
     }))
-    const path = definedGatePath(wrapper, 28)
-    const gradient = gateSplitGradient(wrapper, 28)
-    const stops = gradient.findAll('stop')
+    const paths = definedGateParts(wrapper, 28)
+    const clips = gateSplitClips(wrapper, 28)
+    const rects = clips.map(clip => clip.get('rect'))
 
-    expect(definedGateParts(wrapper, 28)).toHaveLength(1)
-    expect(path.attributes('fill')).toBe('url(#split-defined-28-38-28)')
-    expect(path.attributes('data-parts')).toBe('design,personality')
-    expect(gradient.exists()).toBe(true)
-    expect(gradient.attributes('x1')).toBe('0%')
-    expect(gradient.attributes('x2')).toBe('0%')
-    expect(gradient.attributes('y1')).toBe('0%')
-    expect(gradient.attributes('y2')).toBe('100%')
-    expect(stops.map(stop => [stop.attributes('offset'), stop.attributes('stop-color')])).toEqual([
-      ['0%', '#dd4f52'],
-      ['49.5%', '#dd4f52'],
-      ['50.5%', '#f8fafc'],
-      ['100%', '#f8fafc'],
-    ])
+    expect(paths).toHaveLength(2)
+    expect(paths.map(path => path.attributes('fill'))).toEqual(['#dd4f52', '#f8fafc'])
+    expect(paths.map(path => path.attributes('data-part'))).toEqual(['design', 'personality'])
+    expect(paths.every(path => path.attributes('clip-path')?.startsWith('url(#clip-'))).toBe(true)
+    expect(clips).toHaveLength(2)
+    expect(clips.every(clip => clip.attributes('data-axis') === 'y')).toBe(true)
+    expect(rects[0].attributes('x')).toBe(rects[1].attributes('x'))
+    expect(rects[0].attributes('width')).toBe(rects[1].attributes('width'))
+    expect(Number(rects[0].attributes('y'))).toBeLessThan(Number(rects[1].attributes('y')))
   })
 
   it('paints lower right 55-39 as independent gate-side partials', () => {

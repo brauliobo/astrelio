@@ -8,16 +8,16 @@ const STAR_COUNT = 520
 const CHART_SELECTOR = '[data-testid="chart-wheel-svg"]'
 
 export const SKY_PLANETS = [
-  { name: 'Sun', color: '#f6c453', radius: 13, photo: 'solar', texture: ['#fff7ad', '#f6c453', '#b45309'] },
-  { name: 'Moon', color: '#dbeafe', radius: 8, photo: 'cratered', texture: ['#f8fafc', '#cbd5e1', '#64748b'] },
-  { name: 'Mercury', color: '#7dd3fc', radius: 6, photo: 'cratered', texture: ['#e0f2fe', '#7dd3fc', '#475569'] },
-  { name: 'Venus', color: '#86efac', radius: 7, photo: 'clouds', texture: ['#dcfce7', '#86efac', '#4d7c0f'] },
-  { name: 'Mars', color: '#fb7185', radius: 7, photo: 'dust', texture: ['#fecdd3', '#fb7185', '#991b1b'] },
-  { name: 'Jupiter', color: '#fbbf24', radius: 10, photo: 'bands', texture: ['#fde68a', '#f59e0b', '#92400e'] },
-  { name: 'Saturn', color: '#c4b5fd', radius: 9, photo: 'rings', texture: ['#ede9fe', '#c4b5fd', '#6d28d9'] },
-  { name: 'Uranus', color: '#67e8f9', radius: 6, photo: 'ice', texture: ['#cffafe', '#67e8f9', '#0e7490'] },
-  { name: 'Neptune', color: '#38bdf8', radius: 6, photo: 'storms', texture: ['#dbeafe', '#38bdf8', '#1d4ed8'] },
-  { name: 'Pluto', color: '#c084fc', radius: 5, photo: 'ice', texture: ['#f3e8ff', '#c084fc', '#581c87'] },
+  { name: 'Sun', color: '#f6c453', radius: 13, photo: 'solar', image: '/planets/sun.jpg', texture: ['#fff7ad', '#f6c453', '#b45309'] },
+  { name: 'Moon', color: '#dbeafe', radius: 8, photo: 'cratered', image: '/planets/moon.jpg', texture: ['#f8fafc', '#cbd5e1', '#64748b'] },
+  { name: 'Mercury', color: '#7dd3fc', radius: 6, photo: 'cratered', image: '/planets/mercury.jpg', texture: ['#e0f2fe', '#7dd3fc', '#475569'] },
+  { name: 'Venus', color: '#86efac', radius: 7, photo: 'clouds', image: '/planets/venus.jpg', texture: ['#dcfce7', '#86efac', '#4d7c0f'] },
+  { name: 'Mars', color: '#fb7185', radius: 7, photo: 'dust', image: '/planets/mars.jpg', texture: ['#fecdd3', '#fb7185', '#991b1b'] },
+  { name: 'Jupiter', color: '#fbbf24', radius: 10, photo: 'bands', image: '/planets/jupiter.jpg', texture: ['#fde68a', '#f59e0b', '#92400e'] },
+  { name: 'Saturn', color: '#c4b5fd', radius: 9, photo: 'rings', image: '/planets/saturn.jpg', texture: ['#ede9fe', '#c4b5fd', '#6d28d9'] },
+  { name: 'Uranus', color: '#67e8f9', radius: 6, photo: 'ice', image: '/planets/uranus.jpg', texture: ['#cffafe', '#67e8f9', '#0e7490'] },
+  { name: 'Neptune', color: '#38bdf8', radius: 6, photo: 'storms', image: '/planets/neptune.jpg', texture: ['#dbeafe', '#38bdf8', '#1d4ed8'] },
+  { name: 'Pluto', color: '#c084fc', radius: 5, photo: 'ice', image: '/planets/pluto.jpg', texture: ['#f3e8ff', '#c084fc', '#581c87'] },
 ]
 
 const SIGNS = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
@@ -50,6 +50,17 @@ const makeStars = () => {
     y: random(),
     r: 0.35 + random() * 1.15,
     a: 0.18 + random() * 0.48,
+  }))
+}
+
+const loadPlanetImages = (schedule) => {
+  if (typeof Image === 'undefined') return new Map()
+  return new Map(SKY_PLANETS.map((planet) => {
+    const image = new Image()
+    image.decoding = 'async'
+    image.onload = schedule
+    image.src = planet.image
+    return [planet.name, image]
   }))
 }
 
@@ -183,7 +194,7 @@ const drawEnvironment = (ctx, bounds, mode, wheelShift) => {
   }
 }
 
-const drawPlanet = (ctx, cx, cy, radius, shiftedLongitude, planet, label) => {
+const drawPlanet = (ctx, cx, cy, radius, shiftedLongitude, planet, label, image = null) => {
   const point = polarPoint(cx, cy, radius, shiftedLongitude)
   const labelPoint = polarPoint(cx, cy, radius + planet.radius + 22, shiftedLongitude)
 
@@ -208,7 +219,11 @@ const drawPlanet = (ctx, cx, cy, radius, shiftedLongitude, planet, label) => {
   ctx.arc(point.x, point.y, planet.radius, 0, Math.PI * 2)
   ctx.fill()
 
-  drawPlanetPhotoTexture(ctx, point, planet)
+  if (image?.complete && image.naturalWidth > 0) {
+    drawPlanetImage(ctx, point, planet, image)
+  } else {
+    drawPlanetPhotoTexture(ctx, point, planet)
+  }
 
   ctx.stroke()
 
@@ -232,6 +247,31 @@ const drawPlanet = (ctx, cx, cy, radius, shiftedLongitude, planet, label) => {
   ctx.textBaseline = 'middle'
   ctx.fillStyle = planet.color
   ctx.fillText(label, labelPoint.x, labelPoint.y)
+  ctx.restore()
+}
+
+const drawPlanetImage = (ctx, point, planet, image) => {
+  const diameter = planet.radius * 2
+  ctx.save()
+  ctx.beginPath()
+  ctx.arc(point.x, point.y, planet.radius, 0, Math.PI * 2)
+  ctx.clip()
+
+  const sourceSize = Math.min(image.naturalWidth, image.naturalHeight)
+  const sx = (image.naturalWidth - sourceSize) / 2
+  const sy = (image.naturalHeight - sourceSize) / 2
+  ctx.globalAlpha = 0.96
+  ctx.drawImage(
+    image,
+    sx,
+    sy,
+    sourceSize,
+    sourceSize,
+    point.x - planet.radius,
+    point.y - planet.radius,
+    diameter,
+    diameter
+  )
   ctx.restore()
 }
 
@@ -307,6 +347,7 @@ export const createSkyScene = (canvas) => {
   let raf = 0
   const pulse = window.setInterval(() => schedule(), 1000)
   let chart = null
+  let planetImages = null
 
   const resize = () => {
     const pixelRatio = Math.min(window.devicePixelRatio || 1, 2)
@@ -365,7 +406,8 @@ export const createSkyScene = (canvas) => {
         planetRadius,
         skyLongitudeForPosition({ longitude: position.longitude, mode: context.mode, wheelShift }),
         planet,
-        context.planetLabels[planet.name] || planet.name
+        context.planetLabels[planet.name] || planet.name,
+        planetImages?.get(planet.name)
       )
     }
   }
@@ -376,6 +418,7 @@ export const createSkyScene = (canvas) => {
   }
 
   resize()
+  planetImages = loadPlanetImages(schedule)
   recalc()
   schedule()
   window.addEventListener('resize', schedule)
