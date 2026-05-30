@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { ichingLinesForGate } from './humanDesignWheelGeometry.js'
 
 const props = defineProps({
   gate: { type: Number, required: true },
@@ -12,10 +13,10 @@ const props = defineProps({
 })
 
 const lines = computed(() =>
-  Array.from({ length: 6 }, (_, index) => ({
+  ichingLinesForGate(props.gate).map((broken, index) => ({
     index,
-    broken: ((Number(props.gate) - 1) >> index) & 1,
-  })).reverse()
+    broken,
+  }))
 )
 
 const lineY = index => (index - 2.5) * (props.size / 6)

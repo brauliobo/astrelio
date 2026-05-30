@@ -5,6 +5,7 @@ import ModalityRouteSwitch from '../../src/components/modalities/ModalityRouteSw
 import BodygraphGates from '../../src/components/human-design/BodygraphGates.vue'
 import HumanDesignInsightPanel from '../../src/components/human-design/HumanDesignInsightPanel.vue'
 import HumanDesignIChingRing from '../../src/components/human-design/HumanDesignIChingRing.vue'
+import HumanDesignWheelPlanets from '../../src/components/human-design/HumanDesignWheelPlanets.vue'
 import HumanDesignWheelRings from '../../src/components/human-design/HumanDesignWheelRings.vue'
 import { MANDALA_GATE_ORDER } from '../../src/lib/human-design/constants.js'
 import { wheelRingRadii } from '../../src/components/human-design/humanDesignWheelGeometry.js'
@@ -104,6 +105,21 @@ describe('Human Design visual components', () => {
     expect(wrapper.findAll('[data-testid="iching-symbol"]')).toHaveLength(64)
     expect(wrapper.findAll('[data-testid="iching-line"]').length).toBeGreaterThan(64 * 6)
     expect(wrapper.findAll('text')).toHaveLength(0)
+  })
+
+  it('renders Venus larger on the Human Design wheel', () => {
+    const wrapper = mountInSvg(HumanDesignWheelPlanets, {
+      chart: {
+        personality: {
+          Venus: { planet: 'Venus', gate: 44, line: 6 },
+          Mars: { planet: 'Mars', gate: 44, line: 2 },
+        },
+        design: {},
+      },
+    })
+
+    expect(wrapper.get('[data-planet="Venus"]').attributes('font-size')).toBe('20')
+    expect(wrapper.get('[data-planet="Mars"]').attributes('font-size')).toBe('16')
   })
 
   it('splits a design and personality gate into true half fills', () => {

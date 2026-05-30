@@ -1,11 +1,17 @@
 <script setup>
 import { computed } from 'vue'
 import CelestialGlyph from '../common/CelestialGlyph.vue'
-import { mandalaAngleForActivation, polar } from './humanDesignWheelGeometry.js'
+import { planetGlyphLayout } from './humanDesignWheelGeometry.js'
 
 const props = defineProps({
   chart: { type: Object, required: true },
 })
+
+const planetGlyphSize = planet => {
+  if (planet === 'Venus') return 20
+  if (planet === 'Sun' || planet === 'Earth') return 18
+  return 16
+}
 
 const planets = computed(() => {
   const rows = [
@@ -13,16 +19,13 @@ const planets = computed(() => {
     ...Object.values(props.chart.design || {}).map(item => ({ ...item, layer: 'design' })),
   ]
 
-  return rows.map((item) => {
-    const angle = mandalaAngleForActivation(item)
-    const point = polar(item.layer === 'personality' ? 278 : 302, angle)
+  return planetGlyphLayout(rows).map((item) => {
     return {
       ...item,
-      point,
-      color: item.layer === 'personality' ? 'rgba(248,250,252,0.72)' : 'rgba(239,85,87,0.72)',
-      size: item.planet === 'Sun' || item.planet === 'Earth' ? 18 : 16,
+      color: item.layer === 'personality' ? 'rgba(248,250,252,0.86)' : 'rgba(239,85,87,0.88)',
+      size: planetGlyphSize(item.planet),
     }
-  }).filter(item => Number.isFinite(item.point.x))
+  })
 })
 </script>
 
@@ -38,12 +41,16 @@ g.hd-wheel-planets(data-testid='hd-wheel-planets')
     :color='planet.color'
     :size='planet.size'
     :weight='700'
+    :data-layer='planet.layer'
+    :data-planet='planet.planet'
+    :data-gate='planet.gate'
+    :data-lane='planet.lane'
   )
 </template>
 
 <style scoped>
 .hd-wheel-planets {
-  opacity: 0.76;
+  opacity: 0.9;
   transition: opacity 160ms ease;
 }
 

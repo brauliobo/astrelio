@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import {
   gateSegmentLayout,
+  ichingLinesForGate,
   mandalaAngleForActivation,
+  mandalaAngleForGate,
   mandalaAngleForLongitude,
   mandalaIndexForGate,
+  planetGlyphLayout,
+  planetGlyphRadii,
   referenceBrauliWheelPositions,
   wheelRingRadii,
   zodiacSegmentLayout,
@@ -31,6 +35,9 @@ describe('Human Design wheel geometry', () => {
     expect(referenceBrauliWheelPositions.person.isoLocal).toBe('1986-02-12T18:10')
     expect(personalitySun).toMatchObject({ layer: 'personality', planet: 'Sun', gate: 49, sign: '♒' })
     expect(designSun).toMatchObject({ layer: 'design', planet: 'Sun', gate: 14, sign: '♐' })
+    expect(referenceBrauliWheelPositions.placements).toHaveLength(26)
+    expect(referenceBrauliWheelPositions.placements).toContainEqual({ layer: 'personality', planet: 'Neptune', gate: 58, sign: '♑' })
+    expect(referenceBrauliWheelPositions.placements).toContainEqual({ layer: 'design', planet: 'Mars', gate: 48, sign: '♎' })
     expect(mandalaAngleForActivation({ gate: 10, line: 3 })).toBeGreaterThan(-10)
     expect(mandalaAngleForActivation({ gate: 10, line: 3 })).toBeLessThan(10)
     expect(angularDistance(mandalaAngleForActivation({ gate: 49, line: 6 }), 308.90625)).toBeLessThan(0.001)
@@ -80,5 +87,57 @@ describe('Human Design wheel geometry', () => {
     expect(segment.divider.b.radius).toBe(wheelRingRadii.outerBorder)
     expect(segment.ray.a.radius).toBeLessThan(segment.ray.b.radius)
     expect(segment.ray.b.radius).toBe(wheelRingRadii.zodiacInner)
+  })
+
+  it('draws I Ching hexagram lines from King Wen trigrams', () => {
+    expect(ichingLinesForGate(1)).toEqual([false, false, false, false, false, false])
+    expect(ichingLinesForGate(2)).toEqual([true, true, true, true, true, true])
+    expect(ichingLinesForGate(44)).toEqual([false, false, false, false, false, true])
+    expect(ichingLinesForGate(28)).toEqual([true, false, false, false, false, true])
+  })
+
+  it('stacks planet glyphs in predictable lanes close to the sign circle', () => {
+    const layout = planetGlyphLayout([
+      { layer: 'personality', planet: 'Mars', gate: 9, line: 1 },
+      { layer: 'design', planet: 'Mercury', gate: 5, line: 4 },
+      { layer: 'design', planet: 'Uranus', gate: 5, line: 6 },
+      { layer: 'personality', planet: 'Saturn', gate: 9, line: 4 },
+      { layer: 'design', planet: 'Sun', gate: 14, line: 2 },
+    ])
+
+    expect(layout.map(item => item.planet)).toEqual(['Mars', 'Mercury', 'Uranus', 'Saturn', 'Sun'])
+    expect(layout.every(item => planetGlyphRadii.includes(item.radius))).toBe(true)
+    expect(layout.every(item => item.radius < wheelRingRadii.zodiacInner)).toBe(true)
+    expect(Math.max(...layout.map(item => item.radius))).toBe(planetGlyphRadii[0])
+    expect(layout.filter(item => item.gate === 5).map(item => item.lane).sort()).toEqual([0, 1])
+    expect(layout.filter(item => item.gate === 9).map(item => item.lane).sort()).toEqual([0, 1])
+    expect(layout.find(item => item.gate === 14).lane).toBe(0)
+  })
+
+  it('keeps all planet glyphs for one gate on the sector midpoint angle', () => {
+    const layout = planetGlyphLayout([
+      { layer: 'personality', planet: 'Sun', gate: 44, line: 1 },
+      { layer: 'design', planet: 'Venus', gate: 44, line: 6 },
+      { layer: 'personality', planet: 'Moon', gate: 44, line: 3 },
+    ])
+
+    expect(layout.map(item => item.angle)).toEqual([
+      mandalaAngleForGate(44),
+      mandalaAngleForGate(44),
+      mandalaAngleForGate(44),
+    ])
+    expect(new Set(layout.map(item => item.lane)).size).toBe(3)
+    expect(new Set(layout.map(item => item.point.x)).size).toBe(3)
+  })
+
+  it('does not stack planets across neighboring gate sectors', () => {
+    const layout = planetGlyphLayout([
+      { layer: 'design', planet: 'SouthNode', gate: 44, line: 6 },
+      { layer: 'personality', planet: 'SouthNode', gate: 28, line: 2 },
+    ])
+
+    expect(layout.map(item => item.lane)).toEqual([0, 0])
+    expect(layout.map(item => item.radius)).toEqual([planetGlyphRadii[0], planetGlyphRadii[0]])
+    expect(layout[0].angle).not.toBe(layout[1].angle)
   })
 })

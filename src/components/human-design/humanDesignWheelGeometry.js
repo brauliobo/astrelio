@@ -13,8 +13,95 @@ export const wheelRingRadii = {
   outerBorder: 462,
 }
 
+export const planetGlyphRadii = [326, 304, 282, 260, 238, 216]
+export const planetGlyphMinAngleGap = 5.8
+
+const trigramLinesTopToBottom = {
+  heaven: [false, false, false],
+  earth: [true, true, true],
+  thunder: [true, true, false],
+  water: [true, false, true],
+  mountain: [false, true, true],
+  wind: [false, false, true],
+  fire: [false, true, false],
+  lake: [true, false, false],
+}
+
+const kingWenHexagramTrigrams = {
+  1: ['heaven', 'heaven'],
+  2: ['earth', 'earth'],
+  3: ['water', 'thunder'],
+  4: ['mountain', 'water'],
+  5: ['water', 'heaven'],
+  6: ['heaven', 'water'],
+  7: ['earth', 'water'],
+  8: ['water', 'earth'],
+  9: ['wind', 'heaven'],
+  10: ['heaven', 'lake'],
+  11: ['earth', 'heaven'],
+  12: ['heaven', 'earth'],
+  13: ['heaven', 'fire'],
+  14: ['fire', 'heaven'],
+  15: ['earth', 'mountain'],
+  16: ['thunder', 'earth'],
+  17: ['lake', 'thunder'],
+  18: ['mountain', 'wind'],
+  19: ['earth', 'lake'],
+  20: ['wind', 'earth'],
+  21: ['fire', 'thunder'],
+  22: ['mountain', 'fire'],
+  23: ['mountain', 'earth'],
+  24: ['earth', 'thunder'],
+  25: ['heaven', 'thunder'],
+  26: ['mountain', 'heaven'],
+  27: ['mountain', 'thunder'],
+  28: ['lake', 'wind'],
+  29: ['water', 'water'],
+  30: ['fire', 'fire'],
+  31: ['lake', 'mountain'],
+  32: ['thunder', 'wind'],
+  33: ['heaven', 'mountain'],
+  34: ['thunder', 'heaven'],
+  35: ['fire', 'earth'],
+  36: ['earth', 'fire'],
+  37: ['wind', 'fire'],
+  38: ['fire', 'lake'],
+  39: ['water', 'mountain'],
+  40: ['thunder', 'water'],
+  41: ['mountain', 'lake'],
+  42: ['wind', 'thunder'],
+  43: ['lake', 'heaven'],
+  44: ['heaven', 'wind'],
+  45: ['lake', 'earth'],
+  46: ['earth', 'wind'],
+  47: ['lake', 'water'],
+  48: ['water', 'wind'],
+  49: ['lake', 'fire'],
+  50: ['fire', 'wind'],
+  51: ['thunder', 'thunder'],
+  52: ['mountain', 'mountain'],
+  53: ['wind', 'mountain'],
+  54: ['thunder', 'lake'],
+  55: ['thunder', 'fire'],
+  56: ['fire', 'mountain'],
+  57: ['wind', 'wind'],
+  58: ['lake', 'lake'],
+  59: ['wind', 'water'],
+  60: ['water', 'lake'],
+  61: ['wind', 'lake'],
+  62: ['thunder', 'mountain'],
+  63: ['water', 'fire'],
+  64: ['fire', 'water'],
+}
+
 const mandalaIndexForGateIndex = index => (40 - index + 64) % 64
 const angleForMandalaIndex = index => (index - referenceTopMandalaIndex) * gateStep
+
+export const ichingLinesForGate = (gate) => {
+  const trigrams = kingWenHexagramTrigrams[Number(gate)] || kingWenHexagramTrigrams[2]
+  const [upper, lower] = trigrams
+  return [...trigramLinesTopToBottom[upper], ...trigramLinesTopToBottom[lower]]
+}
 
 export const polar = (radius, angle, center = wheelCenter) => {
   const radians = (angle - 90) * Math.PI / 180
@@ -33,6 +120,46 @@ export const mandalaAngleForActivation = (activation = {}) => {
   if (index < 0) return Number.NaN
   const lineOffset = ((activation.line || 1) - 0.5) / 6
   return angleForMandalaIndex(index + lineOffset)
+}
+
+export const mandalaAngleForGate = (gate) => {
+  const index = mandalaIndexForGate(gate)
+  if (index < 0) return Number.NaN
+  return angleForMandalaIndex(index + 0.5)
+}
+
+export const angularDistance = (a, b) => {
+  const diff = Math.abs(a - b) % 360
+  return Math.min(diff, 360 - diff)
+}
+
+const normalizedAngle = angle => ((angle % 360) + 360) % 360
+
+export const planetGlyphLayout = (activations = []) => {
+  const sorted = activations
+    .map((item, sourceIndex) => ({
+      ...item,
+      sourceIndex,
+      angle: mandalaAngleForGate(item.gate),
+    }))
+    .filter(item => Number.isFinite(item.angle))
+    .sort((a, b) => normalizedAngle(a.angle) - normalizedAngle(b.angle) || a.sourceIndex - b.sourceIndex)
+
+  const placed = []
+  const gateCounts = new Map()
+  for (const item of sorted) {
+    const count = gateCounts.get(item.gate) || 0
+    const lane = Math.min(count, planetGlyphRadii.length - 1)
+    gateCounts.set(item.gate, count + 1)
+    placed.push({
+      ...item,
+      lane,
+      radius: planetGlyphRadii[lane],
+      point: polar(planetGlyphRadii[lane], item.angle),
+    })
+  }
+
+  return placed.sort((a, b) => a.sourceIndex - b.sourceIndex)
 }
 
 export const mandalaAngleForLongitude = (longitude) => {
@@ -111,6 +238,30 @@ export const referenceBrauliWheelPositions = {
   placements: [
     { layer: 'personality', planet: 'Sun', gate: 49, sign: '♒' },
     { layer: 'design', planet: 'Sun', gate: 14, sign: '♐' },
+    { layer: 'personality', planet: 'Earth', gate: 4, sign: '♌' },
+    { layer: 'design', planet: 'Earth', gate: 8, sign: '♉' },
+    { layer: 'personality', planet: 'NorthNode', gate: 27, sign: '♉' },
+    { layer: 'design', planet: 'NorthNode', gate: 24, sign: '♉' },
+    { layer: 'personality', planet: 'SouthNode', gate: 28, sign: '♏' },
+    { layer: 'design', planet: 'SouthNode', gate: 44, sign: '♏' },
+    { layer: 'personality', planet: 'Moon', gate: 21, sign: '♈' },
+    { layer: 'design', planet: 'Moon', gate: 19, sign: '♒' },
+    { layer: 'personality', planet: 'Mercury', gate: 55, sign: '♒' },
+    { layer: 'design', planet: 'Mercury', gate: 5, sign: '♐' },
+    { layer: 'personality', planet: 'Venus', gate: 30, sign: '♒' },
+    { layer: 'design', planet: 'Venus', gate: 44, sign: '♏' },
+    { layer: 'personality', planet: 'Mars', gate: 9, sign: '♐' },
+    { layer: 'design', planet: 'Mars', gate: 48, sign: '♎' },
+    { layer: 'personality', planet: 'Jupiter', gate: 30, sign: '♒' },
+    { layer: 'design', planet: 'Jupiter', gate: 19, sign: '♒' },
+    { layer: 'personality', planet: 'Saturn', gate: 9, sign: '♐' },
+    { layer: 'design', planet: 'Saturn', gate: 34, sign: '♏' },
+    { layer: 'personality', planet: 'Uranus', gate: 26, sign: '♐' },
+    { layer: 'design', planet: 'Uranus', gate: 5, sign: '♐' },
+    { layer: 'personality', planet: 'Neptune', gate: 58, sign: '♑' },
+    { layer: 'design', planet: 'Neptune', gate: 10, sign: '♐' },
+    { layer: 'personality', planet: 'Pluto', gate: 28, sign: '♎' },
+    { layer: 'design', planet: 'Pluto', gate: 28, sign: '♎' },
   ],
 }
 
