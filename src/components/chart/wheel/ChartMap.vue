@@ -13,6 +13,7 @@ const props = defineProps({
   wheelShift: { type: Number, required: true },
   highlightedBodies: { type: Array, default: () => [] },
   highlightedAspectKey: { type: String, default: '' },
+  aspectOptions: { type: Object, default: () => ({}) },
 })
 defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 
@@ -37,6 +38,7 @@ g(:data-chart-map='map.id')
     :placements='placements'
     :highlighted-bodies='highlightedBodies'
     :highlighted-aspect-key='highlightedAspectKey'
+    :aspect-options='aspectOptions'
     @highlight='$emit("highlight", $event)'
     @clear-highlight='$emit("clear-highlight")'
     @toggle-highlight='$emit("toggle-highlight", $event)'

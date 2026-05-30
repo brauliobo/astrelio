@@ -1,10 +1,17 @@
 import { h, nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import AspectTable from '../../src/components/chart/AspectTable.vue'
 import ChartWheel from '../../src/components/chart/ChartWheel.vue'
 import PlanetList from '../../src/components/chart/PlanetList.vue'
+
+vi.mock('../../src/components/chart/ChartDisplayMode.vue', () => ({
+  default: {
+    name: 'ChartDisplayMode',
+    render: () => null,
+  },
+}))
 
 const messages = {
   en: {
@@ -46,13 +53,15 @@ const position = (name, longitude, speed = 1) => ({
   retrograde: false,
 })
 
+const aquariusSun = 300 + 23 + (49 / 60)
+
 const chart = {
-  ascendant: 0,
-  mc: 90,
-  cusps: [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330],
+  ascendant: 120,
+  mc: 210,
+  cusps: [120, 150, 180, 210, 240, 270, 300, 330, 0, 30, 60, 90],
   positions: [
-    position('Sun', 0),
-    position('Mars', 60),
+    position('Sun', aquariusSun),
+    position('Mars', 23 + (49 / 60)),
     position('Moon', 140),
   ],
 }
@@ -94,6 +103,7 @@ describe('chart interactions', () => {
     expect(wrapper.get('[data-aspect-row="Sun-Mars-sextile"]').attributes('data-highlight')).toBe('active')
     expect(wrapper.get('[data-aspect="Sun-Mars-sextile"]').attributes('data-highlight')).toBe('active')
     expect(wrapper.get('[data-testid="planet-glyph-Moon"]').attributes('data-highlight')).toBe('dimmed')
+    expect(wrapper.get('[data-testid="chart-selection-summary"]').text()).toContain('Sun 23°49′ Aquarius · House 7')
   })
 
   it('pins and clears aspect highlight state from click', async () => {
@@ -107,11 +117,14 @@ describe('chart interactions', () => {
     expect(aspectRow.attributes('data-highlight')).toBe('active')
     expect(wrapper.get('[data-testid="planet-glyph-Sun"]').attributes('data-highlight')).toBe('active')
     expect(wrapper.get('[data-testid="planet-glyph-Mars"]').attributes('data-highlight')).toBe('active')
+    expect(wrapper.get('[data-testid="chart-selection-summary"]').attributes('data-selection-kind')).toBe('aspect')
+    expect(wrapper.get('[data-testid="chart-selection-summary"]').text()).toContain('Sun Sextile Mars')
 
     await aspectRow.trigger('click')
     await nextTick()
 
     expect(aspectRow.attributes('data-highlight')).toBe('idle')
     expect(wrapper.get('[data-testid="planet-glyph-Sun"]').attributes('data-highlight')).toBe('idle')
+    expect(wrapper.find('[data-testid="chart-selection-summary"]').exists()).toBe(false)
   })
 })

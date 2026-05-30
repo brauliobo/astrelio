@@ -95,7 +95,14 @@
     "current_positions": "Posições atuais",
     "solar_return_positions": "Posições da revolução solar",
     "no_data": "Sem dados para exibir",
-    "summary": "Resumo"
+    "summary": "Resumo",
+    "display_mode": "Exibição",
+    "display_modes": {
+      "clean": "Limpo",
+      "aspects": "Aspectos",
+      "detailed": "Detalhado",
+      "print": "Impressão"
+    }
   },
   "analysis": {
     "title": "Inteligência do mapa",
@@ -143,9 +150,17 @@
       "synastry": "Vínculos mais ativos entre os dois mapas."
     },
     "theme_n": "Tema {n}",
+    "background": "Fundo",
     "dominant": "Ênfase em {aspect} · {count}",
     "applying_count": "{count} aplicando",
     "aspect_meta": "{a} {aspect} {b} · {orb}° · {motion}",
+    "groups": {
+      "progression_slow_self": {
+        "title": "Fundo dos planetas lentos",
+        "detail": "Planetas de ciclo longo ficam próximos das posições natais, então isso descreve continuidade geracional em vez de um pico pessoal da progressão.",
+        "meta": "{planets} agrupados · {count} contatos · mais próximo {orb}°"
+      }
+    },
     "themes": {
       "transit": {
         "conjunction": "{b} ativa {a} natal",

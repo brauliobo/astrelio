@@ -95,7 +95,14 @@
     "current_positions": "Current positions",
     "solar_return_positions": "Solar return positions",
     "no_data": "No data to display",
-    "summary": "Summary"
+    "summary": "Summary",
+    "display_mode": "Display",
+    "display_modes": {
+      "clean": "Clean",
+      "aspects": "Aspects",
+      "detailed": "Detailed",
+      "print": "Print"
+    }
   },
   "analysis": {
     "title": "Chart intelligence",
@@ -143,9 +150,17 @@
       "synastry": "Most active links between both charts."
     },
     "theme_n": "Theme {n}",
+    "background": "Background",
     "dominant": "{aspect} emphasis · {count}",
     "applying_count": "{count} applying",
     "aspect_meta": "{a} {aspect} {b} · {orb}° · {motion}",
+    "groups": {
+      "progression_slow_self": {
+        "title": "Slow-planet background",
+        "detail": "Long-cycle planets are close to their natal positions, so this reads as generational continuity rather than a personal progression peak.",
+        "meta": "{planets} grouped · {count} contacts · closest {orb}°"
+      }
+    },
     "themes": {
       "transit": {
         "conjunction": "{b} activates natal {a}",

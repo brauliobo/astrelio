@@ -19,18 +19,24 @@ const labels = computed(() =>
 <template lang="pug">
 g(
   data-testid='house-numbers'
-  font-family='serif'
-  font-style='italic'
+  font-family='"Inter", "Avenir Next", system-ui, sans-serif'
   font-weight='700'
-  font-size='12'
-  fill='#111827'
+  font-size='11'
+  fill='#0f172a'
   text-anchor='middle'
 )
-  text(
-    v-for='item in labels'
-    :key='item.index'
-    :x='item.point.x'
-    :y='item.point.y'
-    dominant-baseline='central'
-  ) {{ item.label }}
+  g(v-for='item in labels' :key='item.index')
+    circle(
+      :cx='item.point.x'
+      :cy='item.point.y'
+      r='8.5'
+      fill='#f8fafc'
+      stroke='#cbd5e1'
+      stroke-width='0.75'
+    )
+    text(
+      :x='item.point.x'
+      :y='item.point.y'
+      dominant-baseline='central'
+    ) {{ item.label }}
 </template>

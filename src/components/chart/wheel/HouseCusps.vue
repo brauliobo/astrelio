@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import WheelArc from './WheelArc.vue'
-import { WHEEL_RADII, midpointLongitude, norm360, polarPoint } from './geometry.js'
+import { CENTER, WHEEL_RADII, midpointLongitude, norm360, polarPoint } from './geometry.js'
 
 const props = defineProps({
   cusps: { type: Array, required: true },
@@ -10,12 +10,15 @@ const props = defineProps({
 
 const cusps = computed(() =>
   props.cusps.map((cusp, index) => {
+    const isAngle = [0, 3, 6, 9].includes(index)
     const longitude = norm360(cusp + props.wheelShift)
     return {
       index,
       inner: polarPoint(WHEEL_RADII.houseInner, longitude),
       outer: polarPoint(WHEEL_RADII.zodiacInner, longitude),
-      width: [0, 3, 6, 9].includes(index) ? 1.45 : 0.85,
+      stroke: isAngle ? '#0f172a' : '#64748b',
+      opacity: isAngle ? 0.9 : 0.46,
+      width: isAngle ? 1.75 : 0.75,
     }
   })
 )
@@ -26,7 +29,7 @@ const sectors = computed(() =>
     start: norm360(cusp + props.wheelShift),
     end: norm360(props.cusps[(index + 1) % 12] + props.wheelShift),
     midpoint: midpointLongitude(cusp, props.cusps[(index + 1) % 12]),
-    fill: index % 2 === 0 ? '#ffffff' : '#f8fafc',
+    fill: index % 2 === 0 ? '#fcfdff' : '#f3f6fa',
   }))
 )
 </script>
@@ -50,10 +53,11 @@ g(data-testid='house-cusps')
     :y1='cusp.inner.y'
     :x2='cusp.outer.x'
     :y2='cusp.outer.y'
-    stroke='#111827'
+    :stroke='cusp.stroke'
     :stroke-width='cusp.width'
-    stroke-opacity='0.82'
+    :stroke-opacity='cusp.opacity'
+    stroke-linecap='round'
   )
-  circle(:cx='260' :cy='260' :r='WHEEL_RADII.houseOuter' fill='none' stroke='#252a30' stroke-width='1')
-  circle(:cx='260' :cy='260' :r='WHEEL_RADII.houseInner' fill='none' stroke='#252a30' stroke-width='1.4')
+  circle(:cx='CENTER' :cy='CENTER' :r='WHEEL_RADII.houseOuter' fill='none' stroke='#334155' stroke-width='1.05')
+  circle(:cx='CENTER' :cy='CENTER' :r='WHEEL_RADII.houseInner' fill='none' stroke='#0f172a' stroke-width='1.55')
 </template>

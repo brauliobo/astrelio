@@ -25,5 +25,6 @@ path(
   :stroke='stroke'
   :stroke-width='strokeWidth'
   :opacity='opacity'
+  stroke-linejoin='round'
 )
 </template>

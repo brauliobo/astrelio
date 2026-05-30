@@ -11,6 +11,7 @@ defineProps({
   baseLabel: { type: String, required: true },
   comparisonLabel: { type: String, required: true },
   chartSize: { type: Number, default: 520 },
+  aspectOptions: { type: Object, default: () => ({}) },
 })
 
 const chartMaps = (base, comparison) => [
@@ -80,6 +81,7 @@ const toggleHighlight = (payload) => {
       :size='chartSize'
       :highlighted-bodies='activeHighlight.bodies'
       :highlighted-aspect-key='activeHighlight.aspectKey'
+      :aspect-options='aspectOptions'
       @highlight='setHighlight'
       @clear-highlight='clearHighlight'
       @toggle-highlight='toggleHighlight'

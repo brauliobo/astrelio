@@ -55,6 +55,7 @@ test.describe('Chart regressions', () => {
     await seedSession(page, BRAULIO_LEGACY_TZ.id)
 
     await page.goto('/#/natal')
+    await page.getByTestId('chart-mode-aspects').click()
     await expect(page.getByTestId('aspect-lines')).toBeVisible()
 
     const reachesGlyph = await page.evaluate(() => {

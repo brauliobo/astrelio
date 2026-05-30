@@ -13,13 +13,14 @@ const ticks = computed(() =>
     const isFive = degree % 5 === 0
     const longitude = norm360(degree + props.wheelShift)
     const outer = polarPoint(WHEEL_RADII.zodiacInner - 1, longitude)
-    const inner = polarPoint(WHEEL_RADII.zodiacInner - (isSign ? 9 : isDecan ? 7 : isFive ? 5 : 3), longitude)
+    const inner = polarPoint(WHEEL_RADII.zodiacInner - (isSign ? 11 : isDecan ? 7 : isFive ? 5 : 2.6), longitude)
     return {
       degree,
       outer,
       inner,
-      width: isSign ? 1.05 : isDecan ? 0.8 : 0.45,
-      opacity: isSign ? 0.85 : isDecan ? 0.62 : 0.38,
+      stroke: isSign ? '#0f172a' : '#334155',
+      width: isSign ? 1.35 : isDecan ? 0.8 : isFive ? 0.55 : 0.35,
+      opacity: isSign ? 0.9 : isDecan ? 0.5 : isFive ? 0.34 : 0.18,
     }
   })
 )
@@ -34,7 +35,7 @@ g(data-testid='tick-ring')
     :y1='tick.inner.y'
     :x2='tick.outer.x'
     :y2='tick.outer.y'
-    stroke='#111827'
+    :stroke='tick.stroke'
     :stroke-width='tick.width'
     :stroke-opacity='tick.opacity'
     stroke-linecap='round'
