@@ -35,7 +35,7 @@ export const PLANET_SYMBOLS = {
   Saturn: '♄',
   Uranus: '♅',
   Neptune: '♆',
-  Pluto: '♇',
+  Pluto: '⯓',
   NorthNode: '☊',
   SouthNode: '☋',
   Lilith: '⚸',
