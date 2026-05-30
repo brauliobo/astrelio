@@ -1,6 +1,12 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import {
+  humanDesignChannelLabel,
+  humanDesignGateLabel,
+  humanDesignListLabel,
+  humanDesignValueLabel,
+} from '../../lib/human-design/labels.js'
 
 const props = defineProps({
   chart: { type: Object, required: true },
@@ -11,7 +17,7 @@ const { t } = useI18n()
 const groups = computed(() => {
   const map = new Map()
   for (const channel of props.chart.details?.channels || []) {
-    const key = channel.circuitGroup || channel.circuit || 'Open'
+    const key = channel.circuitGroup || channel.circuit || t('human_design.open_state')
     const item = map.get(key) || { key, channels: [] }
     item.channels.push(channel)
     map.set(key, item)
@@ -22,6 +28,8 @@ const groups = computed(() => {
 const hangingGates = computed(() =>
   (props.chart.details?.gates || []).filter(gate => gate.isHanging)
 )
+const groupLabel = group =>
+  humanDesignValueLabel(t, 'circuitGroup', group.key) || humanDesignValueLabel(t, 'circuit', group.key) || group.key
 </script>
 
 <template lang="pug">
@@ -41,7 +49,7 @@ const hangingGates = computed(() =>
           class='border-white/10 bg-black/10'
         )
           .flex.items-center.justify-between.gap-2
-            h4.text-sm.font-semibold.text-slate-100 {{ group.key }}
+            h4.text-sm.font-semibold.text-slate-100 {{ groupLabel(group) }}
             span.text-xs.text-slate-500 {{ group.channels.length }}
           .mt-3.grid.gap-2
             .rounded.p-2.text-xs(
@@ -49,8 +57,8 @@ const hangingGates = computed(() =>
               :key='channel.channel'
               class='bg-white/5'
             )
-              .font-semibold.text-slate-100 {{ channel.channel }} · {{ channel.name }}
-              .mt-1.text-slate-400 {{ channel.circuit }} · {{ channel.centers?.join(' / ') || '—' }}
+              .font-semibold.text-slate-100 {{ channel.channel }} · {{ humanDesignChannelLabel(t, channel.channel, channel.name) }}
+              .mt-1.text-slate-400 {{ humanDesignValueLabel(t, 'circuit', channel.circuit) }} · {{ humanDesignListLabel(t, 'center', channel.centers) || '—' }}
               .mt-1.flex.flex-wrap.gap-1
                 span.rounded-full(
                   v-if='channel.isLove'
@@ -71,8 +79,8 @@ const hangingGates = computed(() =>
           class='border-sky-300/20 bg-sky-300/10'
         )
           .flex.items-center.justify-between.gap-2
-            .text-sm.font-semibold.text-slate-100 {{ gate.gate }} · {{ gate.name }}
-            .text-xs.text-sky-100 {{ gate.center }}
+            .text-sm.font-semibold.text-slate-100 {{ gate.gate }} · {{ humanDesignGateLabel(t, gate.gate, gate.name) }}
+            .text-xs.text-sky-100 {{ humanDesignValueLabel(t, 'center', gate.center) }}
           .mt-1.text-xs.text-slate-400 {{ t('human_design.harmonics') }}: {{ gate.hangingHarmonics?.join(', ') || '—' }}
       p.text-xs.text-slate-500(v-else) {{ t('human_design.no_hanging_gates') }}
 </template>

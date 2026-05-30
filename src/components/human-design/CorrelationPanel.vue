@@ -2,6 +2,12 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { activationCode } from '../../lib/human-design/activations.js'
+import {
+  humanDesignCrossTitleLabel,
+  humanDesignListLabel,
+  humanDesignStreamLabel,
+  humanDesignValueLabel,
+} from '../../lib/human-design/labels.js'
 
 const props = defineProps({
   chart: { type: Object, required: true },
@@ -10,6 +16,16 @@ const props = defineProps({
 })
 
 const { t } = useI18n()
+const variableLabel = variable => {
+  const key = `human_design.variable_labels.${variable.id}.label`
+  const translated = t(key)
+  return translated === key ? variable.label : translated
+}
+const orientationLabel = orientation => {
+  const key = `human_design.orientations.${orientation || 'unknown'}`
+  const translated = t(key)
+  return translated === key ? orientation || '-' : translated
+}
 
 const planetWeights = {
   Sun: 6,
@@ -138,9 +154,9 @@ const circuitItems = computed(() => {
   return [...groups.values()]
     .sort((left, right) => right.channels.length - left.channels.length || left.key.localeCompare(right.key))
     .map(group => t('human_design.correlations.circuit_item', {
-      circuit: group.key,
+      circuit: humanDesignValueLabel(t, 'circuitGroup', group.key) || humanDesignValueLabel(t, 'circuit', group.key) || group.key,
       count: group.channels.length,
-      streams: [...new Set(group.streams)].slice(0, 3).join(', ') || '-',
+      streams: [...new Set(group.streams)].slice(0, 3).map(stream => humanDesignStreamLabel(t, stream)).join(', ') || '-',
     }))
 })
 
@@ -155,7 +171,7 @@ const crossItems = computed(() => {
   )
   const transitHits = crossGates.filter(gate => transitGates.has(gate))
   return [
-    props.chart.incarnationCross?.name ? t('human_design.correlations.cross_name_item', { name: props.chart.incarnationCross.name }) : '',
+    props.chart.incarnationCross?.name ? t('human_design.correlations.cross_name_item', { name: humanDesignCrossTitleLabel(t, props.chart.incarnationCross) }) : '',
     crossGates.length ? t('human_design.correlations.cross_gate_item', { gates: crossGates.join(', ') }) : '',
     definedChannels.length ? t('human_design.correlations.cross_channel_item', { count: definedChannels.length }) : '',
     transitHits.length ? t('human_design.correlations.cross_transit_item', { gates: transitHits.join(', ') }) : '',
@@ -172,8 +188,8 @@ const variableItems = computed(() => {
   return [
     t('human_design.correlations.variable_orientation_item', { left, right }),
     ...variables.map(variable => t('human_design.correlations.variable_item', {
-      label: variable.label,
-      orientation: variable.orientation || '-',
+      label: variableLabel(variable),
+      orientation: orientationLabel(variable.orientation),
       color: variable.color || '-',
       tone: variable.tone || '-',
       base: variable.base || '-',
@@ -188,7 +204,7 @@ const relationshipItems = computed(() => {
   const openCenters = centers.value.filter(center => !center.defined).map(center => center.center)
   const hanging = gates.value.filter(gate => gate.isHanging).map(gate => gate.gate)
   return [
-    openCenters.length ? t('human_design.correlations.relationship_open_item', { centers: openCenters.join(', ') }) : '',
+    openCenters.length ? t('human_design.correlations.relationship_open_item', { centers: humanDesignListLabel(t, 'center', openCenters) }) : '',
     hanging.length ? t('human_design.correlations.relationship_hanging_item', { gates: hanging.slice(0, 10).join(', ') }) : '',
     t('human_design.correlations.relationship_note_item'),
   ].filter(Boolean)
@@ -201,12 +217,15 @@ const transitClusterItems = computed(() => {
   const rows = props.transitConnection?.activationWatch || props.transitChart?.details?.activations || []
   const byCenter = new Map()
   for (const row of rows) {
-    const key = row.center || 'Open'
+    const key = row.center || t('human_design.open_state')
     byCenter.set(key, (byCenter.get(key) || 0) + 1)
   }
   return [...byCenter.entries()]
     .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))
-    .map(([center, count]) => t('human_design.correlations.transit_cluster_item', { center, count }))
+    .map(([center, count]) => t('human_design.correlations.transit_cluster_item', {
+      center: humanDesignValueLabel(t, 'center', center) || center,
+      count,
+    }))
 })
 
 const astrologyBridgeItems = computed(() => {
@@ -238,7 +257,7 @@ const diaryItems = computed(() => {
     .sort((left, right) => right[1].length - left[1].length || left[0].localeCompare(right[0]))
     .slice(0, 5)
     .map(([center, centerGates]) => t('human_design.correlations.diary_item', {
-      center,
+      center: humanDesignValueLabel(t, 'center', center) || center,
       gates: centerGates.slice(0, 8).join(', '),
     }))
 })

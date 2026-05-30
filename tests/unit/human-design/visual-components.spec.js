@@ -172,7 +172,7 @@ describe('Human Design visual components', () => {
     const parts = wrapper.findAll('[data-testid="bodygraph-gate-part"][data-gate="28"]')
 
     expect(parts).toHaveLength(2)
-    expect(parts.map(part => part.attributes('fill'))).toEqual(['#dd4f52', '#f8fafc'])
+    expect(parts.map(part => part.attributes('fill'))).toEqual(['var(--hd-design)', 'var(--hd-contrast)'])
     expect(wrapper.find('[data-testid="bodygraph-gate-part"][data-gate="28"]').exists()).toBe(true)
   })
 

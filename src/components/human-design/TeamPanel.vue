@@ -1,5 +1,6 @@
 <script setup>
 import { useI18n } from 'vue-i18n'
+import { humanDesignChannelLabel, humanDesignGateLabel, humanDesignListLabel } from '../../lib/human-design/labels.js'
 
 defineProps({
   analysis: { type: Object, default: null },
@@ -31,7 +32,7 @@ const isSelected = (id, selectedIds) => selectedIds.includes(id)
           :key='item.gate'
           :class='item.covered ? "border-amber-300/30 bg-amber-300/10 text-amber-100" : "border-white/10 bg-white/5 text-slate-400"'
         )
-          .font-semibold {{ item.gate }} · {{ item.name }}
+          .font-semibold {{ item.gate }} · {{ humanDesignGateLabel(t, item.gate, item.name) }}
           .mt-1 {{ item.owners.length ? t('human_design.member_count', { count: item.owners.length }) : t('human_design.open_state') }}
     section
       h3.text-sm.font-semibold.text-slate-100.mb-3 {{ t('human_design.composite_channels') }}
@@ -41,7 +42,7 @@ const isSelected = (id, selectedIds) => selectedIds.includes(id)
           :key='channel.channel'
           class='border-white/10 bg-white/5'
         )
-          .text-slate-100 {{ channel.channel }} · {{ channel.name }}
-          .text-slate-400 {{ channel.centers.join(' / ') }}
+          .text-slate-100 {{ channel.channel }} · {{ humanDesignChannelLabel(t, channel.channel, channel.name) }}
+          .text-slate-400 {{ humanDesignListLabel(t, 'center', channel.centers) }}
         p.text-slate-400(v-if='!analysis.compositeChannels.length') {{ t('human_design.no_team_channels') }}
 </template>

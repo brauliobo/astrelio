@@ -5,7 +5,6 @@ import BodygraphCore from './BodygraphCore.vue'
 import ActivationColumns from './ActivationColumns.vue'
 import WheelPlanets from './WheelPlanets.vue'
 import WheelRings from './WheelRings.vue'
-import VariableArrows from './VariableArrows.vue'
 import { humanDesignPalette } from './visualTheme.js'
 
 const props = defineProps({
@@ -66,7 +65,6 @@ const clearHover = () => { hover.value = null }
             :visual-theme='visualTheme'
             @hover-change='setHover'
           )
-        VariableArrows(:variables='chart.variables || []')
     ActivationColumns(
       :chart='chart'
       side='personality'

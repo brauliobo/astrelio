@@ -18,11 +18,11 @@ test.describe('Human Design', () => {
     await expect(page.getByTestId('bodygraph-chart')).toBeVisible()
     await expect(page.getByTestId('rave-mandala')).toBeVisible()
     await expect(page.getByTestId('human-design-tabs')).toBeVisible()
-    await expect(page.getByTestId('hd-variable-arrows')).toBeVisible()
     await expect(page.getByTestId('hd-variable-summary')).toBeVisible()
     await expect(page.getByTestId('mandala-gate')).toHaveCount(64)
     await expect(page.locator('[data-testid="mandala-gate"][data-active="true"]').first()).toBeVisible()
     await expect(page.getByTestId('human-design-insights')).toBeVisible()
+    await page.getByTestId('hd-tab-activations').click()
     await expect(page.getByTestId('human-design-activation-table')).toBeVisible()
 
     await page.getByTestId('hd-tab-transits').click()

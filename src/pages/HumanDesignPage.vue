@@ -6,7 +6,7 @@ import { useSessionStore } from '../stores/session.js'
 import { useSettingsStore } from '../stores/settings.js'
 import { modalityChart } from '../lib/modalities/index.js'
 import { buildHumanDesignTransitChart, humanDesignTeamAnalysis, humanDesignTransitConnection } from '../lib/human-design/bodygraph.js'
-import { humanDesignValueLabel } from '../lib/human-design/labels.js'
+import { humanDesignCrossTitleLabel, humanDesignValueLabel } from '../lib/human-design/labels.js'
 import ActivationTable from '../components/human-design/ActivationTable.vue'
 import CircuitStreamPanel from '../components/human-design/CircuitStreamPanel.vue'
 import CorrelationPanel from '../components/human-design/CorrelationPanel.vue'
@@ -40,29 +40,9 @@ const strategyKeys = {
   'Wait for recognition and invitation': 'wait_for_invitation',
   'Wait through the lunar cycle': 'wait_lunar_cycle',
 }
-const crossGeometryKeys = {
-  'Right Angle': 'right_angle',
-  Juxtaposition: 'juxtaposition',
-  'Left Angle': 'left_angle',
-}
-const crossNameKeys = {
-  Revolution: 'revolution',
-}
 const translatedStrategy = strategy => {
   const key = strategyKeys[strategy]
   return key ? t(`human_design.strategies.${key}`) : strategy
-}
-const translatedCrossName = cross => {
-  if (!cross?.name) return '—'
-  const geometryKey = crossGeometryKeys[cross.geometry]
-  if (!geometryKey) return cross.name
-  const rawName = cross.name.replace(`${cross.geometry} Cross of `, '')
-  const nameKey = crossNameKeys[rawName]
-  const translatedName = nameKey ? t(`human_design.cross_names.${nameKey}`) : rawName
-  return t('human_design.cross_name_format', {
-    geometry: t(`human_design.cross_geometries.${geometryKey}`),
-    name: translatedName,
-  })
 }
 const summaryRows = computed(() => chart.value ? [
   { label: t('human_design.type'), value: humanDesignValueLabel(t, 'type', chart.value.type), testId: 'hd-type' },
@@ -70,7 +50,7 @@ const summaryRows = computed(() => chart.value ? [
   { label: t('human_design.profile'), value: chart.value.profile, testId: 'hd-profile' },
   { label: t('human_design.definition'), value: humanDesignValueLabel(t, 'definition', chart.value.definition), testId: 'hd-definition' },
   { label: t('human_design.strategy'), value: translatedStrategy(chart.value.strategy), testId: 'hd-strategy' },
-  { label: t('human_design.incarnation_cross'), value: translatedCrossName(chart.value.incarnationCross), testId: 'hd-cross' },
+  { label: t('human_design.incarnation_cross'), value: humanDesignCrossTitleLabel(t, chart.value.incarnationCross), testId: 'hd-cross' },
 ] : [])
 
 const tabs = computed(() => [

@@ -39,7 +39,7 @@ const gateSegments = computed(() =>
       personality,
       design,
       fill: active ? (personality && design ? wheelColors.value.gateBoth : design ? wheelColors.value.gateDesign : wheelColors.value.gatePersonality) : 'transparent',
-      hoverFill: design ? 'rgba(239,85,87,0.95)' : wheelColors.value.gateHover,
+      hoverFill: design ? wheelColors.value.gateDesignHover : wheelColors.value.gateHover,
       hoverStroke: palette.value.highlight,
       sectorStroke: wheelColors.value.sectorStroke,
       text: active ? wheelColors.value.activeText : wheelColors.value.inactiveText,

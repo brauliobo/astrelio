@@ -1,5 +1,14 @@
 <script setup>
 import { useI18n } from 'vue-i18n'
+import {
+  humanDesignCenterThemeLabel,
+  humanDesignChannelLabel,
+  humanDesignGateLabel,
+  humanDesignLineRoleLabel,
+  humanDesignListLabel,
+  humanDesignStreamLabel,
+  humanDesignValueLabel,
+} from '../../lib/human-design/labels.js'
 
 defineProps({
   chart: { type: Object, required: true },
@@ -21,10 +30,10 @@ const { t } = useI18n()
           th.py-2.pl-3.text-left {{ t('human_design.theme') }}
       tbody.divide-y(class='divide-white/10')
         tr(v-for='center in chart.details.centers' :key='center.center')
-          td.py-2.pr-3.text-slate-100 {{ center.center }}
+          td.py-2.pr-3.text-slate-100 {{ humanDesignValueLabel(t, 'center', center.center) }}
           td.py-2.px-3(:class='center.defined ? "text-amber-200" : "text-slate-400"') {{ center.defined ? t('human_design.defined') : t('human_design.open_state') }}
           td.py-2.px-3.text-slate-300 {{ center.activeGates.join(', ') || '—' }}
-          td.py-2.pl-3.text-slate-400 {{ center.theme }}
+          td.py-2.pl-3.text-slate-400 {{ humanDesignCenterThemeLabel(t, center.theme) }}
 
   .overflow-x-auto(v-else-if='mode === "channels"')
     table.w-full.text-sm
@@ -37,11 +46,11 @@ const { t } = useI18n()
           th.py-2.pl-3.text-left {{ t('human_design.source') }}
       tbody.divide-y(class='divide-white/10')
         tr(v-for='channel in chart.details.channels' :key='channel.channel')
-          td.py-2.pr-3.text-slate-100 {{ channel.channel }} · {{ channel.name }}
-          td.py-2.px-3.text-slate-300 {{ channel.centers.join(' / ') }}
-          td.py-2.px-3.text-slate-300 {{ channel.circuit }}
-          td.py-2.px-3.text-slate-300 {{ channel.stream || '—' }}
-          td.py-2.pl-3.text-slate-400 {{ channel.source }}
+          td.py-2.pr-3.text-slate-100 {{ channel.channel }} · {{ humanDesignChannelLabel(t, channel.channel, channel.name) }}
+          td.py-2.px-3.text-slate-300 {{ humanDesignListLabel(t, 'center', channel.centers) }}
+          td.py-2.px-3.text-slate-300 {{ humanDesignValueLabel(t, 'circuit', channel.circuit) }}
+          td.py-2.px-3.text-slate-300 {{ humanDesignStreamLabel(t, channel.stream) }}
+          td.py-2.pl-3.text-slate-400 {{ humanDesignValueLabel(t, 'layer', channel.source) }}
         tr(v-if='!chart.details.channels.length')
           td.py-3.text-slate-400(colspan='5') {{ t('human_design.no_defined_channels') }}
 
@@ -56,12 +65,12 @@ const { t } = useI18n()
           th.py-2.pl-3.text-left {{ t('human_design.activations') }}
       tbody.divide-y(class='divide-white/10')
         tr(v-for='gate in chart.details.gates' :key='gate.gate')
-          td.py-2.pr-3.text-slate-100 {{ gate.gate }} · {{ gate.name }}
-          td.py-2.px-3.text-slate-300 {{ gate.center }}
+          td.py-2.pr-3.text-slate-100 {{ gate.gate }} · {{ humanDesignGateLabel(t, gate.gate, gate.name) }}
+          td.py-2.px-3.text-slate-300 {{ humanDesignValueLabel(t, 'center', gate.center) }}
           td.py-2.px-3.text-slate-300 {{ gate.harmonicGates.join(', ') || '—' }}
-          td.py-2.px-3.text-slate-300 {{ gate.lines.map(line => `${line.line}: ${line.role}`).join(', ') || '—' }}
+          td.py-2.px-3.text-slate-300 {{ gate.lines.map(line => `${line.line}: ${humanDesignLineRoleLabel(t, line.role)}`).join(', ') || '—' }}
           td.py-2.pl-3.text-slate-400
             span(v-for='activation in gate.activations' :key='`${gate.gate}-${activation.layer}-${activation.planet}`')
-              | {{ activation.layer }} {{ activation.planet }} {{ activation.code }} · {{ activation.planetMeaning }}
+              | {{ humanDesignValueLabel(t, 'layer', activation.layer) }} {{ activation.planet }} {{ activation.code }} · {{ t('human_design.planet_activation_summary', { planet: activation.planet, layer: humanDesignValueLabel(t, 'layer', activation.layer), gate: gate.gate }) }}
               br
 </template>

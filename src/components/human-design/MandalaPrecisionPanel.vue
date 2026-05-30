@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { activationCode } from '../../lib/human-design/activations.js'
+import { humanDesignValueLabel } from '../../lib/human-design/labels.js'
 
 const props = defineProps({
   chart: { type: Object, required: true },
@@ -43,9 +44,9 @@ const rows = computed(() =>
       tbody.divide-y(class='divide-white/10')
         tr(v-for='row in rows' :key='`${row.layer}-${row.planet}`')
           td.py-2.pr-3.text-slate-100 {{ row.planet }}
-          td.py-2.px-3.text-slate-300 {{ row.layer }}
+          td.py-2.px-3.text-slate-300 {{ humanDesignValueLabel(t, 'layer', row.layer) }}
           td.py-2.px-3.text-amber-200 {{ row.code }}
-          td.py-2.px-3.text-slate-400 {{ row.center || '—' }}
+          td.py-2.px-3.text-slate-400 {{ humanDesignValueLabel(t, 'center', row.center) || '—' }}
           td.py-2.px-3.text-slate-300 {{ row.longitudeLabel }}
           td.py-2.pl-3.text-slate-300 {{ row.progressLabel }}
         tr(v-if='!rows.length')

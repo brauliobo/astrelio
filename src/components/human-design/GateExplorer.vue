@@ -2,6 +2,13 @@
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { activationCode } from '../../lib/human-design/activations.js'
+import {
+  humanDesignLineKeynoteLabel,
+  humanDesignLineRoleLabel,
+  humanDesignStreamLabel,
+  humanDesignValueLabel,
+  humanDesignGateLabel,
+} from '../../lib/human-design/labels.js'
 
 const props = defineProps({
   chart: { type: Object, required: true },
@@ -57,6 +64,15 @@ const harmonicsLabel = computed(() => {
   }
   return activeGate.value.hangingHarmonics?.join(', ') || activeGate.value.harmonicGates?.join(', ') || '—'
 })
+const streamsLabel = computed(() =>
+  (activeGate.value?.library?.streams || []).map(stream => humanDesignStreamLabel(t, stream)).join(', ') || '—'
+)
+const activationLineSummary = activation =>
+  t('human_design.line_activation_summary', {
+    line: activation.lineDetail?.line || activation.line || '-',
+    role: humanDesignLineRoleLabel(t, activation.lineDetail?.role),
+    keynote: humanDesignLineKeynoteLabel(t, activation.lineDetail?.keynote),
+  })
 
 watch(gates, value => {
   if (!selectedGate.value && value.length) selectedGate.value = value[0].gate
@@ -87,18 +103,18 @@ watch(gates, value => {
         @click='selectedGate = gate.gate'
         :data-testid='`hd-gate-option-${gate.gate}`'
       )
-        .font-semibold {{ gate.gate }} · {{ gate.name }}
-        .opacity-75 {{ gate.center }}
+        .font-semibold {{ gate.gate }} · {{ humanDesignGateLabel(t, gate.gate, gate.name) }}
+        .opacity-75 {{ humanDesignValueLabel(t, 'center', gate.center) }}
       p.text-xs.text-slate-500.p-2(v-if='!filteredGates.length') {{ t('human_design.no_gate_results') }}
 
     article.rounded.border.p-4(class='border-white/10 bg-white/5' v-if='activeGate')
       .flex.flex-wrap.items-start.justify-between.gap-3
         div
-          h4.text-lg.font-semibold.text-slate-100 {{ activeGate.gate }} · {{ activeGate.name }}
-          p.text-sm.text-slate-400.mt-1 {{ activeGate.summary || t('human_design.gate_contact_summary', { center: activeGate.center || t('human_design.center'), count: activeGate.activations?.length || 0 }) }}
+          h4.text-lg.font-semibold.text-slate-100 {{ activeGate.gate }} · {{ humanDesignGateLabel(t, activeGate.gate, activeGate.name) }}
+          p.text-sm.text-slate-400.mt-1 {{ t('human_design.gate_contact_summary', { center: humanDesignValueLabel(t, 'center', activeGate.center) || t('human_design.center'), count: activeGate.activations?.length || 0 }) }}
         .text-xs.text-slate-400.text-right
-          div {{ activeGate.center }}
-          div {{ activeGate.library?.circuitGroups?.join(', ') || activeGate.layers?.join(', ') || 'Open' }}
+          div {{ humanDesignValueLabel(t, 'center', activeGate.center) }}
+          div {{ (activeGate.library?.circuitGroups || []).map(group => humanDesignValueLabel(t, 'circuitGroup', group)).join(', ') || activeGate.layers?.map(layer => humanDesignValueLabel(t, 'layer', layer)).join(', ') || t('human_design.open_state') }}
 
       .grid.gap-3.mt-4(class='md:grid-cols-2')
         .rounded.border.p-3(class='border-white/10 bg-slate-950/20')
@@ -106,7 +122,7 @@ watch(gates, value => {
           .mt-1.text-sm.text-slate-200 {{ harmonicsLabel }}
         .rounded.border.p-3(class='border-white/10 bg-slate-950/20')
           .text-xs.uppercase.text-slate-500 {{ t('human_design.defined_streams') }}
-          .mt-1.text-sm.text-slate-200 {{ activeGate.library?.streams?.join(', ') || '—' }}
+          .mt-1.text-sm.text-slate-200 {{ streamsLabel }}
 
       .overflow-x-auto.mt-4
         table.w-full.text-sm
@@ -118,11 +134,11 @@ watch(gates, value => {
               th.py-2.pl-3.text-left {{ t('human_design.mandala_precision') }}
           tbody.divide-y(class='divide-white/10')
             tr(v-for='activation in activeActivations' :key='`${activation.layer}-${activation.planet}`')
-              td.py-2.pr-3.text-slate-100 {{ activation.layer }} {{ activation.planet }} · {{ activation.code }}
+              td.py-2.pr-3.text-slate-100 {{ humanDesignValueLabel(t, 'layer', activation.layer) }} {{ activation.planet }} · {{ activation.code }}
               td.py-2.px-3.text-slate-300
-                .font-medium.text-slate-200 {{ activation.lineDetail?.role || t('human_design.line_detail') }} · {{ activation.lineDetail?.keynote || activation.line }}
-                .text-xs.text-slate-500 {{ activation.lineDetail?.summary || '—' }}
-              td.py-2.px-3.text-slate-400 {{ activation.planetMeaning }}
+                .font-medium.text-slate-200 {{ humanDesignLineRoleLabel(t, activation.lineDetail?.role, t('human_design.line_detail')) }} · {{ humanDesignLineKeynoteLabel(t, activation.lineDetail?.keynote, activation.line) }}
+                .text-xs.text-slate-500 {{ activationLineSummary(activation) }}
+              td.py-2.px-3.text-slate-400 {{ t('human_design.planet_activation_summary', { planet: activation.planet, layer: humanDesignValueLabel(t, 'layer', activation.layer), gate: activeGate.gate }) }}
               td.py-2.pl-3.text-slate-400
                 template(v-if='activation.mandala')
                   | {{ t('human_design.gate') }} {{ activation.mandala.gateDegrees }}° · {{ t('human_design.line') }} {{ activation.mandala.lineDegrees }}°
@@ -133,5 +149,5 @@ watch(gates, value => {
         .grid.gap-2.mt-3.text-xs.text-slate-400
           p(v-for='line in lineRows' :key='line.line')
             span.text-slate-200 {{ t('human_design.line') }} {{ line.line }}:
-            |  {{ line.exaltationTheme || line.summary }} / {{ line.detrimentTheme || t('human_design.metadata_pending') }}
+            |  {{ t('human_design.line_lens_summary', { line: line.line, role: humanDesignLineRoleLabel(t, line.role), keynote: humanDesignLineKeynoteLabel(t, line.keynote) }) }} / {{ t('human_design.metadata_pending') }}
 </template>

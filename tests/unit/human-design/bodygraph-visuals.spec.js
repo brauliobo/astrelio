@@ -40,6 +40,10 @@ const definedGateParts = (wrapper, gate) =>
   definedPaths(wrapper).filter(path => Number(path.attributes('data-gate')) === gate)
 const definedGates = wrapper =>
   definedPaths(wrapper).map(path => Number(path.attributes('data-gate'))).sort((a, b) => a - b)
+const hdDesign = 'var(--hd-design)'
+const hdPersonality = 'var(--hd-contrast)'
+const hdLightPersonality = 'var(--hd-contrast)'
+const hdInactiveChannel = 'var(--hd-channel-inactive)'
 
 describe('Human Design bodygraph visual painting', () => {
   it('keeps the flat cone figure behind channels and centers', () => {
@@ -82,8 +86,8 @@ describe('Human Design bodygraph visual painting', () => {
       personalityGates: [15],
     }))
 
-    expect(definedGatePath(wrapper, 5).attributes('fill')).toBe('#dd4f52')
-    expect(definedGatePath(wrapper, 15).attributes('fill')).toBe('#f8fafc')
+    expect(definedGatePath(wrapper, 5).attributes('fill')).toBe(hdDesign)
+    expect(definedGatePath(wrapper, 15).attributes('fill')).toBe(hdPersonality)
     expect(definedPaths(wrapper)).toHaveLength(2)
     expect(basePaths(wrapper).filter(path => path.attributes('data-defined') === 'true')).toHaveLength(0)
     expect(basePaths(wrapper)).toHaveLength(Object.keys(CHANNEL_CENTERS).length - 1)
@@ -97,11 +101,11 @@ describe('Human Design bodygraph visual painting', () => {
     }))
 
     expect(definedGates(wrapper)).toEqual([5, 14, 21, 30, 39, 41, 55])
-    expect(definedGatePath(wrapper, 5).attributes('fill')).toBe('#dd4f52')
-    expect(definedGatePath(wrapper, 14).attributes('fill')).toBe('#dd4f52')
-    expect(definedGatePath(wrapper, 21).attributes('fill')).toBe('#f8fafc')
-    expect(definedGatePath(wrapper, 39).attributes('fill')).toBe('#f8fafc')
-    expect(definedGatePath(wrapper, 41).attributes('fill')).toBe('#f8fafc')
+    expect(definedGatePath(wrapper, 5).attributes('fill')).toBe(hdDesign)
+    expect(definedGatePath(wrapper, 14).attributes('fill')).toBe(hdDesign)
+    expect(definedGatePath(wrapper, 21).attributes('fill')).toBe(hdPersonality)
+    expect(definedGatePath(wrapper, 39).attributes('fill')).toBe(hdPersonality)
+    expect(definedGatePath(wrapper, 41).attributes('fill')).toBe(hdPersonality)
     expect(basePaths(wrapper).filter(path => path.attributes('data-defined') === 'true')).toHaveLength(0)
   })
 
@@ -111,8 +115,8 @@ describe('Human Design bodygraph visual painting', () => {
       designGates: [2, 14],
     }))
 
-    expect(definedGatePath(wrapper, 2).attributes('fill')).toBe('#dd4f52')
-    expect(definedGatePath(wrapper, 14).attributes('fill')).toBe('#dd4f52')
+    expect(definedGatePath(wrapper, 2).attributes('fill')).toBe(hdDesign)
+    expect(definedGatePath(wrapper, 14).attributes('fill')).toBe(hdDesign)
     expect(definedGates(wrapper)).toEqual([2, 14])
   })
 
@@ -123,8 +127,8 @@ describe('Human Design bodygraph visual painting', () => {
       personalityGates: [21],
     }))
 
-    expect(definedGatePath(wrapper, 21).attributes('fill')).toBe('#f8fafc')
-    expect(definedGatePath(wrapper, 45).attributes('fill')).toBe('#dd4f52')
+    expect(definedGatePath(wrapper, 21).attributes('fill')).toBe(hdPersonality)
+    expect(definedGatePath(wrapper, 45).attributes('fill')).toBe(hdDesign)
     expect(definedGates(wrapper)).toEqual([21, 45])
   })
 
@@ -136,10 +140,10 @@ describe('Human Design bodygraph visual painting', () => {
     }))
 
     const gate10 = definedGatePath(wrapper, 10)
-    expect(gate10.attributes('fill')).toBe('#dd4f52')
-    expect(definedGateParts(wrapper, 10).map(path => path.attributes('fill'))).toEqual(['#dd4f52', '#f8fafc'])
-    expect(definedGatePath(wrapper, 34).attributes('fill')).toBe('#dd4f52')
-    expect(basePaths(wrapper).filter(path => path.attributes('fill') === '#111111')).toHaveLength(0)
+    expect(gate10.attributes('fill')).toBe(hdDesign)
+    expect(definedGateParts(wrapper, 10).map(path => path.attributes('fill'))).toEqual([hdDesign, hdPersonality])
+    expect(definedGatePath(wrapper, 34).attributes('fill')).toBe(hdDesign)
+    expect(basePaths(wrapper).filter(path => path.attributes('fill') === hdLightPersonality)).toHaveLength(0)
   })
 
   it('uses black contrast for both activations in light theme', () => {
@@ -150,9 +154,9 @@ describe('Human Design bodygraph visual painting', () => {
     }), { visualTheme: 'light' })
 
     const gate28 = definedGatePath(wrapper, 28)
-    expect(gate28.attributes('stroke')).toBe('#dd4f52')
-    expect(definedGateParts(wrapper, 28).map(path => path.attributes('stroke'))).toEqual(['#dd4f52', '#111111'])
-    expect(definedGatePath(wrapper, 38).attributes('fill')).toBe('#dd4f52')
+    expect(gate28.attributes('stroke')).toBe(hdDesign)
+    expect(definedGateParts(wrapper, 28).map(path => path.attributes('stroke'))).toEqual([hdDesign, hdLightPersonality])
+    expect(definedGatePath(wrapper, 38).attributes('fill')).toBe(hdDesign)
   })
 
   it('paints gate 28 both activations as two full parallel lanes', () => {
@@ -164,7 +168,7 @@ describe('Human Design bodygraph visual painting', () => {
     const paths = definedGateParts(wrapper, 28)
 
     expect(paths).toHaveLength(2)
-    expect(paths.map(path => path.attributes('stroke'))).toEqual(['#dd4f52', '#f8fafc'])
+    expect(paths.map(path => path.attributes('stroke'))).toEqual([hdDesign, hdPersonality])
     expect(paths.map(path => path.attributes('data-part'))).toEqual(['design', 'personality'])
     expect(paths.map(path => path.attributes('d'))).toEqual([gateLaneStrokeCurve[28], gateLaneStrokeCurve[28]])
     expect(paths.map(path => path.attributes('data-axis'))).toEqual(['x', 'x'])
@@ -183,7 +187,7 @@ describe('Human Design bodygraph visual painting', () => {
       personalityGates: [],
     }))
 
-    expect(basePaths(wrapper).every(path => path.attributes('fill') === '#303039')).toBe(true)
+    expect(basePaths(wrapper).every(path => path.attributes('fill') === hdInactiveChannel)).toBe(true)
     expect(basePaths(wrapper).every(path => path.attributes('fill-opacity') === '1')).toBe(true)
   })
 
@@ -212,8 +216,8 @@ describe('Human Design bodygraph visual painting', () => {
       personalityGates: [39],
     }))
 
-    expect(definedGatePath(wrapper, 55).attributes('fill')).toBe('#dd4f52')
-    expect(definedGatePath(wrapper, 39).attributes('fill')).toBe('#f8fafc')
+    expect(definedGatePath(wrapper, 55).attributes('fill')).toBe(hdDesign)
+    expect(definedGatePath(wrapper, 39).attributes('fill')).toBe(hdPersonality)
     expect(definedGates(wrapper)).toEqual([39, 55])
   })
 
@@ -224,8 +228,8 @@ describe('Human Design bodygraph visual painting', () => {
       personalityGates: [41],
     }))
 
-    expect(definedGatePath(wrapper, 30).attributes('fill')).toBe('#dd4f52')
-    expect(definedGatePath(wrapper, 41).attributes('fill')).toBe('#f8fafc')
+    expect(definedGatePath(wrapper, 30).attributes('fill')).toBe(hdDesign)
+    expect(definedGatePath(wrapper, 41).attributes('fill')).toBe(hdPersonality)
     expect(definedGates(wrapper)).toEqual([30, 41])
   })
 })
