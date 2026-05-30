@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { comparisonAspectInterpretations } from '../../lib/astro/interpretations.js'
 
 const props = defineProps({
   aspects: { type: Array, default: () => [] },
@@ -14,9 +15,9 @@ const props = defineProps({
 
 const { t } = useI18n()
 
-const rankedAspects = computed(() => [...props.aspects]
-  .sort((a, b) => (b.strength || 0) - (a.strength || 0) || a.delta - b.delta)
-  .slice(0, props.limit))
+const interpretedAspects = computed(() =>
+  comparisonAspectInterpretations(props.aspects, props.mode, { limit: props.limit })
+)
 
 const dominantAspect = computed(() => {
   const scores = new Map()
@@ -31,22 +32,49 @@ const dominantAspect = computed(() => {
 
 const applyingCount = computed(() => props.aspects.filter(aspect => aspect.applying).length)
 
-const rows = computed(() => rankedAspects.value.map((aspect, index) => ({
-  key: `${aspect.a}-${aspect.b}-${aspect.type}-${index}`,
-  eyebrow: t('comparison_insights.theme_n', { n: index + 1 }),
-  title: t(`comparison_insights.themes.${props.mode}.${aspect.type}`, {
-    a: t(`planets.${aspect.a}`),
-    b: t(`planets.${aspect.b}`),
-  }),
-  detail: t(`comparison_insights.details.${aspect.type}`),
-  meta: t('comparison_insights.aspect_meta', {
-    a: t(`planets.${aspect.a}`),
-    aspect: t(`aspects.${aspect.type}`),
-    b: t(`planets.${aspect.b}`),
-    orb: aspect.delta.toFixed(2),
-    motion: aspect.applying ? t('aspects.applying') : t('aspects.separating'),
-  }),
-})))
+const localizedPlanetList = planets =>
+  planets.map(planet => t(`planets.${planet}`)).join(', ')
+
+const rows = computed(() => interpretedAspects.value.map((item, index) => {
+  if (item.kind === 'group') {
+    return {
+      key: item.key,
+      kind: item.kind,
+      eyebrow: t('comparison_insights.background'),
+      title: t(item.titleKey),
+      detail: t(item.textKey),
+      meta: t(item.metaKey, {
+        count: item.count,
+        planets: localizedPlanetList(item.planets),
+        orb: item.aspect.delta.toFixed(2),
+      }),
+    }
+  }
+
+  const aspect = item.aspect
+
+  return {
+    key: item.key,
+    kind: item.kind,
+    eyebrow: t('comparison_insights.theme_n', { n: index + 1 }),
+    title: t(`comparison_insights.themes.${props.mode}.${aspect.type}`, {
+      a: t(`planets.${aspect.a}`),
+      b: t(`planets.${aspect.b}`),
+    }),
+    detail: t(item.textKey, {
+      primary: t(`planets.${item.primaryPlanet}`),
+      secondary: t(`planets.${item.secondaryPlanet}`),
+      tone: t(item.toneKey),
+    }),
+    meta: t('comparison_insights.aspect_meta', {
+      a: t(`planets.${aspect.a}`),
+      aspect: t(`aspects.${aspect.type}`),
+      b: t(`planets.${aspect.b}`),
+      orb: aspect.delta.toFixed(2),
+      motion: aspect.applying ? t('aspects.applying') : t('aspects.separating'),
+    }),
+  }
+}))
 </script>
 
 <template lang="pug">
@@ -71,6 +99,7 @@ const rows = computed(() => rankedAspects.value.map((aspect, index) => ({
     section.min-w-0(
       v-for='row in rows'
       :key='row.key'
+      :data-insight-kind='row.kind'
       data-testid='comparison-insight-row'
       class='md:pr-4 last:pr-0'
     )

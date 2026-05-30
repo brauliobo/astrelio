@@ -3,7 +3,7 @@ import { REF_PERSON, seedPeople, seedSession, seedSettings } from './support/fix
 
 test.describe('Progressions', () => {
   test.beforeEach(async ({ page }) => {
-    await seedSettings(page)
+    await seedSettings(page, 'en')
     await seedPeople(page, [REF_PERSON])
     await seedSession(page, REF_PERSON.id)
   })
@@ -13,6 +13,13 @@ test.describe('Progressions', () => {
     await expect(page.getByTestId('progressions-page')).toBeVisible()
     await expect(page.getByTestId('comparison-insight-panel')).toBeVisible()
     await expect(page.getByTestId('comparison-insight-row')).toHaveCount(3)
+    const backgroundRow = page.locator('[data-testid="comparison-insight-row"][data-insight-kind="group"]')
+    await expect(backgroundRow).toHaveCount(1)
+    await expect(backgroundRow).toContainText('Background')
+    await expect(backgroundRow).toContainText('Slow-planet background')
+    await expect(page.getByTestId('comparison-insight-panel')).not.toContainText(/Progressed Uranus .* natal Uranus/i)
+    await expect(page.getByTestId('comparison-insight-panel')).not.toContainText(/Progressed Neptune .* natal Neptune/i)
+    await expect(page.getByTestId('comparison-insight-panel')).not.toContainText(/Progressed Pluto .* natal Pluto/i)
     await expect(page.getByTestId('chart-comparison')).toBeVisible()
     await expect(page.getByTestId('comparison-chart-panel')).toBeVisible()
     await expect(page.getByTestId('chart-wheel')).toHaveCount(1)
