@@ -1,82 +1,97 @@
-const typeText = {
-  Generator: 'Consistent sacral energy is central; satisfaction grows through clear response.',
-  'Manifesting Generator': 'Sacral response and fast movement combine; clarity improves when action follows response.',
-  Manifestor: 'Initiating energy is central; informing others reduces resistance around independent action.',
-  Projector: 'Focused guidance is central; recognition and timing shape where energy lands well.',
-  Reflector: 'Openness is central; time and environment reveal what is reliable.',
-}
+import { humanDesignListLabel, humanDesignValueKey, humanDesignValueLabel } from './labels.js'
 
-const authorityText = {
-  Emotional: 'Emotional authority favors waiting for the wave to settle before deciding.',
-  Sacral: 'Sacral authority favors body-level yes/no response in the moment.',
-  Splenic: 'Splenic authority favors quiet, immediate instinct.',
-  'Ego Projected': 'Ego authority tracks promises, will, and what can honestly be sustained.',
-  'Self Projected': 'Self-projected authority clarifies through speaking from identity and direction.',
-  'Sounding Board': 'Mental authority clarifies through trusted environments and reflection.',
-  Lunar: 'Lunar authority needs time and repeated conditions before clarity forms.',
-}
+const fallbackT = (key, params = {}) =>
+  Object.entries(params).reduce((text, [name, value]) => text.replace(`{${name}}`, value), key)
 
-export const humanDesignInterpretationSections = (chart) => {
+const insightText = (t, path, params = {}) => t(`human_design.insight_text.${path}`, params)
+
+export const humanDesignInterpretationSections = (chart, t = fallbackT) => {
   if (!chart) return []
+
+  const typeKey = humanDesignValueKey('type', chart.type)
+  const authorityKey = humanDesignValueKey('authority', chart.authority)
+  const circuitTitle = chart.circuits.length
+    ? humanDesignListLabel(t, 'circuit', chart.circuits)
+    : t('human_design.open_circuitry')
 
   return [
     {
       key: 'essentials',
-      title: 'Essentials',
+      title: t('human_design.insight_sections.essentials'),
       items: [
-        { key: 'type', title: chart.type, text: typeText[chart.type] || 'This type describes how energy meets the world.' },
-        { key: 'authority', title: `${chart.authority} authority`, text: authorityText[chart.authority] || 'Authority describes the decision signal to privilege.' },
-        { key: 'profile', title: `Profile ${chart.profile}`, text: 'Profile blends conscious and design lines into a recurring life role.' },
+        {
+          key: 'type',
+          title: humanDesignValueLabel(t, 'type', chart.type),
+          text: insightText(t, `types.${typeKey || 'fallback'}`),
+        },
+        {
+          key: 'authority',
+          title: t('human_design.authority_title', { authority: humanDesignValueLabel(t, 'authority', chart.authority) }),
+          text: insightText(t, `authorities.${authorityKey || 'fallback'}`),
+        },
+        {
+          key: 'profile',
+          title: t('human_design.profile_title', { profile: chart.profile }),
+          text: insightText(t, 'profile'),
+        },
       ],
     },
     {
       key: 'definition',
-      title: 'Definition',
+      title: t('human_design.definition'),
       items: [
-        { key: 'definition', title: chart.definition, text: `${chart.centers.length} centers and ${chart.channels.length} channels are defined.` },
-        { key: 'circuits', title: chart.circuits.join(', ') || 'Open circuitry', text: 'Circuitry shows whether definition tends toward individual, collective, or tribal themes.' },
+        {
+          key: 'definition',
+          title: humanDesignValueLabel(t, 'definition', chart.definition),
+          text: insightText(t, 'definition_count', { centers: chart.centers.length, channels: chart.channels.length }),
+        },
+        {
+          key: 'circuits',
+          title: circuitTitle,
+          text: insightText(t, 'circuits'),
+        },
       ],
     },
     {
       key: 'gates',
-      title: 'Gates',
+      title: t('human_design.insight_sections.gates'),
       items: chart.gates.slice(0, 6).map(gate => ({
         key: `gate-${gate}`,
-        title: `Gate ${gate}`,
+        title: t('human_design.gate_title', { gate }),
         text: chart.personalityGates.includes(gate) && chart.designGates.includes(gate)
-          ? 'Active in both personality and design.'
+          ? insightText(t, 'gate_both')
           : chart.personalityGates.includes(gate)
-            ? 'Conscious/personality activation.'
-            : 'Design/body activation.',
+            ? insightText(t, 'gate_personality')
+            : insightText(t, 'gate_design'),
       })),
     },
   ]
 }
 
-export const humanDesignConnectionInsights = (connection) => {
+export const humanDesignConnectionInsights = (connection, t = fallbackT) => {
   if (!connection) return []
 
   return [
     {
       key: 'electromagnetic',
-      title: 'Electromagnetic pull',
+      title: t('human_design.connection_insights.electromagnetic_title'),
       text: connection.electromagnetic.length
-        ? `${connection.electromagnetic.length} channel potentials are completed between both charts.`
-        : 'No electromagnetic channels are completed by the pair.',
+        ? t('human_design.connection_insights.electromagnetic_text', { count: connection.electromagnetic.length })
+        : t('human_design.connection_insights.electromagnetic_empty'),
     },
     {
       key: 'companionship',
-      title: 'Familiar definition',
+      title: t('human_design.connection_insights.companionship_title'),
       text: connection.companionship.length
-        ? `${connection.companionship.length} channels are shared.`
-        : 'Shared channels are not the main bond pattern here.',
+        ? t('human_design.connection_insights.companionship_text', { count: connection.companionship.length })
+        : t('human_design.connection_insights.companionship_empty'),
     },
     {
       key: 'shared-centers',
-      title: 'Shared centers',
+      title: t('human_design.shared_centers'),
       text: connection.sharedCenters.length
-        ? connection.sharedCenters.join(', ')
-        : 'The charts emphasize different centers.',
+        ? humanDesignListLabel(t, 'center', connection.sharedCenters)
+        : t('human_design.connection_insights.shared_centers_empty'),
     },
   ]
 }

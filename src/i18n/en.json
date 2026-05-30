@@ -97,7 +97,92 @@
     "shared_centers": "Shared centers",
     "electromagnetic": "Electromagnetic",
     "companionship": "Companionship",
-    "compromise": "Compromise"
+    "compromise": "Compromise",
+    "rave_mandala_aria": "Rave mandala",
+    "center_aria": "{center} center",
+    "authority_title": "{authority} authority",
+    "profile_title": "Profile {profile}",
+    "gate_title": "Gate {gate}",
+    "open_circuitry": "Open circuitry",
+    "types": {
+      "generator": "Generator",
+      "manifesting_generator": "Manifesting Generator",
+      "manifestor": "Manifestor",
+      "projector": "Projector",
+      "reflector": "Reflector"
+    },
+    "authorities": {
+      "emotional": "Emotional",
+      "sacral": "Sacral",
+      "splenic": "Splenic",
+      "ego_projected": "Ego Projected",
+      "self_projected": "Self Projected",
+      "sounding_board": "Sounding Board",
+      "lunar": "Lunar"
+    },
+    "definitions": {
+      "none": "No Definition",
+      "single": "Single Definition",
+      "split": "Split Definition",
+      "triple_split": "Triple Split Definition",
+      "quad_split": "Quad Split Definition"
+    },
+    "circuits": {
+      "individual": "Individual",
+      "collective_logic": "Collective Logic",
+      "collective_abstract": "Collective Abstract",
+      "tribal": "Tribal"
+    },
+    "centers": {
+      "head": "Head",
+      "ajna": "Ajna",
+      "throat": "Throat",
+      "g": "G",
+      "ego": "Ego",
+      "solar_plexus": "Solar Plexus",
+      "spleen": "Spleen",
+      "sacral": "Sacral",
+      "root": "Root"
+    },
+    "insight_sections": {
+      "essentials": "Essentials",
+      "gates": "Gates"
+    },
+    "insight_text": {
+      "profile": "Profile blends conscious and design lines into a recurring life role.",
+      "definition_count": "{centers} centers and {channels} channels are defined.",
+      "circuits": "Circuitry shows whether definition tends toward individual, collective, or tribal themes.",
+      "gate_both": "Active in both personality and design.",
+      "gate_personality": "Conscious/personality activation.",
+      "gate_design": "Design/body activation.",
+      "types": {
+        "generator": "Consistent sacral energy is central; satisfaction grows through clear response.",
+        "manifesting_generator": "Sacral response and fast movement combine; clarity improves when action follows response.",
+        "manifestor": "Initiating energy is central; informing others reduces resistance around independent action.",
+        "projector": "Focused guidance is central; recognition and timing shape where energy lands well.",
+        "reflector": "Openness is central; time and environment reveal what is reliable.",
+        "fallback": "This type describes how energy meets the world."
+      },
+      "authorities": {
+        "emotional": "Emotional authority favors waiting for the wave to settle before deciding.",
+        "sacral": "Sacral authority favors body-level yes/no response in the moment.",
+        "splenic": "Splenic authority favors quiet, immediate instinct.",
+        "ego_projected": "Ego authority tracks promises, will, and what can honestly be sustained.",
+        "self_projected": "Self-projected authority clarifies through speaking from identity and direction.",
+        "sounding_board": "Mental authority clarifies through trusted environments and reflection.",
+        "lunar": "Lunar authority needs time and repeated conditions before clarity forms.",
+        "fallback": "Authority describes the decision signal to privilege."
+      }
+    },
+    "connection_insights": {
+      "electromagnetic_title": "Electromagnetic pull",
+      "electromagnetic_text": "{count} channel potentials are completed between both charts.",
+      "electromagnetic_empty": "No electromagnetic channels are completed by the pair.",
+      "companionship_title": "Familiar definition",
+      "companionship_text": "{count} channels are shared.",
+      "companionship_empty": "Shared channels are not the main bond pattern here.",
+      "shared_centers_empty": "The charts emphasize different centers."
+    }
   },
   "form": {
     "name": "Name",

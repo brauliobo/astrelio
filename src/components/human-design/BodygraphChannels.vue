@@ -38,7 +38,7 @@ const gateTone = (gate) => {
   return activationTone({ design, personality, mode: props.visualTheme })
 }
 
-const splitAxisForBounds = bounds => bounds?.height > bounds?.width ? 'y' : 'x'
+const splitAxisForBounds = bounds => bounds?.height > bounds?.width ? 'x' : 'y'
 
 const fullChannelFill = (gates, defined) => {
   if (!defined) return palette.value.inactiveChannel

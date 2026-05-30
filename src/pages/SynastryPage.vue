@@ -5,6 +5,7 @@ import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
 import { useSettingsStore } from '../stores/settings.js'
 import { modalityChart, modalityConnection } from '../lib/modalities/index.js'
+import { humanDesignListLabel } from '../lib/human-design/labels.js'
 import Biwheel from '../components/chart/Biwheel.vue'
 import AspectTable from '../components/chart/AspectTable.vue'
 import ComparisonInsightPanel from '../components/chart/ComparisonInsightPanel.vue'
@@ -26,6 +27,9 @@ const hdChartB = computed(() => modalityChart('humanDesign', personB.value))
 
 const aspects = computed(() => modalityConnection('astrology', chartA.value, chartB.value, settings).aspects)
 const hdConnection = computed(() => modalityConnection('humanDesign', hdChartA.value, hdChartB.value))
+const sharedCenterLabel = computed(() =>
+  hdConnection.value?.sharedCenters?.length ? humanDesignListLabel(t, 'center', hdConnection.value.sharedCenters) : '—'
+)
 
 const compareWith = ref(session.comparePersonId)
 const relationshipModality = ref('astrology')
@@ -81,7 +85,7 @@ section.synastry-page(data-testid='synastry-page')
       .ui-panel.mt-6(v-if='hdConnection' data-testid='human-design-connection-details')
         h2.text-sm.font-semibold.text-slate-100.mb-3 {{ t('human_design.connection') }}
         .grid.gap-3(class='md:grid-cols-2')
-          p.text-xs.text-slate-400 {{ t('human_design.shared_centers') }}: {{ hdConnection.sharedCenters.join(', ') || '—' }}
+          p.text-xs.text-slate-400 {{ t('human_design.shared_centers') }}: {{ sharedCenterLabel }}
           p.text-xs.text-slate-400 {{ t('human_design.electromagnetic') }}: {{ hdConnection.electromagnetic.join(', ') || '—' }}
           p.text-xs.text-slate-400 {{ t('human_design.companionship') }}: {{ hdConnection.companionship.join(', ') || '—' }}
           p.text-xs.text-slate-400 {{ t('human_design.compromise') }}: {{ hdConnection.compromise.map(item => item.channel).join(', ') || '—' }}

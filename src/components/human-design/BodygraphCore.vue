@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import BodygraphCenters from './BodygraphCenters.vue'
 import BodygraphChannels from './BodygraphChannels.vue'
 import BodygraphFigure from './BodygraphFigure.vue'
+import { humanDesignPalette } from './humanDesignVisualTheme.js'
 
 const props = defineProps({
   chart: { type: Object, required: true },
@@ -13,6 +14,7 @@ const props = defineProps({
   openChannelWidth: { type: Number, default: 5 },
   definedChannelWidth: { type: Number, default: 10 },
   gateInactiveFill: { type: String, default: 'rgba(255,255,255,0.58)' },
+  visualTheme: { type: String, default: 'dark' },
   hoverState: { type: Object, default: null },
   noDefinedChannelsLabel: { type: String, default: '' },
 })
@@ -22,6 +24,7 @@ const emit = defineEmits(['hover-change'])
 const hasChannels = computed(() => (props.chart.channels || []).length > 0)
 const internalHover = ref(null)
 const hover = computed(() => props.hoverState || internalHover.value)
+const palette = computed(() => humanDesignPalette(props.visualTheme))
 
 const setHover = (value) => {
   internalHover.value = value
@@ -43,6 +46,7 @@ g
     :open-stroke-width='openChannelWidth'
     :defined-stroke-width='definedChannelWidth'
     :hover='hover'
+    :visual-theme='visualTheme'
     @hover='setChannelHover'
     @leave='clearHover'
   )
@@ -51,6 +55,7 @@ g
     :hover='hover'
     :inactive-fill='gateInactiveFill'
     :show-gates='false'
+    :visual-theme='visualTheme'
     @hover='setHover'
     @leave='clearHover'
   )
@@ -63,6 +68,7 @@ g
     :open-stroke-width='openChannelWidth'
     :defined-stroke-width='definedChannelWidth'
     :hover='hover'
+    :visual-theme='visualTheme'
     @hover='setChannelHover'
     @leave='clearHover'
   )
@@ -71,6 +77,7 @@ g
     :hover='hover'
     :inactive-fill='gateInactiveFill'
     :show-shapes='false'
+    :visual-theme='visualTheme'
     @hover='setHover'
     @leave='clearHover'
   )
@@ -79,7 +86,7 @@ g
     x='260'
     y='822'
     text-anchor='middle'
-    fill='#cbd5e1'
+    :fill='palette.emptyText'
     font-size='13'
   ) {{ noDefinedChannelsLabel }}
 </template>

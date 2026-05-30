@@ -13,6 +13,18 @@ export const humanDesignPalette = (mode = 'dark') => {
     inactiveGate: 'transparent',
     muted: light ? '#6b7280' : '#55555a',
     highlight: light ? '#111111' : '#f8fafc',
+    openCenter: light ? '#ffffff' : '#fbfaf4',
+    openCenterStroke: light ? 'rgba(15,23,42,0.18)' : 'rgba(15,23,42,0.1)',
+    centerStroke: light ? 'rgba(15,23,42,0.16)' : 'rgba(255,255,255,0.22)',
+    figure: light ? '#0f172a' : '#f8fafc',
+    figureOpacity: light ? 0.10 : 0.25,
+    gateInactiveFill: light ? 'rgba(15,23,42,0.52)' : 'rgba(15,23,42,0.42)',
+    emptyText: light ? '#475569' : '#cbd5e1',
+    mandalaBase: light ? 'rgba(255,255,255,0.7)' : 'rgba(15,23,42,0.72)',
+    mandalaCenter: light ? 'rgba(255,255,255,0.82)' : 'rgba(2,6,23,0.72)',
+    mandalaStroke: light ? '#94a3b8' : '#64748b',
+    mandalaText: light ? '#0f172a' : '#e2e8f0',
+    mandalaMuted: light ? '#475569' : '#94a3b8',
   }
 }
 

@@ -1,26 +1,30 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import BodygraphCore from './BodygraphCore.vue'
 import HumanDesignActivationColumns from './HumanDesignActivationColumns.vue'
+import { humanDesignPalette } from './humanDesignVisualTheme.js'
 
-defineProps({
+const props = defineProps({
   chart: { type: Object, required: true },
+  visualTheme: { type: String, default: 'dark' },
 })
 
 const hover = ref(null)
 const { t } = useI18n()
+const palette = computed(() => humanDesignPalette(props.visualTheme))
 const setHover = value => { hover.value = value }
 const clearHover = () => { hover.value = null }
 </script>
 
 <template lang="pug">
-.bodygraph-chart(data-testid='bodygraph-chart')
+.bodygraph-chart(data-testid='bodygraph-chart' :data-theme='visualTheme')
   .bodygraph-dashboard
     HumanDesignActivationColumns(
       :chart='chart'
       side='design'
       :hover='hover'
+      :visual-theme='visualTheme'
       @hover='setHover'
       @leave='clearHover'
     )
@@ -34,12 +38,17 @@ const clearHover = () => { hover.value = null }
         :chart='chart'
         :hover-state='hover'
         :no-defined-channels-label='t("human_design.no_defined_channels")'
+        :figure-fill='palette.figure'
+        :figure-opacity='visualTheme === "light" ? 0.18 : 0.66'
+        :gate-inactive-fill='visualTheme === "light" ? "rgba(15,23,42,0.52)" : "rgba(255,255,255,0.58)"'
+        :visual-theme='visualTheme'
         @hover-change='setHover'
       )
     HumanDesignActivationColumns(
       :chart='chart'
       side='personality'
       :hover='hover'
+      :visual-theme='visualTheme'
       @hover='setHover'
       @leave='clearHover'
     )

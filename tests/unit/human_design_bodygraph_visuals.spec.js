@@ -1,12 +1,22 @@
 import { mount } from '@vue/test-utils'
+import { createI18n } from 'vue-i18n'
 import { describe, expect, it } from 'vitest'
 import BodygraphCore from '../../src/components/human-design/BodygraphCore.vue'
 import BodygraphChannels from '../../src/components/human-design/BodygraphChannels.vue'
 import { CHANNEL_CENTERS } from '../../src/lib/human-design/constants.js'
 import { channelCurve, channelSegments, gateSegmentCurve } from '../../src/components/human-design/bodygraphChannelGeometry.js'
+import en from '../../src/i18n/en.json'
+import ptBR from '../../src/i18n/pt-BR.json'
 
-const chartFor = ({ channels, designGates = [], personalityGates = [] }) => ({
+const i18n = () => createI18n({
+  legacy: false,
+  locale: 'en',
+  messages: { en, 'pt-BR': ptBR },
+})
+
+const chartFor = ({ channels, designGates = [], personalityGates = [], centers = [] }) => ({
   channels,
+  centers,
   designGates,
   personalityGates,
 })
@@ -42,6 +52,7 @@ describe('Human Design bodygraph visual painting', () => {
           designGates: [10, 34],
         }),
       },
+      global: { plugins: [i18n()] },
     })
     const paths = wrapper.findAll('path')
 
@@ -161,10 +172,28 @@ describe('Human Design bodygraph visual painting', () => {
     expect(paths.map(path => path.attributes('data-part'))).toEqual(['design', 'personality'])
     expect(paths.every(path => path.attributes('clip-path')?.startsWith('url(#clip-'))).toBe(true)
     expect(clips).toHaveLength(2)
-    expect(clips.every(clip => clip.attributes('data-axis') === 'y')).toBe(true)
-    expect(rects[0].attributes('x')).toBe(rects[1].attributes('x'))
-    expect(rects[0].attributes('width')).toBe(rects[1].attributes('width'))
-    expect(Number(rects[0].attributes('y'))).toBeLessThan(Number(rects[1].attributes('y')))
+    expect(clips.every(clip => clip.attributes('data-axis') === 'x')).toBe(true)
+    expect(rects[0].attributes('y')).toBe(rects[1].attributes('y'))
+    expect(rects[0].attributes('height')).toBe(rects[1].attributes('height'))
+    expect(Number(rects[0].attributes('x'))).toBeLessThan(Number(rects[1].attributes('x')))
+  })
+
+  it('uses the reference brown Solar Plexus center and muted center number colors', () => {
+    const wrapper = mount(BodygraphCore, {
+      props: {
+        chart: chartFor({
+          channels: ['19-49'],
+          centers: ['Solar Plexus'],
+          designGates: [49, 19],
+        }),
+      },
+      global: { plugins: [i18n()] },
+    })
+    const solarPlexus = wrapper.find('[data-center="Solar Plexus"] path')
+    const solarPlexusLabel = wrapper.find('[data-center-group="Solar Plexus"] [data-gate="36"] text')
+
+    expect(solarPlexus.attributes('fill')).toBe('#5f4339')
+    expect(solarPlexusLabel.attributes('fill')).toBe('rgba(15,23,42,0.58)')
   })
 
   it('paints lower right 55-39 as independent gate-side partials', () => {

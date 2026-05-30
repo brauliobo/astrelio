@@ -60,10 +60,10 @@ export const humanDesignConnection = (chartA, chartB) => {
   ]
 
   const themes = [
-    electromagnetic.length ? 'Complementary gates can create immediate recognition.' : '',
-    companionship.length ? 'Shared channels make parts of the connection feel familiar.' : '',
-    compromise.length ? 'Some defined channels may feel stronger from one side.' : '',
-    dominance.length ? 'Each person also carries independent definition into the bond.' : '',
+    electromagnetic.length ? 'electromagnetic' : '',
+    companionship.length ? 'companionship' : '',
+    compromise.length ? 'compromise' : '',
+    dominance.length ? 'dominance' : '',
   ].filter(Boolean)
 
   return {

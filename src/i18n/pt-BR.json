@@ -97,7 +97,92 @@
     "shared_centers": "Centros compartilhados",
     "electromagnetic": "Eletromagnéticos",
     "companionship": "Companheirismo",
-    "compromise": "Compromisso"
+    "compromise": "Compromisso",
+    "rave_mandala_aria": "Mandala rave",
+    "center_aria": "Centro {center}",
+    "authority_title": "Autoridade {authority}",
+    "profile_title": "Perfil {profile}",
+    "gate_title": "Portão {gate}",
+    "open_circuitry": "Circuitaria aberta",
+    "types": {
+      "generator": "Gerador",
+      "manifesting_generator": "Gerador Manifestante",
+      "manifestor": "Manifestador",
+      "projector": "Projetor",
+      "reflector": "Refletor"
+    },
+    "authorities": {
+      "emotional": "Emocional",
+      "sacral": "Sacral",
+      "splenic": "Esplênica",
+      "ego_projected": "Ego Projetado",
+      "self_projected": "Self Projetado",
+      "sounding_board": "Ambiente",
+      "lunar": "Lunar"
+    },
+    "definitions": {
+      "none": "Sem Definição",
+      "single": "Definição Simples",
+      "split": "Definição Dividida",
+      "triple_split": "Definição Tripla Dividida",
+      "quad_split": "Definição Quádrupla Dividida"
+    },
+    "circuits": {
+      "individual": "Individual",
+      "collective_logic": "Coletivo Lógico",
+      "collective_abstract": "Coletivo Abstrato",
+      "tribal": "Tribal"
+    },
+    "centers": {
+      "head": "Cabeça",
+      "ajna": "Ajna",
+      "throat": "Garganta",
+      "g": "G",
+      "ego": "Ego",
+      "solar_plexus": "Plexo Solar",
+      "spleen": "Baço",
+      "sacral": "Sacral",
+      "root": "Raiz"
+    },
+    "insight_sections": {
+      "essentials": "Essenciais",
+      "gates": "Portões"
+    },
+    "insight_text": {
+      "profile": "O perfil combina linhas conscientes e de design em um papel de vida recorrente.",
+      "definition_count": "{centers} centros e {channels} canais definidos.",
+      "circuits": "A circuitaria mostra se a definição tende a temas individuais, coletivos ou tribais.",
+      "gate_both": "Ativo em personalidade e design.",
+      "gate_personality": "Ativação consciente/de personalidade.",
+      "gate_design": "Ativação de design/corpo.",
+      "types": {
+        "generator": "A energia sacral consistente é central; a satisfação cresce por meio de resposta clara.",
+        "manifesting_generator": "Resposta sacral e movimento rápido se combinam; a clareza melhora quando a ação segue a resposta.",
+        "manifestor": "A energia de iniciar é central; informar os outros reduz resistência em torno da ação independente.",
+        "projector": "A orientação focada é central; reconhecimento e timing moldam onde a energia pousa bem.",
+        "reflector": "A abertura é central; tempo e ambiente revelam o que é confiável.",
+        "fallback": "Este tipo descreve como a energia encontra o mundo."
+      },
+      "authorities": {
+        "emotional": "A autoridade emocional favorece esperar a onda assentar antes de decidir.",
+        "sacral": "A autoridade sacral favorece uma resposta corporal de sim/não no momento.",
+        "splenic": "A autoridade esplênica favorece o instinto silencioso e imediato.",
+        "ego_projected": "A autoridade do ego acompanha promessas, vontade e o que pode ser sustentado com honestidade.",
+        "self_projected": "A autoridade self projetada se esclarece ao falar a partir da identidade e direção.",
+        "sounding_board": "A autoridade mental se esclarece por ambientes confiáveis e reflexão.",
+        "lunar": "A autoridade lunar precisa de tempo e condições repetidas antes que a clareza se forme.",
+        "fallback": "A autoridade descreve o sinal de decisão a priorizar."
+      }
+    },
+    "connection_insights": {
+      "electromagnetic_title": "Atração eletromagnética",
+      "electromagnetic_text": "{count} potenciais de canal são completados entre os dois mapas.",
+      "electromagnetic_empty": "Nenhum canal eletromagnético é completado pelo par.",
+      "companionship_title": "Definição familiar",
+      "companionship_text": "{count} canais são compartilhados.",
+      "companionship_empty": "Canais compartilhados não são o principal padrão de vínculo aqui.",
+      "shared_centers_empty": "Os mapas enfatizam centros diferentes."
+    }
   },
   "form": {
     "name": "Nome",

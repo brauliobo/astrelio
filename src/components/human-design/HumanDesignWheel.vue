@@ -1,29 +1,33 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import BodygraphCore from './BodygraphCore.vue'
 import HumanDesignActivationColumns from './HumanDesignActivationColumns.vue'
 import HumanDesignWheelPlanets from './HumanDesignWheelPlanets.vue'
 import HumanDesignWheelRings from './HumanDesignWheelRings.vue'
+import { humanDesignPalette } from './humanDesignVisualTheme.js'
 
-defineProps({
+const props = defineProps({
   chart: { type: Object, required: true },
+  visualTheme: { type: String, default: 'dark' },
 })
 
 const hover = ref(null)
 const { t } = useI18n()
+const palette = computed(() => humanDesignPalette(props.visualTheme))
 const setHover = value => { hover.value = value }
 const clearHover = () => { hover.value = null }
 </script>
 
 <template lang="pug">
-.human-design-wheel(data-testid='rave-mandala')
+.human-design-wheel(data-testid='rave-mandala' :data-theme='visualTheme')
   .wheel-layout
     HumanDesignActivationColumns(
       :chart='chart'
       side='design'
       :hover='hover'
       centered
+      :visual-theme='visualTheme'
       @hover='setHover'
       @leave='clearHover'
     )
@@ -40,6 +44,7 @@ const clearHover = () => { hover.value = null }
         HumanDesignWheelRings(
           :chart='chart'
           :hover='hover'
+          :visual-theme='visualTheme'
           @hover='setHover'
           @leave='clearHover'
         )
@@ -49,12 +54,13 @@ const clearHover = () => { hover.value = null }
             :chart='chart'
             :hover-state='hover'
             :no-defined-channels-label='t("human_design.no_defined_channels")'
-            figure-fill='#f8fafc'
-            :figure-opacity='0.25'
+            :figure-fill='palette.figure'
+            :figure-opacity='palette.figureOpacity'
             :show-open-channels='true'
             :open-channel-opacity='0.26'
             :defined-channel-width='13'
-            gate-inactive-fill='rgba(15,23,42,0.42)'
+            :gate-inactive-fill='palette.gateInactiveFill'
+            :visual-theme='visualTheme'
             @hover-change='setHover'
           )
     HumanDesignActivationColumns(
@@ -62,6 +68,7 @@ const clearHover = () => { hover.value = null }
       side='personality'
       :hover='hover'
       centered
+      :visual-theme='visualTheme'
       @hover='setHover'
       @leave='clearHover'
     )

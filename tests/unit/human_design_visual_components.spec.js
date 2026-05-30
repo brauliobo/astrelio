@@ -3,6 +3,7 @@ import { createI18n } from 'vue-i18n'
 import { describe, expect, it } from 'vitest'
 import ModalityRouteSwitch from '../../src/components/modalities/ModalityRouteSwitch.vue'
 import BodygraphGates from '../../src/components/human-design/BodygraphGates.vue'
+import HumanDesignInsightPanel from '../../src/components/human-design/HumanDesignInsightPanel.vue'
 import HumanDesignIChingRing from '../../src/components/human-design/HumanDesignIChingRing.vue'
 import HumanDesignWheelRings from '../../src/components/human-design/HumanDesignWheelRings.vue'
 import { MANDALA_GATE_ORDER } from '../../src/lib/human-design/constants.js'
@@ -86,5 +87,32 @@ describe('Human Design visual components', () => {
     expect(parts).toHaveLength(2)
     expect(parts.map(part => part.attributes('fill'))).toEqual(['#dd4f52', '#f8fafc'])
     expect(wrapper.find('[data-testid="bodygraph-gate-part"][data-gate="28"]').exists()).toBe(true)
+  })
+
+  it('localizes Human Design enum labels and insight copy', () => {
+    const wrapper = mount(HumanDesignInsightPanel, {
+      props: {
+        chart: {
+          type: 'Generator',
+          authority: 'Emotional',
+          profile: '6 / 2',
+          definition: 'Triple Split Definition',
+          circuits: ['Collective Logic'],
+          centers: ['Solar Plexus', 'Sacral', 'Root'],
+          channels: ['19-49', '30-41', '3-60'],
+          gates: [49],
+          personalityGates: [49],
+          designGates: [],
+        },
+      },
+      global: { plugins: [i18n('pt-BR')] },
+    })
+
+    expect(wrapper.text()).toContain('Gerador')
+    expect(wrapper.text()).toContain('Emocional')
+    expect(wrapper.text()).toContain('Definição Tripla Dividida')
+    expect(wrapper.text()).toContain('Coletivo Lógico')
+    expect(wrapper.text()).not.toContain('Triple Split Definition')
+    expect(wrapper.text()).not.toContain('Collective Logic')
   })
 })

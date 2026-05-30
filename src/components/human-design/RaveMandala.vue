@@ -1,10 +1,13 @@
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { MANDALA_GATE_ORDER } from '../../lib/human-design/constants.js'
+import { humanDesignValueLabel } from '../../lib/human-design/labels.js'
 
 const props = defineProps({
   chart: { type: Object, required: true },
 })
+const { t } = useI18n()
 
 const activeGates = computed(() => new Set(props.chart.gates || []))
 const center = 260
@@ -40,7 +43,7 @@ const gates = computed(() =>
 
 <template lang="pug">
 .rave-mandala(data-testid='rave-mandala')
-  svg.block.mx-auto.max-w-full(viewBox='0 0 520 520' role='img' aria-label='Rave mandala')
+  svg.block.mx-auto.max-w-full(viewBox='0 0 520 520' role='img' :aria-label='t("human_design.rave_mandala_aria")')
     circle(:cx='center' :cy='center' :r='outer' fill='rgba(15,23,42,0.72)' stroke='#64748b' stroke-width='1')
     circle(:cx='center' :cy='center' :r='inner' fill='none' stroke='#64748b' stroke-width='1' stroke-opacity='0.45')
     g
@@ -71,6 +74,6 @@ const gates = computed(() =>
         data-testid='mandala-gate'
       ) {{ item.gate }}
     circle(:cx='center' :cy='center' r='124' fill='rgba(2,6,23,0.72)' stroke='#334155')
-    text(:x='center' :y='center - 10' text-anchor='middle' fill='#e2e8f0' font-size='18' font-weight='700') {{ chart.type }}
-    text(:x='center' :y='center + 18' text-anchor='middle' fill='#94a3b8' font-size='12') {{ chart.profile }} · {{ chart.authority }}
+    text(:x='center' :y='center - 10' text-anchor='middle' fill='#e2e8f0' font-size='18' font-weight='700') {{ humanDesignValueLabel(t, 'type', chart.type) }}
+    text(:x='center' :y='center + 18' text-anchor='middle' fill='#94a3b8' font-size='12') {{ chart.profile }} · {{ humanDesignValueLabel(t, 'authority', chart.authority) }}
 </template>

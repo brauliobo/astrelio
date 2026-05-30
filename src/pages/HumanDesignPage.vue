@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
 import { modalityChart } from '../lib/modalities/index.js'
+import { humanDesignValueLabel } from '../lib/human-design/labels.js'
 import HumanDesignActivationTable from '../components/human-design/HumanDesignActivationTable.vue'
 import HumanDesignInsightPanel from '../components/human-design/HumanDesignInsightPanel.vue'
 import HumanDesignWheel from '../components/human-design/HumanDesignWheel.vue'
@@ -16,10 +17,10 @@ const session = useSessionStore()
 const person = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
 const chart = computed(() => modalityChart('humanDesign', person.value))
 const summaryRows = computed(() => chart.value ? [
-  { label: t('human_design.type'), value: chart.value.type, testId: 'hd-type' },
-  { label: t('human_design.authority'), value: chart.value.authority, testId: 'hd-authority' },
+  { label: t('human_design.type'), value: humanDesignValueLabel(t, 'type', chart.value.type), testId: 'hd-type' },
+  { label: t('human_design.authority'), value: humanDesignValueLabel(t, 'authority', chart.value.authority), testId: 'hd-authority' },
   { label: t('human_design.profile'), value: chart.value.profile, testId: 'hd-profile' },
-  { label: t('human_design.definition'), value: chart.value.definition, testId: 'hd-definition' },
+  { label: t('human_design.definition'), value: humanDesignValueLabel(t, 'definition', chart.value.definition), testId: 'hd-definition' },
 ] : [])
 </script>
 

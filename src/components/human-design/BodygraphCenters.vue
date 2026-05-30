@@ -4,7 +4,7 @@ import { CENTERS } from '../../lib/human-design/constants.js'
 import BodygraphCenterGroup from './BodygraphCenterGroup.vue'
 import { centerFills, centerShapes, centerText } from './bodygraphCenterGeometry.js'
 import { gateLayout } from './bodygraphGateGeometry.js'
-import { activationTone } from './humanDesignVisualTheme.js'
+import { activationTone, humanDesignPalette } from './humanDesignVisualTheme.js'
 
 const props = defineProps({
   chart: { type: Object, required: true },
@@ -22,6 +22,7 @@ const personalityGates = computed(() => new Set(props.chart.personalityGates || 
 const designGates = computed(() => new Set(props.chart.designGates || []))
 const allGates = computed(() => new Set(props.chart.gates || []))
 const hasHover = computed(() => Boolean(props.hover))
+const palette = computed(() => humanDesignPalette(props.visualTheme))
 
 const centerRows = computed(() =>
   CENTERS.map((center) => {
@@ -43,6 +44,8 @@ const centerRows = computed(() =>
           text: design || personality ? tone.text : centerText[center],
           parts: tone.parts,
           inactiveFill: props.inactiveFill,
+          highlightStroke: palette.value.highlight,
+          dimmedText: props.visualTheme === 'light' ? 'rgba(71,85,105,0.38)' : 'rgba(203,213,225,0.34)',
         }
       })
 
@@ -51,6 +54,10 @@ const centerRows = computed(() =>
       shape: centerShapes[center],
       defined: definedCenters.value.has(center),
       fill: centerFills[center],
+      openFill: palette.value.openCenter,
+      openStroke: palette.value.openCenterStroke,
+      definedStroke: palette.value.centerStroke,
+      highlightStroke: palette.value.highlight,
       gateNumbers: gates.map(({ gate }) => gate),
       gates,
     }

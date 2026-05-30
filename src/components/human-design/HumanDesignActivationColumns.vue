@@ -11,6 +11,7 @@ const props = defineProps({
   side: { type: String, required: true },
   hover: { type: Object, default: null },
   centered: { type: Boolean, default: false },
+  visualTheme: { type: String, default: 'dark' },
 })
 
 const emit = defineEmits(['hover', 'leave'])
@@ -28,7 +29,7 @@ const hasHover = computed(() => Boolean(props.hover))
 </script>
 
 <template lang="pug">
-.activation-column(:class='[side, { centered }]')
+.activation-column(:class='[side, { centered }]' :data-theme='visualTheme')
   .activation-title {{ side === 'design' ? t('human_design.design') : t('human_design.personality') }}
   HumanDesignActivationRow(
     v-for='row in rows'
@@ -47,7 +48,7 @@ const hasHover = computed(() => Boolean(props.hover))
   display: grid;
   gap: 10px;
   padding-top: 52px;
-  color: #f8fafc;
+  color: var(--hd-personality, #f8fafc);
 }
 
 .activation-column.centered {
@@ -64,11 +65,11 @@ const hasHover = computed(() => Boolean(props.hover))
 }
 
 .activation-column.design {
-  color: #e0595b;
+  color: var(--hd-design, #e0595b);
 }
 
 .activation-column.personality .activation-title {
-  border-bottom-color: rgba(248, 250, 252, 0.72);
+  border-bottom-color: var(--hd-personality-rule, rgba(248, 250, 252, 0.72));
 }
 
 .activation-column.personality :deep(.activation-row) {
@@ -76,7 +77,13 @@ const hasHover = computed(() => Boolean(props.hover))
 }
 
 .activation-column.personality :deep(.activation-row.highlighted) {
-  background: rgba(248, 250, 252, 0.12);
+  background: var(--hd-personality-highlight, rgba(248, 250, 252, 0.12));
+}
+
+.activation-column[data-theme='light'] {
+  --hd-personality: #0f172a;
+  --hd-personality-rule: rgba(15, 23, 42, 0.34);
+  --hd-personality-highlight: rgba(15, 23, 42, 0.08);
 }
 
 .activation-column.personality :deep(.activation-code) {
