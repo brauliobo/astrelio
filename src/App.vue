@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { useSettingsStore } from './stores/settings.js'
 import { usePeopleStore } from './stores/people.js'
 import { useSessionStore } from './stores/session.js'
+import { birthHeaderForPerson } from './lib/people/labels.js'
 import AppLogo from './components/AppLogo.vue'
 
 const { t, locale } = useI18n()
@@ -60,7 +61,7 @@ const contextItems = computed(() => {
   if (activePerson.value) {
     items.unshift(
       { key: 'person', label: t('context.chart'), value: activePerson.value.name },
-      { key: 'birth', label: t('context.birth'), value: `${activePerson.value.isoLocal} · ${activePerson.value.placeLabel}` }
+      { key: 'birth', label: t('context.birth'), value: birthHeaderForPerson(activePerson.value) }
     )
   }
 

@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest'
 import {
   ianaOffsetMinutes,
   inferIanaZone,
+  formatUtcOffset,
   localToUtcMs,
   offsetMinutesForPerson,
   resolveIanaLocalTime,
+  timezoneLabelForPerson,
 } from '../../src/lib/astro/timezones.js'
 
 describe('timezones', () => {
@@ -44,6 +46,16 @@ describe('timezones', () => {
   it('resolves half-hour IANA zones', () => {
     expect(ianaOffsetMinutes('2024-07-01T12:00', 'Asia/Kolkata')).toBe(330)
     expect(ianaOffsetMinutes('2024-07-01T12:00', 'Australia/Adelaide')).toBe(570)
+  })
+
+  it('formats reusable timezone labels for chart headers', () => {
+    expect(formatUtcOffset(-120)).toBe('UTC-02:00')
+    expect(formatUtcOffset(330)).toBe('UTC+05:30')
+    expect(timezoneLabelForPerson({
+      isoLocal: '1986-02-12T18:10',
+      placeLabel: 'São José dos Campos, SP - Brasil',
+      tzOffsetMinutes: -180,
+    })).toBe('America/Sao_Paulo · UTC-02:00')
   })
 
   it('converts local civil time and numeric offset to UTC milliseconds', () => {

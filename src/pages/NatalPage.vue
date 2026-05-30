@@ -7,6 +7,7 @@ import { useSettingsStore } from '../stores/settings.js'
 import { useNatalChart } from '../composables/useChart.js'
 import { naturalAspects } from '../lib/astro/aspects.js'
 import { moonPhaseLabel } from '../lib/astro/ephemeris.js'
+import { birthHeaderForPerson } from '../lib/people/labels.js'
 import ChartWheel from '../components/chart/ChartWheel.vue'
 import PlanetList from '../components/chart/PlanetList.vue'
 import AspectTable from '../components/chart/AspectTable.vue'
@@ -23,6 +24,7 @@ const person  = computed(() => people.byId(session.activePersonId) || people.sor
 const chart   = useNatalChart(person, settings)
 const phase   = computed(() => chart.value ? t(`moon_phase.${moonPhaseLabel(chart.value.jdUt)}`) : '')
 const aspects = computed(() => chart.value ? naturalAspects(chart.value, settings.aspectOptions) : [])
+const birthHeader = computed(() => birthHeaderForPerson(person.value))
 </script>
 
 <template lang="pug">
@@ -33,7 +35,7 @@ section.natal-page(data-testid='natal-page')
     .flex.flex-wrap.items-start.justify-between.gap-3.mb-4
       div
         h1.text-xl.font-semibold.text-slate-100.mb-1 {{ t('chart.natal_for', { name: person.name }) }}
-        p.text-xs.text-slate-400 {{ person.isoLocal }} · {{ person.placeLabel }}
+        p.text-xs.text-slate-400 {{ birthHeader }}
       .flex.flex-wrap.items-center.gap-2
         ModalityRouteSwitch(active='astrology')
     .grid.gap-6(class='xl:grid-cols-[minmax(220px,0.58fr)_minmax(460px,1fr)_minmax(220px,0.58fr)] xl:items-start')

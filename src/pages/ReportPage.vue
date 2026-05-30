@@ -8,6 +8,7 @@ import { useSettingsStore } from '../stores/settings.js'
 import { useNatalChart } from '../composables/useChart.js'
 import { naturalAspects } from '../lib/astro/aspects.js'
 import { moonPhaseLabel } from '../lib/astro/ephemeris.js'
+import { birthHeaderForPerson } from '../lib/people/labels.js'
 import AspectTable from '../components/chart/AspectTable.vue'
 import ChartInsight from '../components/chart/ChartInsight.vue'
 import ChartWheel from '../components/chart/ChartWheel.vue'
@@ -25,6 +26,7 @@ const person = computed(() => people.byId(session.activePersonId) || people.sort
 const chart = useNatalChart(person, settings)
 const aspects = computed(() => chart.value ? naturalAspects(chart.value, settings.aspectOptions) : [])
 const phase = computed(() => chart.value ? t(`moon_phase.${moonPhaseLabel(chart.value.jdUt)}`) : '')
+const birthHeader = computed(() => birthHeaderForPerson(person.value))
 const reportRoot = ref(null)
 const exportStatus = ref('')
 const isExportingPng = ref(false)
@@ -73,7 +75,7 @@ section.report-page(ref='reportRoot' data-testid='report-page')
     .report-toolbar.flex.flex-wrap.items-start.justify-between.gap-3.mb-5
       div
         h1.text-2xl.font-semibold.text-slate-100 {{ t('report.title', { name: person.name }) }}
-        p.text-xs.text-slate-400 {{ person.isoLocal }} · {{ person.placeLabel }}
+        p.text-xs.text-slate-400 {{ birthHeader }}
       div
         .flex.flex-wrap.gap-2
           RouterLink.rounded.px-3.py-2.text-sm.text-slate-300(

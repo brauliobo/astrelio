@@ -15,6 +15,14 @@ test.describe('Home', () => {
     await expect(page.getByTestId('chart-context-bar')).toBeVisible()
   })
 
+  test('shows timezone in the active chart header context', async ({ page }) => {
+    await seedPeople(page, [REF_PERSON])
+    await page.goto('/natal')
+
+    await expect(page.getByTestId('context-birth')).toContainText('America/Sao_Paulo')
+    await expect(page.getByTestId('context-birth')).toContainText('UTC-02:00')
+  })
+
   test('shows empty state when no person saved', async ({ page }) => {
     await page.goto('/')
     await expect(page.getByTestId('home-empty')).toBeVisible()

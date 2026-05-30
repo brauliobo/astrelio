@@ -3,7 +3,8 @@ import { computed, defineAsyncComponent, onBeforeUnmount, ref, watch } from 'vue
 import { DateTime } from 'luxon'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { inferIanaZone, localToUtcMs, offsetMinutesForPerson } from '../lib/astro/timezones.js'
+import { localToUtcMs, offsetMinutesForPerson, timezoneLabelForPerson } from '../lib/astro/timezones.js'
+import { birthHeaderForPerson } from '../lib/people/labels.js'
 import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
 
@@ -20,17 +21,9 @@ const confirmingDelete = ref(false)
 const personId = computed(() => String(route.params.id || ''))
 const person = computed(() => people.byId(personId.value) || null)
 
-const timezoneName = computed(() => person.value?.ianaZone || inferIanaZone(person.value?.placeLabel) || '')
 const timezoneOffset = computed(() => person.value ? offsetMinutesForPerson(person.value) : 0)
-const timezoneLabel = computed(() => {
-  const minutes = timezoneOffset.value
-  const sign = minutes >= 0 ? '+' : '-'
-  const absolute = Math.abs(minutes)
-  const hours = String(Math.floor(absolute / 60)).padStart(2, '0')
-  const mins = String(absolute % 60).padStart(2, '0')
-  const zone = `UTC${sign}${hours}:${mins}`
-  return timezoneName.value ? `${timezoneName.value} · ${zone}` : zone
-})
+const timezoneLabel = computed(() => timezoneLabelForPerson(person.value))
+const birthHeader = computed(() => birthHeaderForPerson(person.value))
 const localTime = computed(() => {
   if (!person.value) return ''
   const dt = DateTime.fromISO(person.value.isoLocal)
@@ -132,7 +125,7 @@ section.person-page(data-testid='person-page')
     .flex.flex-wrap.items-start.justify-between.gap-3
       div
         h1.text-2xl.font-semibold.text-slate-100(data-testid='person-name') {{ person.name }}
-        p.text-xs.text-slate-400.mt-1 {{ person.isoLocal }} · {{ person.placeLabel }}
+        p.text-xs.text-slate-400.mt-1 {{ birthHeader }}
       .flex.flex-wrap.gap-2
         button.rounded.px-3.py-2.text-sm.text-slate-300(
           type='button'

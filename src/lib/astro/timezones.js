@@ -64,10 +64,30 @@ export const inferIanaZone = (placeLabel = '') => {
   return LEGACY_CITY_ZONES.find(([pattern]) => pattern.test(normalized))?.[1] || null
 }
 
+export const timezoneNameForPerson = (person) =>
+  person?.ianaZone || inferIanaZone(person?.placeLabel)
+
 export const offsetMinutesForPerson = (person) => {
-  const zone = person?.ianaZone || inferIanaZone(person?.placeLabel)
+  const zone = timezoneNameForPerson(person)
   if (zone) return ianaOffsetMinutes(person.isoLocal, zone)
   return person?.tzOffsetMinutes || 0
+}
+
+export const formatUtcOffset = (minutes = 0) => {
+  const sign = minutes >= 0 ? '+' : '-'
+  const absolute = Math.abs(minutes)
+  const hours = String(Math.floor(absolute / 60)).padStart(2, '0')
+  const mins = String(absolute % 60).padStart(2, '0')
+
+  return `UTC${sign}${hours}:${mins}`
+}
+
+export const timezoneLabelForPerson = (person) => {
+  if (!person) return ''
+
+  const zone = timezoneNameForPerson(person)
+  const offset = formatUtcOffset(offsetMinutesForPerson(person))
+  return zone ? `${zone} · ${offset}` : offset
 }
 
 export const localToUtcMs = (isoLocal, tzOffsetMinutes) => {
