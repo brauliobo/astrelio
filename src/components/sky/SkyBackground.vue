@@ -9,6 +9,7 @@ const props = defineProps({
   zodiac: { type: String, default: 'tropical' },
   houseSystem: { type: String, default: 'placidus' },
   mode: { type: String, default: 'astrology' },
+  theme: { type: String, default: 'dark' },
 })
 
 const canvas = ref(null)
@@ -30,6 +31,7 @@ const applyContext = () => {
       zodiac: props.zodiac,
       houseSystem: props.houseSystem,
       mode: props.mode,
+      theme: props.theme,
       planetLabels: planetLabels(),
     })
     return
@@ -42,6 +44,7 @@ const applyContext = () => {
     zodiac: props.zodiac,
     houseSystem: props.houseSystem,
     mode: props.mode,
+    theme: props.theme,
     planetLabels: planetLabels(),
   })
 }
@@ -58,22 +61,39 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => handle?.dispose?.())
-watch(() => [props.person, props.zodiac, props.houseSystem, props.mode, locale.value], applyContext, { deep: true })
+watch(() => [props.person, props.zodiac, props.houseSystem, props.mode, props.theme, locale.value], applyContext, { deep: true })
 </script>
 
 <template lang="pug">
-.sky-bg.absolute.inset-0.pointer-events-none(aria-hidden='true' data-testid='sky-bg')
+.sky-bg.absolute.inset-0.pointer-events-none(
+  aria-hidden='true'
+  data-testid='sky-bg'
+  :data-theme='theme'
+)
   canvas.block.w-full.h-full(ref='canvas')
   .gradient-overlay
 </template>
 
 <style scoped>
-.sky-bg { background: radial-gradient(ellipse at center, #17152b 0%, #0b0a1a 58%, #050410 100%); }
+.sky-bg {
+  background: radial-gradient(ellipse at center, #17152b 0%, #0b0a1a 58%, #050410 100%);
+}
+
+.sky-bg[data-theme='light'] {
+  background: radial-gradient(ellipse at center, #f8fbff 0%, #eaf2fa 54%, #dbe8f4 100%);
+}
+
 .gradient-overlay {
   position: absolute; inset: 0;
   background:
     radial-gradient(ellipse at center, rgba(11,10,26,0.08) 0%, rgba(11,10,26,0.18) 46%, rgba(11,10,26,0.55) 100%),
     linear-gradient(180deg, rgba(11,10,26,0) 0%, rgba(11,10,26,0.28) 70%, rgba(11,10,26,0.82) 100%);
   pointer-events: none;
+}
+
+.sky-bg[data-theme='light'] .gradient-overlay {
+  background:
+    radial-gradient(ellipse at center, rgba(255,255,255,0.62) 0%, rgba(238,245,251,0.72) 48%, rgba(224,235,246,0.92) 100%),
+    linear-gradient(180deg, rgba(248,251,255,0.64) 0%, rgba(238,245,251,0.74) 68%, rgba(229,239,248,0.96) 100%);
 }
 </style>

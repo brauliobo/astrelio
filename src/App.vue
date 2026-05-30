@@ -1,5 +1,5 @@
 <script setup>
-import { computed, defineAsyncComponent } from 'vue'
+import { computed, defineAsyncComponent, watchEffect } from 'vue'
 import { RouterView, RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useSettingsStore } from './stores/settings.js'
@@ -17,6 +17,16 @@ const activePerson = computed(() => people.byId(session.activePersonId) || peopl
 const SkyBackground = defineAsyncComponent(() => import('./components/sky/SkyBackground.vue'))
 const personPath = computed(() => activePerson.value ? `/person/${activePerson.value.id}` : '/')
 const skyMode = computed(() => route.path === '/human-design' ? 'humanDesign' : 'astrology')
+const activeTheme = computed(() => settings.theme === 'light' ? 'light' : 'dark')
+const toggleThemeLabel = computed(() =>
+  activeTheme.value === 'light' ? 'Switch to dark mode' : 'Switch to light mode'
+)
+
+watchEffect(() => {
+  if (typeof document === 'undefined') return
+  document.documentElement.dataset.theme = activeTheme.value
+  document.documentElement.style.colorScheme = activeTheme.value
+})
 
 const links = computed(() => [
   { to: '/',                 label: t('nav.home'),     id: 'home' },
@@ -52,22 +62,33 @@ const contextItems = computed(() => {
     :zodiac='settings.zodiac'
     :house-system='settings.houseSystem'
     :mode='skyMode'
+    :theme='activeTheme'
     v-if='settings.skyEnabled'
   )
-  header.sticky.top-0.z-20.backdrop-blur-md.border-b(class='bg-night/70 border-white/5')
-    nav.mx-auto.max-w-6xl.px-4.py-3.flex.items-center.gap-3.overflow-x-auto
+  header.app-header.sticky.top-0.z-20.backdrop-blur-md.border-b
+    nav.mx-auto.max-w-6xl.px-4.py-3.flex.items-center.gap-3
       RouterLink(to='/' data-testid='brand' aria-label='Astrelio')
         AppLogo
       .grow
-      RouterLink.text-sm.text-slate-300.px-2.py-1.rounded.transition.whitespace-nowrap(
-        v-for='l in links'
-        :key='l.to'
-        :to='l.to'
-        active-class='text-amber-300 bg-white/5'
-        :data-testid='`nav-${l.id}`'
-        class='hover:text-white'
-      ) {{ l.label }}
-    .border-t(class='border-white/5')
+      .flex.items-center.gap-2.overflow-x-auto
+        RouterLink.text-sm.text-slate-300.px-2.py-1.rounded.transition.whitespace-nowrap(
+          v-for='l in links'
+          :key='l.to'
+          :to='l.to'
+          active-class='text-amber-300 bg-white/5'
+          :data-testid='`nav-${l.id}`'
+          class='hover:text-white'
+        ) {{ l.label }}
+      button.theme-toggle(
+        type='button'
+        :aria-label='toggleThemeLabel'
+        :title='toggleThemeLabel'
+        :data-theme='activeTheme'
+        data-testid='theme-toggle'
+        @click='settings.toggleTheme()'
+      )
+        span.theme-toggle__icon(aria-hidden='true') {{ activeTheme === 'light' ? '☾' : '☼' }}
+    .app-context-border.border-t
       .mx-auto.max-w-6xl.px-4.py-2.flex.items-center.gap-2.overflow-x-auto(
         data-testid='chart-context-bar'
       )

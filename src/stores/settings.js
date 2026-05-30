@@ -92,6 +92,13 @@ export const useSettingsStore = defineStore('settings', {
       this.orbScale ??= 1
       this.applyingOnly ??= false
       this.includeModernPlanets ??= true
+      if (!['dark', 'light'].includes(this.theme)) this.theme = 'dark'
+    },
+    setTheme(theme) {
+      this.theme = theme === 'light' ? 'light' : 'dark'
+    },
+    toggleTheme() {
+      this.setTheme(this.theme === 'light' ? 'dark' : 'light')
     },
     applyPreset(presetKey) {
       const preset = SETTING_PRESETS[presetKey]

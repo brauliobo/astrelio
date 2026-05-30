@@ -25,6 +25,44 @@ const SIGNS = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '�
 const clamp = (value, min, max) =>
   Math.max(min, Math.min(max, value))
 
+const skyPalette = (theme = 'dark') => {
+  const light = theme === 'light'
+  return {
+    star: light ? '#475569' : '#e0f2fe',
+    starAlpha: light ? 0.34 : 1,
+    baseStops: light
+      ? [
+          'rgba(255,255,255,0.38)',
+          'rgba(203,213,225,0.11)',
+          'rgba(148,163,184,0.00)',
+        ]
+      : [
+          'rgba(15, 23, 42, 0.28)',
+          'rgba(15, 23, 42, 0.10)',
+          'rgba(2, 6, 23, 0.00)',
+        ],
+    environmentStops: light
+      ? [
+          'rgba(255,255,255,0.18)',
+          'rgba(148,163,184,0.08)',
+          'rgba(37,99,235,0.06)',
+        ]
+      : [
+          'rgba(15, 23, 42, 0.12)',
+          'rgba(30, 41, 59, 0.11)',
+          'rgba(125, 211, 252, 0.08)',
+        ],
+    ring: light ? '#2563eb' : '#7dd3fc',
+    secondaryRing: light ? '#7c3aed' : '#c4b5fd',
+    accentRing: light ? '#b45309' : '#fbbf24',
+    grid: light ? '#334155' : '#dbeafe',
+    label: light ? '#334155' : '#e0f2fe',
+    axis: light ? '#b45309' : '#f97316',
+    axisLabel: light ? '#92400e' : '#fed7aa',
+    planetLabelAlpha: light ? 0.62 : 0.40,
+  }
+}
+
 export const skyRadiusForBounds = ({ chartRadius, maxRadius, viewportWidth }) => {
   const widthBound = Math.max(160, viewportWidth * 0.48)
   const upper = Math.min(maxRadius * 0.98, widthBound)
@@ -137,32 +175,32 @@ const drawLine = (ctx, a, b, stroke, alpha = 1, width = 1, dash = []) => {
   ctx.restore()
 }
 
-const drawEnvironment = (ctx, bounds, mode, wheelShift) => {
+const drawEnvironment = (ctx, bounds, mode, wheelShift, palette) => {
   const { cx, cy, skyRadius, chartRadius } = bounds
 
   const gradient = ctx.createRadialGradient(cx, cy, chartRadius * 0.8, cx, cy, skyRadius)
-  gradient.addColorStop(0, 'rgba(15, 23, 42, 0.12)')
-  gradient.addColorStop(0.58, 'rgba(30, 41, 59, 0.11)')
-  gradient.addColorStop(1, 'rgba(125, 211, 252, 0.08)')
+  gradient.addColorStop(0, palette.environmentStops[0])
+  gradient.addColorStop(0.58, palette.environmentStops[1])
+  gradient.addColorStop(1, palette.environmentStops[2])
   ctx.fillStyle = gradient
   ctx.beginPath()
   ctx.arc(cx, cy, skyRadius, 0, Math.PI * 2)
   ctx.fill()
 
-  drawRing(ctx, cx, cy, skyRadius, '#7dd3fc', 0.20, 1.25)
-  drawRing(ctx, cx, cy, skyRadius * 0.72, '#c4b5fd', 0.12, 0.9, [8, 10])
-  drawRing(ctx, cx, cy, chartRadius * 1.18, '#fbbf24', 0.12, 0.9, [2, 7])
+  drawRing(ctx, cx, cy, skyRadius, palette.ring, 0.20, 1.25)
+  drawRing(ctx, cx, cy, skyRadius * 0.72, palette.secondaryRing, 0.12, 0.9, [8, 10])
+  drawRing(ctx, cx, cy, chartRadius * 1.18, palette.accentRing, 0.12, 0.9, [2, 7])
 
   for (let i = 0; i < 12; i++) {
     const longitude = skyLongitudeForPosition({ longitude: i * 30, mode, wheelShift })
     const inner = polarPoint(cx, cy, chartRadius * 1.06, longitude)
     const outer = polarPoint(cx, cy, skyRadius, longitude)
-    drawLine(ctx, inner, outer, '#dbeafe', i % 3 === 0 ? 0.16 : 0.08, i % 3 === 0 ? 1 : 0.6)
+    drawLine(ctx, inner, outer, palette.grid, i % 3 === 0 ? 0.16 : 0.08, i % 3 === 0 ? 1 : 0.6)
 
     const label = polarPoint(cx, cy, skyRadius * 0.965, skyLongitudeForPosition({ longitude: i * 30 + 15, mode, wheelShift }))
     ctx.save()
     ctx.globalAlpha = 0.18
-    ctx.fillStyle = '#e0f2fe'
+    ctx.fillStyle = palette.label
     ctx.font = '600 22px Georgia, serif'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
@@ -181,11 +219,11 @@ const drawEnvironment = (ctx, bounds, mode, wheelShift) => {
     const longitude = norm360(axis.lon)
     const a = polarPoint(cx, cy, chartRadius * 1.02, longitude)
     const b = polarPoint(cx, cy, skyRadius * 0.985, longitude)
-    drawLine(ctx, a, b, '#f97316', 0.20, 1.2)
+    drawLine(ctx, a, b, palette.axis, 0.20, 1.2)
     const text = polarPoint(cx, cy, skyRadius * 1.015, longitude)
     ctx.save()
     ctx.globalAlpha = 0.34
-    ctx.fillStyle = '#fed7aa'
+    ctx.fillStyle = palette.axisLabel
     ctx.font = '700 12px system-ui, sans-serif'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
@@ -194,7 +232,7 @@ const drawEnvironment = (ctx, bounds, mode, wheelShift) => {
   }
 }
 
-const drawPlanet = (ctx, cx, cy, radius, shiftedLongitude, planet, label, image = null) => {
+const drawPlanet = (ctx, cx, cy, radius, shiftedLongitude, planet, label, image = null, palette = skyPalette()) => {
   const point = polarPoint(cx, cy, radius, shiftedLongitude)
   const labelPoint = polarPoint(cx, cy, radius + planet.radius + 22, shiftedLongitude)
 
@@ -241,7 +279,7 @@ const drawPlanet = (ctx, cx, cy, radius, shiftedLongitude, planet, label, image 
   ctx.arc(point.x, point.y, planet.radius * 1.7, 0, Math.PI * 2)
   ctx.stroke()
 
-  ctx.globalAlpha = 0.40
+  ctx.globalAlpha = palette.planetLabelAlpha
   ctx.font = '700 14px system-ui, sans-serif'
   ctx.textAlign = labelPoint.x < cx - 8 ? 'right' : labelPoint.x > cx + 8 ? 'left' : 'center'
   ctx.textBaseline = 'middle'
@@ -342,6 +380,7 @@ export const createSkyScene = (canvas) => {
     zodiac: 'tropical',
     houseSystem: 'placidus',
     mode: 'astrology',
+    theme: 'dark',
     planetLabels: {},
   }
   let raf = 0
@@ -372,27 +411,28 @@ export const createSkyScene = (canvas) => {
     const height = canvas.clientHeight
     const bounds = chartBounds(canvas, context.mode)
     const wheelShift = context.mode === 'humanDesign' ? 58 : norm360(-(chart?.cusps?.[0] || 0))
+    const palette = skyPalette(context.theme)
 
     ctx.clearRect(0, 0, width, height)
 
     const base = ctx.createRadialGradient(bounds.cx, bounds.cy, 0, bounds.cx, bounds.cy, bounds.skyRadius)
-    base.addColorStop(0, 'rgba(15, 23, 42, 0.28)')
-    base.addColorStop(0.58, 'rgba(15, 23, 42, 0.10)')
-    base.addColorStop(1, 'rgba(2, 6, 23, 0.00)')
+    base.addColorStop(0, palette.baseStops[0])
+    base.addColorStop(0.58, palette.baseStops[1])
+    base.addColorStop(1, palette.baseStops[2])
     ctx.fillStyle = base
     ctx.fillRect(0, 0, width, height)
 
     ctx.save()
-    ctx.fillStyle = '#e0f2fe'
+    ctx.fillStyle = palette.star
     for (const star of stars) {
-      ctx.globalAlpha = star.a
+      ctx.globalAlpha = star.a * palette.starAlpha
       ctx.beginPath()
       ctx.arc(star.x * width, star.y * height, star.r, 0, Math.PI * 2)
       ctx.fill()
     }
     ctx.restore()
 
-    drawEnvironment(ctx, bounds, context.mode, wheelShift)
+    drawEnvironment(ctx, bounds, context.mode, wheelShift, palette)
 
     const planetRadius = Math.max(bounds.chartRadius * 1.42, bounds.skyRadius * 0.78)
     const byName = new Map((chart?.positions || []).map(item => [item.name, item]))
@@ -407,7 +447,8 @@ export const createSkyScene = (canvas) => {
         skyLongitudeForPosition({ longitude: position.longitude, mode: context.mode, wheelShift }),
         planet,
         context.planetLabels[planet.name] || planet.name,
-        planetImages?.get(planet.name)
+        planetImages?.get(planet.name),
+        palette
       )
     }
   }
