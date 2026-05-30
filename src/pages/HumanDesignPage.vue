@@ -4,10 +4,10 @@ import { useI18n } from 'vue-i18n'
 import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
 import { modalityChart } from '../lib/modalities/index.js'
-import BodygraphChart from '../components/human-design/BodygraphChart.vue'
 import HumanDesignActivationTable from '../components/human-design/HumanDesignActivationTable.vue'
 import HumanDesignInsightPanel from '../components/human-design/HumanDesignInsightPanel.vue'
-import RaveMandala from '../components/human-design/RaveMandala.vue'
+import HumanDesignWheel from '../components/human-design/HumanDesignWheel.vue'
+import ModalityRouteSwitch from '../components/modalities/ModalityRouteSwitch.vue'
 
 const { t } = useI18n()
 const people = usePeopleStore()
@@ -32,9 +32,7 @@ section.human-design-page(data-testid='human-design-page')
       div
         h1.text-2xl.font-semibold.text-slate-100 {{ t('human_design.title', { name: person.name }) }}
         p.text-xs.text-slate-400.mt-1 {{ t('human_design.subtitle') }}
-      .flex.flex-wrap.gap-2
-        span.rounded-full.px-2.py-1.text-xs.text-slate-300(class='bg-white/5') {{ t('modalities.human_design') }}
-        span.rounded-full.px-2.py-1.text-xs.text-slate-300(class='bg-white/5') {{ t('modalities.astrology') }}
+      ModalityRouteSwitch(active='humanDesign')
 
     .grid.gap-3(class='sm:grid-cols-2 lg:grid-cols-4')
       .rounded.border.p-3(
@@ -45,11 +43,8 @@ section.human-design-page(data-testid='human-design-page')
         .text-xs.uppercase.tracking-wide.text-slate-500 {{ row.label }}
         .mt-1.text-lg.font-semibold.text-slate-100(:data-testid='row.testId') {{ row.value }}
 
-    .grid.gap-6(class='xl:grid-cols-[minmax(320px,0.85fr)_minmax(0,1fr)]')
-      .ui-panel
-        BodygraphChart(:chart='chart')
-      .ui-panel
-        RaveMandala(:chart='chart')
+    .ui-panel
+      HumanDesignWheel(:chart='chart')
 
     HumanDesignInsightPanel(:chart='chart')
     HumanDesignActivationTable(:chart='chart')

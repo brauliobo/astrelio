@@ -1,5 +1,6 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { offsetMinutesForPerson, localToUtcMs } from '../../lib/astro/timezones.js'
 import { createSkyScene } from '../../lib/sky/scene.js'
 
@@ -7,10 +8,17 @@ const props = defineProps({
   person: { type: Object, default: null },
   zodiac: { type: String, default: 'tropical' },
   houseSystem: { type: String, default: 'placidus' },
+  mode: { type: String, default: 'astrology' },
 })
 
 const canvas = ref(null)
+const { t, locale } = useI18n()
 let handle  = null
+
+const planetLabels = () => Object.fromEntries(
+  ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto']
+    .map(planet => [planet, t(`planets.${planet}`)])
+)
 
 const applyContext = () => {
   if (!handle) return
@@ -21,6 +29,8 @@ const applyContext = () => {
       lon: 0,
       zodiac: props.zodiac,
       houseSystem: props.houseSystem,
+      mode: props.mode,
+      planetLabels: planetLabels(),
     })
     return
   }
@@ -31,6 +41,8 @@ const applyContext = () => {
     lon: props.person.lon,
     zodiac: props.zodiac,
     houseSystem: props.houseSystem,
+    mode: props.mode,
+    planetLabels: planetLabels(),
   })
 }
 
@@ -46,7 +58,7 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => handle?.dispose?.())
-watch(() => [props.person, props.zodiac, props.houseSystem], applyContext, { deep: true })
+watch(() => [props.person, props.zodiac, props.houseSystem, props.mode, locale.value], applyContext, { deep: true })
 </script>
 
 <template lang="pug">

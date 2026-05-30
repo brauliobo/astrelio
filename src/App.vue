@@ -1,6 +1,6 @@
 <script setup>
 import { computed, defineAsyncComponent } from 'vue'
-import { RouterView, RouterLink } from 'vue-router'
+import { RouterView, RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useSettingsStore } from './stores/settings.js'
 import { usePeopleStore } from './stores/people.js'
@@ -8,6 +8,7 @@ import { useSessionStore } from './stores/session.js'
 import AppLogo from './components/AppLogo.vue'
 
 const { t } = useI18n()
+const route = useRoute()
 const settings = useSettingsStore()
 settings.normalize()
 const people = usePeopleStore()
@@ -15,6 +16,7 @@ const session = useSessionStore()
 const activePerson = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
 const SkyBackground = defineAsyncComponent(() => import('./components/sky/SkyBackground.vue'))
 const personPath = computed(() => activePerson.value ? `/person/${activePerson.value.id}` : '/')
+const skyMode = computed(() => route.path === '/human-design' ? 'humanDesign' : 'astrology')
 
 const links = computed(() => [
   { to: '/',                 label: t('nav.home'),     id: 'home' },
@@ -49,6 +51,7 @@ const contextItems = computed(() => {
     :person='activePerson'
     :zodiac='settings.zodiac'
     :house-system='settings.houseSystem'
+    :mode='skyMode'
     v-if='settings.skyEnabled'
   )
   header.sticky.top-0.z-20.backdrop-blur-md.border-b(class='bg-night/70 border-white/5')

@@ -25,10 +25,22 @@ test.describe('Human Design', () => {
 
   test('opens Human Design from the natal map workspace', async ({ page }) => {
     await page.goto('/#/natal')
-    await page.getByTestId('open-human-design').click()
+    await expect(page.getByTestId('modality-astrology')).toBeVisible()
+    await expect(page.getByTestId('modality-human-design')).toBeVisible()
+    await page.getByTestId('modality-human-design').click()
 
     await expect(page).toHaveURL(/\/human-design/)
     await expect(page.getByTestId('human-design-page')).toBeVisible()
+    await expect(page.getByTestId('modality-astrology')).toBeVisible()
+    await expect(page.getByTestId('modality-human-design')).toBeVisible()
+  })
+
+  test('switches from Human Design back to astrology', async ({ page }) => {
+    await page.goto('/#/human-design')
+    await page.getByTestId('modality-astrology').click()
+
+    await expect(page).toHaveURL(/\/natal/)
+    await expect(page.getByTestId('natal-page')).toBeVisible()
   })
 
   test('switches relationships from astrology synastry to Human Design connection', async ({ page }) => {

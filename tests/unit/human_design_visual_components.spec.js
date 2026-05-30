@@ -1,0 +1,90 @@
+import { mount } from '@vue/test-utils'
+import { createI18n } from 'vue-i18n'
+import { describe, expect, it } from 'vitest'
+import ModalityRouteSwitch from '../../src/components/modalities/ModalityRouteSwitch.vue'
+import BodygraphGates from '../../src/components/human-design/BodygraphGates.vue'
+import HumanDesignIChingRing from '../../src/components/human-design/HumanDesignIChingRing.vue'
+import HumanDesignWheelRings from '../../src/components/human-design/HumanDesignWheelRings.vue'
+import { MANDALA_GATE_ORDER } from '../../src/lib/human-design/constants.js'
+import { wheelRingRadii } from '../../src/components/human-design/humanDesignWheelGeometry.js'
+import en from '../../src/i18n/en.json'
+import ptBR from '../../src/i18n/pt-BR.json'
+
+const i18n = locale => createI18n({
+  legacy: false,
+  locale,
+  messages: { en, 'pt-BR': ptBR },
+})
+
+const mountInSvg = (component, props = {}) => mount({
+  components: { Target: component },
+  template: '<svg><Target v-bind="props" /></svg>',
+  setup: () => ({ props }),
+})
+
+describe('Human Design visual components', () => {
+  it('uses one locale-backed modality switcher contract on modality pages', () => {
+    const wrapper = mount(ModalityRouteSwitch, {
+      props: { active: 'humanDesign' },
+      global: {
+        plugins: [i18n('pt-BR')],
+        stubs: { RouterLink: { props: ['to'], template: '<a :href="to"><slot /></a>' } },
+      },
+    })
+
+    expect(wrapper.get('[data-testid="modality-switch"]').attributes('aria-label')).toBe('Alternar modalidade')
+    expect(wrapper.get('[data-testid="modality-astrology"]').text()).toBe('Astrologia')
+    expect(wrapper.get('[data-testid="modality-human-design"]').text()).toBe('Human Design')
+    expect(ptBR.planets.Earth).toBe('Terra')
+  })
+
+  it('renders active backgrounds only for gate sectors that have planets', () => {
+    const wrapper = mountInSvg(HumanDesignWheelRings, {
+      chart: {
+        gates: [49, 14, 28],
+        personalityGates: [49, 28],
+        designGates: [14, 28],
+      },
+    })
+    const sectors = wrapper.findAll('[data-testid="mandala-gate-sector"]')
+    const active = sectors.filter(sector => sector.attributes('data-active') === 'true')
+    const inactive = sectors.filter(sector => sector.attributes('data-active') === 'false')
+
+    expect(sectors).toHaveLength(64)
+    expect(active.map(sector => Number(sector.attributes('data-gate'))).sort((a, b) => a - b)).toEqual([14, 28, 49])
+    expect(inactive.every(sector => sector.attributes('fill') === 'transparent')).toBe(true)
+  })
+
+  it('keeps zodiac, gate, and I Ching rings compact with shared borders instead of margins', () => {
+    expect(wheelRingRadii.zodiacOuter).toBe(wheelRingRadii.gateInner)
+    expect(wheelRingRadii.ichingRadius - wheelRingRadii.gateOuter).toBeLessThanOrEqual(22)
+    expect(wheelRingRadii.outerBorder - wheelRingRadii.ichingRadius).toBeLessThanOrEqual(18)
+  })
+
+  it('builds the I Ching ring from SVG lines, not duplicated Unicode glyphs', () => {
+    const wrapper = mountInSvg(HumanDesignIChingRing, {
+      gates: MANDALA_GATE_ORDER,
+      activeGates: [49, 14],
+      radius: 489,
+    })
+
+    expect(wrapper.findAll('[data-testid="iching-symbol"]')).toHaveLength(64)
+    expect(wrapper.findAll('[data-testid="iching-line"]').length).toBeGreaterThan(64 * 6)
+    expect(wrapper.findAll('text')).toHaveLength(0)
+  })
+
+  it('splits a design and personality gate into true half fills', () => {
+    const wrapper = mountInSvg(BodygraphGates, {
+      chart: {
+        gates: [28],
+        personalityGates: [28],
+        designGates: [28],
+      },
+    })
+    const parts = wrapper.findAll('[data-testid="bodygraph-gate-part"][data-gate="28"]')
+
+    expect(parts).toHaveLength(2)
+    expect(parts.map(part => part.attributes('fill'))).toEqual(['#dd4f52', '#f8fafc'])
+    expect(wrapper.find('[data-testid="bodygraph-gate-part"][data-gate="28"]').exists()).toBe(true)
+  })
+})

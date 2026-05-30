@@ -1,27 +1,35 @@
 import { computeChart } from '../astro/ephemeris.js'
 import { msToJd } from '../astro/timezones.js'
 import { norm360 } from '../astro/zodiac.js'
+import { mandalaAngleForLongitude } from '../../components/human-design/humanDesignWheelGeometry.js'
 
 const STAR_COUNT = 520
 const CHART_SELECTOR = '[data-testid="chart-wheel-svg"]'
 
 const PLANETS = [
-  { name: 'Sun', label: 'Sol', color: '#f6c453', radius: 13 },
-  { name: 'Moon', label: 'Lua', color: '#dbeafe', radius: 8 },
-  { name: 'Mercury', label: 'Mercurio', color: '#7dd3fc', radius: 6 },
-  { name: 'Venus', label: 'Venus', color: '#86efac', radius: 7 },
-  { name: 'Mars', label: 'Marte', color: '#fb7185', radius: 7 },
-  { name: 'Jupiter', label: 'Jupiter', color: '#fbbf24', radius: 10 },
-  { name: 'Saturn', label: 'Saturno', color: '#c4b5fd', radius: 9 },
-  { name: 'Uranus', label: 'Urano', color: '#67e8f9', radius: 6 },
-  { name: 'Neptune', label: 'Netuno', color: '#38bdf8', radius: 6 },
-  { name: 'Pluto', label: 'Plutao', color: '#c084fc', radius: 5 },
+  { name: 'Sun', color: '#f6c453', radius: 13, texture: ['#fff7ad', '#f6c453', '#b45309'] },
+  { name: 'Moon', color: '#dbeafe', radius: 8, texture: ['#f8fafc', '#cbd5e1', '#64748b'] },
+  { name: 'Mercury', color: '#7dd3fc', radius: 6, texture: ['#e0f2fe', '#7dd3fc', '#475569'] },
+  { name: 'Venus', color: '#86efac', radius: 7, texture: ['#dcfce7', '#86efac', '#4d7c0f'] },
+  { name: 'Mars', color: '#fb7185', radius: 7, texture: ['#fecdd3', '#fb7185', '#991b1b'] },
+  { name: 'Jupiter', color: '#fbbf24', radius: 10, texture: ['#fde68a', '#f59e0b', '#92400e'] },
+  { name: 'Saturn', color: '#c4b5fd', radius: 9, texture: ['#ede9fe', '#c4b5fd', '#6d28d9'] },
+  { name: 'Uranus', color: '#67e8f9', radius: 6, texture: ['#cffafe', '#67e8f9', '#0e7490'] },
+  { name: 'Neptune', color: '#38bdf8', radius: 6, texture: ['#dbeafe', '#38bdf8', '#1d4ed8'] },
+  { name: 'Pluto', color: '#c084fc', radius: 5, texture: ['#f3e8ff', '#c084fc', '#581c87'] },
 ]
 
 const SIGNS = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
 
 const clamp = (value, min, max) =>
   Math.max(min, Math.min(max, value))
+
+export const skyRadiusForBounds = ({ chartRadius, maxRadius, viewportWidth }) => {
+  const widthBound = Math.max(160, viewportWidth * 0.48)
+  const upper = Math.min(maxRadius * 0.98, widthBound)
+  const lower = Math.min(chartRadius + 180, upper)
+  return clamp(chartRadius * 2.08, lower, upper)
+}
 
 const mulberry32 = (seed) => {
   let value = seed
@@ -52,9 +60,19 @@ const polarPoint = (cx, cy, radius, longitude) => {
   }
 }
 
-const chartBounds = (canvas) => {
+export const skyLongitudeForHumanDesignLongitude = longitude =>
+  norm360(270 - mandalaAngleForLongitude(longitude))
+
+export const skyLongitudeForPosition = ({ longitude, mode = 'astrology', wheelShift = 0 }) =>
+  mode === 'humanDesign'
+    ? skyLongitudeForHumanDesignLongitude(longitude)
+    : norm360(longitude + wheelShift)
+
+const chartSelector = mode => mode === 'humanDesign' ? '[data-testid="bodygraph-svg"]' : CHART_SELECTOR
+
+const chartBounds = (canvas, mode) => {
   const rect = canvas.getBoundingClientRect()
-  const chart = document.querySelector(CHART_SELECTOR)?.getBoundingClientRect()
+  const chart = document.querySelector(chartSelector(mode))?.getBoundingClientRect()
 
   if (!chart || chart.width < 40 || chart.height < 40) {
     const radius = Math.min(rect.width, rect.height) * 0.44
@@ -78,7 +96,7 @@ const chartBounds = (canvas) => {
     cx,
     cy,
     chartRadius,
-    skyRadius: clamp(chartRadius * 2.08, chartRadius + 180, maxRadius * 0.98),
+    skyRadius: skyRadiusForBounds({ chartRadius, maxRadius, viewportWidth: rect.width }),
   }
 }
 
@@ -107,7 +125,7 @@ const drawLine = (ctx, a, b, stroke, alpha = 1, width = 1, dash = []) => {
   ctx.restore()
 }
 
-const drawEnvironment = (ctx, bounds, wheelShift) => {
+const drawEnvironment = (ctx, bounds, mode, wheelShift) => {
   const { cx, cy, skyRadius, chartRadius } = bounds
 
   const gradient = ctx.createRadialGradient(cx, cy, chartRadius * 0.8, cx, cy, skyRadius)
@@ -124,12 +142,12 @@ const drawEnvironment = (ctx, bounds, wheelShift) => {
   drawRing(ctx, cx, cy, chartRadius * 1.18, '#fbbf24', 0.12, 0.9, [2, 7])
 
   for (let i = 0; i < 12; i++) {
-    const longitude = norm360(i * 30 + wheelShift)
+    const longitude = skyLongitudeForPosition({ longitude: i * 30, mode, wheelShift })
     const inner = polarPoint(cx, cy, chartRadius * 1.06, longitude)
     const outer = polarPoint(cx, cy, skyRadius, longitude)
     drawLine(ctx, inner, outer, '#dbeafe', i % 3 === 0 ? 0.16 : 0.08, i % 3 === 0 ? 1 : 0.6)
 
-    const label = polarPoint(cx, cy, skyRadius * 0.965, norm360(i * 30 + 15 + wheelShift))
+    const label = polarPoint(cx, cy, skyRadius * 0.965, skyLongitudeForPosition({ longitude: i * 30 + 15, mode, wheelShift }))
     ctx.save()
     ctx.globalAlpha = 0.18
     ctx.fillStyle = '#e0f2fe'
@@ -164,18 +182,40 @@ const drawEnvironment = (ctx, bounds, wheelShift) => {
   }
 }
 
-const drawPlanet = (ctx, cx, cy, radius, shiftedLongitude, planet) => {
+const drawPlanet = (ctx, cx, cy, radius, shiftedLongitude, planet, label) => {
   const point = polarPoint(cx, cy, radius, shiftedLongitude)
   const labelPoint = polarPoint(cx, cy, radius + planet.radius + 22, shiftedLongitude)
 
   ctx.save()
+  const body = ctx.createRadialGradient(
+    point.x - planet.radius * 0.35,
+    point.y - planet.radius * 0.42,
+    planet.radius * 0.15,
+    point.x,
+    point.y,
+    planet.radius
+  )
+  body.addColorStop(0, planet.texture[0])
+  body.addColorStop(0.55, planet.texture[1])
+  body.addColorStop(1, planet.texture[2])
+
   ctx.strokeStyle = planet.color
-  ctx.fillStyle = planet.color
+  ctx.fillStyle = body
   ctx.globalAlpha = 0.62
-  ctx.lineWidth = 3
+  ctx.lineWidth = 1.2
   ctx.beginPath()
   ctx.arc(point.x, point.y, planet.radius, 0, Math.PI * 2)
+  ctx.fill()
   ctx.stroke()
+
+  ctx.globalAlpha = 0.24
+  ctx.strokeStyle = 'rgba(255,255,255,0.72)'
+  ctx.lineWidth = 0.7
+  for (let i = 0; i < 3; i++) {
+    ctx.beginPath()
+    ctx.ellipse(point.x, point.y + (i - 1) * planet.radius * 0.26, planet.radius * 0.74, planet.radius * 0.14, -0.18, 0, Math.PI * 2)
+    ctx.stroke()
+  }
 
   ctx.globalAlpha = planet.name === 'Sun' ? 0.26 : 0.16
   ctx.beginPath()
@@ -186,7 +226,8 @@ const drawPlanet = (ctx, cx, cy, radius, shiftedLongitude, planet) => {
   ctx.font = '700 14px system-ui, sans-serif'
   ctx.textAlign = labelPoint.x < cx - 8 ? 'right' : labelPoint.x > cx + 8 ? 'left' : 'center'
   ctx.textBaseline = 'middle'
-  ctx.fillText(planet.label, labelPoint.x, labelPoint.y)
+  ctx.fillStyle = planet.color
+  ctx.fillText(label, labelPoint.x, labelPoint.y)
   ctx.restore()
 }
 
@@ -199,6 +240,8 @@ export const createSkyScene = (canvas) => {
     lon: 0,
     zodiac: 'tropical',
     houseSystem: 'placidus',
+    mode: 'astrology',
+    planetLabels: {},
   }
   let raf = 0
   const pulse = window.setInterval(() => schedule(), 1000)
@@ -225,8 +268,8 @@ export const createSkyScene = (canvas) => {
     resize()
     const width = canvas.clientWidth
     const height = canvas.clientHeight
-    const bounds = chartBounds(canvas)
-    const wheelShift = norm360(-(chart?.cusps?.[0] || 0))
+    const bounds = chartBounds(canvas, context.mode)
+    const wheelShift = context.mode === 'humanDesign' ? 58 : norm360(-(chart?.cusps?.[0] || 0))
 
     ctx.clearRect(0, 0, width, height)
 
@@ -247,14 +290,22 @@ export const createSkyScene = (canvas) => {
     }
     ctx.restore()
 
-    drawEnvironment(ctx, bounds, wheelShift)
+    drawEnvironment(ctx, bounds, context.mode, wheelShift)
 
     const planetRadius = Math.max(bounds.chartRadius * 1.42, bounds.skyRadius * 0.78)
     const byName = new Map((chart?.positions || []).map(item => [item.name, item]))
     for (const planet of PLANETS) {
       const position = byName.get(planet.name)
       if (!position) continue
-      drawPlanet(ctx, bounds.cx, bounds.cy, planetRadius, norm360(position.longitude + wheelShift), planet)
+      drawPlanet(
+        ctx,
+        bounds.cx,
+        bounds.cy,
+        planetRadius,
+        skyLongitudeForPosition({ longitude: position.longitude, mode: context.mode, wheelShift }),
+        planet,
+        context.planetLabels[planet.name] || planet.name
+      )
     }
   }
 
