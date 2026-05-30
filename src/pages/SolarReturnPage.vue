@@ -7,8 +7,8 @@ import { useSettingsStore } from '../stores/settings.js'
 import { useNatalChart } from '../composables/useChart.js'
 import { solarReturnChartForNatal } from '../lib/astro/solar_return.js'
 import { crossAspects, naturalAspects } from '../lib/astro/aspects.js'
-import ChartComparison from '../components/chart/ChartComparison.vue'
-import ChartInsight from '../components/chart/ChartInsight.vue'
+import Comparison from '../components/chart/Comparison.vue'
+import Insight from '../components/chart/Insight.vue'
 
 const { t }    = useI18n()
 const people   = usePeopleStore()
@@ -52,8 +52,8 @@ section.solar-return(data-testid='solar-return-page')
         data-testid='sr-year'
       )
       .text-xs.text-slate-400(v-if='returnDate' data-testid='sr-date') {{ t('chart.solar_return_exact') }}: {{ returnDate }} UTC
-    ChartInsight.mb-6(:chart='sr' :aspects='srNaturalAspects' v-if='sr')
-    ChartComparison(
+    Insight.mb-6(:chart='sr' :aspects='srNaturalAspects' v-if='sr')
+    Comparison(
       v-if='natal && sr'
       :base='natal'
       :comparison='sr'

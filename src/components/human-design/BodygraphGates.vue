@@ -4,7 +4,7 @@ import BodygraphGateMarker from './BodygraphGateMarker.vue'
 import { centerText } from './bodygraphCenterGeometry.js'
 import { gateLayout } from './bodygraphGateGeometry.js'
 import { hoverMatchesGate } from './bodygraphInteraction.js'
-import { activationTone, humanDesignPalette } from './humanDesignVisualTheme.js'
+import { activationTone, humanDesignPalette } from './visualTheme.js'
 
 const props = defineProps({
   chart: { type: Object, required: true },

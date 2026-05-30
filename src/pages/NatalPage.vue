@@ -8,10 +8,10 @@ import { useNatalChart } from '../composables/useChart.js'
 import { naturalAspects } from '../lib/astro/aspects.js'
 import { moonPhaseLabel } from '../lib/astro/ephemeris.js'
 import { birthHeaderForPerson } from '../lib/people/labels.js'
-import ChartWheel from '../components/chart/ChartWheel.vue'
+import Wheel from '../components/chart/Wheel.vue'
 import PlanetList from '../components/chart/PlanetList.vue'
 import AspectTable from '../components/chart/AspectTable.vue'
-import ChartInsight from '../components/chart/ChartInsight.vue'
+import Insight from '../components/chart/Insight.vue'
 import InterpretationPanel from '../components/chart/InterpretationPanel.vue'
 import ModalityRouteSwitch from '../components/modalities/ModalityRouteSwitch.vue'
 
@@ -39,7 +39,7 @@ section.natal-page(data-testid='natal-page')
       .flex.flex-wrap.items-center.gap-2
         ModalityRouteSwitch(active='astrology')
     .grid.gap-6(class='xl:grid-cols-[minmax(220px,0.58fr)_minmax(460px,1fr)_minmax(220px,0.58fr)] xl:items-start')
-      ChartInsight.order-2(
+      Insight.order-2(
         class='xl:order-1'
         :chart='chart'
         :aspects='aspects'
@@ -48,8 +48,8 @@ section.natal-page(data-testid='natal-page')
         v-if='chart'
       )
       .ui-panel.order-1(class='xl:order-2' data-testid='natal-chart-panel')
-        ChartWheel(:natal='chart' :aspect-options='settings.aspectOptions' v-if='chart')
-      ChartInsight.order-3(
+        Wheel(:natal='chart' :aspect-options='settings.aspectOptions' v-if='chart')
+      Insight.order-3(
         class='xl:order-3'
         :chart='chart'
         :aspects='aspects'

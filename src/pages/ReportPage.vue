@@ -10,8 +10,8 @@ import { naturalAspects } from '../lib/astro/aspects.js'
 import { moonPhaseLabel } from '../lib/astro/ephemeris.js'
 import { birthHeaderForPerson } from '../lib/people/labels.js'
 import AspectTable from '../components/chart/AspectTable.vue'
-import ChartInsight from '../components/chart/ChartInsight.vue'
-import ChartWheel from '../components/chart/ChartWheel.vue'
+import Insight from '../components/chart/Insight.vue'
+import Wheel from '../components/chart/Wheel.vue'
 import InterpretationPanel from '../components/chart/InterpretationPanel.vue'
 import PlanetList from '../components/chart/PlanetList.vue'
 import { downloadPng, downloadSvg } from '../lib/export/chartImage.js'
@@ -105,11 +105,11 @@ section.report-page(ref='reportRoot' data-testid='report-page')
     .grid.gap-6(class='xl:grid-cols-[minmax(340px,0.85fr)_minmax(0,1fr)]')
       .grid.gap-6
         .ui-panel
-          ChartWheel(:natal='chart' :aspect-options='settings.aspectOptions' display-mode='print' v-if='chart')
+          Wheel(:natal='chart' :aspect-options='settings.aspectOptions' display-mode='print' v-if='chart')
         .ui-panel
           PlanetList(:chart='chart' v-if='chart')
       .grid.gap-6
-        ChartInsight(:chart='chart' :aspects='aspects' :phase-label='phase' v-if='chart')
+        Insight(:chart='chart' :aspects='aspects' :phase-label='phase' v-if='chart')
         InterpretationPanel(:chart='chart' :aspects='aspects' v-if='chart')
         .ui-panel(v-if='aspects.length')
           AspectTable(:aspects='aspects')

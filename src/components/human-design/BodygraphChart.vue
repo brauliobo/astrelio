@@ -2,8 +2,8 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import BodygraphCore from './BodygraphCore.vue'
-import HumanDesignActivationColumns from './HumanDesignActivationColumns.vue'
-import { humanDesignPalette } from './humanDesignVisualTheme.js'
+import ActivationColumns from './ActivationColumns.vue'
+import { humanDesignPalette } from './visualTheme.js'
 
 const props = defineProps({
   chart: { type: Object, required: true },
@@ -20,7 +20,7 @@ const clearHover = () => { hover.value = null }
 <template lang="pug">
 .bodygraph-chart(data-testid='bodygraph-chart' :data-theme='visualTheme')
   .bodygraph-dashboard
-    HumanDesignActivationColumns(
+    ActivationColumns(
       :chart='chart'
       side='design'
       :hover='hover'
@@ -44,7 +44,7 @@ const clearHover = () => { hover.value = null }
         :visual-theme='visualTheme'
         @hover-change='setHover'
       )
-    HumanDesignActivationColumns(
+    ActivationColumns(
       :chart='chart'
       side='personality'
       :hover='hover'

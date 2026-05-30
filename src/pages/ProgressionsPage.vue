@@ -9,7 +9,7 @@ import { useNatalChart } from '../composables/useChart.js'
 import { secondaryProgression } from '../lib/astro/progressions.js'
 import { localToJdUt, localToUtcMs, offsetMinutesForPerson } from '../lib/astro/timezones.js'
 import { crossAspects } from '../lib/astro/aspects.js'
-import ChartComparison from '../components/chart/ChartComparison.vue'
+import Comparison from '../components/chart/Comparison.vue'
 import ComparisonInsightPanel from '../components/chart/ComparisonInsightPanel.vue'
 
 const { t }    = useI18n()
@@ -55,7 +55,7 @@ section.progressions-page(data-testid='progressions-page')
         data-testid='btn-today'
       ) {{ t('common.today') }}
     ComparisonInsightPanel.mb-6(:aspects='aspects' mode='progression')
-    ChartComparison(
+    Comparison(
       v-if='natal && progressed'
       :base='natal'
       :comparison='progressed'

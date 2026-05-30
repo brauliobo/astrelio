@@ -8,8 +8,8 @@ import { useSettingsStore } from '../stores/settings.js'
 import { useNatalChart } from '../composables/useChart.js'
 import { lunarReturnChartForNatal } from '../lib/astro/lunar_return.js'
 import { crossAspects, naturalAspects } from '../lib/astro/aspects.js'
-import ChartComparison from '../components/chart/ChartComparison.vue'
-import ChartInsight from '../components/chart/ChartInsight.vue'
+import Comparison from '../components/chart/Comparison.vue'
+import Insight from '../components/chart/Insight.vue'
 
 const { t } = useI18n()
 const people = usePeopleStore()
@@ -65,8 +65,8 @@ section.lunar-return-page(data-testid='lunar-return-page')
       ) {{ t('common.today') }}
       .text-xs.text-slate-400(v-if='returnDate' data-testid='lunar-return-exact')
         | {{ t('techniques.lunar_return.exact') }}: {{ returnDate }} UTC
-    ChartInsight.mb-6(:chart='lunarReturn' :aspects='naturalReturnAspects' v-if='lunarReturn')
-    ChartComparison(
+    Insight.mb-6(:chart='lunarReturn' :aspects='naturalReturnAspects' v-if='lunarReturn')
+    Comparison(
       v-if='natal && lunarReturn'
       :base='natal'
       :comparison='lunarReturn'

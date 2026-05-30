@@ -4,7 +4,7 @@ import { CENTERS } from '../../lib/human-design/constants.js'
 import BodygraphCenterGroup from './BodygraphCenterGroup.vue'
 import { centerFills, centerShapes, centerText } from './bodygraphCenterGeometry.js'
 import { gateLayout } from './bodygraphGateGeometry.js'
-import { activationTone, humanDesignPalette } from './humanDesignVisualTheme.js'
+import { activationTone, humanDesignPalette } from './visualTheme.js'
 
 const props = defineProps({
   chart: { type: Object, required: true },

@@ -7,7 +7,7 @@ import { useSettingsStore } from '../stores/settings.js'
 import { buildVedicChart } from '../lib/vedic/chart.js'
 import { AYANAMSHA_KEYS, VEDIC_BODY_COLORS, VEDIC_BODY_LABELS, VEDIC_BODY_SYMBOLS, VEDIC_HOUSE_MODES } from '../lib/vedic/constants.js'
 import { degInSign, signIndex } from '../lib/astro/zodiac.js'
-import ChartWheel from '../components/chart/ChartWheel.vue'
+import Wheel from '../components/chart/Wheel.vue'
 import ModalityRouteSwitch from '../components/modalities/ModalityRouteSwitch.vue'
 
 const { t, tm } = useI18n()
@@ -167,7 +167,7 @@ section.vedic-page(data-testid='vedic-page')
             .text-xs.text-slate-400.mt-1 {{ row.meta }}
 
         .ui-panel.order-1.flex.justify-center(class='xl:order-2' data-testid='vedic-chart-panel')
-          ChartWheel(
+          Wheel(
             :charts='vedicMaps'
             :show-mode-controls='false'
             display-mode='print'

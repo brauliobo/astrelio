@@ -1,11 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { PLANET_COLORS, PLANET_SYMBOLS, WHEEL_RADII, degreeLabel } from './geometry.js'
-
-const PLANET_GLYPH_SCALE = {
-  Venus: 1.16,
-  Mars: 1.16,
-}
+import { PLANET_COLORS, PLANET_SYMBOLS, WHEEL_RADII, degreeLabel, planetGlyphScale } from './geometry.js'
 
 const props = defineProps({
   placements: { type: Array, required: true },
@@ -31,7 +26,7 @@ const glyphs = computed(() =>
     const color = props.mapIndex === 0 ? colors[item.planet.name] || props.color : props.color
     const labelColor = props.mapIndex === 0 ? 'var(--chart-ink)' : props.color
     const name = props.labels?.[item.planet.name] || item.planet.displayName || item.planet.name
-    const glyphScale = PLANET_GLYPH_SCALE[item.planet.name] || 1
+    const glyphScale = planetGlyphScale(item.planet.name)
     return {
       ...item,
       glyph,

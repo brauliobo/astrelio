@@ -2,7 +2,7 @@ import { computeChart } from '../astro/ephemeris.js'
 import { msToJd } from '../astro/timezones.js'
 import { norm360 } from '../astro/zodiac.js'
 import { activationFromLongitude } from '../human-design/activations.js'
-import { mandalaAngleForActivation } from '../../components/human-design/humanDesignWheelGeometry.js'
+import { mandalaAngleForActivation } from '../../components/human-design/wheelCore.js'
 import { moonPhaseLighting, moonPhaseLitPoints } from './moonPhase.js'
 
 const STAR_COUNT = 520

@@ -1,5 +1,5 @@
 <script setup>
-import ChartWheel from './ChartWheel.vue'
+import Wheel from './Wheel.vue'
 
 defineProps({
   natal:   { type: Object, required: true },
@@ -10,5 +10,5 @@ defineProps({
 
 <template lang="pug">
 .biwheel(data-testid='biwheel')
-  ChartWheel(:natal='natal' :overlay='overlay' :aspect-options='aspectOptions')
+  Wheel(:natal='natal' :overlay='overlay' :aspect-options='aspectOptions')
 </template>

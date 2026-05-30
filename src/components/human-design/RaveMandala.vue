@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { MANDALA_GATE_ORDER } from '../../lib/human-design/constants.js'
 import { humanDesignValueLabel } from '../../lib/human-design/labels.js'
-import { humanDesignPalette } from './humanDesignVisualTheme.js'
+import { humanDesignPalette } from './visualTheme.js'
 
 const props = defineProps({
   chart: { type: Object, required: true },

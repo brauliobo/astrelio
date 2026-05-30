@@ -6,9 +6,9 @@ import { useSessionStore } from '../stores/session.js'
 import { useSettingsStore } from '../stores/settings.js'
 import { modalityChart } from '../lib/modalities/index.js'
 import { humanDesignValueLabel } from '../lib/human-design/labels.js'
-import HumanDesignActivationTable from '../components/human-design/HumanDesignActivationTable.vue'
-import HumanDesignInsightPanel from '../components/human-design/HumanDesignInsightPanel.vue'
-import HumanDesignWheel from '../components/human-design/HumanDesignWheel.vue'
+import ActivationTable from '../components/human-design/ActivationTable.vue'
+import InsightPanel from '../components/human-design/InsightPanel.vue'
+import Wheel from '../components/human-design/Wheel.vue'
 import ModalityRouteSwitch from '../components/modalities/ModalityRouteSwitch.vue'
 
 const { t } = useI18n()
@@ -47,8 +47,8 @@ section.human-design-page(data-testid='human-design-page')
         .mt-1.text-lg.font-semibold.text-slate-100(:data-testid='row.testId') {{ row.value }}
 
     .ui-panel
-      HumanDesignWheel(:chart='chart' :visual-theme='settings.theme')
+      Wheel(:chart='chart' :visual-theme='settings.theme')
 
-    HumanDesignInsightPanel(:chart='chart')
-    HumanDesignActivationTable(:chart='chart')
+    InsightPanel(:chart='chart')
+    ActivationTable(:chart='chart')
 </template>

@@ -17,8 +17,8 @@ import { crossAspects, naturalAspects } from '../lib/astro/aspects.js'
 import { localToJdUt, localToUtcMs, offsetMinutesForPerson } from '../lib/astro/timezones.js'
 import Biwheel from '../components/chart/Biwheel.vue'
 import AspectTable from '../components/chart/AspectTable.vue'
-import ChartComparison from '../components/chart/ChartComparison.vue'
-import ChartInsight from '../components/chart/ChartInsight.vue'
+import Comparison from '../components/chart/Comparison.vue'
+import Insight from '../components/chart/Insight.vue'
 import ComparisonInsightPanel from '../components/chart/ComparisonInsightPanel.vue'
 
 const props = defineProps({
@@ -283,7 +283,7 @@ section.timing-page(data-testid='timing-page')
           data-testid='btn-today'
         ) {{ t('common.today') }}
       ComparisonInsightPanel.mb-6(:aspects='progressionAspects' mode='progression')
-      ChartComparison(
+      Comparison(
         v-if='natal && progressed'
         :base='natal'
         :comparison='progressed'
@@ -302,8 +302,8 @@ section.timing-page(data-testid='timing-page')
           data-testid='sr-year'
         )
         .text-xs.text-slate-400(v-if='solarReturnDate' data-testid='sr-date') {{ t('chart.solar_return_exact') }}: {{ solarReturnDate }} UTC
-      ChartInsight.mb-6(:chart='solarReturn' :aspects='solarReturnNaturalAspects' v-if='solarReturn')
-      ChartComparison(
+      Insight.mb-6(:chart='solarReturn' :aspects='solarReturnNaturalAspects' v-if='solarReturn')
+      Comparison(
         v-if='natal && solarReturn'
         :base='natal'
         :comparison='solarReturn'
@@ -363,7 +363,7 @@ section.timing-page(data-testid='timing-page')
         ) {{ t('common.today') }}
         .text-xs.text-slate-400(v-if='directed' data-testid='solar-arc-degrees')
           | {{ t('techniques.solar_arc.arc') }}: {{ solarArcLabel }}°
-      ChartComparison(
+      Comparison(
         v-if='natal && directed'
         :base='natal'
         :comparison='directed'
@@ -389,8 +389,8 @@ section.timing-page(data-testid='timing-page')
         ) {{ t('common.today') }}
         .text-xs.text-slate-400(v-if='lunarReturnDate' data-testid='lunar-return-exact')
           | {{ t('techniques.lunar_return.exact') }}: {{ lunarReturnDate }} UTC
-      ChartInsight.mb-6(:chart='lunarReturn' :aspects='lunarReturnNaturalAspects' v-if='lunarReturn')
-      ChartComparison(
+      Insight.mb-6(:chart='lunarReturn' :aspects='lunarReturnNaturalAspects' v-if='lunarReturn')
+      Comparison(
         v-if='natal && lunarReturn'
         :base='natal'
         :comparison='lunarReturn'

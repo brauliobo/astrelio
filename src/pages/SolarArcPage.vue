@@ -9,7 +9,7 @@ import { useNatalChart } from '../composables/useChart.js'
 import { solarArcDirections } from '../lib/astro/solar_arc.js'
 import { localToJdUt, localToUtcMs, offsetMinutesForPerson } from '../lib/astro/timezones.js'
 import { crossAspects } from '../lib/astro/aspects.js'
-import ChartComparison from '../components/chart/ChartComparison.vue'
+import Comparison from '../components/chart/Comparison.vue'
 
 const { t } = useI18n()
 const people = usePeopleStore()
@@ -59,7 +59,7 @@ section.solar-arc-page(data-testid='solar-arc-page')
       ) {{ t('common.today') }}
       .text-xs.text-slate-400(v-if='directed' data-testid='solar-arc-degrees')
         | {{ t('techniques.solar_arc.arc') }}: {{ arcLabel }}°
-    ChartComparison(
+    Comparison(
       v-if='natal && directed'
       :base='natal'
       :comparison='directed'

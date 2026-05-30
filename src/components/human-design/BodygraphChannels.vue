@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { CHANNEL_CENTERS } from '../../lib/human-design/constants.js'
 import BodygraphChannelLayer from './BodygraphChannelLayer.vue'
 import { channelCurve, channelSegments, gateLaneStrokeCurve, gateSegmentBounds, gateSegmentCurve } from './bodygraphChannelGeometry.js'
-import { activationTone, humanDesignPalette } from './humanDesignVisualTheme.js'
+import { activationTone, humanDesignPalette } from './visualTheme.js'
 
 const props = defineProps({
   chart: { type: Object, required: true },

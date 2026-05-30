@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import BodygraphCenters from './BodygraphCenters.vue'
 import BodygraphChannels from './BodygraphChannels.vue'
 import BodygraphFigure from './BodygraphFigure.vue'
-import { humanDesignPalette } from './humanDesignVisualTheme.js'
+import { humanDesignPalette } from './visualTheme.js'
 
 const props = defineProps({
   chart: { type: Object, required: true },

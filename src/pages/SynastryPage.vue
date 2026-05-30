@@ -10,7 +10,7 @@ import Biwheel from '../components/chart/Biwheel.vue'
 import AspectTable from '../components/chart/AspectTable.vue'
 import ComparisonInsightPanel from '../components/chart/ComparisonInsightPanel.vue'
 import BodygraphChart from '../components/human-design/BodygraphChart.vue'
-import HumanDesignInsightPanel from '../components/human-design/HumanDesignInsightPanel.vue'
+import InsightPanel from '../components/human-design/InsightPanel.vue'
 
 const { t }    = useI18n()
 const people   = usePeopleStore()
@@ -74,7 +74,7 @@ section.synastry-page(data-testid='synastry-page')
         .ui-panel(v-if='aspects.length')
           AspectTable(:aspects='aspects')
     template(v-else)
-      HumanDesignInsightPanel.mb-6(:connection='hdConnection' v-if='hdConnection')
+      InsightPanel.mb-6(:connection='hdConnection' v-if='hdConnection')
       .grid.gap-6(class='lg:grid-cols-2' data-testid='human-design-connection')
         .ui-panel(v-if='hdChartA')
           h2.text-sm.font-semibold.text-slate-100.mb-3 {{ personA.name }}

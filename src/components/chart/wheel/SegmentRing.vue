@@ -1,5 +1,5 @@
 <script setup>
-import WheelArc from './WheelArc.vue'
+import Arc from './Arc.vue'
 
 defineProps({
   sectors: { type: Array, required: true },
@@ -18,7 +18,7 @@ defineProps({
 
 <template lang="pug">
 g(:data-testid='testId' pointer-events='none')
-  WheelArc(
+  Arc(
     v-for='sector in sectors'
     :key='sector.key ?? sector.index'
     :inner-radius='innerRadius'

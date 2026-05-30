@@ -15,7 +15,7 @@ settings.normalize()
 const people = usePeopleStore()
 const session = useSessionStore()
 const activePerson = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
-const SkyBackground = defineAsyncComponent(() => import('./components/sky/SkyBackground.vue'))
+const Background = defineAsyncComponent(() => import('./components/sky/Background.vue'))
 const personPath = computed(() => activePerson.value ? `/person/${activePerson.value.id}` : '/')
 const skyMode = computed(() => route.path === '/human-design' ? 'humanDesign' : 'astrology')
 const activeTheme = computed(() => settings.theme === 'light' ? 'light' : 'dark')
@@ -71,7 +71,7 @@ const contextItems = computed(() => {
 
 <template lang="pug">
 .app-shell.relative.min-h-dvh.flex.flex-col
-  SkyBackground.fixed.inset-0.z-0(
+  Background.fixed.inset-0.z-0(
     :person='activePerson'
     :zodiac='settings.zodiac'
     :house-system='settings.houseSystem'

@@ -12,13 +12,19 @@ const props = defineProps({
   weight: { type: [Number, String], default: 700 },
   anchor: { type: String, default: 'middle' },
   baseline: { type: String, default: 'middle' },
+  scale: { type: Number, default: 1 },
 })
 
 const symbol = computed(() => PLANET_SYMBOLS[props.reference] || props.reference.slice(0, 2))
+const svgTransform = computed(() => props.scale === 1
+  ? null
+  : `translate(${props.x} ${props.y}) scale(${props.scale}) translate(${-props.x} ${-props.y})`
+)
 const htmlStyle = computed(() => ({
   '--glyph-size': `${props.size}px`,
   '--glyph-color': props.color,
   '--glyph-weight': props.weight,
+  '--glyph-scale': props.scale,
 }))
 </script>
 
@@ -32,6 +38,7 @@ text(
   :fill='color'
   :font-size='size'
   :font-weight='weight'
+  :transform='svgTransform'
   class='celestial-glyph-svg'
 ) {{ symbol }}
 span(v-else class='celestial-glyph' :style='htmlStyle') {{ symbol }}
@@ -51,5 +58,6 @@ span(v-else class='celestial-glyph' :style='htmlStyle') {{ symbol }}
   font-weight: var(--glyph-weight);
   min-width: 1.25em;
   place-items: center;
+  transform: scale(var(--glyph-scale));
 }
 </style>

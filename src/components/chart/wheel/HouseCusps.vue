@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import WheelArc from './WheelArc.vue'
+import Arc from './Arc.vue'
 import { CENTER, WHEEL_RADII, midpointLongitude, norm360, polarPoint } from './geometry.js'
 
 const props = defineProps({
@@ -44,7 +44,7 @@ const sectors = computed(() =>
 
 <template lang="pug">
 g(data-testid='house-cusps' pointer-events='none')
-  WheelArc(
+  Arc(
     v-for='sector in sectors'
     :key='`house-sector-${sector.index}`'
     :inner-radius='WHEEL_RADII.houseInner'
