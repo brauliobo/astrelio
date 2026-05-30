@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { mandalaAngleForActivation, mandalaAngleForLongitude, mandalaIndexForGate, referenceBrauliWheelPositions, zodiacSegmentLayout } from '../../src/components/human-design/humanDesignWheelGeometry.js'
-import { skyLongitudeForHumanDesignLongitude, skyLongitudeForPosition, skyRadiusForBounds } from '../../src/lib/sky/scene.js'
+import { activationFromLongitude } from '../../src/lib/human-design/activations.js'
+import { SKY_PLANETS, skyLongitudeForHumanDesignLongitude, skyLongitudeForPosition, skyRadiusForBounds } from '../../src/lib/sky/scene.js'
 
 const angularDistance = (a, b) => {
   const diff = Math.abs(a - b) % 360
@@ -32,9 +33,11 @@ describe('Human Design wheel geometry', () => {
     const aquariusSunLongitude = 323.5
     const skyLongitude = skyLongitudeForHumanDesignLongitude(aquariusSunLongitude)
     const screenAngle = (180 - skyLongitude + 360) % 360
-    const mandalaScreenAngle = (mandalaAngleForLongitude(aquariusSunLongitude) - 90 + 360) % 360
+    const rawLongitudeScreenAngle = (mandalaAngleForLongitude(aquariusSunLongitude) - 90 + 360) % 360
+    const activationScreenAngle = (mandalaAngleForActivation(activationFromLongitude(aquariusSunLongitude)) - 90 + 360) % 360
 
-    expect(angularDistance(screenAngle, mandalaScreenAngle)).toBeLessThan(0.001)
+    expect(angularDistance(screenAngle, activationScreenAngle)).toBeLessThan(0.001)
+    expect(angularDistance(screenAngle, rawLongitudeScreenAngle)).toBeGreaterThan(1)
     expect(skyLongitudeForPosition({ longitude: aquariusSunLongitude, mode: 'humanDesign', wheelShift: 120 }))
       .toBe(skyLongitude)
     expect(skyLongitude).not.toBe((aquariusSunLongitude + 120) % 360)
@@ -49,5 +52,10 @@ describe('Human Design wheel geometry', () => {
 
     expect(radius).toBeLessThanOrEqual(1440 * 0.48)
     expect(radius).toBeGreaterThan(600)
+  })
+
+  it('uses photo texture specs for every sky planet while retaining halo colors', () => {
+    expect(SKY_PLANETS).toHaveLength(10)
+    expect(SKY_PLANETS.every(planet => planet.photo && planet.texture?.length === 3 && planet.color)).toBe(true)
   })
 })

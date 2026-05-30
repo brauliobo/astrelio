@@ -1,22 +1,23 @@
 import { computeChart } from '../astro/ephemeris.js'
 import { msToJd } from '../astro/timezones.js'
 import { norm360 } from '../astro/zodiac.js'
-import { mandalaAngleForLongitude } from '../../components/human-design/humanDesignWheelGeometry.js'
+import { activationFromLongitude } from '../human-design/activations.js'
+import { mandalaAngleForActivation } from '../../components/human-design/humanDesignWheelGeometry.js'
 
 const STAR_COUNT = 520
 const CHART_SELECTOR = '[data-testid="chart-wheel-svg"]'
 
-const PLANETS = [
-  { name: 'Sun', color: '#f6c453', radius: 13, texture: ['#fff7ad', '#f6c453', '#b45309'] },
-  { name: 'Moon', color: '#dbeafe', radius: 8, texture: ['#f8fafc', '#cbd5e1', '#64748b'] },
-  { name: 'Mercury', color: '#7dd3fc', radius: 6, texture: ['#e0f2fe', '#7dd3fc', '#475569'] },
-  { name: 'Venus', color: '#86efac', radius: 7, texture: ['#dcfce7', '#86efac', '#4d7c0f'] },
-  { name: 'Mars', color: '#fb7185', radius: 7, texture: ['#fecdd3', '#fb7185', '#991b1b'] },
-  { name: 'Jupiter', color: '#fbbf24', radius: 10, texture: ['#fde68a', '#f59e0b', '#92400e'] },
-  { name: 'Saturn', color: '#c4b5fd', radius: 9, texture: ['#ede9fe', '#c4b5fd', '#6d28d9'] },
-  { name: 'Uranus', color: '#67e8f9', radius: 6, texture: ['#cffafe', '#67e8f9', '#0e7490'] },
-  { name: 'Neptune', color: '#38bdf8', radius: 6, texture: ['#dbeafe', '#38bdf8', '#1d4ed8'] },
-  { name: 'Pluto', color: '#c084fc', radius: 5, texture: ['#f3e8ff', '#c084fc', '#581c87'] },
+export const SKY_PLANETS = [
+  { name: 'Sun', color: '#f6c453', radius: 13, photo: 'solar', texture: ['#fff7ad', '#f6c453', '#b45309'] },
+  { name: 'Moon', color: '#dbeafe', radius: 8, photo: 'cratered', texture: ['#f8fafc', '#cbd5e1', '#64748b'] },
+  { name: 'Mercury', color: '#7dd3fc', radius: 6, photo: 'cratered', texture: ['#e0f2fe', '#7dd3fc', '#475569'] },
+  { name: 'Venus', color: '#86efac', radius: 7, photo: 'clouds', texture: ['#dcfce7', '#86efac', '#4d7c0f'] },
+  { name: 'Mars', color: '#fb7185', radius: 7, photo: 'dust', texture: ['#fecdd3', '#fb7185', '#991b1b'] },
+  { name: 'Jupiter', color: '#fbbf24', radius: 10, photo: 'bands', texture: ['#fde68a', '#f59e0b', '#92400e'] },
+  { name: 'Saturn', color: '#c4b5fd', radius: 9, photo: 'rings', texture: ['#ede9fe', '#c4b5fd', '#6d28d9'] },
+  { name: 'Uranus', color: '#67e8f9', radius: 6, photo: 'ice', texture: ['#cffafe', '#67e8f9', '#0e7490'] },
+  { name: 'Neptune', color: '#38bdf8', radius: 6, photo: 'storms', texture: ['#dbeafe', '#38bdf8', '#1d4ed8'] },
+  { name: 'Pluto', color: '#c084fc', radius: 5, photo: 'ice', texture: ['#f3e8ff', '#c084fc', '#581c87'] },
 ]
 
 const SIGNS = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
@@ -61,7 +62,7 @@ const polarPoint = (cx, cy, radius, longitude) => {
 }
 
 export const skyLongitudeForHumanDesignLongitude = longitude =>
-  norm360(270 - mandalaAngleForLongitude(longitude))
+  norm360(270 - mandalaAngleForActivation(activationFromLongitude(longitude)))
 
 export const skyLongitudeForPosition = ({ longitude, mode = 'astrology', wheelShift = 0 }) =>
   mode === 'humanDesign'
@@ -206,6 +207,9 @@ const drawPlanet = (ctx, cx, cy, radius, shiftedLongitude, planet, label) => {
   ctx.beginPath()
   ctx.arc(point.x, point.y, planet.radius, 0, Math.PI * 2)
   ctx.fill()
+
+  drawPlanetPhotoTexture(ctx, point, planet)
+
   ctx.stroke()
 
   ctx.globalAlpha = 0.24
@@ -229,6 +233,63 @@ const drawPlanet = (ctx, cx, cy, radius, shiftedLongitude, planet, label) => {
   ctx.fillStyle = planet.color
   ctx.fillText(label, labelPoint.x, labelPoint.y)
   ctx.restore()
+}
+
+const drawPlanetPhotoTexture = (ctx, point, planet) => {
+  const r = planet.radius
+  ctx.save()
+  ctx.beginPath()
+  ctx.arc(point.x, point.y, r, 0, Math.PI * 2)
+  ctx.clip()
+
+  if (planet.photo === 'bands' || planet.photo === 'rings') {
+    const bands = planet.photo === 'rings'
+      ? ['rgba(255,255,255,0.30)', 'rgba(88,28,135,0.24)', 'rgba(250,204,21,0.20)']
+      : ['rgba(255,247,237,0.38)', 'rgba(180,83,9,0.28)', 'rgba(254,215,170,0.34)']
+    for (let index = -4; index <= 4; index += 1) {
+      ctx.globalAlpha = 0.55
+      ctx.fillStyle = bands[Math.abs(index) % bands.length]
+      ctx.fillRect(point.x - r, point.y + index * r * 0.24, r * 2, r * 0.13)
+    }
+  }
+
+  if (planet.photo === 'cratered' || planet.photo === 'dust' || planet.photo === 'ice') {
+    const spots = planet.photo === 'dust' ? 9 : 7
+    for (let index = 0; index < spots; index += 1) {
+      const angle = (index * 137.5) * Math.PI / 180
+      const distance = r * (0.18 + ((index * 17) % 53) / 100)
+      const size = r * (0.12 + ((index * 11) % 19) / 100)
+      ctx.globalAlpha = planet.photo === 'dust' ? 0.28 : 0.22
+      ctx.fillStyle = planet.photo === 'dust' ? 'rgba(127,29,29,0.55)' : 'rgba(15,23,42,0.45)'
+      ctx.beginPath()
+      ctx.arc(point.x + Math.cos(angle) * distance, point.y + Math.sin(angle) * distance, size, 0, Math.PI * 2)
+      ctx.fill()
+    }
+  }
+
+  if (planet.photo === 'clouds' || planet.photo === 'storms' || planet.photo === 'solar') {
+    for (let index = 0; index < 4; index += 1) {
+      ctx.globalAlpha = planet.photo === 'solar' ? 0.18 : 0.24
+      ctx.strokeStyle = planet.photo === 'solar' ? 'rgba(255,255,255,0.72)' : 'rgba(255,255,255,0.48)'
+      ctx.lineWidth = Math.max(0.8, r * 0.12)
+      ctx.beginPath()
+      ctx.ellipse(point.x, point.y + (index - 1.5) * r * 0.22, r * 0.95, r * 0.22, -0.38, 0, Math.PI * 2)
+      ctx.stroke()
+    }
+  }
+
+  ctx.restore()
+
+  if (planet.photo === 'rings') {
+    ctx.save()
+    ctx.globalAlpha = 0.34
+    ctx.strokeStyle = 'rgba(226,232,240,0.72)'
+    ctx.lineWidth = Math.max(1, r * 0.18)
+    ctx.beginPath()
+    ctx.ellipse(point.x, point.y, r * 1.62, r * 0.45, -0.24, 0, Math.PI * 2)
+    ctx.stroke()
+    ctx.restore()
+  }
 }
 
 export const createSkyScene = (canvas) => {
@@ -294,7 +355,7 @@ export const createSkyScene = (canvas) => {
 
     const planetRadius = Math.max(bounds.chartRadius * 1.42, bounds.skyRadius * 0.78)
     const byName = new Map((chart?.positions || []).map(item => [item.name, item]))
-    for (const planet of PLANETS) {
+    for (const planet of SKY_PLANETS) {
       const position = byName.get(planet.name)
       if (!position) continue
       drawPlanet(
