@@ -9,6 +9,7 @@ const messages = {
   en: {
     chart: {
       display_mode: 'Display',
+      transit_orbit: 'Transits',
       display_modes: {
         clean: 'Clean',
         aspects: 'Aspects',
@@ -51,6 +52,15 @@ const mountWheel = (props = {}) => mount(Wheel, {
     plugins: [createI18n({ legacy: false, locale: 'en', messages })],
   },
 })
+
+const markerPoints = (path) => [...path.matchAll(/-?\d+(?:\.\d+)?/g)]
+  .map(match => Number(match[0]))
+  .reduce((points, value, index, values) => {
+    if (index % 2 === 0) points.push({ x: value, y: values[index + 1] })
+    return points
+  }, [])
+
+const distanceFromCenter = ({ x, y }) => Math.hypot(Number(x) - CENTER, Number(y) - CENTER)
 
 describe('chart display modes', () => {
   it('switches degrees, aspects, and point detail visibility by mode', async () => {
@@ -97,6 +107,65 @@ describe('chart display modes', () => {
     })
 
     expect(wrapper.get('[data-testid="chart-wheel-svg"]').attributes('viewBox')).toBe('43.333 43.333 433.333 433.333')
+  })
+
+  it('keeps transit overlays hidden by default and shows them on a wider exterior orbit', async () => {
+    const wrapper = mountWheel({
+      overlay: {
+        ...chart,
+        positions: [
+          position('Sun', 60),
+          position('Moon', 120),
+        ],
+      },
+    })
+
+    expect(wrapper.get('[data-testid="chart-toggle-transit-orbit"]').attributes('aria-pressed')).toBe('false')
+    expect(wrapper.get('[data-testid="chart-wheel-svg"]').attributes('viewBox')).toBe('60 60 400 400')
+    expect(wrapper.find('[data-testid="transit-orbit-frame"]').exists()).toBe(false)
+    expect(wrapper.find('[data-chart-map="overlay"]').exists()).toBe(false)
+
+    await wrapper.get('[data-testid="chart-toggle-transit-orbit"]').trigger('click')
+    await nextTick()
+
+    expect(wrapper.get('[data-testid="chart-wheel-svg"]').attributes('viewBox')).toBe('19.259 19.259 481.481 481.481')
+    expect(wrapper.get('[data-testid="transit-orbit-frame"]').exists()).toBe(true)
+    expect(wrapper.get('[data-chart-map="overlay"] [data-testid="planet-glyph-Sun"]').exists()).toBe(true)
+    expect(wrapper.get('[data-testid="transit-orbit-frame"] circle:nth-child(2)').attributes('r')).toBe(String(WHEEL_RADII.zodiacOuter))
+  })
+
+  it('toggles the exterior transit orbit and resizes back to the natal frame', async () => {
+    const wrapper = mountWheel({
+      overlay: {
+        ...chart,
+        positions: [
+          position('Sun', 60),
+          position('Moon', 120),
+        ],
+      },
+    })
+
+    const toggle = wrapper.get('[data-testid="chart-toggle-transit-orbit"]')
+    const natalSunBefore = wrapper.get('[data-chart-map="natal"] [data-testid="planet-hit-Sun"]').attributes()
+    expect(toggle.attributes('aria-pressed')).toBe('false')
+
+    await toggle.trigger('click')
+    await nextTick()
+
+    const natalSunAfter = wrapper.get('[data-chart-map="natal"] [data-testid="planet-hit-Sun"]').attributes()
+    expect(toggle.attributes('aria-pressed')).toBe('true')
+    expect(wrapper.get('[data-testid="chart-wheel-svg"]').attributes('viewBox')).toBe('19.259 19.259 481.481 481.481')
+    expect(wrapper.get('[data-testid="transit-orbit-frame"]').exists()).toBe(true)
+    expect(natalSunAfter.cx).toBe(natalSunBefore.cx)
+    expect(natalSunAfter.cy).toBe(natalSunBefore.cy)
+    expect(distanceFromCenter(markerPoints(wrapper.get('[data-testid="angle-arrow-asc"]').attributes('d'))[0])).toBeCloseTo(WHEEL_RADII.transitOuter + 15, 4)
+
+    await toggle.trigger('click')
+    await nextTick()
+
+    expect(toggle.attributes('aria-pressed')).toBe('false')
+    expect(wrapper.get('[data-testid="chart-wheel-svg"]').attributes('viewBox')).toBe('60 60 400 400')
+    expect(wrapper.find('[data-testid="transit-orbit-frame"]').exists()).toBe(false)
   })
 
   it('defaults simple charts to clean mode on small screens', async () => {
@@ -149,13 +218,6 @@ describe('chart display modes', () => {
   it('renders ascendant and midheaven as compact arrow markers', () => {
     const wrapper = mountWheel()
     const markers = wrapper.get('[data-testid="angle-markers"]')
-    const markerPoints = (path) => [...path.matchAll(/-?\d+(?:\.\d+)?/g)]
-      .map(match => Number(match[0]))
-      .reduce((points, value, index, values) => {
-        if (index % 2 === 0) points.push({ x: value, y: values[index + 1] })
-        return points
-      }, [])
-    const distanceFromCenter = ({ x, y }) => Math.hypot(x - CENTER, y - CENTER)
 
     expect(markers.findAll('[data-testid^="angle-arrow-"]')).toHaveLength(2)
     expect(markers.get('[data-testid="angle-arrow-asc"]').attributes('fill')).toBe('var(--chart-angle-asc, var(--chart-angle-accent))')

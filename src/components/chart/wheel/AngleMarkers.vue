@@ -5,6 +5,7 @@ import { WHEEL_RADII, norm360, polarPoint, radialTrianglePath } from './geometry
 const props = defineProps({
   chart: { type: Object, required: true },
   wheelShift: { type: Number, required: true },
+  baseRadius: { type: Number, default: WHEEL_RADII.zodiacOuter },
 })
 
 const ANGLE_MARKERS = [
@@ -22,12 +23,12 @@ const MARKER_OFFSET = {
   label: 28,
 }
 
-const markerPoint = (radius, longitude) => polarPoint(WHEEL_RADII.zodiacOuter + radius, longitude)
+const markerPoint = (radius, longitude) => polarPoint(props.baseRadius + radius, longitude)
 const outwardArrowPath = (longitude) =>
   radialTrianglePath(
     longitude,
-    WHEEL_RADII.zodiacOuter + MARKER_OFFSET.arrowTip,
-    WHEEL_RADII.zodiacOuter + MARKER_OFFSET.arrowBase,
+    props.baseRadius + MARKER_OFFSET.arrowTip,
+    props.baseRadius + MARKER_OFFSET.arrowBase,
     MARKER_OFFSET.arrowHalfWidth,
   )
 

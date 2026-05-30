@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import SelectionSummary from './SelectionSummary.vue'
 import DisplayMode from './DisplayMode.vue'
 import AngleMarkers from './wheel/AngleMarkers.vue'
@@ -8,7 +9,7 @@ import NakshatraRing from './wheel/NakshatraRing.vue'
 import TickRing from './wheel/TickRing.vue'
 import Frame from './wheel/Frame.vue'
 import ZodiacRing from './wheel/ZodiacRing.vue'
-import { VIEWBOX_SIZE, mapsFromProps, norm360 } from './wheel/geometry.js'
+import { CENTER, VIEWBOX_SIZE, WHEEL_RADII, mapsFromProps, norm360 } from './wheel/geometry.js'
 
 const displayModes = ['clean', 'aspects', 'detailed', 'print']
 const zoomMin = 0.85
@@ -55,6 +56,7 @@ const props = defineProps({
   defaultZoomBase: { type: Number, default: 1.3 },
 })
 const emit = defineEmits(['highlight', 'clear-highlight', 'toggle-highlight', 'update:display-mode'])
+const { t } = useI18n()
 
 const hoverHighlight = ref(null)
 const pinnedHighlight = ref(null)
@@ -63,6 +65,7 @@ const sharedPinnedHighlight = ref(null)
 const localDisplayMode = ref('')
 const isSmallScreen = ref(false)
 const zoomLevel = ref(1)
+const showExteriorOrbit = ref(false)
 const chartHighlightEvent = 'astrelio-chart-highlight'
 let smallScreenQuery = null
 
@@ -71,8 +74,14 @@ const updateSmallScreen = () => {
 }
 
 const maps = computed(() => mapsFromProps(props))
+const hasExteriorOrbitOption = computed(() => maps.value.some(map => map.exteriorOrbit))
+const visibleMaps = computed(() =>
+  maps.value.filter(map => !map.exteriorOrbit || showExteriorOrbit.value)
+)
 const baseChart = computed(() => maps.value[0]?.chart || null)
-const isSimpleChart = computed(() => maps.value.length === 1)
+const isSimpleChart = computed(() => visibleMaps.value.length === 1)
+const hasExteriorOrbit = computed(() => visibleMaps.value.some(map => map.exteriorOrbit))
+const zoomBase = computed(() => hasExteriorOrbit.value ? Math.min(props.defaultZoomBase, 1.08) : props.defaultZoomBase)
 const automaticDisplayMode = computed(() =>
   isSimpleChart.value && isSmallScreen.value ? 'clean' : 'detailed'
 )
@@ -83,7 +92,7 @@ const activeDisplayMode = computed(() => {
 })
 const displayOptions = computed(() => modeSettings[activeDisplayMode.value])
 const displayMaps = computed(() =>
-  maps.value.map(map => ({
+  visibleMaps.value.map(map => ({
     ...map,
     showAspects: displayOptions.value.aspects && map.showAspects,
   }))
@@ -94,7 +103,7 @@ const style = computed(() => ({
   maxWidth: '100%',
 }))
 const zoomViewBox = computed(() => {
-  const viewSize = VIEWBOX_SIZE / (props.defaultZoomBase * zoomLevel.value)
+  const viewSize = VIEWBOX_SIZE / (zoomBase.value * zoomLevel.value)
   const offset = (VIEWBOX_SIZE - viewSize) / 2
   return [offset, offset, viewSize, viewSize]
     .map(value => Number(value.toFixed(3)))
@@ -192,6 +201,10 @@ const resetZoom = () => {
   zoomLevel.value = 1
 }
 
+const toggleExteriorOrbit = () => {
+  showExteriorOrbit.value = !showExteriorOrbit.value
+}
+
 const onWheelKeydown = (event) => {
   if (event.key === '+' || event.key === '=') {
     event.preventDefault()
@@ -247,6 +260,15 @@ onBeforeUnmount(() => {
       v-if='baseChart'
       aria-label='Chart zoom controls'
     )
+      button.chart-zoom-button.chart-transit-orbit-toggle(
+        v-if='hasExteriorOrbitOption'
+        type='button'
+        data-testid='chart-toggle-transit-orbit'
+        :class='{ "chart-transit-orbit-toggle--active": showExteriorOrbit }'
+        :aria-pressed='showExteriorOrbit'
+        :aria-label='t("chart.transit_orbit")'
+        @click='toggleExteriorOrbit'
+      ) {{ t('chart.transit_orbit') }}
       button.chart-zoom-button(
         type='button'
         data-testid='chart-zoom-out'
@@ -283,6 +305,25 @@ onBeforeUnmount(() => {
       data-testid='chart-wheel-svg'
     )
       Frame
+      g(v-if='hasExteriorOrbit' data-testid='transit-orbit-frame' pointer-events='none')
+        circle(
+          :cx='CENTER'
+          :cy='CENTER'
+          :r='WHEEL_RADII.transitOuter'
+          fill='none'
+          stroke='var(--chart-frame-stroke)'
+          stroke-width='1.25'
+          stroke-opacity='0.62'
+        )
+        circle(
+          :cx='CENTER'
+          :cy='CENTER'
+          :r='WHEEL_RADII.transitInner'
+          fill='none'
+          stroke='var(--chart-overlay-accent)'
+          stroke-width='0.9'
+          stroke-opacity='0.34'
+        )
       NakshatraRing(v-if='showNakshatraRing' :wheel-shift='wheelShift')
       ChartMap(
         v-for='(map, index) in displayMaps'
@@ -305,6 +346,7 @@ onBeforeUnmount(() => {
         v-if='displayMaps[0]?.showAngles'
         :chart='baseChart'
         :wheel-shift='wheelShift'
+        :base-radius='hasExteriorOrbit ? WHEEL_RADII.transitOuter : WHEEL_RADII.zodiacOuter'
       )
     SelectionSummary(
       v-if='activeBodies.length || activeAspectKey'
@@ -343,6 +385,16 @@ onBeforeUnmount(() => {
   font-size: 0.6875rem;
   font-weight: 800;
   min-width: 2.875rem;
+}
+
+.chart-transit-orbit-toggle {
+  font-size: 0.6875rem;
+  min-width: 4.25rem;
+}
+
+.chart-transit-orbit-toggle--active {
+  background: var(--chart-overlay-accent);
+  color: var(--chart-control-active-text, var(--app-bg));
 }
 
 .chart-zoom-button:hover:not(:disabled),

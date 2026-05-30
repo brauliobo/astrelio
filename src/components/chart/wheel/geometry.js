@@ -8,6 +8,8 @@ export const CENTER = VIEWBOX_SIZE / 2
 
 // Shared geometry constants keep all SVG layers aligned on one coordinate system.
 export const WHEEL_RADII = {
+  transitOuter: 232,
+  transitInner: 188,
   zodiacOuter: 188,
   zodiacInner: 160,
   houseOuter: 156,
@@ -179,6 +181,7 @@ export const chartToMap = (chart, index = 0, options = {}) => ({
   planetColors: options.planetColors || null,
   planetLabels: options.planetLabels || null,
   planetGlyphRenderer: options.planetGlyphRenderer || null,
+  exteriorOrbit: options.exteriorOrbit || false,
 })
 
 export const mapsFromProps = ({ natal, overlay, charts }) => {
@@ -192,7 +195,12 @@ export const mapsFromProps = ({ natal, overlay, charts }) => {
   }
 
   const maps = []
-  if (natal) maps.push(chartToMap(natal, 0, { id: 'natal' }))
+  if (natal) maps.push(chartToMap(natal, 0, {
+    id: 'natal',
+    planetBand: overlay
+      ? { inner: 78, outer: 150, tickRadius: WHEEL_RADII.houseOuter - 4 }
+      : null,
+  }))
   if (overlay) {
     maps.push(chartToMap(overlay, 1, {
       id: 'overlay',
@@ -201,6 +209,13 @@ export const mapsFromProps = ({ natal, overlay, charts }) => {
       showHouseLabels: false,
       showAspects: false,
       showAngles: false,
+      exteriorOrbit: true,
+      planetBand: {
+        inner: WHEEL_RADII.transitInner,
+        outer: WHEEL_RADII.transitOuter,
+        tickRadius: WHEEL_RADII.zodiacOuter + 8,
+        glyphPadding: 8,
+      },
     }))
   }
   return maps

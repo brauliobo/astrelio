@@ -80,6 +80,7 @@ section.natal-page(data-testid='natal-page')
       .ui-panel.order-1(class='xl:order-2' data-testid='natal-chart-panel')
         Wheel(
           :natal='chart'
+          :overlay='transit'
           :aspect-options='settings.aspectOptions'
           :planet-glyph-renderer='settings.planetGlyphRenderer'
           v-if='chart'

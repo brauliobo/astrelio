@@ -42,6 +42,8 @@ const syntheticPoint = (name, longitude) => longitude === null || longitude === 
     longitude: norm360(longitude),
     latitude: 0,
     speed: 0,
+    motion: 'direct',
+    stationary: false,
     retrograde: false,
     synthetic: true,
   }

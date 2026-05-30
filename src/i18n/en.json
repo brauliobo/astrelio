@@ -290,6 +290,7 @@
     "solar_return_positions": "Solar return positions",
     "no_data": "No data to display",
     "summary": "Summary",
+    "transit_orbit": "Transits",
     "aspect_grid_natal": "Natal aspect grid",
     "aspect_grid_comparison": "Aspect grid",
     "display_mode": "Display",

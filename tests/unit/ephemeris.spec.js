@@ -67,7 +67,14 @@ describe('ephemeris', () => {
     const tSun = tropical.positions.find(p => p.name === 'Sun')
     const sSun = sidereal.positions.find(p => p.name === 'Sun')
 
-    expect(tropical.positions.find(p => p.name === 'Pluto').retrograde).toBe(true)
+    const pluto = tropical.positions.find(p => p.name === 'Pluto')
+    const chiron = tropical.positions.find(p => p.name === 'Chiron')
+    const northNode = tropical.positions.find(p => p.name === 'NorthNode')
+
+    expect(pluto.retrograde).toBe(true)
+    expect(pluto.motion).toBe('stationary')
+    expect(chiron.motion).toBe('stationary')
+    expect(northNode.motion).toBe('retrograde')
     expect(tropical.positions.find(p => p.name === 'Mercury').retrograde).toBe(false)
     expect(tSun.longitude - sSun.longitude).toBeCloseTo(23.656068, 5)
   })

@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { fortuneLongitude } from '../../lib/astro/aspectarian.js'
 import { houseOf } from '../../lib/astro/houses.js'
+import { motionMarker } from '../../lib/astro/motion.js'
 import { signIndex, degInSign, norm360 } from '../../lib/astro/zodiac.js'
 
 const props = defineProps({
@@ -32,7 +33,7 @@ const rows = computed(() =>
     sign:  signs.value[signIndex(p.longitude)],
     deg:   fmt(p.longitude),
     house: houseOf(p.longitude, props.chart.cusps),
-    retro: p.retrograde
+    motion: motionMarker(p)
   }))
 )
 
@@ -150,5 +151,5 @@ onBeforeUnmount(() => {
         td.py-1.px-2.text-slate-100 {{ r.sign }}
         td.py-1.px-2.tabular-nums {{ r.deg }}
         td.py-1.px-2.text-slate-400 {{ t('chart.house_system') ? '' : '' }} {{ r.house }}
-        td.py-1.pl-2.text-amber-300(v-if='r.retro') ℞
+        td.py-1.pl-2.text-amber-300(v-if='r.motion') {{ r.motion }}
 </template>

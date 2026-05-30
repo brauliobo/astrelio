@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { aspectMatrix, chartAspectPoints } from '../../lib/astro/aspectarian.js'
+import { motionMarker } from '../../lib/astro/motion.js'
 import { degInSign, signIndex } from '../../lib/astro/zodiac.js'
 import CelestialGlyph from '../common/CelestialGlyph.vue'
 import { PLANET_SYMBOLS, ZODIAC_SIGNS } from './wheel/geometry.js'
@@ -61,6 +62,7 @@ const activeAspectKey = computed(() => localHighlight.value?.aspectKey || '')
 
 const pointLabel = (name) => t(`planets.${name}`)
 const pointSymbol = (name) => PLANET_SYMBOLS[name] || name.slice(0, 2)
+const pointMotion = (point) => motionMarker(point)
 const aspectSymbol = (aspect) => ASPECT_SYMBOLS[aspect?.type] || ''
 const aspectKey = (aspect) => aspect ? `${aspect.a}-${aspect.b}-${aspect.type}` : ''
 const pointKey = (point, prefix) => `${prefix}-${point.name}`
@@ -194,7 +196,7 @@ onBeforeUnmount(() => {
         span.tabular-nums {{ formatPosition(point.longitude).degrees }}
         span.aspect-sign {{ formatPosition(point.longitude).sign }}
         span.tabular-nums {{ formatPosition(point.longitude).minutes }}
-        span.aspect-retro(v-if='point.retrograde') R
+        span.aspect-retro(v-if='pointMotion(point)') {{ pointMotion(point) }}
     .aspect-matrix-stage
       .aspect-matrix-grid(:style='gridStyle' role='grid' :aria-label='title')
         .aspect-matrix-corner
@@ -284,7 +286,7 @@ onBeforeUnmount(() => {
         span.tabular-nums {{ formatPosition(point.longitude).degrees }}
         span.aspect-sign {{ formatPosition(point.longitude).sign }}
         span.tabular-nums {{ formatPosition(point.longitude).minutes }}
-        span.aspect-retro(v-if='point.retrograde') R
+        span.aspect-retro(v-if='pointMotion(point)') {{ pointMotion(point) }}
   .flex.flex-wrap.gap-x-3.gap-y-1.mt-3.text-xs.text-slate-500
     span(v-for='type in Object.keys(ASPECT_SYMBOLS)' :key='type' :class='aspectClass(type)')
       | {{ ASPECT_SYMBOLS[type] }} {{ t(`aspects.${type}`) }}

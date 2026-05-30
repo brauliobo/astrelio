@@ -1,5 +1,6 @@
 import { norm360, toSidereal } from './zodiac.js'
 import { calcHouses } from './houses.js'
+import { motionStateForSpeed } from './motion.js'
 import { SWISS_BODY, SWISS_FLAGS, swissPosition } from './swisseph.js'
 
 // VegaPlus-style charts use Swiss Ephemeris longitudes; keep displayed bodies
@@ -22,11 +23,14 @@ const sidereal = (lon, jd, mode) => mode === 'sidereal' ? toSidereal(lon, jd) : 
 const swissPoint = (name, body, jd, mode) => {
   const result = swissPosition(body, jd, SWISS_FLAGS)
   const speed = result[3]
+  const motion = motionStateForSpeed(speed)
   return {
     name,
     longitude: sidereal(result[0], jd, mode),
     latitude: result[1],
     speed,
+    motion,
+    stationary: motion === 'stationary',
     retrograde: speed < 0,
   }
 }

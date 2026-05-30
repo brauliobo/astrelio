@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { motionMarker } from '../../../lib/astro/motion.js'
 import CelestialGlyph from '../../common/CelestialGlyph.vue'
 import { PLANET_COLORS, PLANET_SYMBOLS, WHEEL_RADII, degreeLabel, planetGlyphScale } from './geometry.js'
 
@@ -29,6 +30,7 @@ const glyphs = computed(() =>
     const labelColor = props.mapIndex === 0 ? 'var(--chart-ink)' : props.color
     const name = props.labels?.[item.planet.name] || item.planet.displayName || item.planet.name
     const glyphScale = planetGlyphScale(item.planet.name)
+    const motion = motionMarker(item.planet)
     return {
       ...item,
       glyph,
@@ -40,6 +42,7 @@ const glyphs = computed(() =>
       name,
       symbol: symbols[item.planet.name],
       degree: degreeLabel(item.planet.longitude),
+      motion,
       showDegreeLabel: item.showDegreeLabel !== false,
       fontSize: props.mapIndex === 0 ? 22 : 17,
       glyphScale,
@@ -111,7 +114,7 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
       dominant-baseline='central'
     ) {{ item.degree }}
     text(
-      v-if='item.planet.retrograde'
+      v-if='item.motion'
       :x='item.retrograde.x'
       :y='item.retrograde.y'
       :fill='item.labelColor'
@@ -119,7 +122,7 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
       :text-anchor='item.labelAnchor'
       class='planet-retrograde-label'
       dominant-baseline='central'
-    ) R
+    ) {{ item.motion }}
 </template>
 
 <style scoped>
