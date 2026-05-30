@@ -11,7 +11,6 @@ import ZodiacRing from './wheel/ZodiacRing.vue'
 import { VIEWBOX_SIZE, mapsFromProps, norm360 } from './wheel/geometry.js'
 
 const displayModes = ['clean', 'aspects', 'detailed', 'print']
-const zoomBase = 1.3
 const zoomMin = 0.85
 const zoomMax = 1.6
 const zoomStep = 0.15
@@ -52,6 +51,7 @@ const props = defineProps({
   showModeControls: { type: Boolean, default: true },
   zodiacSymbols: { type: Array, default: null },
   showNakshatraRing: { type: Boolean, default: false },
+  defaultZoomBase: { type: Number, default: 1.3 },
 })
 const emit = defineEmits(['highlight', 'clear-highlight', 'toggle-highlight', 'update:display-mode'])
 
@@ -93,7 +93,7 @@ const style = computed(() => ({
   maxWidth: '100%',
 }))
 const zoomViewBox = computed(() => {
-  const viewSize = VIEWBOX_SIZE / (zoomBase * zoomLevel.value)
+  const viewSize = VIEWBOX_SIZE / (props.defaultZoomBase * zoomLevel.value)
   const offset = (VIEWBOX_SIZE - viewSize) / 2
   return [offset, offset, viewSize, viewSize]
     .map(value => Number(value.toFixed(3)))

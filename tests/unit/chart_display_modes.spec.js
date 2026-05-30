@@ -90,6 +90,15 @@ describe('chart display modes', () => {
     expect(toolbarText.indexOf('100%')).toBeLessThan(toolbarText.indexOf('Clean'))
   })
 
+  it('allows wider default framing for wheels with an outer nakshatra ring', () => {
+    const wrapper = mountChartWheel({
+      defaultZoomBase: 1.2,
+      showNakshatraRing: true,
+    })
+
+    expect(wrapper.get('[data-testid="chart-wheel-svg"]').attributes('viewBox')).toBe('43.333 43.333 433.333 433.333')
+  })
+
   it('defaults simple charts to clean mode on small screens', async () => {
     const originalMatchMedia = window.matchMedia
     window.matchMedia = vi.fn(() => ({

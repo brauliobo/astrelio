@@ -172,6 +172,7 @@ section.vedic-page(data-testid='vedic-page')
             :show-mode-controls='false'
             display-mode='print'
             :show-nakshatra-ring='true'
+            :default-zoom-base='1.2'
             v-if='vedicMaps.length'
           )
 
