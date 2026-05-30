@@ -11,6 +11,15 @@
 - See `src/components/chart/wheel/README.md` for the layer responsibilities.
 - `ChartWheel.vue` is only the orchestrator; put SVG parts such as arcs, ticks, houses, planets, aspects, and angles in focused child components.
 - Preserve exact astrology geometry for cusps, planet longitudes, and aspect endpoints; offset glyph labels only for readability.
+- Keep interaction centered on the wheel: zoom, selection, highlight, and summary should stay compact and stable inside the chart surface.
+
+## UX Structure
+
+- Keep the top navigation condensed to primary workspaces, not individual techniques.
+- Use `TimingPage.vue` as the shared workspace for transits, progressions, solar return, profections, solar arc, and lunar return.
+- Preserve legacy technique routes as deep links into the timing workspace.
+- Prefer presets and disclosure sections over always-visible advanced controls.
+- Keep the persistent chart context bar concise: active chart, birth data, system, and preset only.
 
 ## Git
 
