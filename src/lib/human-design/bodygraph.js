@@ -1,6 +1,7 @@
 import { localToJdUt, offsetMinutesForPerson } from '../astro/timezones.js'
 import { activationsForChart, channelKey, personalityDesignCharts } from './activations.js'
 import { CENTER_COORDS, CENTERS, CHANNEL_CENTERS, CHANNEL_CIRCUITS, HARMONIC_GATES } from './constants.js'
+import { enrichHumanDesignChart } from './details.js'
 
 const sortedUnique = values => [...new Set(values)].sort()
 
@@ -102,18 +103,20 @@ const definitionFor = (channels, centers) => {
 const circuitriesFor = (channels) =>
   sortedUnique(channels.map(channel => CHANNEL_CIRCUITS[channel]).filter(Boolean))
 
-export const deriveHumanDesignGraph = ({ personId, personName, birthJd, designJd, personality, design }) => {
+export const deriveHumanDesignGraph = ({ personId, personName, birthJd, designJd, lat, lon, personality, design }) => {
   const gates = collectGates(personality, design)
   const personalityGates = collectGates(personality)
   const designGates = collectGates(design)
   const channels = channelsForGates(gates)
   const centers = centersForChannels(channels)
 
-  return {
+  return enrichHumanDesignChart({
     personId,
     personName,
     birthJd,
     designJd,
+    lat,
+    lon,
     personality,
     design,
     profile: `${personality.Sun?.line || '-'} / ${design.Sun?.line || '-'}`,
@@ -127,7 +130,7 @@ export const deriveHumanDesignGraph = ({ personId, personName, birthJd, designJd
     personalityGates,
     designGates,
     circuits: circuitriesFor(channels),
-  }
+  })
 }
 
 export const buildHumanDesignChart = (person) => {
@@ -141,9 +144,33 @@ export const buildHumanDesignChart = (person) => {
     personName: person.name,
     birthJd: jdUt,
     designJd,
+    lat: person.lat,
+    lon: person.lon,
     personality: activationsForChart(personalityChart),
     design: activationsForChart(designChart),
   })
 }
 
 export { CENTER_COORDS, CENTERS, CHANNEL_CENTERS, CHANNEL_CIRCUITS, HARMONIC_GATES }
+export {
+  buildHumanDesignTransitChart,
+  deriveHumanDesignDetails,
+  deriveHumanDesignVariables,
+  deriveIncarnationCross,
+  humanDesignTeamAnalysis,
+  humanDesignTransitConnection,
+} from './details.js'
+export {
+  activationLibraryEntry,
+  channelLibraryEntry,
+  circuitLibrarySummary,
+  gateExplorerEntry as humanDesignGateExplorer,
+  gateLibraryEntry,
+  lineLibraryEntry,
+  LINE_ARCHETYPES,
+  mandalaDegreeDetailForActivation,
+  mandalaDegreeSpanForGate,
+  PLANET_ACTIVATION_MEANINGS,
+  planetLibraryEntry,
+  STREAM_BY_CHANNEL,
+} from './gate-library.js'

@@ -3,6 +3,13 @@ import { norm180, norm360 } from '../astro/zodiac.js'
 import { GATE_ORDER, HD_PLANETS } from './constants.js'
 
 export const HD_GATE_ANCHOR_OFFSET = 58
+const GATE_ARC_DEGREES = 360 / 64
+const LINE_ARC_DEGREES = GATE_ARC_DEGREES / 6
+const COLOR_ARC_DEGREES = LINE_ARC_DEGREES / 6
+const TONE_ARC_DEGREES = COLOR_ARC_DEGREES / 6
+const BASE_ARC_DEGREES = TONE_ARC_DEGREES / 5
+
+const roundDegree = value => Number(value.toFixed(6))
 
 export const channelKey = (a, b) =>
   [Number(a), Number(b)].sort((left, right) => left - right).join('-')
@@ -10,15 +17,45 @@ export const channelKey = (a, b) =>
 export const activationFromLongitude = (longitude) => {
   const degrees = norm360(longitude + HD_GATE_ANCHOR_OFFSET)
   const percentage = degrees / 360
+  const gateIndex = Math.floor(percentage * 64)
+  const gateStart = gateIndex * GATE_ARC_DEGREES
+  const withinGate = degrees - gateStart
+  const lineIndex = Math.floor(withinGate / LINE_ARC_DEGREES)
+  const lineStart = gateStart + (lineIndex * LINE_ARC_DEGREES)
+  const withinLine = degrees - lineStart
+  const colorIndex = Math.floor(withinLine / COLOR_ARC_DEGREES)
+  const colorStart = lineStart + (colorIndex * COLOR_ARC_DEGREES)
+  const withinColor = degrees - colorStart
+  const toneIndex = Math.floor(withinColor / TONE_ARC_DEGREES)
+  const toneStart = colorStart + (toneIndex * TONE_ARC_DEGREES)
+  const withinTone = degrees - toneStart
+  const baseIndex = Math.floor(withinTone / BASE_ARC_DEGREES)
+  const baseStart = toneStart + (baseIndex * BASE_ARC_DEGREES)
 
   return {
-    gate: GATE_ORDER[Math.floor(percentage * 64)],
-    line: (Math.floor(percentage * 384) % 6) + 1,
-    color: (Math.floor(percentage * 2304) % 6) + 1,
-    tone: (Math.floor(percentage * 13824) % 6) + 1,
-    base: (Math.floor(percentage * 69120) % 5) + 1,
+    gate: GATE_ORDER[gateIndex],
+    line: lineIndex + 1,
+    color: colorIndex + 1,
+    tone: toneIndex + 1,
+    base: baseIndex + 1,
     longitude: norm360(longitude),
     progress: percentage,
+    mandala: {
+      raveLongitude: roundDegree(degrees),
+      gateIndex,
+      gateStart: roundDegree(gateStart),
+      gateEnd: roundDegree(gateStart + GATE_ARC_DEGREES),
+      gateDegrees: roundDegree(withinGate),
+      lineDegrees: roundDegree(withinLine),
+      colorDegrees: roundDegree(withinColor),
+      toneDegrees: roundDegree(withinTone),
+      baseDegrees: roundDegree(degrees - baseStart),
+      gateArcDegrees: GATE_ARC_DEGREES,
+      lineArcDegrees: LINE_ARC_DEGREES,
+      colorArcDegrees: COLOR_ARC_DEGREES,
+      toneArcDegrees: TONE_ARC_DEGREES,
+      baseArcDegrees: BASE_ARC_DEGREES,
+    },
   }
 }
 
