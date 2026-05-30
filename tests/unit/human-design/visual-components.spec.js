@@ -107,7 +107,7 @@ describe('Human Design visual components', () => {
     expect(wrapper.findAll('text')).toHaveLength(0)
   })
 
-  it('renders planet glyphs with a shared normalized visual scale on the Human Design wheel', () => {
+  it('renders planet glyphs with the shared fixed-width SVG renderer on the Human Design wheel', () => {
     const wrapper = mountInSvg(WheelPlanets, {
       chart: {
         personality: {
@@ -121,12 +121,14 @@ describe('Human Design visual components', () => {
       },
     })
 
-    expect(wrapper.findAll('.celestial-glyph-svg').every(glyph => glyph.attributes('font-size') === '28')).toBe(true)
-    expect(wrapper.get('[data-planet="Sun"]').attributes('transform')).toBeUndefined()
-    expect(wrapper.get('[data-planet="Mercury"]').attributes('transform')).toContain('scale(1.42 1.08)')
-    expect(wrapper.get('[data-planet="Venus"]').attributes('transform')).toContain('scale(1.35 1.18)')
-    expect(wrapper.get('[data-planet="Mars"]').attributes('transform')).toContain('scale(1.35 1.18)')
-    expect(wrapper.get('[data-planet="Pluto"]').attributes('transform')).toContain('scale(0.96 1)')
+    const glyphs = wrapper.findAll('.celestial-glyph-svg')
+
+    expect(glyphs).toHaveLength(5)
+    expect(glyphs.every(glyph => glyph.find('path').exists())).toBe(true)
+    expect(wrapper.get('[data-planet="Sun"]').attributes('transform')).toContain('scale(2.3333333333333335 2.3333333333333335)')
+    expect(wrapper.get('[data-planet="Mercury"]').attributes('transform')).toContain('scale(5.133333333333334 2.3333333333333335)')
+    expect(wrapper.get('[data-planet="Venus"]').attributes('transform')).toContain('scale(3.4533333333333336 2.4033333333333338)')
+    expect(wrapper.get('[data-planet="Mars"]').attributes('transform')).toContain('scale(2.2866666666666666 2.2866666666666666)')
   })
 
   it('splits a design and personality gate into true half fills', () => {

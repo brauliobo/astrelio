@@ -47,7 +47,11 @@ section.human-design-page(data-testid='human-design-page')
         .mt-1.text-lg.font-semibold.text-slate-100(:data-testid='row.testId') {{ row.value }}
 
     .ui-panel
-      Wheel(:chart='chart' :visual-theme='settings.theme')
+      Wheel(
+        :chart='chart'
+        :visual-theme='settings.theme'
+        :planet-glyph-renderer='settings.planetGlyphRenderer'
+      )
 
     InsightPanel(:chart='chart')
     ActivationTable(:chart='chart')

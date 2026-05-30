@@ -14,6 +14,7 @@ const props = defineProps({
   highlightedBodies: { type: Array, default: () => [] },
   highlightedAspectKey: { type: String, default: '' },
   aspectOptions: { type: Object, default: () => ({}) },
+  glyphRenderer: { type: String, default: null },
 })
 defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 
@@ -49,6 +50,7 @@ g(:data-chart-map='map.id')
     :symbols='map.planetSymbols'
     :colors='map.planetColors'
     :labels='map.planetLabels'
+    :glyph-renderer='glyphRenderer'
     :highlighted-bodies='highlightedBodies'
     @highlight='$emit("highlight", $event)'
     @clear-highlight='$emit("clear-highlight")'

@@ -59,24 +59,24 @@ export const PLANET_COLORS = {
   Chiron: 'var(--chart-ink)',
 }
 
-// Georgia renders planet symbols with uneven visible proportions. These factors
-// normalize narrow symbols without letting height dominate the wheel.
+// Keep tropical SVG glyphs compact; Human Design applies stronger optical
+// normalization in its own wheel layer where the glyphs sit outside the body.
 export const PLANET_GLYPH_SCALE = {
   Sun: { x: 1, y: 1 },
-  Earth: { x: 1.07, y: 1 },
-  Moon: { x: 1, y: 1 },
-  Mercury: { x: 1.42, y: 1.08 },
-  Venus: { x: 1.35, y: 1.18 },
-  Mars: { x: 1.35, y: 1.18 },
-  Jupiter: { x: 1, y: 1 },
-  Saturn: { x: 1, y: 1 },
-  Uranus: { x: 1, y: 1 },
-  Neptune: { x: 1, y: 1 },
-  Pluto: { x: 0.96, y: 1 },
-  NorthNode: { x: 1.01, y: 1 },
-  SouthNode: { x: 1.01, y: 1 },
-  Lilith: { x: 1.3, y: 1.12 },
-  Chiron: { x: 1.3, y: 1.12 },
+  Earth: { x: 1, y: 1 },
+  Moon: { x: 1.22, y: 1 },
+  Mercury: { x: 1.44, y: 1 },
+  Venus: { x: 1.12, y: 1 },
+  Mars: { x: 0.95, y: 0.95 },
+  Jupiter: { x: 1.08, y: 1 },
+  Saturn: { x: 1.14, y: 1 },
+  Uranus: { x: 1.18, y: 1 },
+  Neptune: { x: 1.06, y: 1 },
+  Pluto: { x: 1.06, y: 1 },
+  NorthNode: { x: 1, y: 1 },
+  SouthNode: { x: 1, y: 1 },
+  Lilith: { x: 1.16, y: 1 },
+  Chiron: { x: 1.24, y: 1 },
 }
 
 export const planetGlyphScale = planet => PLANET_GLYPH_SCALE[planet] || { x: 1, y: 1 }
@@ -169,6 +169,7 @@ export const chartToMap = (chart, index = 0, options = {}) => ({
   planetSymbols: options.planetSymbols || null,
   planetColors: options.planetColors || null,
   planetLabels: options.planetLabels || null,
+  planetGlyphRenderer: options.planetGlyphRenderer || null,
 })
 
 export const mapsFromProps = ({ natal, overlay, charts }) => {

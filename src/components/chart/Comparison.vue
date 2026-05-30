@@ -12,6 +12,7 @@ defineProps({
   comparisonLabel: { type: String, required: true },
   chartSize: { type: Number, default: 520 },
   aspectOptions: { type: Object, default: () => ({}) },
+  planetGlyphRenderer: { type: String, default: null },
 })
 
 const chartMaps = (base, comparison) => [
@@ -82,6 +83,7 @@ const toggleHighlight = (payload) => {
       :highlighted-bodies='activeHighlight.bodies'
       :highlighted-aspect-key='activeHighlight.aspectKey'
       :aspect-options='aspectOptions'
+      :planet-glyph-renderer='planetGlyphRenderer'
       @highlight='setHighlight'
       @clear-highlight='clearHighlight'
       @toggle-highlight='toggleHighlight'

@@ -1,6 +1,6 @@
 import { mandalaAngleForGate, polar } from './wheelCore.js'
 
-export const planetGlyphRadii = [326, 292, 258, 224, 190, 156]
+export const planetGlyphRadii = [342, 304, 266, 228, 190, 152]
 
 const normalizedAngle = angle => ((angle % 360) + 360) % 360
 

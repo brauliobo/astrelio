@@ -264,6 +264,7 @@ section.timing-page(data-testid='timing-page')
             :natal='natal'
             :overlay='transit'
             :aspect-options='settings.aspectOptions'
+            :planet-glyph-renderer='settings.planetGlyphRenderer'
           )
         .ui-panel(v-if='transitAspects.length')
           AspectTable(:aspects='transitAspects')
@@ -291,6 +292,7 @@ section.timing-page(data-testid='timing-page')
         :base-label='t("chart.natal_positions")'
         :comparison-label='t("chart.current_positions")'
         :aspect-options='settings.aspectOptions'
+        :planet-glyph-renderer='settings.planetGlyphRenderer'
       )
 
     section.solar-return(v-else-if='activeTechnique === "solar-return"' data-testid='solar-return-page')
@@ -311,6 +313,7 @@ section.timing-page(data-testid='timing-page')
         :base-label='t("chart.natal_positions")'
         :comparison-label='t("chart.solar_return_positions")'
         :aspect-options='settings.aspectOptions'
+        :planet-glyph-renderer='settings.planetGlyphRenderer'
       )
 
     section.profections-page(v-else-if='activeTechnique === "profections"' data-testid='profections-page')
@@ -371,6 +374,7 @@ section.timing-page(data-testid='timing-page')
         :base-label='t("chart.natal_positions")'
         :comparison-label='t("techniques.solar_arc.positions")'
         :aspect-options='settings.aspectOptions'
+        :planet-glyph-renderer='settings.planetGlyphRenderer'
       )
 
     section.lunar-return-page(v-else-if='activeTechnique === "lunar-return"' data-testid='lunar-return-page')
@@ -398,5 +402,6 @@ section.timing-page(data-testid='timing-page')
         :base-label='t("chart.natal_positions")'
         :comparison-label='t("techniques.lunar_return.positions")'
         :aspect-options='settings.aspectOptions'
+        :planet-glyph-renderer='settings.planetGlyphRenderer'
       )
 </template>

@@ -63,5 +63,6 @@ section.progressions-page(data-testid='progressions-page')
       :base-label='t("chart.natal_positions")'
       :comparison-label='t("chart.current_positions")'
       :aspect-options='settings.aspectOptions'
+      :planet-glyph-renderer='settings.planetGlyphRenderer'
     )
 </template>

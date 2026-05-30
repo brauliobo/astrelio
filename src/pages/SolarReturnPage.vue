@@ -61,5 +61,6 @@ section.solar-return(data-testid='solar-return-page')
       :base-label='t("chart.natal_positions")'
       :comparison-label='t("chart.solar_return_positions")'
       :aspect-options='settings.aspectOptions'
+      :planet-glyph-renderer='settings.planetGlyphRenderer'
     )
 </template>

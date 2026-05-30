@@ -5,12 +5,12 @@ export const gateStep = 360 / 64
 export const zodiacSigns = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
 export const referenceTopMandalaIndex = 47
 export const wheelRingRadii = {
-  zodiacInner: 346,
-  zodiacOuter: 386,
-  gateInner: 386,
-  gateOuter: 426,
-  ichingRadius: 446,
-  outerBorder: 462,
+  zodiacInner: 366,
+  zodiacOuter: 406,
+  gateInner: 406,
+  gateOuter: 446,
+  ichingRadius: 466,
+  outerBorder: 482,
 }
 
 const mandalaIndexForGateIndex = index => (40 - index + 64) % 64

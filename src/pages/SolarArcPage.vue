@@ -66,5 +66,6 @@ section.solar-arc-page(data-testid='solar-arc-page')
       :aspects='aspects'
       :base-label='t("chart.natal_positions")'
       :comparison-label='t("techniques.solar_arc.positions")'
+      :planet-glyph-renderer='settings.planetGlyphRenderer'
     )
 </template>

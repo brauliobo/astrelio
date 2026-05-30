@@ -13,6 +13,11 @@
 - Preserve exact astrology geometry for cusps, planet longitudes, and aspect endpoints; offset glyph labels only for readability.
 - Keep interaction centered on the wheel: zoom, selection, highlight, and summary should stay compact and stable inside the chart surface.
 
+## Verification
+
+- Prefer targeted checks for focused UI changes. For chart or Human Design visual tweaks, run the affected unit specs and screenshot checks first.
+- Avoid full `npm run lint` unless the change spans many files, touches shared syntax/config, or the user asks for a full lint pass; use focused tests for specific changed files instead.
+
 ## UX Structure
 
 - Keep the top navigation condensed to primary workspaces, not individual techniques.

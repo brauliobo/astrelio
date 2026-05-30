@@ -52,7 +52,13 @@ section.transits-page(data-testid='transits-page')
     ComparisonInsightPanel.mb-6(:aspects='aspects' mode='transit')
     .grid.gap-6(class='lg:grid-cols-2')
       .ui-panel
-        Biwheel(:natal='natal' :overlay='transit' :aspect-options='settings.aspectOptions' v-if='natal && transit')
+        Biwheel(
+          :natal='natal'
+          :overlay='transit'
+          :aspect-options='settings.aspectOptions'
+          :planet-glyph-renderer='settings.planetGlyphRenderer'
+          v-if='natal && transit'
+        )
       .ui-panel(v-if='aspects.length')
         AspectTable(:aspects='aspects')
 </template>

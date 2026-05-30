@@ -10,6 +10,7 @@ import { humanDesignPalette } from './visualTheme.js'
 const props = defineProps({
   chart: { type: Object, required: true },
   visualTheme: { type: String, default: 'dark' },
+  planetGlyphRenderer: { type: String, default: null },
 })
 
 const hover = ref(null)
@@ -48,7 +49,7 @@ const clearHover = () => { hover.value = null }
           @hover='setHover'
           @leave='clearHover'
         )
-        WheelPlanets(:chart='chart')
+        WheelPlanets(:chart='chart' :glyph-renderer='planetGlyphRenderer')
         g(data-testid='bodygraph-chart' transform='translate(317 242) scale(0.78)' filter='url(#hd-wheel-shadow)')
           BodygraphCore(
             :chart='chart'

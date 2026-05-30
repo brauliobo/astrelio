@@ -125,14 +125,14 @@ describe('chart display modes', () => {
     const frame = wrapper.get('[data-testid="wheel-frame"]')
     const zodiacText = wrapper.get('[data-testid="zodiac-ring"] text')
     const houseSector = wrapper.get('[data-testid="house-cusps"] path')
-    const planetLabel = wrapper.get('[data-testid="planet-glyph-Moon"] text[data-role="symbol"]')
+    const planetLabel = wrapper.get('[data-testid="planet-glyph-Moon"] [data-role="symbol"]')
 
     expect(frame.findAll('circle')[1].attributes('fill')).toBe('var(--chart-zodiac-fill-b)')
     expect(zodiacText.attributes('fill')).toBe('var(--chart-zodiac-text)')
     expect(houseSector.attributes('fill')).toBe('var(--chart-house-fill-a)')
     expect(wrapper.get('[data-testid="house-cusp-1"]').attributes('stroke')).toBe('var(--chart-angle-asc, var(--chart-angle-accent))')
     expect(wrapper.get('[data-testid="house-cusp-10"]').attributes('stroke')).toBe('var(--chart-angle-mc, var(--chart-angle-accent))')
-    expect(planetLabel.attributes('fill')).toBe('var(--chart-ink)')
+    expect(planetLabel.attributes('style')).toContain('color: var(--chart-ink)')
   })
 
   it('keeps house labels visually secondary to planet positions', () => {
@@ -170,16 +170,18 @@ describe('chart display modes', () => {
     expect(markers.findAll('circle')).toHaveLength(0)
   })
 
-  it('uses the same glyph size for natal planets', () => {
+  it('uses shared SVG glyph sizing with planet-specific optical normalization', () => {
     const wrapper = mountWheel()
-    const sun = wrapper.get('[data-testid="planet-glyph-Sun"] text[data-role="symbol"]')
-    const venus = wrapper.get('[data-testid="planet-glyph-Venus"] text[data-role="symbol"]')
-    const mars = wrapper.get('[data-testid="planet-glyph-Mars"] text[data-role="symbol"]')
+    const sun = wrapper.get('[data-testid="planet-glyph-Sun"] [data-role="symbol"]')
+    const venus = wrapper.get('[data-testid="planet-glyph-Venus"] [data-role="symbol"]')
+    const mars = wrapper.get('[data-testid="planet-glyph-Mars"] [data-role="symbol"]')
 
-    expect(sun.attributes('font-size')).toBe(venus.attributes('font-size'))
-    expect(sun.attributes('font-size')).toBe(mars.attributes('font-size'))
-    expect(venus.attributes('transform')).toContain('scale(1.35 1.18)')
-    expect(mars.attributes('transform')).toContain('scale(1.35 1.18)')
+    expect(sun.find('path').exists()).toBe(true)
+    expect(venus.find('path').exists()).toBe(true)
+    expect(mars.find('path').exists()).toBe(true)
+    expect(sun.attributes('transform')).toContain('scale(1.8333333333333333 1.8333333333333333)')
+    expect(venus.attributes('transform')).toContain('scale(2.0533333333333332 1.8333333333333333)')
+    expect(mars.attributes('transform')).toContain('scale(1.7416666666666665 1.7416666666666665)')
   })
 
   it('renders planet positions without exact-point leader marks', () => {

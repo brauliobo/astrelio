@@ -93,6 +93,7 @@ const vedicMaps = computed(() => chart.value ? [{
   planetSymbols: VEDIC_BODY_SYMBOLS,
   planetColors: VEDIC_BODY_COLORS,
   planetLabels: VEDIC_BODY_LABELS,
+  planetGlyphRenderer: 'text',
 }] : [])
 
 const placementRows = computed(() => chart.value?.positions.map(position => ({

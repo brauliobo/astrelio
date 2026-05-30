@@ -34,6 +34,10 @@ const labels = {
     advanced: 'Advanced settings',
     backup: 'Backup and reset',
     open: 'Open',
+    glyphRenderer: 'Planet glyphs',
+    glyphSvg: 'SVG symbols',
+    glyphUtf8: 'Unicode symbols',
+    glyphText: 'Text labels',
   },
   pt: {
     preset: 'Predefinição',
@@ -46,6 +50,10 @@ const labels = {
     advanced: 'Configurações avançadas',
     backup: 'Backup e redefinição',
     open: 'Abrir',
+    glyphRenderer: 'Símbolos planetários',
+    glyphSvg: 'Símbolos SVG',
+    glyphUtf8: 'Símbolos Unicode',
+    glyphText: 'Rótulos de texto',
   },
 }
 
@@ -109,6 +117,15 @@ section.settings.max-w-lg(data-testid='settings-page')
           )
             option(value='tropical') {{ t('settings.tropical') }}
             option(value='sidereal') {{ t('settings.sidereal') }}
+        div
+          label.block.text-xs.text-slate-400.mb-1 {{ copy.glyphRenderer }}
+          select.ui-control.ui-control-md.w-full(
+            v-model='settings.planetGlyphRenderer'
+            data-testid='setting-planet-glyph-renderer'
+          )
+            option(value='svg') {{ copy.glyphSvg }}
+            option(value='utf8') {{ copy.glyphUtf8 }}
+            option(value='text') {{ copy.glyphText }}
         .grid.gap-3
           h2.text-sm.font-semibold.text-slate-100 {{ t('settings.aspect_options') }}
           div

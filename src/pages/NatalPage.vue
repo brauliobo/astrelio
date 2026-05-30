@@ -48,7 +48,12 @@ section.natal-page(data-testid='natal-page')
         v-if='chart'
       )
       .ui-panel.order-1(class='xl:order-2' data-testid='natal-chart-panel')
-        Wheel(:natal='chart' :aspect-options='settings.aspectOptions' v-if='chart')
+        Wheel(
+          :natal='chart'
+          :aspect-options='settings.aspectOptions'
+          :planet-glyph-renderer='settings.planetGlyphRenderer'
+          v-if='chart'
+        )
       Insight.order-3(
         class='xl:order-3'
         :chart='chart'

@@ -70,7 +70,13 @@ section.synastry-page(data-testid='synastry-page')
       ComparisonInsightPanel.mb-6(:aspects='aspects' mode='synastry')
       .grid.gap-6(class='lg:grid-cols-2')
         .ui-panel
-          Biwheel(:natal='chartA' :overlay='chartB' :aspect-options='settings.aspectOptions' v-if='chartA && chartB')
+          Biwheel(
+            :natal='chartA'
+            :overlay='chartB'
+            :aspect-options='settings.aspectOptions'
+            :planet-glyph-renderer='settings.planetGlyphRenderer'
+            v-if='chartA && chartB'
+          )
         .ui-panel(v-if='aspects.length')
           AspectTable(:aspects='aspects')
     template(v-else)

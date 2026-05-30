@@ -73,5 +73,6 @@ section.lunar-return-page(data-testid='lunar-return-page')
       :aspects='aspects'
       :base-label='t("chart.natal_positions")'
       :comparison-label='t("techniques.lunar_return.positions")'
+      :planet-glyph-renderer='settings.planetGlyphRenderer'
     )
 </template>

@@ -105,7 +105,13 @@ section.report-page(ref='reportRoot' data-testid='report-page')
     .grid.gap-6(class='xl:grid-cols-[minmax(340px,0.85fr)_minmax(0,1fr)]')
       .grid.gap-6
         .ui-panel
-          Wheel(:natal='chart' :aspect-options='settings.aspectOptions' display-mode='print' v-if='chart')
+          Wheel(
+            :natal='chart'
+            :aspect-options='settings.aspectOptions'
+            :planet-glyph-renderer='settings.planetGlyphRenderer'
+            display-mode='print'
+            v-if='chart'
+          )
         .ui-panel
           PlanetList(:chart='chart' v-if='chart')
       .grid.gap-6

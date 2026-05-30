@@ -50,6 +50,7 @@ const props = defineProps({
   displayMode: { type: String, default: 'auto' },
   showModeControls: { type: Boolean, default: true },
   zodiacSymbols: { type: Array, default: null },
+  planetGlyphRenderer: { type: String, default: null },
   showNakshatraRing: { type: Boolean, default: false },
   defaultZoomBase: { type: Number, default: 1.3 },
 })
@@ -293,6 +294,7 @@ onBeforeUnmount(() => {
         :highlighted-bodies='activeBodies'
         :highlighted-aspect-key='activeAspectKey'
         :aspect-options='aspectOptions'
+        :glyph-renderer='map.planetGlyphRenderer || planetGlyphRenderer'
         @highlight='setHoverHighlight'
         @clear-highlight='clearHoverHighlight'
         @toggle-highlight='togglePinnedHighlight'

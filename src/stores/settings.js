@@ -75,6 +75,7 @@ export const useSettingsStore = defineStore('settings', {
     orbScale:    1,
     applyingOnly: false,
     includeModernPlanets: true,
+    planetGlyphRenderer: 'svg',
     vedic: {
       ayanamsha: 'lahiri',
       houseMode: 'whole_sign',
@@ -105,6 +106,8 @@ export const useSettingsStore = defineStore('settings', {
       this.orbScale ??= 1
       this.applyingOnly ??= false
       this.includeModernPlanets ??= true
+      this.planetGlyphRenderer ||= 'svg'
+      if (!['svg', 'utf8', 'text'].includes(this.planetGlyphRenderer)) this.planetGlyphRenderer = 'svg'
       this.vedic ??= {}
       this.vedic.ayanamsha ||= 'lahiri'
       this.vedic.houseMode ||= 'whole_sign'

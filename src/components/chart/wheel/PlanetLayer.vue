@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import CelestialGlyph from '../../common/CelestialGlyph.vue'
 import { PLANET_COLORS, PLANET_SYMBOLS, WHEEL_RADII, degreeLabel, planetGlyphScale } from './geometry.js'
 
 const props = defineProps({
@@ -8,6 +9,7 @@ const props = defineProps({
   symbols: { type: Object, default: null },
   colors: { type: Object, default: null },
   labels: { type: Object, default: null },
+  glyphRenderer: { type: String, default: null },
   mapIndex: { type: Number, default: 0 },
   highlightedBodies: { type: Array, default: () => [] },
 })
@@ -41,9 +43,6 @@ const glyphs = computed(() =>
       showDegreeLabel: item.showDegreeLabel !== false,
       fontSize: props.mapIndex === 0 ? 22 : 17,
       glyphScale,
-      glyphTransform: glyphScale.x === 1 && glyphScale.y === 1
-        ? null
-        : `translate(${glyph.x} ${glyph.y}) scale(${glyphScale.x} ${glyphScale.y}) translate(${-glyph.x} ${-glyph.y})`,
     }
   })
 )
@@ -87,18 +86,19 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
       pointer-events='all'
       :data-testid='`planet-hit-${item.planet.name}`'
     )
-    text(
+    CelestialGlyph(
+      mode='svg'
+      :reference='item.planet.name'
+      :symbol='item.symbol'
+      :renderer='glyphRenderer'
       :x='item.glyph.x'
       :y='item.glyph.y'
-      :fill='item.color'
-      :stroke='item.planet.name === "Sun" && mapIndex === 0 ? "var(--chart-sun-stroke)" : "none"'
-      :stroke-width='glyphHighlightState(item.planet.name) === "active" ? 1.1 : item.planet.name === "Sun" && mapIndex === 0 ? 0.8 : 0'
-      :font-size='item.fontSize'
-      :font-weight='glyphHighlightState(item.planet.name) === "active" ? 700 : 400'
-      :transform='item.glyphTransform'
-      dominant-baseline='central'
+      :color='item.color'
+      :size='item.fontSize'
+      :weight='glyphHighlightState(item.planet.name) === "active" ? 700 : 400'
+      :scale='item.glyphScale'
       data-role='symbol'
-    ) {{ item.symbol }}
+    )
     text(
       :x='item.label.x'
       :y='item.label.y'
