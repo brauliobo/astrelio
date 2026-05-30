@@ -23,7 +23,7 @@
 ## Static GitHub Pages
 
 - Do not commit generated `dist/` output. `dist/` is a local build directory and remains ignored.
-- When the user explicitly asks for committed static GitHub Pages output, build and commit `docs/` instead of `dist/`.
+- Vite builds to `docs/` by default; when the user explicitly asks for committed static GitHub Pages output, run the build and commit `docs/`.
 - For the repository workflow, keep GitHub Actions Pages deployment as the default unless the user explicitly asks for a committed static artifact.
 
 ## UX Structure

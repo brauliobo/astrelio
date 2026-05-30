@@ -84,6 +84,8 @@ export default defineConfig(({ mode }) => ({
   assetsInclude: ['**/*.wasm', '**/*.data'],
   optimizeDeps: { exclude: ['swisseph-wasm'] },
   build:   {
+    outDir: 'docs',
+    emptyOutDir: true,
     target: 'es2022',
     sourcemap: mode !== 'production',
     rollupOptions: {
