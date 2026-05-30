@@ -1,149 +1,287 @@
-import * as THREE from 'three'
-import { Body, MakeTime, Observer, Equator } from 'astronomy-engine'
+import { computeChart } from '../astro/ephemeris.js'
+import { msToJd } from '../astro/timezones.js'
+import { norm360 } from '../astro/zodiac.js'
 
-const STAR_COUNT = 1500
-
-const makeStarField = () => {
-  const geo = new THREE.BufferGeometry()
-  const pos = new Float32Array(STAR_COUNT * 3)
-  const col = new Float32Array(STAR_COUNT * 3)
-  for (let i = 0; i < STAR_COUNT; i++) {
-    pos[i*3]     = (Math.random() - 0.5) * 120
-    pos[i*3 + 1] = (Math.random() - 0.5) * 80
-    pos[i*3 + 2] = -30 - Math.random() * 90
-    const b = 0.4 + Math.random() * 0.6
-    col[i*3]     = b
-    col[i*3 + 1] = b
-    col[i*3 + 2] = Math.min(1, b + 0.1)
-  }
-  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
-  geo.setAttribute('color',    new THREE.BufferAttribute(col, 3))
-  const mat = new THREE.PointsMaterial({
-    size: 1.25, vertexColors: true, transparent: true, opacity: 0.9, sizeAttenuation: false
-  })
-  return new THREE.Points(geo, mat)
-}
+const STAR_COUNT = 520
+const CHART_SELECTOR = '[data-testid="chart-wheel-svg"]'
 
 const PLANETS = [
-  { name: 'Sun',     body: Body.Sun,     color: 0xffd87a, size: 1.6, label: 'Sol' },
-  { name: 'Moon',    body: Body.Moon,    color: 0xdbeafe, size: 1.0, label: 'Lua' },
-  { name: 'Mercury', body: Body.Mercury, color: 0x9aa6b2, size: 0.6, label: 'Mercurio' },
-  { name: 'Venus',   body: Body.Venus,   color: 0xf2c97d, size: 0.8, label: 'Venus' },
-  { name: 'Mars',    body: Body.Mars,    color: 0xe87a5d, size: 0.75, label: 'Marte' },
-  { name: 'Jupiter', body: Body.Jupiter, color: 0xf0c060, size: 1.25, label: 'Jupiter' },
-  { name: 'Saturn',  body: Body.Saturn,  color: 0xd8b070, size: 1.05, label: 'Saturno' }
+  { name: 'Sun', label: 'Sol', color: '#f6c453', radius: 13 },
+  { name: 'Moon', label: 'Lua', color: '#dbeafe', radius: 8 },
+  { name: 'Mercury', label: 'Mercurio', color: '#7dd3fc', radius: 6 },
+  { name: 'Venus', label: 'Venus', color: '#86efac', radius: 7 },
+  { name: 'Mars', label: 'Marte', color: '#fb7185', radius: 7 },
+  { name: 'Jupiter', label: 'Jupiter', color: '#fbbf24', radius: 10 },
+  { name: 'Saturn', label: 'Saturno', color: '#c4b5fd', radius: 9 },
+  { name: 'Uranus', label: 'Urano', color: '#67e8f9', radius: 6 },
+  { name: 'Neptune', label: 'Netuno', color: '#38bdf8', radius: 6 },
+  { name: 'Pluto', label: 'Plutao', color: '#c084fc', radius: 5 },
 ]
 
-const labelTexture = (label, color) => {
-  const canvas = document.createElement('canvas')
-  canvas.width = 192
-  canvas.height = 48
-  const ctx = canvas.getContext('2d')
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
-  ctx.font = '600 22px system-ui, sans-serif'
-  ctx.textBaseline = 'middle'
-  ctx.fillStyle = 'rgba(11, 10, 26, 0.62)'
-  ctx.fillRect(0, 5, canvas.width, 38)
-  ctx.fillStyle = color
-  ctx.fillText(label, 14, 25)
-  const texture = new THREE.CanvasTexture(canvas)
-  texture.colorSpace = THREE.SRGBColorSpace
-  return texture
+const SIGNS = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
+
+const clamp = (value, min, max) =>
+  Math.max(min, Math.min(max, value))
+
+const mulberry32 = (seed) => {
+  let value = seed
+  return () => {
+    value += 0x6D2B79F5
+    let t = value
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
 }
 
-const planetMarker = (planet) => {
-  const color = `#${planet.color.toString(16).padStart(6, '0')}`
-  const group = new THREE.Group()
-  const geo = new THREE.SphereGeometry(planet.size * 0.18, 16, 16)
-  const mat = new THREE.MeshBasicMaterial({ color: planet.color, transparent: true, opacity: 0.92 })
-  const mesh = new THREE.Mesh(geo, mat)
-  const haloGeo = new THREE.RingGeometry(planet.size * 0.28, planet.size * 0.38, 32)
-  const haloMat = new THREE.MeshBasicMaterial({ color: planet.color, transparent: true, opacity: 0.46, side: THREE.DoubleSide })
-  const halo = new THREE.Mesh(haloGeo, haloMat)
-  const texture = labelTexture(planet.label, color)
-  const label = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true, opacity: 0.72 }))
-  label.position.set(planet.size * 0.35, planet.size * 0.35, 0)
-  label.scale.set(5.8, 1.45, 1)
-  group.add(halo, mesh, label)
-  return { group, geometry: [geo, haloGeo], material: [mat, haloMat, label.material], texture }
+const makeStars = () => {
+  const random = mulberry32(19860212)
+  return Array.from({ length: STAR_COUNT }, () => ({
+    x: random(),
+    y: random(),
+    r: 0.35 + random() * 1.15,
+    a: 0.18 + random() * 0.48,
+  }))
 }
 
-export const createSkyScene = (canvas) => {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true })
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-  renderer.setClearColor(0x000000, 0)
-  const scene  = new THREE.Scene()
-  const camera = new THREE.PerspectiveCamera(70, 1, 0.1, 200)
-  camera.position.set(0, 0, 0)
-  camera.lookAt(new THREE.Vector3(0, 0, -1))
+const polarPoint = (cx, cy, radius, longitude) => {
+  const angle = (180 - longitude) * Math.PI / 180
+  return {
+    x: cx + radius * Math.cos(angle),
+    y: cy + radius * Math.sin(angle),
+  }
+}
 
-  const stars = makeStarField()
-  scene.add(stars)
+const chartBounds = (canvas) => {
+  const rect = canvas.getBoundingClientRect()
+  const chart = document.querySelector(CHART_SELECTOR)?.getBoundingClientRect()
 
-  const planetMeshes = PLANETS.map(p => {
-    const marker = planetMarker(p)
-    scene.add(marker.group)
-    return { ...p, ...marker }
-  })
-  let observer = new Observer(0, 0, 0)
-  let sceneDate = new Date()
-
-  const positionPlanets = (date) => {
-    const t = MakeTime(date)
-    for (const p of planetMeshes) {
-      const eq = Equator(p.body, t, observer, true, false)
-      const ra = eq.ra * 15 * Math.PI / 180
-      const dec = eq.dec * Math.PI / 180
-      const r  = 48
-      p.group.position.set(
-        r * Math.cos(dec) * Math.sin(ra),
-        r * Math.sin(dec),
-        -r * Math.cos(dec) * Math.cos(ra)
-      )
-      p.group.lookAt(camera.position)
+  if (!chart || chart.width < 40 || chart.height < 40) {
+    const radius = Math.min(rect.width, rect.height) * 0.44
+    return {
+      cx: rect.width / 2,
+      cy: rect.height / 2,
+      chartRadius: radius * 0.42,
+      skyRadius: radius,
     }
   }
 
-  const resize = () => {
-    const w = canvas.clientWidth
-    const h = canvas.clientHeight
-    renderer.setSize(w, h, false)
-    camera.aspect = w / h
-    camera.updateProjectionMatrix()
+  const chartRadius = Math.min(chart.width, chart.height) / 2
+  const cx = chart.left - rect.left + chart.width / 2
+  const cy = chart.top - rect.top + chart.height / 2
+  const maxRadius = Math.hypot(
+    Math.max(cx, rect.width - cx),
+    Math.max(cy, rect.height - cy)
+  )
+
+  return {
+    cx,
+    cy,
+    chartRadius,
+    skyRadius: clamp(chartRadius * 2.08, chartRadius + 180, maxRadius * 0.98),
+  }
+}
+
+const drawRing = (ctx, cx, cy, radius, stroke, alpha = 1, width = 1, dash = []) => {
+  ctx.save()
+  ctx.globalAlpha = alpha
+  ctx.strokeStyle = stroke
+  ctx.lineWidth = width
+  ctx.setLineDash(dash)
+  ctx.beginPath()
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2)
+  ctx.stroke()
+  ctx.restore()
+}
+
+const drawLine = (ctx, a, b, stroke, alpha = 1, width = 1, dash = []) => {
+  ctx.save()
+  ctx.globalAlpha = alpha
+  ctx.strokeStyle = stroke
+  ctx.lineWidth = width
+  ctx.setLineDash(dash)
+  ctx.beginPath()
+  ctx.moveTo(a.x, a.y)
+  ctx.lineTo(b.x, b.y)
+  ctx.stroke()
+  ctx.restore()
+}
+
+const drawEnvironment = (ctx, bounds, wheelShift) => {
+  const { cx, cy, skyRadius, chartRadius } = bounds
+
+  const gradient = ctx.createRadialGradient(cx, cy, chartRadius * 0.8, cx, cy, skyRadius)
+  gradient.addColorStop(0, 'rgba(15, 23, 42, 0.12)')
+  gradient.addColorStop(0.58, 'rgba(30, 41, 59, 0.11)')
+  gradient.addColorStop(1, 'rgba(125, 211, 252, 0.08)')
+  ctx.fillStyle = gradient
+  ctx.beginPath()
+  ctx.arc(cx, cy, skyRadius, 0, Math.PI * 2)
+  ctx.fill()
+
+  drawRing(ctx, cx, cy, skyRadius, '#7dd3fc', 0.20, 1.25)
+  drawRing(ctx, cx, cy, skyRadius * 0.72, '#c4b5fd', 0.12, 0.9, [8, 10])
+  drawRing(ctx, cx, cy, chartRadius * 1.18, '#fbbf24', 0.12, 0.9, [2, 7])
+
+  for (let i = 0; i < 12; i++) {
+    const longitude = norm360(i * 30 + wheelShift)
+    const inner = polarPoint(cx, cy, chartRadius * 1.06, longitude)
+    const outer = polarPoint(cx, cy, skyRadius, longitude)
+    drawLine(ctx, inner, outer, '#dbeafe', i % 3 === 0 ? 0.16 : 0.08, i % 3 === 0 ? 1 : 0.6)
+
+    const label = polarPoint(cx, cy, skyRadius * 0.965, norm360(i * 30 + 15 + wheelShift))
+    ctx.save()
+    ctx.globalAlpha = 0.18
+    ctx.fillStyle = '#e0f2fe'
+    ctx.font = '600 22px Georgia, serif'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(SIGNS[i], label.x, label.y)
+    ctx.restore()
   }
 
-  const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-  let raf       = 0
-  let frame     = 0
-  const tick    = () => {
-    frame++
-    if (frame % 60 === 0) positionPlanets(sceneDate)
-    stars.rotation.y += reduced ? 0 : 0.00008
-    renderer.render(scene, camera)
-    raf = requestAnimationFrame(tick)
+  const axisStyle = [
+    { lon: 0, label: 'AS' },
+    { lon: 90, label: 'IC' },
+    { lon: 180, label: 'DS' },
+    { lon: 270, label: 'MC' },
+  ]
+
+  for (const axis of axisStyle) {
+    const longitude = norm360(axis.lon)
+    const a = polarPoint(cx, cy, chartRadius * 1.02, longitude)
+    const b = polarPoint(cx, cy, skyRadius * 0.985, longitude)
+    drawLine(ctx, a, b, '#f97316', 0.20, 1.2)
+    const text = polarPoint(cx, cy, skyRadius * 1.015, longitude)
+    ctx.save()
+    ctx.globalAlpha = 0.34
+    ctx.fillStyle = '#fed7aa'
+    ctx.font = '700 12px system-ui, sans-serif'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(axis.label, text.x, text.y)
+    ctx.restore()
+  }
+}
+
+const drawPlanet = (ctx, cx, cy, radius, shiftedLongitude, planet) => {
+  const point = polarPoint(cx, cy, radius, shiftedLongitude)
+  const labelPoint = polarPoint(cx, cy, radius + planet.radius + 22, shiftedLongitude)
+
+  ctx.save()
+  ctx.strokeStyle = planet.color
+  ctx.fillStyle = planet.color
+  ctx.globalAlpha = 0.62
+  ctx.lineWidth = 3
+  ctx.beginPath()
+  ctx.arc(point.x, point.y, planet.radius, 0, Math.PI * 2)
+  ctx.stroke()
+
+  ctx.globalAlpha = planet.name === 'Sun' ? 0.26 : 0.16
+  ctx.beginPath()
+  ctx.arc(point.x, point.y, planet.radius * 1.7, 0, Math.PI * 2)
+  ctx.stroke()
+
+  ctx.globalAlpha = 0.40
+  ctx.font = '700 14px system-ui, sans-serif'
+  ctx.textAlign = labelPoint.x < cx - 8 ? 'right' : labelPoint.x > cx + 8 ? 'left' : 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillText(planet.label, labelPoint.x, labelPoint.y)
+  ctx.restore()
+}
+
+export const createSkyScene = (canvas) => {
+  const ctx = canvas.getContext('2d')
+  const stars = makeStars()
+  let context = {
+    date: new Date(),
+    lat: 0,
+    lon: 0,
+    zodiac: 'tropical',
+    houseSystem: 'placidus',
+  }
+  let raf = 0
+  const pulse = window.setInterval(() => schedule(), 1000)
+  let chart = null
+
+  const resize = () => {
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2)
+    const width = Math.max(1, canvas.clientWidth)
+    const height = Math.max(1, canvas.clientHeight)
+    canvas.width = Math.floor(width * pixelRatio)
+    canvas.height = Math.floor(height * pixelRatio)
+    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
+  }
+
+  const recalc = () => {
+    const jd = msToJd(context.date.getTime())
+    chart = computeChart(jd, context.lat, context.lon, {
+      zodiac: context.zodiac,
+      houseSystem: context.houseSystem,
+    })
+  }
+
+  const draw = () => {
+    resize()
+    const width = canvas.clientWidth
+    const height = canvas.clientHeight
+    const bounds = chartBounds(canvas)
+    const wheelShift = norm360(-(chart?.cusps?.[0] || 0))
+
+    ctx.clearRect(0, 0, width, height)
+
+    const base = ctx.createRadialGradient(bounds.cx, bounds.cy, 0, bounds.cx, bounds.cy, bounds.skyRadius)
+    base.addColorStop(0, 'rgba(15, 23, 42, 0.28)')
+    base.addColorStop(0.58, 'rgba(15, 23, 42, 0.10)')
+    base.addColorStop(1, 'rgba(2, 6, 23, 0.00)')
+    ctx.fillStyle = base
+    ctx.fillRect(0, 0, width, height)
+
+    ctx.save()
+    ctx.fillStyle = '#e0f2fe'
+    for (const star of stars) {
+      ctx.globalAlpha = star.a
+      ctx.beginPath()
+      ctx.arc(star.x * width, star.y * height, star.r, 0, Math.PI * 2)
+      ctx.fill()
+    }
+    ctx.restore()
+
+    drawEnvironment(ctx, bounds, wheelShift)
+
+    const planetRadius = Math.max(bounds.chartRadius * 1.42, bounds.skyRadius * 0.78)
+    const byName = new Map((chart?.positions || []).map(item => [item.name, item]))
+    for (const planet of PLANETS) {
+      const position = byName.get(planet.name)
+      if (!position) continue
+      drawPlanet(ctx, bounds.cx, bounds.cy, planetRadius, norm360(position.longitude + wheelShift), planet)
+    }
+  }
+
+  const schedule = () => {
+    cancelAnimationFrame(raf)
+    raf = requestAnimationFrame(draw)
   }
 
   resize()
-  positionPlanets(new Date())
-  window.addEventListener('resize', resize)
-  raf = requestAnimationFrame(tick)
+  recalc()
+  schedule()
+  window.addEventListener('resize', schedule)
 
   return {
     dispose() {
       cancelAnimationFrame(raf)
-      window.removeEventListener('resize', resize)
-      renderer.dispose()
-      stars.geometry.dispose()
-      planetMeshes.forEach(p => {
-        p.geometry.forEach(g => g.dispose())
-        p.material.forEach(m => m.dispose())
-        p.texture.dispose()
-      })
+      window.clearInterval(pulse)
+      window.removeEventListener('resize', schedule)
     },
-    setContext({ date, lat, lon }) {
-      sceneDate = date || new Date()
-      observer = new Observer(lat || 0, lon || 0, 0)
-      positionPlanets(sceneDate)
+    setContext(next) {
+      context = {
+        ...context,
+        ...next,
+        date: next.date || context.date,
+      }
+      recalc()
+      schedule()
     },
   }
 }

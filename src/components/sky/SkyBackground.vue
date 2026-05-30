@@ -4,7 +4,9 @@ import { offsetMinutesForPerson, localToUtcMs } from '../../lib/astro/timezones.
 import { createSkyScene } from '../../lib/sky/scene.js'
 
 const props = defineProps({
-  person: { type: Object, default: null }
+  person: { type: Object, default: null },
+  zodiac: { type: String, default: 'tropical' },
+  houseSystem: { type: String, default: 'placidus' },
 })
 
 const canvas = ref(null)
@@ -13,7 +15,13 @@ let handle  = null
 const applyContext = () => {
   if (!handle) return
   if (!props.person) {
-    handle.setContext({ date: new Date(), lat: 0, lon: 0 })
+    handle.setContext({
+      date: new Date(),
+      lat: 0,
+      lon: 0,
+      zodiac: props.zodiac,
+      houseSystem: props.houseSystem,
+    })
     return
   }
   const offset = offsetMinutesForPerson(props.person)
@@ -21,6 +29,8 @@ const applyContext = () => {
     date: new Date(localToUtcMs(props.person.isoLocal, offset)),
     lat: props.person.lat,
     lon: props.person.lon,
+    zodiac: props.zodiac,
+    houseSystem: props.houseSystem,
   })
 }
 
@@ -36,7 +46,7 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => handle?.dispose?.())
-watch(() => props.person, applyContext, { deep: true })
+watch(() => [props.person, props.zodiac, props.houseSystem], applyContext, { deep: true })
 </script>
 
 <template lang="pug">
@@ -46,10 +56,12 @@ watch(() => props.person, applyContext, { deep: true })
 </template>
 
 <style scoped>
-.sky-bg { background: radial-gradient(ellipse at center, #1a1530 0%, #0b0a1a 60%, #050410 100%); }
+.sky-bg { background: radial-gradient(ellipse at center, #17152b 0%, #0b0a1a 58%, #050410 100%); }
 .gradient-overlay {
   position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(11,10,26,0) 0%, rgba(11,10,26,0.4) 70%, rgba(11,10,26,0.85) 100%);
+  background:
+    radial-gradient(ellipse at center, rgba(11,10,26,0.08) 0%, rgba(11,10,26,0.18) 46%, rgba(11,10,26,0.55) 100%),
+    linear-gradient(180deg, rgba(11,10,26,0) 0%, rgba(11,10,26,0.28) 70%, rgba(11,10,26,0.82) 100%);
   pointer-events: none;
 }
 </style>
