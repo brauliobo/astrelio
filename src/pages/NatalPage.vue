@@ -1,6 +1,7 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRoute, useRouter } from 'vue-router'
 import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
 import { useSettingsStore } from '../stores/settings.js'
@@ -8,6 +9,7 @@ import { useNatalChart } from '../composables/useChart.js'
 import { naturalAspects } from '../lib/astro/aspects.js'
 import { moonPhaseLabel } from '../lib/astro/ephemeris.js'
 import { birthHeaderForPerson } from '../lib/people/labels.js'
+import { hasPersonRouteQuery, natalRouteForPerson, personFromRouteQuery } from '../lib/people/routeQuery.js'
 import Wheel from '../components/chart/Wheel.vue'
 import PlanetList from '../components/chart/PlanetList.vue'
 import AspectTable from '../components/chart/AspectTable.vue'
@@ -16,15 +18,25 @@ import InterpretationPanel from '../components/chart/InterpretationPanel.vue'
 import ModalityRouteSwitch from '../components/modalities/ModalityRouteSwitch.vue'
 
 const { t }    = useI18n()
+const route    = useRoute()
+const router   = useRouter()
 const people   = usePeopleStore()
 const session  = useSessionStore()
 const settings = useSettingsStore()
 
-const person  = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
+const savedPerson = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
+const hasRoutePerson = computed(() => hasPersonRouteQuery(route.query))
+const routePerson = computed(() => hasRoutePerson.value ? personFromRouteQuery(route.query) : null)
+const person  = computed(() => hasRoutePerson.value ? routePerson.value : savedPerson.value)
 const chart   = useNatalChart(person, settings)
 const phase   = computed(() => chart.value ? t(`moon_phase.${moonPhaseLabel(chart.value.jdUt)}`) : '')
 const aspects = computed(() => chart.value ? naturalAspects(chart.value, settings.aspectOptions) : [])
 const birthHeader = computed(() => birthHeaderForPerson(person.value))
+
+watch(savedPerson, (next) => {
+  if (!next || hasRoutePerson.value) return
+  router.replace(natalRouteForPerson(next))
+}, { immediate: true })
 </script>
 
 <template lang="pug">

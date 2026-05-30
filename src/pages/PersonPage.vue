@@ -5,6 +5,7 @@ import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { localToUtcMs, offsetMinutesForPerson, timezoneLabelForPerson } from '../lib/astro/timezones.js'
 import { birthHeaderForPerson } from '../lib/people/labels.js'
+import { natalRouteForPerson } from '../lib/people/routeQuery.js'
 import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
 
@@ -86,7 +87,7 @@ const remove = () => {
 
 const openNatal = () => {
   activate()
-  router.push({ name: 'natal' })
+  router.push(natalRouteForPerson(person.value))
 }
 
 const openReport = () => {

@@ -9,6 +9,7 @@ import { useNatalChart } from '../composables/useChart.js'
 import { naturalAspects } from '../lib/astro/aspects.js'
 import { moonPhaseLabel } from '../lib/astro/ephemeris.js'
 import { birthHeaderForPerson } from '../lib/people/labels.js'
+import { natalRouteForPerson } from '../lib/people/routeQuery.js'
 import AspectTable from '../components/chart/AspectTable.vue'
 import Insight from '../components/chart/Insight.vue'
 import Wheel from '../components/chart/Wheel.vue'
@@ -23,6 +24,7 @@ const session = useSessionStore()
 const settings = useSettingsStore()
 
 const person = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
+const natalRoute = computed(() => natalRouteForPerson(person.value))
 const chart = useNatalChart(person, settings)
 const aspects = computed(() => chart.value ? naturalAspects(chart.value, settings.aspectOptions) : [])
 const phase = computed(() => chart.value ? t(`moon_phase.${moonPhaseLabel(chart.value.jdUt)}`) : '')
@@ -79,7 +81,7 @@ section.report-page(ref='reportRoot' data-testid='report-page')
       div
         .flex.flex-wrap.gap-2
           RouterLink.rounded.px-3.py-2.text-sm.text-slate-300(
-            to='/natal'
+            :to='natalRoute'
             class='bg-white/5 hover:bg-white/10 hover:text-white'
             data-testid='report-back'
           ) {{ t('report.back') }}

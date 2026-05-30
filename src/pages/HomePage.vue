@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
+import { natalRouteForPerson } from '../lib/people/routeQuery.js'
 
 const { t }   = useI18n()
 const router  = useRouter()
@@ -49,7 +50,7 @@ const onSubmit = (data) => {
   const rec = people.add(data)
   session.setActive(rec.id)
   closeForm()
-  router.push('/natal')
+  router.push(natalRouteForPerson(rec))
 }
 
 const open = (id) => {

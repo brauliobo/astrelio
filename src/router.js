@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   { path: '/',             component: () => import('./pages/HomePage.vue'),         name: 'home' },
@@ -20,7 +20,25 @@ const routes = [
 ]
 
 export const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes,
   scrollBehavior() { return { top: 0 } }
+})
+
+const GITHUB_PAGES_REDIRECT_KEY = 'astrelio.redirect'
+
+const takeGitHubPagesRedirect = () => {
+  if (typeof window === 'undefined') return ''
+
+  const redirect = window.sessionStorage.getItem(GITHUB_PAGES_REDIRECT_KEY) || ''
+  window.sessionStorage.removeItem(GITHUB_PAGES_REDIRECT_KEY)
+
+  if (!redirect.startsWith('/') || redirect.startsWith('//')) return ''
+  return redirect
+}
+
+router.beforeEach((to) => {
+  const redirect = takeGitHubPagesRedirect()
+  if (redirect && redirect !== to.fullPath) return redirect
+  return true
 })

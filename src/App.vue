@@ -6,6 +6,7 @@ import { useSettingsStore } from './stores/settings.js'
 import { usePeopleStore } from './stores/people.js'
 import { useSessionStore } from './stores/session.js'
 import { birthHeaderForPerson } from './lib/people/labels.js'
+import { hasPersonRouteQuery, natalRouteForPerson, personFromRouteQuery } from './lib/people/routeQuery.js'
 import AppLogo from './components/AppLogo.vue'
 
 const { t, locale } = useI18n()
@@ -14,9 +15,16 @@ const settings = useSettingsStore()
 settings.normalize()
 const people = usePeopleStore()
 const session = useSessionStore()
-const activePerson = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
+const storedActivePerson = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
+const routePerson = computed(() =>
+  route.name === 'natal' && hasPersonRouteQuery(route.query) ? personFromRouteQuery(route.query) : null
+)
+const activePerson = computed(() =>
+  route.name === 'natal' && hasPersonRouteQuery(route.query) ? routePerson.value : storedActivePerson.value
+)
 const Background = defineAsyncComponent(() => import('./components/sky/Background.vue'))
-const personPath = computed(() => activePerson.value ? `/person/${activePerson.value.id}` : '/')
+const personPath = computed(() => storedActivePerson.value ? `/person/${storedActivePerson.value.id}` : '/')
+const natalPath = computed(() => natalRouteForPerson(storedActivePerson.value))
 const skyMode = computed(() => route.path === '/human-design' ? 'humanDesign' : 'astrology')
 const activeTheme = computed(() => settings.theme === 'light' ? 'light' : 'dark')
 const isVedicRoute = computed(() => route.path === '/vedic')
@@ -38,7 +46,7 @@ watchEffect(() => {
 
 const links = computed(() => [
   { to: '/',                 label: t('nav.home'),     id: 'home' },
-  { to: '/natal',            label: t('nav.map'),      id: 'natal' },
+  { to: natalPath.value,     label: t('nav.map'),      id: 'natal' },
   { to: '/timing/transits',  label: t('nav.timing'),   id: 'timing' },
   { to: '/synastry',         label: t('nav.relations'), id: 'synastry' },
   { to: personPath.value,    label: t('nav.library'),  id: 'library' },
@@ -87,7 +95,7 @@ const contextItems = computed(() => {
       .flex.items-center.gap-2.overflow-x-auto
         RouterLink.text-sm.text-slate-300.px-2.py-1.rounded.transition.whitespace-nowrap(
           v-for='l in links'
-          :key='l.to'
+          :key='l.id'
           :to='l.to'
           active-class='text-amber-300 bg-white/5'
           :data-testid='`nav-${l.id}`'
