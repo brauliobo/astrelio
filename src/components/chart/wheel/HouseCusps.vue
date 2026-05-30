@@ -8,16 +8,24 @@ const props = defineProps({
   wheelShift: { type: Number, required: true },
 })
 
+const ANGLE_AXIS_STROKES = {
+  0: 'var(--chart-angle-asc, var(--chart-angle-accent))',
+  3: 'var(--chart-angle-mc, var(--chart-angle-accent))',
+  6: 'var(--chart-angle-asc, var(--chart-angle-accent))',
+  9: 'var(--chart-angle-mc, var(--chart-angle-accent))',
+}
+
 const cusps = computed(() =>
   props.cusps.map((cusp, index) => {
-    const isAngle = [0, 3, 6, 9].includes(index)
+    const angleStroke = ANGLE_AXIS_STROKES[index]
+    const isAngle = Boolean(angleStroke)
     const longitude = norm360(cusp + props.wheelShift)
     return {
       index,
       inner: polarPoint(WHEEL_RADII.houseInner, longitude),
       outer: polarPoint(WHEEL_RADII.zodiacInner, longitude),
-      stroke: isAngle ? 'var(--chart-cusp-angle)' : 'var(--chart-cusp-line)',
-      opacity: isAngle ? 0.9 : 0.46,
+      stroke: angleStroke || 'var(--chart-cusp-line)',
+      opacity: isAngle ? 0.74 : 0.46,
       width: isAngle ? 1.75 : 0.75,
     }
   })
@@ -49,6 +57,7 @@ g(data-testid='house-cusps' pointer-events='none')
   line(
     v-for='cusp in cusps'
     :key='cusp.index'
+    :data-testid='`house-cusp-${cusp.index + 1}`'
     :x1='cusp.inner.x'
     :y1='cusp.inner.y'
     :x2='cusp.outer.x'

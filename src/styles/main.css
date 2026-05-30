@@ -61,11 +61,12 @@
   --chart-ink-muted: #e2e8f0;
   --chart-house-number-fill: #cbd5e1;
   --chart-house-number-opacity: 0.62;
-  --chart-angle-label-bg: #0f172a;
   --chart-hit-target-fill: rgb(255 255 255 / 0.01);
   --chart-sun-stroke: #facc15;
   --chart-retrograde-text: #fde68a;
   --chart-angle-accent: #f59e0b;
+  --chart-angle-asc: #f87171;
+  --chart-angle-mc: #93c5fd;
   --chart-sun-color: #ff4d4d;
   --chart-overlay-ink: #94a3b8;
   --chart-overlay-accent: #2dd4bf;
@@ -131,11 +132,12 @@ html[data-theme="light"] {
   --chart-ink-muted: #334155;
   --chart-house-number-fill: #475569;
   --chart-house-number-opacity: 0.68;
-  --chart-angle-label-bg: #fffaf0;
   --chart-hit-target-fill: rgb(15 23 42 / 0.01);
   --chart-sun-stroke: #facc15;
   --chart-retrograde-text: #92400e;
   --chart-angle-accent: #b45309;
+  --chart-angle-asc: #dc2626;
+  --chart-angle-mc: #2563eb;
   --chart-sun-color: #dc2626;
   --chart-overlay-ink: #334155;
   --chart-overlay-accent: #0f766e;

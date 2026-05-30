@@ -113,6 +113,8 @@ describe('chart display modes', () => {
     expect(frame.findAll('circle')[1].attributes('fill')).toBe('var(--chart-zodiac-fill-b)')
     expect(zodiacText.attributes('fill')).toBe('var(--chart-zodiac-text)')
     expect(houseSector.attributes('fill')).toBe('var(--chart-house-fill-a)')
+    expect(wrapper.get('[data-testid="house-cusp-1"]').attributes('stroke')).toBe('var(--chart-angle-asc, var(--chart-angle-accent))')
+    expect(wrapper.get('[data-testid="house-cusp-10"]').attributes('stroke')).toBe('var(--chart-angle-mc, var(--chart-angle-accent))')
     expect(planetLabel.attributes('fill')).toBe('var(--chart-ink)')
   })
 
@@ -125,6 +127,38 @@ describe('chart display modes', () => {
     expect(houseNumbers.attributes('opacity')).toBe('var(--chart-house-number-opacity)')
     expect(houseNumbers.find('circle').exists()).toBe(false)
     expect(Number(planetDegree.attributes('font-size'))).toBeGreaterThan(Number(houseNumbers.attributes('font-size')))
+  })
+
+  it('renders ascendant and midheaven as compact arrow markers', () => {
+    const wrapper = mountChartWheel()
+    const markers = wrapper.get('[data-testid="angle-markers"]')
+    const markerPoints = (path) => [...path.matchAll(/-?\d+(?:\.\d+)?/g)]
+      .map(match => Number(match[0]))
+      .reduce((points, value, index, values) => {
+        if (index % 2 === 0) points.push({ x: value, y: values[index + 1] })
+        return points
+      }, [])
+    const distanceFromCenter = ({ x, y }) => Math.hypot(x - CENTER, y - CENTER)
+
+    expect(markers.findAll('[data-testid^="angle-arrow-"]')).toHaveLength(2)
+    expect(markers.get('[data-testid="angle-arrow-asc"]').attributes('fill')).toBe('var(--chart-angle-asc, var(--chart-angle-accent))')
+    expect(markers.get('[data-testid="angle-arrow-mc"]').attributes('fill')).toBe('var(--chart-angle-mc, var(--chart-angle-accent))')
+    for (const marker of markers.findAll('[data-testid^="angle-arrow-"]')) {
+      const [tip, baseA, baseB] = markerPoints(marker.attributes('d'))
+      const baseDistance = (distanceFromCenter(baseA) + distanceFromCenter(baseB)) / 2
+
+      expect(distanceFromCenter(tip)).toBeCloseTo(WHEEL_RADII.zodiacOuter + 15, 4)
+      expect(distanceFromCenter(tip)).toBeGreaterThan(baseDistance)
+    }
+    expect(markers.findAll('circle')).toHaveLength(0)
+  })
+
+  it('uses the same glyph size for natal planets', () => {
+    const wrapper = mountChartWheel()
+    const sun = wrapper.get('[data-testid="planet-glyph-Sun"] text[data-role="symbol"]')
+    const mars = wrapper.get('[data-testid="planet-glyph-Mars"] text[data-role="symbol"]')
+
+    expect(sun.attributes('font-size')).toBe(mars.attributes('font-size'))
   })
 
   it('keeps aspect lines bounded to the central aspect circle', () => {

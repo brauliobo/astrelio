@@ -15,9 +15,6 @@ const closePoint = (actual, expected) => {
   expect(actual.y).toBeCloseTo(expected.y, 6)
 }
 
-const pointDistance = (a, b) =>
-  Math.hypot(a.x - b.x, a.y - b.y)
-
 const placementSnapshot = (placements) =>
   Object.fromEntries(placements.map(item => [item.planet.name, {
     glyphLongitude: Number(item.glyphLongitude.toFixed(6)),
@@ -64,7 +61,7 @@ describe('chart wheel geometry', () => {
     expect(line.start.y).toBeCloseTo(sun.point.y, 6)
   })
 
-  it('keeps exact longitude ticks while spreading crowded stellium glyphs', () => {
+  it('stacks crowded stellium glyphs on their exact longitude rays', () => {
     const chart = {
       positions: [
         mk('Sun', 10),
@@ -80,13 +77,13 @@ describe('chart wheel geometry', () => {
     expect(sun.longitude).toBeCloseTo(25)
     closePoint(sun.tick, polarPoint(152, 25))
     closePoint(sun.point, polarPoint(sun.radius, 25))
-    expect(sun.glyphLongitude).not.toBeCloseTo(sun.longitude)
+    expect(sun.glyphLongitude).toBeCloseTo(sun.longitude)
+    closePoint(sun.glyphPoint, sun.point)
     expect(placements.every(item => item.isCrowded)).toBe(true)
     expect(placements.every(item => item.showDegreeLabel)).toBe(false)
 
-    for (let index = 1; index < placements.length; index += 1) {
-      expect(pointDistance(placements[index - 1].glyphPoint, placements[index].glyphPoint)).toBeGreaterThan(14)
-    }
+    expect(new Set(placements.map(item => item.radius)).size).toBe(placements.length)
+    expect(placements.every(item => item.glyphLongitude === item.longitude)).toBe(true)
   })
 
   it('keeps degree labels always visible only outside crowded clusters', () => {

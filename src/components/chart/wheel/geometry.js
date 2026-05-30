@@ -61,7 +61,6 @@ export const PLANET_COLORS = {
 
 const PLANET_ORDER = new Map(Object.keys(PLANET_SYMBOLS).map((name, index) => [name, index]))
 const PLANET_CLUSTER_GAP = 8
-const GLYPH_MIN_SEPARATION = 6.8
 const DEGREE_LABEL_CLUSTER_LIMIT = 2
 
 export const ZODIAC_SIGNS = [
@@ -85,6 +84,23 @@ export const polarPoint = (radius, longitude, cx = CENTER, cy = CENTER) => {
     x: cx + radius * Math.cos(angle),
     y: cy + radius * Math.sin(angle),
   }
+}
+
+export const radialTrianglePath = (longitude, tipRadius, baseRadius, halfWidth, cx = CENTER, cy = CENTER) => {
+  const angle = (180 - longitude) * Math.PI / 180
+  const tangent = { x: -Math.sin(angle), y: Math.cos(angle) }
+  const tip = polarPoint(tipRadius, longitude, cx, cy)
+  const base = polarPoint(baseRadius, longitude, cx, cy)
+  const left = {
+    x: base.x + tangent.x * halfWidth,
+    y: base.y + tangent.y * halfWidth,
+  }
+  const right = {
+    x: base.x - tangent.x * halfWidth,
+    y: base.y - tangent.y * halfWidth,
+  }
+
+  return `M ${tip.x} ${tip.y} L ${left.x} ${left.y} L ${right.x} ${right.y} Z`
 }
 
 export const ringSectorPath = (innerRadius, outerRadius, startLongitude, endLongitude) => {
@@ -196,29 +212,6 @@ export const clusteredPlanets = (positions, symbols = PLANET_SYMBOLS) => {
 const clamp = (value, min, max) =>
   Math.max(min, Math.min(max, value))
 
-const unwrappedClusterLongitudes = (cluster) => {
-  const longitudes = []
-  for (const planet of cluster) {
-    let longitude = planet.longitude
-    const previous = longitudes[longitudes.length - 1]
-    while (previous !== undefined && longitude < previous) longitude += 360
-    longitudes.push(longitude)
-  }
-  return longitudes
-}
-
-const visualLongitudesForCluster = (cluster) => {
-  const longitudes = unwrappedClusterLongitudes(cluster)
-  if (longitudes.length <= 1) return longitudes
-
-  const span = longitudes[longitudes.length - 1] - longitudes[0]
-  const visualSpan = Math.max(span, (longitudes.length - 1) * GLYPH_MIN_SEPARATION)
-  const center = (longitudes[0] + longitudes[longitudes.length - 1]) / 2
-  const start = center - visualSpan / 2
-
-  return longitudes.map((_, index) => start + index * (visualSpan / (longitudes.length - 1)))
-}
-
 const RADIUS_LANES = [0, -1, 1, -0.45, 0.45, -0.75, 0.75, -0.25, 0.25]
 
 const radiusLaneFor = (index, count) => {
@@ -259,11 +252,10 @@ const labelPlacement = (glyphPoint, glyphLongitude) => {
 export const planetPlacements = (chart, wheelShift, band, symbols = PLANET_SYMBOLS) => {
   const placements = []
   for (const cluster of clusteredPlanets(chart.positions || [], symbols)) {
-    const glyphLongitudes = visualLongitudesForCluster(cluster)
     cluster.forEach((planet, index) => {
       const radius = radiusForClusterIndex(index, cluster.length, band)
       const longitude = norm360(planet.longitude + wheelShift)
-      const glyphLongitude = norm360(glyphLongitudes[index] + wheelShift)
+      const glyphLongitude = longitude
       const glyphPoint = polarPoint(radius, glyphLongitude)
       placements.push({
         planet,

@@ -40,7 +40,7 @@ const glyphs = computed(() =>
       symbol: symbols[item.planet.name],
       degree: degreeLabel(item.planet.longitude),
       showDegreeLabel: item.showDegreeLabel !== false,
-      fontSize: item.planet.name === 'Sun' && props.mapIndex === 0 ? 24 : props.mapIndex === 0 ? 21 : 17,
+      fontSize: props.mapIndex === 0 ? 22 : 17,
     }
   })
 )
