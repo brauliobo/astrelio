@@ -21,6 +21,13 @@
 - Prefer presets and disclosure sections over always-visible advanced controls.
 - Keep the persistent chart context bar concise: active chart, birth data, system, and preset only.
 
+## Modalities
+
+- Use `src/lib/modalities/` as the generic adapter boundary for chart, interpretation, and connection workflows.
+- Keep modality-specific engines isolated under their own domain folders, such as `src/lib/human-design/`.
+- UI pages should delegate through modality adapters when switching between astrology, Human Design, or future systems.
+- Keep ignored research checkouts under `research/`; never import them as runtime dependencies.
+
 ## Git
 
 - Never commit changes unless the user explicitly asks for a commit.
