@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
+import { useSettingsStore } from '../stores/settings.js'
 import { modalityChart } from '../lib/modalities/index.js'
 import { humanDesignValueLabel } from '../lib/human-design/labels.js'
 import HumanDesignActivationTable from '../components/human-design/HumanDesignActivationTable.vue'
@@ -13,6 +14,7 @@ import ModalityRouteSwitch from '../components/modalities/ModalityRouteSwitch.vu
 const { t } = useI18n()
 const people = usePeopleStore()
 const session = useSessionStore()
+const settings = useSettingsStore()
 
 const person = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
 const chart = computed(() => modalityChart('humanDesign', person.value))
@@ -45,7 +47,7 @@ section.human-design-page(data-testid='human-design-page')
         .mt-1.text-lg.font-semibold.text-slate-100(:data-testid='row.testId') {{ row.value }}
 
     .ui-panel
-      HumanDesignWheel(:chart='chart')
+      HumanDesignWheel(:chart='chart' :visual-theme='settings.theme')
 
     HumanDesignInsightPanel(:chart='chart')
     HumanDesignActivationTable(:chart='chart')

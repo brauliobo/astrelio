@@ -29,6 +29,26 @@
   --app-shadow: 0 8px 32px rgba(0,0,0,0.35);
   --chart-control-bg: rgb(255 255 255 / 0.9);
   --chart-control-text: rgb(15 23 42);
+  --chart-shadow-fill: #020617;
+  --chart-zodiac-fill-a: #263653;
+  --chart-zodiac-fill-b: #1d2a42;
+  --chart-zodiac-fill-c: #30415f;
+  --chart-zodiac-stroke: #9fb1c8;
+  --chart-zodiac-text: #f8fafc;
+  --chart-zodiac-text-stroke: #0f172a;
+  --chart-frame-stroke: #d7e1ee;
+  --chart-house-fill-a: #18243a;
+  --chart-house-fill-b: #21304a;
+  --chart-house-center: #07111f;
+  --chart-cusp-angle: #f8fafc;
+  --chart-cusp-line: #c7d3e2;
+  --chart-ink: #f8fafc;
+  --chart-ink-muted: #e2e8f0;
+  --chart-house-number-fill: #0f172a;
+  --chart-house-number-bg: #f8fafc;
+  --chart-house-number-stroke: #64748b;
+  --chart-angle-label-bg: #0f172a;
+  --chart-sun-stroke: #facc15;
 }
 
 html[data-theme="light"] {
@@ -52,6 +72,26 @@ html[data-theme="light"] {
   --app-shadow: 0 10px 30px rgba(15,23,42,0.12);
   --chart-control-bg: rgb(255 255 255 / 0.94);
   --chart-control-text: rgb(15 23 42);
+  --chart-shadow-fill: #0f172a;
+  --chart-zodiac-fill-a: #f3f7fb;
+  --chart-zodiac-fill-b: #e9eff6;
+  --chart-zodiac-fill-c: #f8fafc;
+  --chart-zodiac-stroke: #c3ceda;
+  --chart-zodiac-text: #0b1220;
+  --chart-zodiac-text-stroke: #f8fafc;
+  --chart-frame-stroke: #0f172a;
+  --chart-house-fill-a: #fcfdff;
+  --chart-house-fill-b: #f3f6fa;
+  --chart-house-center: #101827;
+  --chart-cusp-angle: #0f172a;
+  --chart-cusp-line: #64748b;
+  --chart-ink: #111827;
+  --chart-ink-muted: #334155;
+  --chart-house-number-fill: #0f172a;
+  --chart-house-number-bg: #f8fafc;
+  --chart-house-number-stroke: #cbd5e1;
+  --chart-angle-label-bg: #fffaf0;
+  --chart-sun-stroke: #facc15;
 }
 
 html, body {

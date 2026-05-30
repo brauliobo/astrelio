@@ -3,11 +3,15 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { MANDALA_GATE_ORDER } from '../../lib/human-design/constants.js'
 import { humanDesignValueLabel } from '../../lib/human-design/labels.js'
+import { humanDesignPalette } from './humanDesignVisualTheme.js'
 
 const props = defineProps({
   chart: { type: Object, required: true },
+  visualTheme: { type: String, default: 'dark' },
 })
 const { t } = useI18n()
+const palette = computed(() => humanDesignPalette(props.visualTheme))
+const light = computed(() => props.visualTheme === 'light')
 
 const activeGates = computed(() => new Set(props.chart.gates || []))
 const center = 260
@@ -44,8 +48,8 @@ const gates = computed(() =>
 <template lang="pug">
 .rave-mandala(data-testid='rave-mandala')
   svg.block.mx-auto.max-w-full(viewBox='0 0 520 520' role='img' :aria-label='t("human_design.rave_mandala_aria")')
-    circle(:cx='center' :cy='center' :r='outer' fill='rgba(15,23,42,0.72)' stroke='#64748b' stroke-width='1')
-    circle(:cx='center' :cy='center' :r='inner' fill='none' stroke='#64748b' stroke-width='1' stroke-opacity='0.45')
+    circle(:cx='center' :cy='center' :r='outer' :fill='palette.mandalaBase' :stroke='palette.mandalaStroke' stroke-width='1')
+    circle(:cx='center' :cy='center' :r='inner' fill='none' :stroke='palette.mandalaStroke' stroke-width='1' stroke-opacity='0.45')
     g
       line(
         v-for='item in gates'
@@ -54,7 +58,7 @@ const gates = computed(() =>
         :y1='item.line.a.y'
         :x2='item.line.b.x'
         :y2='item.line.b.y'
-        :stroke='item.active ? "#f59e0b" : "#475569"'
+        :stroke='item.active ? "#f59e0b" : light ? "#94a3b8" : "#475569"'
         :stroke-width='item.active ? 2 : 0.8'
         :stroke-opacity='item.active ? 0.95 : 0.5'
       )
@@ -66,14 +70,14 @@ const gates = computed(() =>
         :y='item.label.y'
         text-anchor='middle'
         dominant-baseline='middle'
-        :fill='item.active ? "#fbbf24" : "#cbd5e1"'
+        :fill='item.active ? "#b45309" : light ? "#475569" : "#cbd5e1"'
         :font-size='item.active ? 12 : 9'
         :font-weight='item.active ? 800 : 500'
         :data-gate='item.gate'
         :data-active='String(item.active)'
         data-testid='mandala-gate'
       ) {{ item.gate }}
-    circle(:cx='center' :cy='center' r='124' fill='rgba(2,6,23,0.72)' stroke='#334155')
-    text(:x='center' :y='center - 10' text-anchor='middle' fill='#e2e8f0' font-size='18' font-weight='700') {{ humanDesignValueLabel(t, 'type', chart.type) }}
-    text(:x='center' :y='center + 18' text-anchor='middle' fill='#94a3b8' font-size='12') {{ chart.profile }} · {{ humanDesignValueLabel(t, 'authority', chart.authority) }}
+    circle(:cx='center' :cy='center' r='124' :fill='palette.mandalaCenter' :stroke='palette.mandalaStroke')
+    text(:x='center' :y='center - 10' text-anchor='middle' :fill='palette.mandalaText' font-size='18' font-weight='700') {{ humanDesignValueLabel(t, 'type', chart.type) }}
+    text(:x='center' :y='center + 18' text-anchor='middle' :fill='palette.mandalaMuted' font-size='12') {{ chart.profile }} · {{ humanDesignValueLabel(t, 'authority', chart.authority) }}
 </template>

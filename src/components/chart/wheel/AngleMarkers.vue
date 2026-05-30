@@ -14,9 +14,9 @@ const markers = computed(() => {
 
   return [
     { key: 'asc', label: 'AS', longitude: asc, accent: '#b45309' },
-    { key: 'desc', label: 'DS', longitude: asc + 180, accent: '#475569' },
+    { key: 'desc', label: 'DS', longitude: asc + 180, accent: 'var(--chart-ink-muted)' },
     { key: 'mc', label: 'MC', longitude: mc, accent: '#b45309' },
-    { key: 'ic', label: 'IC', longitude: mc + 180, accent: '#475569' },
+    { key: 'ic', label: 'IC', longitude: mc + 180, accent: 'var(--chart-ink-muted)' },
   ].map((marker) => {
     const longitude = norm360(marker.longitude + props.wheelShift)
     return {
@@ -46,7 +46,7 @@ g(data-testid='angle-markers' font-family='"Inter", "Avenir Next", system-ui, sa
       :cx='marker.labelPoint.x'
       :cy='marker.labelPoint.y'
       r='12'
-      fill='#fffaf0'
+      fill='var(--chart-angle-label-bg)'
       :stroke='marker.accent'
       stroke-width='1'
       stroke-opacity='0.9'

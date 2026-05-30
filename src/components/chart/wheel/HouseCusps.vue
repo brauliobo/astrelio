@@ -16,7 +16,7 @@ const cusps = computed(() =>
       index,
       inner: polarPoint(WHEEL_RADII.houseInner, longitude),
       outer: polarPoint(WHEEL_RADII.zodiacInner, longitude),
-      stroke: isAngle ? '#0f172a' : '#64748b',
+      stroke: isAngle ? 'var(--chart-cusp-angle)' : 'var(--chart-cusp-line)',
       opacity: isAngle ? 0.9 : 0.46,
       width: isAngle ? 1.75 : 0.75,
     }
@@ -29,7 +29,7 @@ const sectors = computed(() =>
     start: norm360(cusp + props.wheelShift),
     end: norm360(props.cusps[(index + 1) % 12] + props.wheelShift),
     midpoint: midpointLongitude(cusp, props.cusps[(index + 1) % 12]),
-    fill: index % 2 === 0 ? '#fcfdff' : '#f3f6fa',
+    fill: index % 2 === 0 ? 'var(--chart-house-fill-a)' : 'var(--chart-house-fill-b)',
   }))
 )
 </script>
@@ -58,6 +58,6 @@ g(data-testid='house-cusps')
     :stroke-opacity='cusp.opacity'
     stroke-linecap='round'
   )
-  circle(:cx='CENTER' :cy='CENTER' :r='WHEEL_RADII.houseOuter' fill='none' stroke='#334155' stroke-width='1.05')
-  circle(:cx='CENTER' :cy='CENTER' :r='WHEEL_RADII.houseInner' fill='none' stroke='#0f172a' stroke-width='1.55')
+  circle(:cx='CENTER' :cy='CENTER' :r='WHEEL_RADII.houseOuter' fill='none' stroke='var(--chart-ink-muted)' stroke-width='1.05')
+  circle(:cx='CENTER' :cy='CENTER' :r='WHEEL_RADII.houseInner' fill='none' stroke='var(--chart-frame-stroke)' stroke-width='1.55')
 </template>

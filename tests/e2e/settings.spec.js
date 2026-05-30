@@ -42,6 +42,22 @@ test.describe('Settings', () => {
     await expect(cb).toBeChecked({ checked: false })  // seedSettings disables it
   })
 
+  test('toggles light and dark mode globally and persists it', async ({ page }) => {
+    await page.goto('/#/settings')
+
+    await expect.poll(() => page.evaluate(() => document.documentElement.dataset.theme)).toBe('dark')
+    await page.getByTestId('theme-toggle').click()
+    await expect.poll(() => page.evaluate(() => document.documentElement.dataset.theme)).toBe('light')
+
+    await page.reload()
+    await expect.poll(() => page.evaluate(() => document.documentElement.dataset.theme)).toBe('light')
+
+    await page.getByTestId('theme-toggle').click()
+    await expect.poll(async () =>
+      page.evaluate(() => JSON.parse(localStorage.getItem('astrelio_settings')).theme)
+    ).toBe('dark')
+  })
+
   test('persists aspect display options', async ({ page }) => {
     await page.goto('/#/settings')
     await openAdvancedSettings(page)

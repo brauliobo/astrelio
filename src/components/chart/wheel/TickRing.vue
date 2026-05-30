@@ -18,7 +18,7 @@ const ticks = computed(() =>
       degree,
       outer,
       inner,
-      stroke: isSign ? '#0f172a' : '#334155',
+      stroke: isSign ? 'var(--chart-cusp-angle)' : 'var(--chart-ink-muted)',
       width: isSign ? 1.35 : isDecan ? 0.8 : isFive ? 0.55 : 0.35,
       opacity: isSign ? 0.9 : isDecan ? 0.5 : isFive ? 0.34 : 0.18,
     }

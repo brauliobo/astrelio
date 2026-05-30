@@ -39,4 +39,16 @@ test.describe('Natal chart', () => {
     await page.goto('/#/natal')
     await expect(page.getByTestId('moon-phase')).toBeVisible()
   })
+
+  test('reactively updates chart wheel colors when theme changes', async ({ page }) => {
+    await page.goto('/#/natal')
+    const sign = page.locator('[data-testid="zodiac-ring"] text').first()
+    const darkFill = await sign.evaluate(el => getComputedStyle(el).fill)
+
+    await page.getByTestId('theme-toggle').click()
+    await expect.poll(() => page.evaluate(() => document.documentElement.dataset.theme)).toBe('light')
+
+    const lightFill = await sign.evaluate(el => getComputedStyle(el).fill)
+    expect(lightFill).not.toBe(darkFill)
+  })
 })

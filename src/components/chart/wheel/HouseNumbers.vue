@@ -22,7 +22,7 @@ g(
   font-family='"Inter", "Avenir Next", system-ui, sans-serif'
   font-weight='700'
   font-size='11'
-  fill='#0f172a'
+  fill='var(--chart-house-number-fill)'
   text-anchor='middle'
 )
   g(v-for='item in labels' :key='item.index')
@@ -30,8 +30,8 @@ g(
       :cx='item.point.x'
       :cy='item.point.y'
       r='8.5'
-      fill='#f8fafc'
-      stroke='#cbd5e1'
+      fill='var(--chart-house-number-bg)'
+      stroke='var(--chart-house-number-stroke)'
       stroke-width='0.75'
     )
     text(

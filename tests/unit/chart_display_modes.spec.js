@@ -101,4 +101,17 @@ describe('chart display modes', () => {
       window.matchMedia = originalMatchMedia
     }
   })
+
+  it('uses CSS variables for chart wheel colors so root theme changes cascade', () => {
+    const wrapper = mountChartWheel()
+    const frame = wrapper.get('[data-testid="wheel-frame"]')
+    const zodiacText = wrapper.get('[data-testid="zodiac-ring"] text')
+    const houseSector = wrapper.get('[data-testid="house-cusps"] path')
+    const planetLabel = wrapper.get('[data-testid="planet-glyph-Moon"] text[data-role="symbol"]')
+
+    expect(frame.findAll('circle')[1].attributes('fill')).toBe('var(--chart-zodiac-fill-b)')
+    expect(zodiacText.attributes('fill')).toBe('var(--chart-zodiac-text)')
+    expect(houseSector.attributes('fill')).toBe('var(--chart-house-fill-a)')
+    expect(planetLabel.attributes('fill')).toBe('var(--chart-ink)')
+  })
 })

@@ -4,7 +4,7 @@ import { PLANET_COLORS, PLANET_SYMBOLS, WHEEL_RADII, degreeLabel } from './geome
 
 const props = defineProps({
   placements: { type: Array, required: true },
-  color: { type: String, default: '#111827' },
+  color: { type: String, default: 'var(--chart-ink)' },
   mapIndex: { type: Number, default: 0 },
   highlightedBodies: { type: Array, default: () => [] },
 })
@@ -20,7 +20,7 @@ const glyphs = computed(() =>
     const label = item.labelPoint || { x: glyph.x + 10, y: glyph.y - 9 }
     const retrograde = item.retrogradePoint || { x: glyph.x + 10, y: glyph.y + 7 }
     const color = props.mapIndex === 0 ? PLANET_COLORS[item.planet.name] || props.color : props.color
-    const labelColor = props.mapIndex === 0 ? '#111827' : props.color
+    const labelColor = props.mapIndex === 0 ? 'var(--chart-ink)' : props.color
     return {
       ...item,
       exact,
@@ -47,7 +47,7 @@ const glyphHighlightState = (body) => {
 
 <template lang="pug">
 g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
-  circle(:cx='260' :cy='260' :r='WHEEL_RADII.aspect' fill='none' stroke='#475569' stroke-width='0.45' stroke-opacity='0.25')
+  circle(:cx='260' :cy='260' :r='WHEEL_RADII.aspect' fill='none' stroke='var(--chart-ink-muted)' stroke-width='0.45' stroke-opacity='0.25')
   g(
     v-for='item in glyphs'
     :key='`${item.planet.name}-${item.planet.longitude}`'
@@ -90,7 +90,7 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
       :x='item.glyph.x'
       :y='item.glyph.y'
       :fill='item.color'
-      :stroke='item.planet.name === "Sun" && mapIndex === 0 ? "#facc15" : "none"'
+      :stroke='item.planet.name === "Sun" && mapIndex === 0 ? "var(--chart-sun-stroke)" : "none"'
       :stroke-width='glyphHighlightState(item.planet.name) === "active" ? 1.1 : item.planet.name === "Sun" && mapIndex === 0 ? 0.8 : 0'
       :font-size='item.fontSize'
       :font-weight='glyphHighlightState(item.planet.name) === "active" ? 700 : 400'

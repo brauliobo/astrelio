@@ -8,6 +8,7 @@ import HumanDesignIChingRing from '../../src/components/human-design/HumanDesign
 import HumanDesignWheelRings from '../../src/components/human-design/HumanDesignWheelRings.vue'
 import { MANDALA_GATE_ORDER } from '../../src/lib/human-design/constants.js'
 import { wheelRingRadii } from '../../src/components/human-design/humanDesignWheelGeometry.js'
+import { humanDesignWheelPalette } from '../../src/components/human-design/humanDesignVisualTheme.js'
 import en from '../../src/i18n/en.json'
 import ptBR from '../../src/i18n/pt-BR.json'
 
@@ -54,6 +55,36 @@ describe('Human Design visual components', () => {
     expect(sectors).toHaveLength(64)
     expect(active.map(sector => Number(sector.attributes('data-gate'))).sort((a, b) => a - b)).toEqual([14, 28, 49])
     expect(inactive.every(sector => sector.attributes('fill') === 'transparent')).toBe(true)
+  })
+
+  it('applies the Human Design wheel palette for dark and light themes', () => {
+    const dark = mountInSvg(HumanDesignWheelRings, {
+      chart: {
+        gates: [49, 14, 28],
+        personalityGates: [49, 28],
+        designGates: [14, 28],
+      },
+    })
+    const light = mountInSvg(HumanDesignWheelRings, {
+      chart: {
+        gates: [49, 14, 28],
+        personalityGates: [49, 28],
+        designGates: [14, 28],
+      },
+      visualTheme: 'light',
+    })
+
+    const darkPalette = humanDesignWheelPalette('dark')
+    const lightPalette = humanDesignWheelPalette('light')
+    const darkPersonality = dark.find('[data-testid="mandala-gate-sector"][data-gate="49"]')
+    const lightPersonality = light.find('[data-testid="mandala-gate-sector"][data-gate="49"]')
+    const lightZodiac = light.find('[data-testid="hd-zodiac-sector"]')
+
+    expect(darkPersonality.attributes('fill')).toBe(darkPalette.gatePersonality)
+    expect(lightPersonality.attributes('fill')).toBe(lightPalette.gatePersonality)
+    expect(lightPersonality.attributes('stroke')).toBe(lightPalette.sectorStroke)
+    expect(lightZodiac.attributes('stroke')).toBe(lightPalette.zodiacStroke)
+    expect(light.find('[data-testid="iching-line"]').attributes('stroke')).toBe(lightPalette.iching)
   })
 
   it('keeps zodiac, gate, and I Ching rings compact with shared borders instead of margins', () => {

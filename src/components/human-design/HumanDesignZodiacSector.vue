@@ -8,7 +8,7 @@ defineProps({
 path(
   :d='segment.path'
   :fill='segment.fill'
-  stroke='rgba(248,250,252,0.07)'
+  :stroke='segment.stroke'
   stroke-width='0.75'
   data-testid='hd-zodiac-sector'
 )

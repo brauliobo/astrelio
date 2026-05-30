@@ -43,6 +43,18 @@ test.describe('Human Design', () => {
     await expect(page.getByTestId('natal-page')).toBeVisible()
   })
 
+  test('reactively updates Human Design wheel colors when theme changes', async ({ page }) => {
+    await page.goto('/#/human-design')
+    const activeGate = page.locator('[data-testid="mandala-gate-sector"][data-active="true"]').first()
+    const darkFill = await activeGate.evaluate(el => getComputedStyle(el).fill)
+
+    await page.getByTestId('theme-toggle').click()
+    await expect.poll(() => page.evaluate(() => document.documentElement.dataset.theme)).toBe('light')
+
+    const lightFill = await activeGate.evaluate(el => getComputedStyle(el).fill)
+    expect(lightFill).not.toBe(darkFill)
+  })
+
   test('switches relationships from astrology synastry to Human Design connection', async ({ page }) => {
     await page.goto('/#/synastry')
     await page.getByTestId('relationship-modality-human-design').click()

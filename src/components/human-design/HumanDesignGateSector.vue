@@ -13,7 +13,7 @@ path(
   :d='segment.path'
   :fill='hovered ? segment.hoverFill : segment.fill'
   :fill-opacity='dimmed ? 0.32 : 1'
-  :stroke='hovered ? "#f8fafc" : "rgba(248,250,252,0.075)"'
+  :stroke='hovered ? segment.hoverStroke : segment.sectorStroke'
   :stroke-width='hovered ? 1.7 : 0.7'
   :data-gate='segment.gate'
   :data-active='String(segment.active)'

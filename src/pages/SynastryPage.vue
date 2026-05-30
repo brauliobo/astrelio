@@ -78,10 +78,10 @@ section.synastry-page(data-testid='synastry-page')
       .grid.gap-6(class='lg:grid-cols-2' data-testid='human-design-connection')
         .ui-panel(v-if='hdChartA')
           h2.text-sm.font-semibold.text-slate-100.mb-3 {{ personA.name }}
-          BodygraphChart(:chart='hdChartA')
+          BodygraphChart(:chart='hdChartA' :visual-theme='settings.theme')
         .ui-panel(v-if='hdChartB')
           h2.text-sm.font-semibold.text-slate-100.mb-3 {{ personB?.name }}
-          BodygraphChart(:chart='hdChartB')
+          BodygraphChart(:chart='hdChartB' :visual-theme='settings.theme')
       .ui-panel.mt-6(v-if='hdConnection' data-testid='human-design-connection-details')
         h2.text-sm.font-semibold.text-slate-100.mb-3 {{ t('human_design.connection') }}
         .grid.gap-3(class='md:grid-cols-2')
