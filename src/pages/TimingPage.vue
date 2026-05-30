@@ -27,10 +27,10 @@ const props = defineProps({
 })
 
 const { t, tm } = useI18n()
-const route = useRoute()
-const router = useRouter()
-const people = usePeopleStore()
-const session = useSessionStore()
+const route    = useRoute()
+const router   = useRouter()
+const people   = usePeopleStore()
+const session  = useSessionStore()
 const settings = useSettingsStore()
 
 const techniqueOptions = [
@@ -43,7 +43,7 @@ const techniqueOptions = [
 ]
 
 const knownTechniqueIds = new Set(techniqueOptions.map(option => option.id))
-const localTechnique = ref('transits')
+const localTechnique    = ref('transits')
 
 const normalizeTechnique = (value) => {
   const normalized = String(value || '')
@@ -78,15 +78,15 @@ const activeTechnique = computed(() => routeTechnique.value || localTechnique.va
 
 const selectTechnique = (techniqueId) => {
   localTechnique.value = techniqueId
-  const target = techniqueOptions.find(option => option.id === techniqueId)
+  const target         = techniqueOptions.find(option => option.id === techniqueId)
   if (!target || routeTechnique.value === techniqueId || !router?.hasRoute?.(target.routeName)) return
   router.push({ name: target.routeName })
 }
 
 const person = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
-const natal = useNatalChart(person, settings)
+const natal  = useNatalChart(person, settings)
 
-const transitDateMs = ref(session.transitDateMs || Date.now())
+const transitDateMs    = ref(session.transitDateMs || Date.now())
 const transitDateInput = computed({
   get: () => new Date(transitDateMs.value).toISOString().slice(0, 16),
   set: (value) => {
@@ -95,7 +95,7 @@ const transitDateInput = computed({
   },
 })
 
-const progressionDateMs = ref(session.progressionDateMs || Date.now())
+const progressionDateMs    = ref(session.progressionDateMs || Date.now())
 const progressionDateInput = computed({
   get: () => new Date(progressionDateMs.value).toISOString().slice(0, 10),
   set: (value) => {
@@ -106,7 +106,7 @@ const progressionDateInput = computed({
 
 const solarReturnYear = ref(new Date().getFullYear())
 
-const profectionDateMs = ref(Date.now())
+const profectionDateMs    = ref(Date.now())
 const profectionDateInput = computed({
   get: () => new Date(profectionDateMs.value).toISOString().slice(0, 10),
   set: (value) => {
@@ -114,7 +114,7 @@ const profectionDateInput = computed({
   },
 })
 
-const solarArcDateMs = ref(Date.now())
+const solarArcDateMs    = ref(Date.now())
 const solarArcDateInput = computed({
   get: () => new Date(solarArcDateMs.value).toISOString().slice(0, 10),
   set: (value) => {
@@ -122,7 +122,7 @@ const solarArcDateInput = computed({
   },
 })
 
-const lunarReturnDateMs = ref(Date.now())
+const lunarReturnDateMs    = ref(Date.now())
 const lunarReturnDateInput = computed({
   get: () => new Date(lunarReturnDateMs.value).toISOString().slice(0, 10),
   set: (value) => {
@@ -132,9 +132,9 @@ const lunarReturnDateInput = computed({
 
 const transit = computed(() => person.value
   ? transitsFor(transitDateMs.value, person.value.lat, person.value.lon, {
-    zodiac: settings.zodiac,
+    zodiac:      settings.zodiac,
     houseSystem: settings.houseSystem,
-    nodeMode: settings.nodeMode,
+    nodeMode:    settings.nodeMode,
   })
   : null
 )
@@ -145,12 +145,12 @@ const transitAspects = computed(() =>
 const progressed = computed(() => {
   if (!person.value) return null
   const tzOffsetMinutes = offsetMinutesForPerson(person.value)
-  const birthMs = localToUtcMs(person.value.isoLocal, tzOffsetMinutes)
-  const natalJdUt = localToJdUt(person.value.isoLocal, tzOffsetMinutes)
+  const birthMs         = localToUtcMs(person.value.isoLocal, tzOffsetMinutes)
+  const natalJdUt       = localToJdUt(person.value.isoLocal, tzOffsetMinutes)
   return secondaryProgression(natalJdUt, progressionDateMs.value, birthMs, person.value.lat, person.value.lon, {
-    zodiac: settings.zodiac,
+    zodiac:      settings.zodiac,
     houseSystem: settings.houseSystem,
-    nodeMode: settings.nodeMode,
+    nodeMode:    settings.nodeMode,
   })
 })
 const progressionAspects = computed(() =>
@@ -161,9 +161,9 @@ const solarReturn = computed(() => {
   if (!person.value || !natal.value) return null
   const near = new Date(`${solarReturnYear.value}-01-15T12:00Z`).getTime()
   return solarReturnChartForNatal(natal.value.jdUt, near, person.value.lat, person.value.lon, {
-    zodiac: settings.zodiac,
+    zodiac:      settings.zodiac,
     houseSystem: settings.houseSystem,
-    nodeMode: settings.nodeMode,
+    nodeMode:    settings.nodeMode,
   })
 })
 const solarReturnAspects = computed(() =>
@@ -177,19 +177,19 @@ const profection = computed(() => {
   if (!person.value || !natal.value) return null
   return annualProfection(natal.value.ascendant, person.value.isoLocal, profectionDateInput.value)
 })
-const signs = computed(() => tm('zodiac.signs'))
+const signs               = computed(() => tm('zodiac.signs'))
 const profectionSignLabel = computed(() => profection.value ? signs.value[profection.value.sign] : '')
 const profectionLordLabel = computed(() => profection.value ? t(`planets.${profection.value.lord}`) : '')
 
 const directed = computed(() => {
   if (!person.value || !natal.value) return null
   const tzOffsetMinutes = offsetMinutesForPerson(person.value)
-  const birthMs = localToUtcMs(person.value.isoLocal, tzOffsetMinutes)
-  const natalJdUt = localToJdUt(person.value.isoLocal, tzOffsetMinutes)
+  const birthMs         = localToUtcMs(person.value.isoLocal, tzOffsetMinutes)
+  const natalJdUt       = localToJdUt(person.value.isoLocal, tzOffsetMinutes)
   return solarArcDirections(natal.value, natalJdUt, solarArcDateMs.value, birthMs, person.value.lat, person.value.lon, {
-    zodiac: settings.zodiac,
+    zodiac:      settings.zodiac,
     houseSystem: settings.houseSystem,
-    nodeMode: settings.nodeMode,
+    nodeMode:    settings.nodeMode,
   })
 })
 const solarArcAspects = computed(() =>
@@ -200,9 +200,9 @@ const solarArcLabel = computed(() => directed.value ? directed.value.solarArc.to
 const lunarReturn = computed(() => {
   if (!person.value || !natal.value) return null
   return lunarReturnChartForNatal(natal.value.jdUt, lunarReturnDateMs.value, person.value.lat, person.value.lon, {
-    zodiac: settings.zodiac,
+    zodiac:      settings.zodiac,
     houseSystem: settings.houseSystem,
-    nodeMode: settings.nodeMode,
+    nodeMode:    settings.nodeMode,
   })
 })
 const lunarReturnAspects = computed(() =>
@@ -218,7 +218,7 @@ const formatUtcReturnDate = (chart) => {
   return new Intl.DateTimeFormat(settings.locale, {
     dateStyle: 'medium',
     timeStyle: 'short',
-    timeZone: 'UTC',
+    timeZone:  'UTC',
   }).format(date)
 }
 

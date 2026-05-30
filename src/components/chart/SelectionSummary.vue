@@ -5,13 +5,13 @@ import { houseOf } from '../../lib/astro/houses.js'
 import { degInSign, signIndex } from '../../lib/astro/zodiac.js'
 
 const props = defineProps({
-  chart: { type: Object, required: true },
-  bodies: { type: Array, default: () => [] },
+  chart:     { type: Object, required: true },
+  bodies:    { type: Array, default: () => [] },
   aspectKey: { type: String, default: '' },
 })
 
 const { t, tm, te } = useI18n()
-const signs = computed(() => tm('zodiac.signs'))
+const signs      = computed(() => tm('zodiac.signs'))
 const houseNames = computed(() => {
   const names = tm('houses.names')
   return Array.isArray(names) ? names : []
@@ -33,8 +33,8 @@ const houseLabel = (house) => {
 
 const formatDegree = (longitude) => {
   const totalMinutes = Math.floor((degInSign(longitude) * 60) + 1e-6)
-  const degrees = Math.floor(totalMinutes / 60)
-  const minutes = totalMinutes % 60
+  const degrees      = Math.floor(totalMinutes / 60)
+  const minutes      = totalMinutes % 60
   return `${degrees}°${minutes.toString().padStart(2, '0')}′`
 }
 
@@ -44,8 +44,8 @@ const aspect = computed(() => {
   if (parts.length < 3) return null
 
   return {
-    a: props.bodies[0] || parts[0],
-    b: props.bodies[1] || parts.slice(1, -1).join('-'),
+    a:    props.bodies[0] || parts[0],
+    b:    props.bodies[1] || parts.slice(1, -1).join('-'),
     type: parts.at(-1),
   }
 })
@@ -64,11 +64,11 @@ const placements = computed(() =>
     const position = positionsByName.value.get(name)
     if (!position) return { name, label: label('planets', name), detail: '' }
 
-    const sign = signs.value[signIndex(position.longitude)] || ''
+    const sign  = signs.value[signIndex(position.longitude)] || ''
     const house = houseOf(position.longitude, props.chart.cusps || [])
     return {
       name,
-      label: label('planets', name),
+      label:  label('planets', name),
       detail: `${formatDegree(position.longitude)} ${sign} · ${houseLabel(house)}`,
     }
   })

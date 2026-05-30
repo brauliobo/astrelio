@@ -6,12 +6,12 @@ import { comparisonAspectInterpretations } from '../../lib/astro/interpretations
 import HouseCorrelationPanel from './HouseCorrelationPanel.vue'
 
 const props = defineProps({
-  aspects: { type: Array, default: () => [] },
-  base: { type: Object, default: null },
+  aspects:    { type: Array, default: () => [] },
+  base:       { type: Object, default: null },
   comparison: { type: Object, default: null },
-  mode: {
-    type: String,
-    required: true,
+  mode:       {
+    type:      String,
+    required:  true,
     validator: value => ['transit', 'progression', 'synastry'].includes(value),
   },
   limit: { type: Number, default: 3 },
@@ -21,8 +21,8 @@ const { t } = useI18n()
 
 const interpretedAspects = computed(() =>
   comparisonAspectInterpretations(props.aspects, props.mode, {
-    limit: props.limit,
-    baseChart: props.base,
+    limit:           props.limit,
+    baseChart:       props.base,
     comparisonChart: props.comparison,
   })
 )
@@ -38,7 +38,7 @@ const dominantAspect = computed(() => {
   return [...scores.values()].sort((a, b) => b.strength - a.strength || b.count - a.count)[0] || null
 })
 
-const applyingCount = computed(() => props.aspects.filter(aspect => aspect.applying).length)
+const applyingCount     = computed(() => props.aspects.filter(aspect => aspect.applying).length)
 const houseCorrelations = computed(() => {
   if (!props.base || !props.comparison) return null
   return props.mode === 'synastry'
@@ -52,15 +52,15 @@ const localizedPlanetList = planets =>
 const rows = computed(() => interpretedAspects.value.map((item, index) => {
   if (item.kind === 'group') {
     return {
-      key: item.key,
-      kind: item.kind,
+      key:     item.key,
+      kind:    item.kind,
       eyebrow: t('comparison_insights.background'),
-      title: t(item.titleKey),
-      detail: t(item.textKey),
-      meta: t(item.metaKey, {
-        count: item.count,
+      title:   t(item.titleKey),
+      detail:  t(item.textKey),
+      meta:    t(item.metaKey, {
+        count:   item.count,
         planets: localizedPlanetList(item.planets),
-        orb: item.aspect.delta.toFixed(2),
+        orb:     item.aspect.delta.toFixed(2),
       }),
     }
   }
@@ -68,32 +68,32 @@ const rows = computed(() => interpretedAspects.value.map((item, index) => {
   const aspect = item.aspect
 
   return {
-    key: item.key,
-    kind: item.kind,
+    key:     item.key,
+    kind:    item.kind,
     eyebrow: t('comparison_insights.theme_n', { n: index + 1 }),
-    title: t(`comparison_insights.themes.${props.mode}.${aspect.type}`, {
+    title:   t(`comparison_insights.themes.${props.mode}.${aspect.type}`, {
       a: t(`planets.${aspect.a}`),
       b: t(`planets.${aspect.b}`),
     }),
     detail: t(item.textKey, {
-      primary: t(`planets.${item.primaryPlanet}`),
+      primary:   t(`planets.${item.primaryPlanet}`),
       secondary: t(`planets.${item.secondaryPlanet}`),
-      tone: t(item.toneKey),
+      tone:      t(item.toneKey),
     }),
     meta: item.kind === 'transit' && aspect.rank?.transitHouse
       ? t('comparison_insights.transit_aspect_meta', {
-        a: t(`planets.${aspect.a}`),
+        a:      t(`planets.${aspect.a}`),
         aspect: t(`aspects.${aspect.type}`),
-        b: t(`planets.${aspect.b}`),
-        orb: aspect.delta.toFixed(2),
+        b:      t(`planets.${aspect.b}`),
+        orb:    aspect.delta.toFixed(2),
         motion: aspect.applying ? t('aspects.applying') : t('aspects.separating'),
-        house: aspect.rank.transitHouse,
+        house:  aspect.rank.transitHouse,
       })
       : t('comparison_insights.aspect_meta', {
-        a: t(`planets.${aspect.a}`),
+        a:      t(`planets.${aspect.a}`),
         aspect: t(`aspects.${aspect.type}`),
-        b: t(`planets.${aspect.b}`),
-        orb: aspect.delta.toFixed(2),
+        b:      t(`planets.${aspect.b}`),
+        orb:    aspect.delta.toFixed(2),
         motion: aspect.applying ? t('aspects.applying') : t('aspects.separating'),
       }),
   }

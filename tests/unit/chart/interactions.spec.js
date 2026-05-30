@@ -21,36 +21,36 @@ const messages = {
       house_n: 'House {house}',
     },
     common: { all: 'All' },
-    chart: {
-      asc: 'ASC',
-      mc: 'MC',
+    chart:  {
+      asc:          'ASC',
+      mc:           'MC',
       house_system: 'House',
-      summary: 'Summary',
+      summary:      'Summary',
     },
     zodiac: {
       signs: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'],
     },
     planets: {
-      Sun: 'Sun',
-      Moon: 'Moon',
-      Mars: 'Mars',
+      Sun:     'Sun',
+      Moon:    'Moon',
+      Mars:    'Mars',
       Fortune: 'Fortune',
     },
     aspects: {
-      applying: 'Applying',
-      aspect: 'Aspect',
-      body_a: 'Body A',
-      body_b: 'Body B',
-      motion: 'Motion',
+      applying:        'Applying',
+      aspect:          'Aspect',
+      body_a:          'Body A',
+      body_b:          'Body B',
+      motion:          'Motion',
       none_for_filter: 'No aspects',
-      orb: 'Orb',
-      separating: 'Separating',
-      sextile: 'Sextile',
-      tight: 'Tight',
+      orb:             'Orb',
+      separating:      'Separating',
+      sextile:         'Sextile',
+      tight:           'Tight',
     },
     houses: {
       numbered_name: 'House {house} · {name}',
-      names: [
+      names:         [
         'Identity',
         'Resources',
         'Communication',
@@ -71,17 +71,17 @@ const messages = {
       house_n: 'Casa {house}',
     },
     chart: {
-      asc: 'ASC',
-      mc: 'MC',
+      asc:           'ASC',
+      mc:            'MC',
       transit_orbit: 'Trânsitos',
     },
     zodiac: {
       signs: ['Áries', 'Touro', 'Gêmeos', 'Câncer', 'Leão', 'Virgem', 'Libra', 'Escorpião', 'Sagitário', 'Capricórnio', 'Aquário', 'Peixes'],
     },
     planets: {
-      Sun: 'Sol',
-      Moon: 'Lua',
-      Mars: 'Marte',
+      Sun:     'Sol',
+      Moon:    'Lua',
+      Mars:    'Marte',
       Fortune: 'Fortuna',
     },
     aspects: {
@@ -89,7 +89,7 @@ const messages = {
     },
     houses: {
       numbered_name: 'Casa {house} · {name}',
-      names: [
+      names:         [
         'Identidade',
         'Recursos',
         'Comunicação',
@@ -119,8 +119,8 @@ const aquariusSun = 300 + 23 + (49 / 60)
 
 const chart = {
   ascendant: 120,
-  mc: 210,
-  cusps: [120, 150, 180, 210, 240, 270, 300, 330, 0, 30, 60, 90],
+  mc:        210,
+  cusps:     [120, 150, 180, 210, 240, 270, 300, 330, 0, 30, 60, 90],
   positions: [
     position('Sun', aquariusSun),
     position('Mars', 23 + (49 / 60)),
@@ -130,12 +130,12 @@ const chart = {
 
 const aspects = [
   {
-    a: 'Sun',
-    b: 'Mars',
-    type: 'sextile',
-    exact: 60,
-    delta: 0.2,
-    orb: 5,
+    a:        'Sun',
+    b:        'Mars',
+    type:     'sextile',
+    exact:    60,
+    delta:    0.2,
+    orb:      5,
     strength: 0.8,
     applying: true,
   },
@@ -170,7 +170,7 @@ describe('chart interactions', () => {
 
   it('localizes selected house labels with house names', async () => {
     const wrapper = mount(Wheel, {
-      props: { natal: chart },
+      props:  { natal: chart },
       global: {
         plugins: [createI18n({ legacy: false, locale: 'pt-BR', messages })],
       },
@@ -185,7 +185,7 @@ describe('chart interactions', () => {
   })
 
   it('pins and clears aspect highlight state from click', async () => {
-    const wrapper = mountChartTools()
+    const wrapper   = mountChartTools()
     const aspectRow = wrapper.get('[data-aspect-row="Sun-Mars-sextile"]')
 
     await aspectRow.trigger('click')
@@ -208,13 +208,13 @@ describe('chart interactions', () => {
 
   it('zooms the wheel with compact controls without resizing the chart frame', async () => {
     const wrapper = mount(Wheel, {
-      props: { natal: chart },
+      props:  { natal: chart },
       global: {
         plugins: [createI18n({ legacy: false, locale: 'en', messages })],
       },
     })
-    const stage = wrapper.get('[data-testid="chart-wheel"]').get('.chart-wheel-stage')
-    const svg = wrapper.get('[data-testid="chart-wheel-svg"]')
+    const stage          = wrapper.get('[data-testid="chart-wheel"]').get('.chart-wheel-stage')
+    const svg            = wrapper.get('[data-testid="chart-wheel-svg"]')
     const initialViewBox = svg.attributes('viewBox')
 
     expect(stage.attributes('data-zoom')).toBe('1.00')

@@ -10,10 +10,10 @@ import {
 const mk = (name, longitude, speed = 1) => ({ name, longitude, latitude: 0, speed, retrograde: speed < 0 })
 
 const chart = {
-  zodiac: 'tropical',
+  zodiac:    'tropical',
   ascendant: 0,
-  mc: 90,
-  cusps: Array.from({ length: 12 }, (_, index) => index * 30),
+  mc:        90,
+  cusps:     Array.from({ length: 12 }, (_, index) => index * 30),
   positions: [
     mk('Sun', 5),
     mk('Moon', 96),
@@ -52,18 +52,18 @@ describe('house correlations', () => {
     const correlations = natalHouseCorrelations(chart, [])
 
     expect(correlations.houses[7]).toMatchObject({
-      house: 8,
-      ruler: 'Pluto',
+      house:      8,
+      ruler:      'Pluto',
       rulerHouse: 9,
     })
     expect(correlations.houses[10]).toMatchObject({
-      house: 11,
-      ruler: 'Uranus',
+      house:      11,
+      ruler:      'Uranus',
       rulerHouse: 11,
     })
     expect(correlations.houses[11]).toMatchObject({
-      house: 12,
-      ruler: 'Neptune',
+      house:      12,
+      ruler:      'Neptune',
       rulerHouse: 12,
     })
   })
@@ -81,7 +81,7 @@ describe('house correlations', () => {
     ]
 
     const correlations = timingHouseCorrelations(chart, transit, transitAspects, 'transit')
-    const firstHouse = correlations.houses[0]
+    const firstHouse   = correlations.houses[0]
 
     expect(firstHouse.activators).toEqual([
       expect.objectContaining({ planet: 'Saturn', house: 1, mode: 'timing' }),
@@ -118,9 +118,9 @@ describe('house correlations', () => {
     expect(relationshipHouseCorrelations(null, null, []).ranked).toEqual([])
 
     const combined = combinedHouseCorrelations({
-      natalChart: chart,
-      natalAspects: aspects,
-      timingChart: { ...chart, positions: [mk('Saturn', 8)] },
+      natalChart:    chart,
+      natalAspects:  aspects,
+      timingChart:   { ...chart, positions: [mk('Saturn', 8)] },
       timingAspects: [{ a: 'Sun', b: 'Saturn', type: 'conjunction', delta: 1, orb: 8, strength: 0.8 }],
     })
 

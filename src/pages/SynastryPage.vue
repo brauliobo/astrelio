@@ -20,13 +20,13 @@ const settings = useSettingsStore()
 const personA = computed(() => people.byId(session.activePersonId)  || people.sorted[0] || null)
 const personB = computed(() => people.byId(session.comparePersonId) || people.sorted[1] || null)
 
-const chartA = computed(() => modalityChart('astrology', personA.value, settings))
-const chartB = computed(() => modalityChart('astrology', personB.value, settings))
+const chartA   = computed(() => modalityChart('astrology', personA.value, settings))
+const chartB   = computed(() => modalityChart('astrology', personB.value, settings))
 const hdChartA = computed(() => modalityChart('humanDesign', personA.value))
 const hdChartB = computed(() => modalityChart('humanDesign', personB.value))
 
-const aspects = computed(() => modalityConnection('astrology', chartA.value, chartB.value, settings).aspects)
-const hdConnection = computed(() => modalityConnection('humanDesign', hdChartA.value, hdChartB.value))
+const aspects           = computed(() => modalityConnection('astrology', chartA.value, chartB.value, settings).aspects)
+const hdConnection      = computed(() => modalityConnection('humanDesign', hdChartA.value, hdChartB.value))
 const sharedCenterLabel = computed(() =>
   hdConnection.value?.sharedCenters?.length ? humanDesignListLabel(t, 'center', hdConnection.value.sharedCenters) : '—'
 )
@@ -34,9 +34,9 @@ const openCenterLabel = computed(() =>
   hdConnection.value?.openCenters?.length ? humanDesignListLabel(t, 'center', hdConnection.value.openCenters) : '—'
 )
 
-const compareWith = ref(session.comparePersonId)
+const compareWith          = ref(session.comparePersonId)
 const relationshipModality = ref('astrology')
-const onChange = (e) => { session.setCompare(e.target.value); compareWith.value = e.target.value }
+const onChange             = (e) => { session.setCompare(e.target.value); compareWith.value = e.target.value }
 </script>
 
 <template lang="pug">

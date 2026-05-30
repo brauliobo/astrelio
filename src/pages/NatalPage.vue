@@ -20,41 +20,41 @@ import InterpretationPanel from '../components/chart/InterpretationPanel.vue'
 import ModalityRouteSwitch from '../components/modalities/ModalityRouteSwitch.vue'
 
 const { t }    = useI18n()
-const route    = useRoute()
-const router   = useRouter()
-const people   = usePeopleStore()
-const session  = useSessionStore()
-const settings = useSettingsStore()
-const chartPanelRef = ref(null)
+const route              = useRoute()
+const router             = useRouter()
+const people             = usePeopleStore()
+const session            = useSessionStore()
+const settings           = useSettingsStore()
+const chartPanelRef      = ref(null)
 const sidePanelMaxHeight = ref('')
-let chartPanelObserver = null
+let chartPanelObserver   = null
 
-const savedPerson = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
+const savedPerson    = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
 const hasRoutePerson = computed(() => hasPersonRouteQuery(route.query))
-const routePerson = computed(() => hasRoutePerson.value ? personFromRouteQuery(route.query) : null)
-const person  = computed(() => hasRoutePerson.value ? routePerson.value : savedPerson.value)
-const chart   = useNatalChart(person, settings)
-const transit = computed(() => person.value
+const routePerson    = computed(() => hasRoutePerson.value ? personFromRouteQuery(route.query) : null)
+const person         = computed(() => hasRoutePerson.value ? routePerson.value : savedPerson.value)
+const chart          = useNatalChart(person, settings)
+const transit        = computed(() => person.value
   ? transitsFor(session.transitDateMs || Date.now(), person.value.lat, person.value.lon, {
-    zodiac: settings.zodiac,
+    zodiac:      settings.zodiac,
     houseSystem: settings.houseSystem,
-    nodeMode: settings.nodeMode,
+    nodeMode:    settings.nodeMode,
   })
   : null
 )
-const phase   = computed(() => chart.value ? t(`moon_phase.${moonPhaseLabel(chart.value.jdUt)}`) : '')
-const aspects = computed(() => chart.value ? naturalAspects(chart.value, settings.aspectOptions) : [])
+const phase          = computed(() => chart.value ? t(`moon_phase.${moonPhaseLabel(chart.value.jdUt)}`) : '')
+const aspects        = computed(() => chart.value ? naturalAspects(chart.value, settings.aspectOptions) : [])
 const transitAspects = computed(() => chart.value && transit.value
   ? crossAspects(chart.value, transit.value, settings.aspectOptions)
   : []
 )
-const birthHeader = computed(() => birthHeaderForPerson(person.value))
+const birthHeader    = computed(() => birthHeaderForPerson(person.value))
 const sidePanelStyle = computed(() =>
   sidePanelMaxHeight.value ? { '--natal-wheel-panel-height': sidePanelMaxHeight.value } : {}
 )
 
 const updateSidePanelHeight = () => {
-  const height = chartPanelRef.value?.getBoundingClientRect?.().height || 0
+  const height             = chartPanelRef.value?.getBoundingClientRect?.().height || 0
   sidePanelMaxHeight.value = height ? `${Math.round(height)}px` : ''
 }
 

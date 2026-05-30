@@ -7,107 +7,107 @@ import { degInSign } from '../../lib/astro/zodiac.js'
 import HouseCorrelationPanel from './HouseCorrelationPanel.vue'
 
 const props = defineProps({
-  chart: { type: Object, required: true },
-  aspects: { type: Array, default: () => [] },
-  phaseLabel: { type: String, default: '' },
-  panel: { type: String, default: 'full' },
-  timingChart: { type: Object, default: null },
-  timingAspects: { type: Array, default: () => [] },
-  timingMode: { type: String, default: 'transit' },
-  relationshipChart: { type: Object, default: null },
+  chart:               { type: Object, required: true },
+  aspects:             { type: Array, default: () => [] },
+  phaseLabel:          { type: String, default: '' },
+  panel:               { type: String, default: 'full' },
+  timingChart:         { type: Object, default: null },
+  timingAspects:       { type: Array, default: () => [] },
+  timingMode:          { type: String, default: 'transit' },
+  relationshipChart:   { type: Object, default: null },
   relationshipAspects: { type: Array, default: () => [] },
-  houseCorrelations: { type: Object, default: null },
+  houseCorrelations:   { type: Object, default: null },
 })
 
 const { t, tm } = useI18n()
-const signs = computed(() => tm('zodiac.signs'))
-const signature = computed(() => chartSignature(props.chart))
-const angles = computed(() => anglePlacements(props.chart))
-const tropical = computed(() => signature.value.tropical)
+const signs           = computed(() => tm('zodiac.signs'))
+const signature       = computed(() => chartSignature(props.chart))
+const angles          = computed(() => anglePlacements(props.chart))
+const tropical        = computed(() => signature.value.tropical)
 const activeDetailTab = ref('patterns')
 
 const fmtDegree = (lon) => {
-  const d = degInSign(lon)
+  const d  = degInSign(lon)
   const dd = Math.floor(d)
   const mm = Math.floor((d - dd) * 60)
   return `${dd}°${mm.toString().padStart(2, '0')}'`
 }
 
 const placementRows = computed(() => {
-  const sun = placementFor(props.chart, 'Sun')
+  const sun  = placementFor(props.chart, 'Sun')
   const moon = placementFor(props.chart, 'Moon')
   return [
     sun && {
-      key: 'sun',
-      label: t('analysis.sun'),
-      value: signs.value[sun.signIndex],
-      meta: t('analysis.house_n', { house: sun.house }),
+      key:    'sun',
+      label:  t('analysis.sun'),
+      value:  signs.value[sun.signIndex],
+      meta:   t('analysis.house_n', { house: sun.house }),
       degree: fmtDegree(sun.longitude),
     },
     moon && {
-      key: 'moon',
-      label: t('analysis.moon'),
-      value: signs.value[moon.signIndex],
-      meta: props.phaseLabel || t('analysis.house_n', { house: moon.house }),
+      key:    'moon',
+      label:  t('analysis.moon'),
+      value:  signs.value[moon.signIndex],
+      meta:   props.phaseLabel || t('analysis.house_n', { house: moon.house }),
       degree: fmtDegree(moon.longitude),
     },
     {
-      key: 'ascendant',
-      label: t('chart.asc'),
-      value: signs.value[angles.value.ascendant.signIndex],
-      meta: t('analysis.horizon'),
+      key:    'ascendant',
+      label:  t('chart.asc'),
+      value:  signs.value[angles.value.ascendant.signIndex],
+      meta:   t('analysis.horizon'),
       degree: fmtDegree(angles.value.ascendant.longitude),
     },
     {
-      key: 'mc',
-      label: t('chart.mc'),
-      value: signs.value[angles.value.mc.signIndex],
-      meta: t('analysis.meridian'),
+      key:    'mc',
+      label:  t('chart.mc'),
+      value:  signs.value[angles.value.mc.signIndex],
+      meta:   t('analysis.meridian'),
       degree: fmtDegree(angles.value.mc.longitude),
     },
   ].filter(Boolean)
 })
 
-const houseRows = computed(() => signature.value.houses.filter(row => row.value > 0).slice(0, 4))
-const chartRuler = computed(() => tropical.value?.chartRuler || null)
+const houseRows      = computed(() => signature.value.houses.filter(row => row.value > 0).slice(0, 4))
+const chartRuler     = computed(() => tropical.value?.chartRuler || null)
 const houseRulerRows = computed(() => {
   const rulers = tropical.value?.houseRulers || []
   return houseRows.value
     .map(row => rulers[row.house - 1])
     .filter(Boolean)
 })
-const sect = computed(() => tropical.value?.sect || null)
+const sect           = computed(() => tropical.value?.sect || null)
 const hemisphereRows = computed(() => [
   signature.value.hemisphereEmphasis.horizontal,
   signature.value.hemisphereEmphasis.vertical,
 ].filter(Boolean))
-const dignityRows = computed(() => tropical.value?.dignityBasics?.slice(0, 4) || [])
+const dignityRows     = computed(() => tropical.value?.dignityBasics?.slice(0, 4) || [])
 const featuredAspects = computed(() => topAspects(props.aspects, 4))
-const correlations = computed(() =>
+const correlations    = computed(() =>
   props.houseCorrelations || combinedHouseCorrelations({
-    natalChart: props.chart,
-    natalAspects: props.aspects,
-    timingChart: props.timingChart,
-    timingAspects: props.timingAspects,
-    timingMode: props.timingMode,
-    relationshipChart: props.relationshipChart,
+    natalChart:          props.chart,
+    natalAspects:        props.aspects,
+    timingChart:         props.timingChart,
+    timingAspects:       props.timingAspects,
+    timingMode:          props.timingMode,
+    relationshipChart:   props.relationshipChart,
     relationshipAspects: props.relationshipAspects,
   })
 )
-const showPrimary = computed(() => props.panel !== 'right')
-const showDetails = computed(() => props.panel !== 'left')
+const showPrimary   = computed(() => props.panel !== 'right')
+const showDetails   = computed(() => props.panel !== 'left')
 const useDetailTabs = computed(() => props.panel === 'right')
-const detailTabs = [
+const detailTabs    = [
   { key: 'patterns', labelKey: 'analysis.detail_tabs.patterns' },
   { key: 'factors', labelKey: 'analysis.detail_tabs.factors' },
   { key: 'houses', labelKey: 'analysis.detail_tabs.houses' },
 ]
 const placementGridClass = computed(() => props.panel === 'full' ? 'lg:grid-cols-4' : 'grid-cols-2')
-const balanceGridClass = computed(() => props.panel === 'full' ? 'lg:grid-cols-2' : '')
-const detailGridClass = computed(() => props.panel === 'full' ? 'lg:grid-cols-3' : '')
-const aspectGridClass = computed(() => props.panel === 'full' ? 'sm:grid-cols-2' : '')
+const balanceGridClass   = computed(() => props.panel === 'full' ? 'lg:grid-cols-2' : '')
+const detailGridClass    = computed(() => props.panel === 'full' ? 'lg:grid-cols-3' : '')
+const aspectGridClass    = computed(() => props.panel === 'full' ? 'sm:grid-cols-2' : '')
 
-const pct = (share) => `${Math.round(share * 100)}%`
+const pct           = (share) => `${Math.round(share * 100)}%`
 const showDetailTab = tab => !useDetailTabs.value || activeDetailTab.value === tab
 </script>
 

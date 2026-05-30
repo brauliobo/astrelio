@@ -20,7 +20,7 @@ const settings = useSettingsStore()
 const person = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
 const natal  = useNatalChart(person, settings)
 
-const dateMs = ref(session.progressionDateMs || Date.now())
+const dateMs    = ref(session.progressionDateMs || Date.now())
 const dateInput = computed({
   get: () => new Date(dateMs.value).toISOString().slice(0, 10),
   set: (v) => { dateMs.value = DateTime.fromISO(v).toMillis(); session.setProgressionDate(dateMs.value) }
@@ -29,8 +29,8 @@ const dateInput = computed({
 const progressed = computed(() => {
   if (!person.value) return null
   const tzOffsetMinutes = offsetMinutesForPerson(person.value)
-  const birthMs   = localToUtcMs(person.value.isoLocal, tzOffsetMinutes)
-  const natalJdUt = localToJdUt(person.value.isoLocal, tzOffsetMinutes)
+  const birthMs         = localToUtcMs(person.value.isoLocal, tzOffsetMinutes)
+  const natalJdUt       = localToJdUt(person.value.isoLocal, tzOffsetMinutes)
   return secondaryProgression(natalJdUt, dateMs.value, birthMs, person.value.lat, person.value.lon, settings.chartOptions)
 })
 

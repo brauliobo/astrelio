@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   correlations: { type: Object, default: null },
-  limit: { type: Number, default: 5 },
+  limit:        { type: Number, default: 5 },
 })
 
 const { t, tm, te } = useI18n()
@@ -28,17 +28,17 @@ const houseLabel = (house) => {
 
 const planetLabel = planet => planet ? t(`planets.${planet}`) : ''
 const aspectLabel = aspect => aspect ? t(`aspects.${aspect}`) : ''
-const pct = share => `${Math.round((share || 0) * 100)}%`
+const pct         = share => `${Math.round((share || 0) * 100)}%`
 
 const reasonText = (reason) => {
   const key = `house_correlations.reasons.${reason.type}`
   if (!te(key)) return ''
   return t(key, {
-    planet: planetLabel(reason.planet),
-    partner: planetLabel(reason.partner),
-    ruler: planetLabel(reason.ruler),
-    aspect: aspectLabel(reason.aspect),
-    house: reason.house,
+    planet:     planetLabel(reason.planet),
+    partner:    planetLabel(reason.partner),
+    ruler:      planetLabel(reason.ruler),
+    aspect:     aspectLabel(reason.aspect),
+    house:      reason.house,
     rulerHouse: reason.rulerHouse,
   })
 }

@@ -17,20 +17,20 @@ export const MODERN_SIGN_RULERS = [
 ]
 
 export const PSYCHOLOGICAL_PLANET_WEIGHTS = {
-  Sun: 5,
-  Moon: 5,
-  Mercury: 4,
-  Venus: 4,
-  Mars: 4,
-  Jupiter: 3,
-  Saturn: 3,
-  Uranus: 2.5,
-  Neptune: 2.5,
-  Pluto: 2.5,
+  Sun:       5,
+  Moon:      5,
+  Mercury:   4,
+  Venus:     4,
+  Mars:      4,
+  Jupiter:   3,
+  Saturn:    3,
+  Uranus:    2.5,
+  Neptune:   2.5,
+  Pluto:     2.5,
   NorthNode: 1.25,
   SouthNode: 1.25,
-  Chiron: 1.25,
-  Lilith: 1.25,
+  Chiron:    1.25,
+  Lilith:    1.25,
 }
 
 const modeKeys = ['natal', 'timing', 'relationship']
@@ -40,19 +40,19 @@ const planetWeight = name => PSYCHOLOGICAL_PLANET_WEIGHTS[name] || 1
 const emptyRows = chart =>
   Array.from({ length: 12 }, (_, index) => {
     const house = index + 1
-    const cusp = chart?.cusps?.[index]
+    const cusp  = chart?.cusps?.[index]
     const ruler = Number.isFinite(cusp) ? MODERN_SIGN_RULERS[signIndex(cusp)] : null
     return {
       house,
-      score: 0,
-      share: 0,
+      score:     0,
+      share:     0,
       topicsKey: `house_correlations.topics.${house}`,
       occupants: [],
       ruler,
       rulerHouse: null,
       activators: [],
-      aspects: [],
-      reasons: [],
+      aspects:    [],
+      reasons:    [],
     }
   })
 
@@ -90,11 +90,11 @@ const aspectPower = aspect => {
 }
 
 const finish = (rows) => {
-  const total = rows.reduce((sum, row) => sum + row.score, 0) || 1
+  const total        = rows.reduce((sum, row) => sum + row.score, 0) || 1
   const finishedRows = rows.map(row => ({
     ...row,
-    score: Number(row.score.toFixed(3)),
-    share: Number((row.score / total).toFixed(4)),
+    score:   Number(row.score.toFixed(3)),
+    share:   Number((row.score / total).toFixed(4)),
     reasons: row.reasons.slice(0, 8),
   }))
   const ranked = [...finishedRows]
@@ -106,7 +106,7 @@ const finish = (rows) => {
       if (modeTotals[reason.mode] !== undefined) modeTotals[reason.mode] += row.score / Math.max(row.reasons.length, 1)
     }
   }
-  const modeTotal = Object.values(modeTotals).reduce((sum, value) => sum + value, 0) || 1
+  const modeTotal            = Object.values(modeTotals).reduce((sum, value) => sum + value, 0) || 1
   const normalizedModeTotals = Object.fromEntries(
     Object.entries(modeTotals).map(([key, value]) => [key, Number((value / modeTotal).toFixed(4))])
   )
@@ -114,8 +114,8 @@ const finish = (rows) => {
     houses: finishedRows,
     ranked,
     summary: {
-      topHouses: ranked.slice(0, 5),
-      modeTotals: normalizedModeTotals,
+      topHouses:    ranked.slice(0, 5),
+      modeTotals:   normalizedModeTotals,
       dominantMode: Object.entries(normalizedModeTotals).sort((a, b) => b[1] - a[1])[0]?.[0] || 'natal',
     },
   }
@@ -127,9 +127,9 @@ const addNatalOccupants = (rows, placements) => {
     const item = { planet: placement.name, house: placement.house }
     addUnique(rows[placement.house - 1].occupants, item, value => value.planet)
     addScore(rows, placement.house, planetWeight(placement.name) * 2, 'natal', {
-      type: 'occupant',
+      type:   'occupant',
       planet: placement.name,
-      house: placement.house,
+      house:  placement.house,
     })
   }
 }
@@ -140,15 +140,15 @@ const addRulers = (rows, placements, mode = 'natal') => {
     if (!rulerPlacement?.house) continue
     row.rulerHouse = rulerPlacement.house
     addScore(rows, row.house, planetWeight(row.ruler) * 0.75, mode, {
-      type: 'ruler',
-      ruler: row.ruler,
-      house: row.house,
+      type:       'ruler',
+      ruler:      row.ruler,
+      house:      row.house,
       rulerHouse: rulerPlacement.house,
     })
     addScore(rows, rulerPlacement.house, planetWeight(row.ruler) * 0.45, mode, {
-      type: 'ruler_placement',
-      ruler: row.ruler,
-      house: row.house,
+      type:       'ruler_placement',
+      ruler:      row.ruler,
+      house:      row.house,
       rulerHouse: rulerPlacement.house,
     })
   }
@@ -162,21 +162,21 @@ const addNatalAspects = (rows, aspects, placements) => {
     const power = aspectPower(aspect)
     for (const [body, partner] of [[a, b], [b, a]]) {
       const amount = power * (planetWeight(body.name) + planetWeight(partner.name)) * 0.28
-      const item = { a: aspect.a, b: aspect.b, type: aspect.type, delta: aspect.delta }
+      const item   = { a: aspect.a, b: aspect.b, type: aspect.type, delta: aspect.delta }
       addUnique(rows[body.house - 1].aspects, item, value => `${value.a}-${value.b}-${value.type}`)
       addScore(rows, body.house, amount, 'natal', {
-        type: 'aspect',
-        planet: body.name,
+        type:    'aspect',
+        planet:  body.name,
         partner: partner.name,
-        aspect: aspect.type,
-        house: body.house,
+        aspect:  aspect.type,
+        house:   body.house,
       })
     }
   }
 }
 
 export const natalHouseCorrelations = (chart, aspects = []) => {
-  const rows = emptyRows(chart)
+  const rows       = emptyRows(chart)
   const placements = placementMap(chart)
   addNatalOccupants(rows, placements)
   addRulers(rows, placements)
@@ -191,7 +191,7 @@ const addOverlayActivators = (rows, baseChart, overlayChart, mode, reasonType) =
     const activator = { planet: position.name, house, mode }
     addUnique(rows[house - 1].activators, activator, value => `${value.mode}-${value.planet}`)
     addScore(rows, house, planetWeight(position.name) * 1.15, mode, {
-      type: reasonType,
+      type:   reasonType,
       planet: position.name,
       house,
     })
@@ -199,23 +199,23 @@ const addOverlayActivators = (rows, baseChart, overlayChart, mode, reasonType) =
 }
 
 const addOverlayAspects = (rows, baseChart, overlayChart, aspects, mode, reasonType) => {
-  const basePlacements = placementMap(baseChart)
+  const basePlacements   = placementMap(baseChart)
   const overlayPositions = positionMap(overlayChart)
   for (const aspect of aspects || []) {
-    const base = basePlacements.get(aspect.a)
-    const overlay = overlayPositions.get(aspect.b)
-    const baseHouse = base?.house || null
+    const base         = basePlacements.get(aspect.a)
+    const overlay      = overlayPositions.get(aspect.b)
+    const baseHouse    = base?.house || null
     const overlayHouse = safeHouseOf(overlay?.longitude, baseChart?.cusps)
     if (!baseHouse && !overlayHouse) continue
     const power = aspectPower(aspect)
-    const item = { a: aspect.a, b: aspect.b, type: aspect.type, delta: aspect.delta, mode }
+    const item  = { a: aspect.a, b: aspect.b, type: aspect.type, delta: aspect.delta, mode }
     for (const house of [baseHouse, overlayHouse].filter(Boolean)) {
       addUnique(rows[house - 1].aspects, item, value => `${value.mode}-${value.a}-${value.b}-${value.type}`)
       addScore(rows, house, power * (planetWeight(aspect.a) + planetWeight(aspect.b)) * 0.42, mode, {
-        type: reasonType,
-        planet: aspect.b,
+        type:    reasonType,
+        planet:  aspect.b,
         partner: aspect.a,
-        aspect: aspect.type,
+        aspect:  aspect.type,
         house,
       })
     }
@@ -259,12 +259,12 @@ const mergeRows = (chart, analyses) => {
 }
 
 export const combinedHouseCorrelations = ({
-  natalChart = null,
-  natalAspects = [],
-  timingChart = null,
-  timingAspects = [],
-  timingMode = 'transit',
-  relationshipChart = null,
+  natalChart          = null,
+  natalAspects        = [],
+  timingChart         = null,
+  timingAspects       = [],
+  timingMode          = 'transit',
+  relationshipChart   = null,
   relationshipAspects = [],
 } = {}) => {
   const analyses = []
