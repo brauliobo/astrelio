@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import AspectTable from './AspectTable.vue'
+import AspectMatrix from './AspectMatrix.vue'
 import Wheel from './Wheel.vue'
 import PlanetList from './PlanetList.vue'
 
@@ -107,6 +108,20 @@ const toggleHighlight = (payload) => {
         @clear-highlight='clearHighlight'
         @toggle-highlight='toggleHighlight'
       )
+  .border.rounded-xl.p-4.mt-6(
+    class='border-white/10 bg-night/40'
+  )
+    AspectMatrix(
+      :base='base'
+      :comparison='comparison'
+      :aspect-options='aspectOptions'
+      :base-label='baseLabel'
+      :comparison-label='comparisonLabel'
+      :planet-glyph-renderer='planetGlyphRenderer'
+      @highlight='setHighlight'
+      @clear-highlight='clearHighlight'
+      @toggle-highlight='toggleHighlight'
+    )
   .border.rounded-xl.p-4.mt-6(class='border-white/10 bg-night/40' v-if='aspects.length')
     AspectTable(
       :aspects='aspects'

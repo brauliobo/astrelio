@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { fortuneLongitude } from '../../lib/astro/aspectarian.js'
 import { houseOf } from '../../lib/astro/houses.js'
 import { signIndex, degInSign, norm360 } from '../../lib/astro/zodiac.js'
 
@@ -37,6 +38,8 @@ const rows = computed(() =>
 
 const ascSign = computed(() => signs.value[signIndex(props.chart.ascendant)])
 const mcSign  = computed(() => signs.value[signIndex(props.chart.mc)])
+const fortune = computed(() => fortuneLongitude(props.chart))
+const fortuneSign = computed(() => fortune.value === null ? '' : signs.value[signIndex(fortune.value)])
 const hasExternalHighlight = computed(() => props.highlightedBodies.length > 0)
 const localHighlight = computed(() =>
   hoverHighlight.value || pinnedHighlight.value || sharedHoverHighlight.value || sharedPinnedHighlight.value
@@ -120,6 +123,9 @@ onBeforeUnmount(() => {
     .text-slate-100.font-medium(data-testid='asc-sign') {{ ascSign }} {{ fmt(chart.ascendant) }}
     .text-slate-400 {{ t('chart.mc') }}
     .text-slate-100.font-medium(data-testid='mc-sign') {{ mcSign }} {{ fmt(chart.mc) }}
+    template(v-if='fortune !== null')
+      .text-slate-400 {{ t('planets.Fortune') }}
+      .text-slate-100.font-medium(data-testid='fortune-sign') {{ fortuneSign }} {{ fmt(fortune) }}
   table.w-full
     tbody
       tr.border-t.cursor-pointer.outline-none(

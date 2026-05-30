@@ -7,11 +7,13 @@ import { useSessionStore } from '../stores/session.js'
 import { useSettingsStore } from '../stores/settings.js'
 import { useNatalChart } from '../composables/useChart.js'
 import { naturalAspects } from '../lib/astro/aspects.js'
+import { transitsFor } from '../lib/astro/transits.js'
 import { moonPhaseLabel } from '../lib/astro/ephemeris.js'
 import { birthHeaderForPerson } from '../lib/people/labels.js'
 import { hasPersonRouteQuery, natalRouteForPerson, personFromRouteQuery, samePersonRouteData } from '../lib/people/routeQuery.js'
 import Wheel from '../components/chart/Wheel.vue'
 import PlanetList from '../components/chart/PlanetList.vue'
+import AspectMatrix from '../components/chart/AspectMatrix.vue'
 import AspectTable from '../components/chart/AspectTable.vue'
 import Insight from '../components/chart/Insight.vue'
 import InterpretationPanel from '../components/chart/InterpretationPanel.vue'
@@ -29,6 +31,13 @@ const hasRoutePerson = computed(() => hasPersonRouteQuery(route.query))
 const routePerson = computed(() => hasRoutePerson.value ? personFromRouteQuery(route.query) : null)
 const person  = computed(() => hasRoutePerson.value ? routePerson.value : savedPerson.value)
 const chart   = useNatalChart(person, settings)
+const transit = computed(() => person.value
+  ? transitsFor(session.transitDateMs || Date.now(), person.value.lat, person.value.lon, {
+    zodiac: settings.zodiac,
+    houseSystem: settings.houseSystem,
+  })
+  : null
+)
 const phase   = computed(() => chart.value ? t(`moon_phase.${moonPhaseLabel(chart.value.jdUt)}`) : '')
 const aspects = computed(() => chart.value ? naturalAspects(chart.value, settings.aspectOptions) : [])
 const birthHeader = computed(() => birthHeaderForPerson(person.value))
@@ -82,6 +91,15 @@ section.natal-page(data-testid='natal-page')
         :phase-label='phase'
         panel='right'
         v-if='chart'
+      )
+    .ui-panel.mt-6(v-if='chart && transit')
+      AspectMatrix(
+        :base='chart'
+        :comparison='transit'
+        :aspect-options='settings.aspectOptions'
+        :base-label='t("chart.natal_positions")'
+        :comparison-label='t("chart.transit_positions")'
+        :planet-glyph-renderer='settings.planetGlyphRenderer'
       )
     InterpretationPanel.mt-6(:chart='chart' :aspects='aspects' v-if='chart')
     .grid.gap-6.mt-6(class='xl:grid-cols-[minmax(320px,0.8fr)_minmax(0,1fr)]')

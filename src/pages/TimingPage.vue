@@ -17,6 +17,7 @@ import { crossAspects, naturalAspects } from '../lib/astro/aspects.js'
 import { localToJdUt, localToUtcMs, offsetMinutesForPerson } from '../lib/astro/timezones.js'
 import Biwheel from '../components/chart/Biwheel.vue'
 import AspectTable from '../components/chart/AspectTable.vue'
+import AspectMatrix from '../components/chart/AspectMatrix.vue'
 import Comparison from '../components/chart/Comparison.vue'
 import Insight from '../components/chart/Insight.vue'
 import ComparisonInsightPanel from '../components/chart/ComparisonInsightPanel.vue'
@@ -257,6 +258,15 @@ section.timing-page(data-testid='timing-page')
           data-testid='btn-now'
         ) {{ t('common.now') }}
       ComparisonInsightPanel.mb-6(:aspects='transitAspects' mode='transit')
+      .ui-panel.mb-6(v-if='natal && transit')
+        AspectMatrix(
+          :base='natal'
+          :comparison='transit'
+          :aspect-options='settings.aspectOptions'
+          :base-label='t("chart.natal_positions")'
+          :comparison-label='t("chart.transit_positions")'
+          :planet-glyph-renderer='settings.planetGlyphRenderer'
+        )
       .grid.gap-6(class='lg:grid-cols-2')
         .ui-panel
           Biwheel(

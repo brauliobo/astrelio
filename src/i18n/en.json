@@ -286,9 +286,12 @@
     "solar_return_exact": "Exact return",
     "natal_positions": "Natal positions",
     "current_positions": "Current positions",
+    "transit_positions": "Transit positions",
     "solar_return_positions": "Solar return positions",
     "no_data": "No data to display",
     "summary": "Summary",
+    "aspect_grid_natal": "Natal aspect grid",
+    "aspect_grid_comparison": "Aspect grid",
     "display_mode": "Display",
     "display_modes": {
       "clean": "Clean",
@@ -571,7 +574,10 @@
     "Chiron":  "Chiron",
     "NorthNode": "North Node",
     "SouthNode": "South Node",
-    "Lilith":  "Lilith"
+    "Lilith":  "Lilith",
+    "Ascendant": "Ascendant",
+    "Midheaven": "Midheaven",
+    "Fortune": "Fortune"
   },
   "aspects": {
     "conjunction": "Conjunction",

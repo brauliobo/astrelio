@@ -9,7 +9,7 @@ export const ASPECT_DEFS = [
   { type: 'quincunx',    angle: 150, orb: 3, weight: 0.54 }
 ]
 
-const TIGHTER = new Set(['Chiron', 'NorthNode', 'SouthNode', 'Lilith'])
+const TIGHTER = new Set(['Chiron', 'NorthNode', 'SouthNode', 'Lilith', 'Ascendant', 'Midheaven', 'Fortune'])
 const MODERN = new Set(['Uranus', 'Neptune', 'Pluto', 'Chiron', 'Lilith'])
 const MAJOR_TYPES = new Set(['conjunction', 'opposition', 'trine', 'square', 'sextile'])
 
@@ -35,6 +35,9 @@ const enabledDefs = (opts) =>
 
 const includeBody = (name, opts) =>
   opts.includeModernPlanets || !MODERN.has(name)
+
+export const isAspectBodyEnabled = (name, options = DEFAULT_ASPECT_OPTIONS) =>
+  includeBody(name, aspectOptionsFromSettings(options))
 
 const detect = (a, b, options = DEFAULT_ASPECT_OPTIONS) => {
   const opts = aspectOptionsFromSettings(options)
@@ -64,6 +67,8 @@ const detect = (a, b, options = DEFAULT_ASPECT_OPTIONS) => {
   }
   return null
 }
+
+export const aspectBetween = detect
 
 export const naturalAspects = (chart, options = DEFAULT_ASPECT_OPTIONS) => {
   const out = []

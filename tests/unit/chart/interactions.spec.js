@@ -31,6 +31,7 @@ const messages = {
       Sun: 'Sun',
       Moon: 'Moon',
       Mars: 'Mars',
+      Fortune: 'Fortune',
     },
     aspects: {
       applying: 'Applying',

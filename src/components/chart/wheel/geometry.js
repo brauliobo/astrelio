@@ -40,6 +40,9 @@ export const PLANET_SYMBOLS = {
   SouthNode: '☋',
   Lilith: '⚸',
   Chiron: '⚷',
+  Ascendant: 'ASC',
+  Midheaven: 'MC',
+  Fortune: '⊕',
 }
 
 export const PLANET_COLORS = {
@@ -57,6 +60,9 @@ export const PLANET_COLORS = {
   SouthNode: 'var(--chart-ink)',
   Lilith: 'var(--chart-ink)',
   Chiron: 'var(--chart-ink)',
+  Ascendant: 'var(--chart-angle-asc, var(--chart-angle-accent))',
+  Midheaven: 'var(--chart-angle-mc, var(--chart-angle-accent))',
+  Fortune: 'var(--chart-ink)',
 }
 
 // Keep tropical SVG glyphs compact; Human Design applies stronger optical
@@ -77,6 +83,9 @@ export const PLANET_GLYPH_SCALE = {
   SouthNode: { x: 1, y: 1 },
   Lilith: { x: 1.16, y: 1 },
   Chiron: { x: 1.24, y: 1 },
+  Ascendant: { x: 0.72, y: 0.72 },
+  Midheaven: { x: 0.8, y: 0.8 },
+  Fortune: { x: 1, y: 1 },
 }
 
 export const planetGlyphScale = planet => PLANET_GLYPH_SCALE[planet] || { x: 1, y: 1 }
