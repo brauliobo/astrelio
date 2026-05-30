@@ -61,13 +61,11 @@ export const PLANET_COLORS = {
 
 const PLANET_ORDER = new Map(Object.keys(PLANET_SYMBOLS).map((name, index) => [name, index]))
 const PLANET_CLUSTER_GAP = 10.5
-const PLANET_GLYPH_RADIUS_PADDING = 5
+const PLANET_GLYPH_RADIUS_PADDING = 13
+const PLANET_NARROW_BAND_PADDING = 5
 const PLANET_LANE_RATIOS = {
-  1: [0.7],
-  2: [0.56, 0.8],
-  3: [0.44, 0.68, 0.92],
-  4: [0.32, 0.52, 0.72, 0.92],
-  5: [0.2, 0.38, 0.56, 0.74, 0.92],
+  4: [0.08, 0.36, 0.64, 0.92],
+  5: [0.04, 0.26, 0.48, 0.7, 0.92],
 }
 
 export const ZODIAC_SIGNS = [
@@ -219,8 +217,14 @@ export const clusteredPlanets = (positions, symbols = PLANET_SYMBOLS) => {
 const clamp = (value, min, max) =>
   Math.max(min, Math.min(max, value))
 
+const planetBandPadding = (band) => {
+  if (band.glyphPadding !== undefined) return band.glyphPadding
+  const width = band.outer - band.inner
+  return Math.min(PLANET_GLYPH_RADIUS_PADDING, Math.max(PLANET_NARROW_BAND_PADDING, width * 0.25))
+}
+
 const safePlanetBand = (band) => {
-  const padding = band.glyphPadding ?? PLANET_GLYPH_RADIUS_PADDING
+  const padding = planetBandPadding(band)
   const inner = band.inner + padding
   const outer = band.outer - padding
 
@@ -228,6 +232,17 @@ const safePlanetBand = (band) => {
 
   const midpoint = band.inner + ((band.outer - band.inner) / 2)
   return { inner: midpoint, outer: midpoint }
+}
+
+const centeredRadii = (safeBand, count, gap, centerRatio = 0.56) => {
+  const spread = safeBand.outer - safeBand.inner
+  const usableGap = Math.min(gap, count > 1 ? spread / (count - 1) : 0)
+  const total = usableGap * (count - 1)
+  const minCenter = safeBand.inner + (total / 2)
+  const maxCenter = safeBand.outer - (total / 2)
+  const center = clamp(safeBand.inner + (spread * centerRatio), minCenter, maxCenter)
+  const start = center - (total / 2)
+  return Array.from({ length: count }, (_, index) => start + (usableGap * index))
 }
 
 const radiusRatioFor = (index, count) => {
@@ -239,31 +254,29 @@ const radiusRatioFor = (index, count) => {
   return start + ((end - start) * index / (count - 1))
 }
 
-const radiusForClusterIndex = (index, count, band) => {
+const radiiForCluster = (count, band) => {
   const safeBand = safePlanetBand(band)
   const spread = safeBand.outer - safeBand.inner
-  return clamp(safeBand.inner + (spread * radiusRatioFor(index, count)), safeBand.inner, safeBand.outer)
+  if (count <= 1) return [safeBand.inner + (spread * 0.84)]
+  if (count === 2) return centeredRadii(safeBand, count, 22, 0.58)
+  if (count === 3) return centeredRadii(safeBand, count, 18, 0.56)
+
+  return Array.from({ length: count }, (_, index) =>
+    clamp(safeBand.inner + (spread * radiusRatioFor(index, count)), safeBand.inner, safeBand.outer)
+  )
 }
 
-const labelPlacement = (glyphPoint, glyphLongitude) => {
-  const angle = (180 - glyphLongitude) * Math.PI / 180
-  const radial = { x: Math.cos(angle), y: Math.sin(angle) }
-  const labelAnchor = radial.x < -0.25 ? 'end' : radial.x > 0.25 ? 'start' : 'middle'
-  const horizontalNudge = labelAnchor === 'start' ? 5 : labelAnchor === 'end' ? -5 : 0
-  const labelOffset = {
-    x: radial.x * 12 + horizontalNudge,
-    y: radial.y * 10 - 3,
-  }
-
+const labelPlacement = (glyphPoint) => {
   return {
-    labelAnchor,
+    labelAnchor: 'start',
+    labelSide: 'bottom-right',
     labelPoint: {
-      x: glyphPoint.x + labelOffset.x,
-      y: glyphPoint.y + labelOffset.y,
+      x: glyphPoint.x + 7,
+      y: glyphPoint.y + 8,
     },
     retrogradePoint: {
-      x: glyphPoint.x + labelOffset.x,
-      y: glyphPoint.y + labelOffset.y + 9,
+      x: glyphPoint.x + 7,
+      y: glyphPoint.y + 16,
     },
   }
 }
@@ -271,8 +284,9 @@ const labelPlacement = (glyphPoint, glyphLongitude) => {
 export const planetPlacements = (chart, wheelShift, band, symbols = PLANET_SYMBOLS) => {
   const placements = []
   for (const cluster of clusteredPlanets(chart.positions || [], symbols)) {
+    const radii = radiiForCluster(cluster.length, band)
     cluster.forEach((planet, index) => {
-      const radius = radiusForClusterIndex(index, cluster.length, band)
+      const radius = radii[index]
       const longitude = norm360(planet.longitude + wheelShift)
       const glyphLongitude = longitude
       const glyphPoint = polarPoint(radius, glyphLongitude)
@@ -287,7 +301,7 @@ export const planetPlacements = (chart, wheelShift, band, symbols = PLANET_SYMBO
         showDegreeLabel: true,
         point: polarPoint(radius, longitude),
         glyphPoint,
-        ...labelPlacement(glyphPoint, glyphLongitude),
+        ...labelPlacement(glyphPoint),
         tick: polarPoint(band.tickRadius || WHEEL_RADII.houseOuter - 4, longitude),
       })
     })

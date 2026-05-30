@@ -86,7 +86,7 @@ describe('chart wheel geometry', () => {
     expect(new Set(placements.map(item => item.radius)).size).toBe(placements.length)
     expect(Math.min(...placements.map(item => item.radius))).toBeGreaterThan(78)
     expect(Math.max(...placements.map(item => item.radius))).toBeLessThan(150)
-    expect(placements.map(item => Number(item.radius.toFixed(2)))).toEqual([95.4, 106.56, 117.72, 128.88, 140.04])
+    expect(placements.map(item => Number(item.radius.toFixed(2)))).toEqual([92.84, 102.96, 113.08, 123.2, 133.32])
     expect(placements.every(item => item.longitude >= 25 && item.longitude <= 25.8)).toBe(true)
     expect(placements.every(item => item.glyphLongitude === item.longitude)).toBe(true)
   })
@@ -100,9 +100,27 @@ describe('chart wheel geometry', () => {
     }, 0, planetBandFor({}, 0, 1))
 
     expect(placements.map(item => item.planet.name)).toEqual(['Mars', 'Saturn'])
-    expect(placements.map(item => Number(item.radius.toFixed(2)))).toEqual([117.72, 132.6])
-    expect(placements[1].radius - placements[0].radius).toBeLessThan(16)
+    expect(placements.map(item => Number(item.radius.toFixed(2)))).toEqual([106.68, 128.68])
+    expect(placements[1].radius - placements[0].radius).toBeGreaterThan(18)
+    expect(placements[1].radius - placements[0].radius).toBeLessThan(24)
     expect(placements.every(item => item.glyphLongitude === item.longitude)).toBe(true)
+  })
+
+  it('places every degree label at the bottom-right of its glyph', () => {
+    const placements = planetPlacements({
+      positions: [
+        mk('Moon', 118),
+        mk('Chiron', 126),
+        mk('Mars', 214),
+      ],
+    }, 0, planetBandFor({}, 0, 1))
+
+    for (const placement of placements) {
+      expect(placement.labelAnchor).toBe('start')
+      expect(placement.labelSide).toBe('bottom-right')
+      expect(placement.labelPoint.x - placement.glyphPoint.x).toBe(7)
+      expect(placement.labelPoint.y - placement.glyphPoint.y).toBe(8)
+    }
   })
 
   it('keeps the default single-chart planet band away from ring borders', () => {
