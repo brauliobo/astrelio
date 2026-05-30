@@ -18,6 +18,7 @@ const selectMode = (mode) => {
 .chart-display-mode.flex.flex-wrap.items-center.justify-between.gap-2(data-testid='chart-display-mode')
   span.text-xs.font-medium.text-slate-400 {{ t('chart.display_mode') }}
   .inline-flex.rounded.border(class='border-white/10 bg-slate-950/50 p-0.5')
+    slot
     button.px-2.py-1.text-xs.font-medium.transition(
       v-for='mode in modes'
       :key='mode'

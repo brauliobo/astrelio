@@ -11,6 +11,7 @@ import ZodiacRing from './wheel/ZodiacRing.vue'
 import { VIEWBOX_SIZE, mapsFromProps, norm360 } from './wheel/geometry.js'
 
 const displayModes = ['clean', 'aspects', 'detailed', 'print']
+const zoomBase = 1.3
 const zoomMin = 0.85
 const zoomMax = 1.6
 const zoomStep = 0.15
@@ -92,7 +93,7 @@ const style = computed(() => ({
   maxWidth: '100%',
 }))
 const zoomViewBox = computed(() => {
-  const viewSize = VIEWBOX_SIZE / zoomLevel.value
+  const viewSize = VIEWBOX_SIZE / (zoomBase * zoomLevel.value)
   const offset = (VIEWBOX_SIZE - viewSize) / 2
   return [offset, offset, viewSize, viewSize]
     .map(value => Number(value.toFixed(3)))
@@ -241,15 +242,8 @@ onBeforeUnmount(() => {
     :modes='displayModes'
     @update:model-value='selectDisplayMode'
   )
-  .chart-wheel-stage.relative.aspect-square.overflow-hidden.rounded-md(
-    v-if='baseChart'
-    role='group'
-    tabindex='0'
-    aria-label='Chart wheel'
-    :data-zoom='zoomLevel.toFixed(2)'
-    @keydown='onWheelKeydown'
-  )
-    .chart-zoom-controls.absolute.right-2.top-2.z-20.flex.items-center.gap-1.rounded-md.border.p-1.shadow-sm.backdrop-blur-sm(
+    .chart-zoom-controls.inline-flex.items-center.gap-1.mr-1.border-r.pr-1(
+      v-if='baseChart'
       aria-label='Chart zoom controls'
     )
       button.chart-zoom-button(
@@ -273,6 +267,14 @@ onBeforeUnmount(() => {
         :disabled='isZoomMax'
         @click='zoomIn'
       ) +
+  .chart-wheel-stage.relative.aspect-square.overflow-hidden.rounded-md(
+    v-if='baseChart'
+    role='group'
+    tabindex='0'
+    aria-label='Chart wheel'
+    :data-zoom='zoomLevel.toFixed(2)'
+    @keydown='onWheelKeydown'
+  )
     svg(
       class='block h-full w-full'
       :viewBox='zoomViewBox'

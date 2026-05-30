@@ -9,7 +9,9 @@ import PlanetList from '../../src/components/chart/PlanetList.vue'
 vi.mock('../../src/components/chart/ChartDisplayMode.vue', () => ({
   default: {
     name: 'ChartDisplayMode',
-    render: () => null,
+    render() {
+      return h('div', { 'data-testid': 'chart-display-mode' }, this.$slots.default?.())
+    },
   },
 }))
 
@@ -138,6 +140,10 @@ describe('chart interactions', () => {
     const stage = wrapper.get('[data-testid="chart-wheel"]').get('.chart-wheel-stage')
     const svg = wrapper.get('[data-testid="chart-wheel-svg"]')
     const initialViewBox = svg.attributes('viewBox')
+
+    expect(stage.attributes('data-zoom')).toBe('1.00')
+    expect(initialViewBox).toBe('60 60 400 400')
+    expect(wrapper.get('[data-testid="chart-zoom-reset"]').text()).toBe('100%')
 
     await wrapper.get('[data-testid="chart-zoom-in"]').trigger('click')
     await nextTick()

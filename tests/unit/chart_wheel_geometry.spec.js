@@ -5,6 +5,7 @@ import {
   midpointLongitude,
   naturalAspectLines,
   planetPlacements,
+  planetBandFor,
   polarPoint,
   ringSectorPath,
 } from '../../src/components/chart/wheel/geometry.js'
@@ -61,7 +62,7 @@ describe('chart wheel geometry', () => {
     expect(line.start.y).toBeCloseTo(sun.point.y, 6)
   })
 
-  it('stacks crowded stellium glyphs on their exact longitude rays', () => {
+  it('stacks crowded stellium glyphs radially on their exact longitude rays', () => {
     const chart = {
       positions: [
         mk('Sun', 10),
@@ -71,7 +72,7 @@ describe('chart wheel geometry', () => {
         mk('Mars', 10.8),
       ],
     }
-    const placements = planetPlacements(chart, 15, { inner: 134, outer: 150 })
+    const placements = planetPlacements(chart, 15, planetBandFor({}, 0, 1))
     const sun = placements.find(item => item.planet.name === 'Sun')
 
     expect(sun.longitude).toBeCloseTo(25)
@@ -80,13 +81,39 @@ describe('chart wheel geometry', () => {
     expect(sun.glyphLongitude).toBeCloseTo(sun.longitude)
     closePoint(sun.glyphPoint, sun.point)
     expect(placements.every(item => item.isCrowded)).toBe(true)
-    expect(placements.every(item => item.showDegreeLabel)).toBe(false)
+    expect(placements.every(item => item.showDegreeLabel)).toBe(true)
 
     expect(new Set(placements.map(item => item.radius)).size).toBe(placements.length)
+    expect(Math.min(...placements.map(item => item.radius))).toBeGreaterThan(78)
+    expect(Math.max(...placements.map(item => item.radius))).toBeLessThan(150)
+    expect(placements.map(item => Number(item.radius.toFixed(2)))).toEqual([95.4, 106.56, 117.72, 128.88, 140.04])
+    expect(placements.every(item => item.longitude >= 25 && item.longitude <= 25.8)).toBe(true)
     expect(placements.every(item => item.glyphLongitude === item.longitude)).toBe(true)
   })
 
-  it('keeps degree labels always visible only outside crowded clusters', () => {
+  it('keeps two close planets on nearby predictable lanes', () => {
+    const placements = planetPlacements({
+      positions: [
+        mk('Mars', 20),
+        mk('Saturn', 21),
+      ],
+    }, 0, planetBandFor({}, 0, 1))
+
+    expect(placements.map(item => item.planet.name)).toEqual(['Mars', 'Saturn'])
+    expect(placements.map(item => Number(item.radius.toFixed(2)))).toEqual([117.72, 132.6])
+    expect(placements[1].radius - placements[0].radius).toBeLessThan(16)
+    expect(placements.every(item => item.glyphLongitude === item.longitude)).toBe(true)
+  })
+
+  it('keeps the default single-chart planet band away from ring borders', () => {
+    expect(planetBandFor({}, 0, 1)).toEqual({
+      inner: 78,
+      outer: 150,
+      tickRadius: 152,
+    })
+  })
+
+  it('keeps degree labels consistent across single and crowded placements', () => {
     const placements = planetPlacements({
       positions: [
         mk('Sun', 12),
@@ -96,9 +123,9 @@ describe('chart wheel geometry', () => {
       ],
     }, 0, { inner: 134, outer: 150 })
 
-    expect(placements.find(item => item.planet.name === 'Sun').showDegreeLabel).toBe(false)
-    expect(placements.find(item => item.planet.name === 'Moon').showDegreeLabel).toBe(false)
-    expect(placements.find(item => item.planet.name === 'Mercury').showDegreeLabel).toBe(false)
+    expect(placements.find(item => item.planet.name === 'Sun').showDegreeLabel).toBe(true)
+    expect(placements.find(item => item.planet.name === 'Moon').showDegreeLabel).toBe(true)
+    expect(placements.find(item => item.planet.name === 'Mercury').showDegreeLabel).toBe(true)
     expect(placements.find(item => item.planet.name === 'Mars').showDegreeLabel).toBe(true)
   })
 

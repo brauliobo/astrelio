@@ -11,9 +11,9 @@ export const WHEEL_RADII = {
   zodiacOuter: 188,
   zodiacInner: 160,
   houseOuter: 156,
-  houseInner: 104,
-  aspect: 100,
-  center: 104,
+  houseInner: 70,
+  aspect: 66,
+  center: 70,
 }
 
 export const ASPECT_COLORS = {
@@ -60,8 +60,15 @@ export const PLANET_COLORS = {
 }
 
 const PLANET_ORDER = new Map(Object.keys(PLANET_SYMBOLS).map((name, index) => [name, index]))
-const PLANET_CLUSTER_GAP = 8
-const DEGREE_LABEL_CLUSTER_LIMIT = 2
+const PLANET_CLUSTER_GAP = 10.5
+const PLANET_GLYPH_RADIUS_PADDING = 5
+const PLANET_LANE_RATIOS = {
+  1: [0.7],
+  2: [0.56, 0.8],
+  3: [0.44, 0.68, 0.92],
+  4: [0.32, 0.52, 0.72, 0.92],
+  5: [0.2, 0.38, 0.56, 0.74, 0.92],
+}
 
 export const ZODIAC_SIGNS = [
   '♈︎',
@@ -171,7 +178,7 @@ export const mapsFromProps = ({ natal, overlay, charts }) => {
 
 export const planetBandFor = (map, index, count) => {
   if (map.planetBand) return map.planetBand
-  if (count <= 1) return { inner: 134, outer: 150 }
+  if (count <= 1) return { inner: 78, outer: 150, tickRadius: WHEEL_RADII.houseOuter - 4 }
 
   const trackWidth = 13
   const gap = 4
@@ -212,18 +219,30 @@ export const clusteredPlanets = (positions, symbols = PLANET_SYMBOLS) => {
 const clamp = (value, min, max) =>
   Math.max(min, Math.min(max, value))
 
-const RADIUS_LANES = [0, -1, 1, -0.45, 0.45, -0.75, 0.75, -0.25, 0.25]
+const safePlanetBand = (band) => {
+  const padding = band.glyphPadding ?? PLANET_GLYPH_RADIUS_PADDING
+  const inner = band.inner + padding
+  const outer = band.outer - padding
 
-const radiusLaneFor = (index, count) => {
-  if (count <= 1) return 0
-  if (count === 2) return [-0.75, 0.75][index]
-  return RADIUS_LANES[index % RADIUS_LANES.length]
+  if (inner <= outer) return { inner, outer }
+
+  const midpoint = band.inner + ((band.outer - band.inner) / 2)
+  return { inner: midpoint, outer: midpoint }
+}
+
+const radiusRatioFor = (index, count) => {
+  const ratios = PLANET_LANE_RATIOS[count]
+  if (ratios) return ratios[index]
+
+  const start = 0.12
+  const end = 0.94
+  return start + ((end - start) * index / (count - 1))
 }
 
 const radiusForClusterIndex = (index, count, band) => {
-  const midpoint = band.inner + ((band.outer - band.inner) / 2)
-  const spread = (band.outer - band.inner) / 2
-  return clamp(midpoint + radiusLaneFor(index, count) * spread, band.inner, band.outer)
+  const safeBand = safePlanetBand(band)
+  const spread = safeBand.outer - safeBand.inner
+  return clamp(safeBand.inner + (spread * radiusRatioFor(index, count)), safeBand.inner, safeBand.outer)
 }
 
 const labelPlacement = (glyphPoint, glyphLongitude) => {
@@ -264,8 +283,8 @@ export const planetPlacements = (chart, wheelShift, band, symbols = PLANET_SYMBO
         radius,
         clusterSize: cluster.length,
         laneIndex: index,
-        isCrowded: cluster.length > DEGREE_LABEL_CLUSTER_LIMIT,
-        showDegreeLabel: cluster.length <= DEGREE_LABEL_CLUSTER_LIMIT,
+        isCrowded: cluster.length > 1,
+        showDegreeLabel: true,
         point: polarPoint(radius, longitude),
         glyphPoint,
         ...labelPlacement(glyphPoint, glyphLongitude),

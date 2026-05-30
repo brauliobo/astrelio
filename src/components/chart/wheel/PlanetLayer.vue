@@ -2,6 +2,11 @@
 import { computed } from 'vue'
 import { PLANET_COLORS, PLANET_SYMBOLS, WHEEL_RADII, degreeLabel } from './geometry.js'
 
+const PLANET_GLYPH_SCALE = {
+  Venus: 1.16,
+  Mars: 1.16,
+}
+
 const props = defineProps({
   placements: { type: Array, required: true },
   color: { type: String, default: 'var(--chart-ink)' },
@@ -18,7 +23,6 @@ const hasHighlight = computed(() => highlightedBodySet.value.size > 0)
 
 const glyphs = computed(() =>
   props.placements.map((item) => {
-    const exact = item.tick
     const glyph = item.glyphPoint || item.point
     const label = item.labelPoint || { x: glyph.x + 10, y: glyph.y - 9 }
     const retrograde = item.retrogradePoint || { x: glyph.x + 10, y: glyph.y + 7 }
@@ -27,9 +31,9 @@ const glyphs = computed(() =>
     const color = props.mapIndex === 0 ? colors[item.planet.name] || props.color : props.color
     const labelColor = props.mapIndex === 0 ? 'var(--chart-ink)' : props.color
     const name = props.labels?.[item.planet.name] || item.planet.displayName || item.planet.name
+    const glyphScale = PLANET_GLYPH_SCALE[item.planet.name] || 1
     return {
       ...item,
-      exact,
       glyph,
       label,
       retrograde,
@@ -41,6 +45,10 @@ const glyphs = computed(() =>
       degree: degreeLabel(item.planet.longitude),
       showDegreeLabel: item.showDegreeLabel !== false,
       fontSize: props.mapIndex === 0 ? 22 : 17,
+      glyphScale,
+      glyphTransform: glyphScale === 1
+        ? null
+        : `translate(${glyph.x} ${glyph.y}) scale(${glyphScale}) translate(${-glyph.x} ${-glyph.y})`,
     }
   })
 )
@@ -84,23 +92,6 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
       pointer-events='all'
       :data-testid='`planet-hit-${item.planet.name}`'
     )
-    line(
-      :x1='item.exact.x'
-      :y1='item.exact.y'
-      :x2='item.glyph.x'
-      :y2='item.glyph.y'
-      :stroke='item.color'
-      :stroke-width='glyphHighlightState(item.planet.name) === "active" ? 1.1 : 0.58'
-      :stroke-opacity='glyphHighlightState(item.planet.name) === "active" ? 0.82 : item.isCrowded ? 0.5 : 0.34'
-      stroke-linecap='round'
-    )
-    circle(
-      :cx='item.exact.x'
-      :cy='item.exact.y'
-      r='1.55'
-      :fill='color'
-      :fill-opacity='glyphHighlightState(item.planet.name) === "active" ? 1 : 0.72'
-    )
     text(
       :x='item.glyph.x'
       :y='item.glyph.y'
@@ -109,6 +100,7 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
       :stroke-width='glyphHighlightState(item.planet.name) === "active" ? 1.1 : item.planet.name === "Sun" && mapIndex === 0 ? 0.8 : 0'
       :font-size='item.fontSize'
       :font-weight='glyphHighlightState(item.planet.name) === "active" ? 700 : 400'
+      :transform='item.glyphTransform'
       dominant-baseline='central'
       data-role='symbol'
     ) {{ item.symbol }}

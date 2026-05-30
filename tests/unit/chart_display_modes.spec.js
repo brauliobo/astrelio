@@ -39,6 +39,7 @@ const chart = {
   cusps: [120, 150, 180, 210, 240, 270, 300, 330, 0, 30, 60, 90],
   positions: [
     position('Sun', 300 + 23 + (49 / 60)),
+    position('Venus', 28),
     position('Mars', 23 + (49 / 60)),
     position('Moon', 140),
   ],
@@ -80,6 +81,13 @@ describe('chart display modes', () => {
     expect(wrapper.get('[data-testid="chart-wheel"]').attributes('data-chart-mode')).toBe('print')
     expect(wrapper.get('[data-testid="chart-wheel"]').attributes('data-show-degrees')).toBe('true')
     expect(wrapper.find('[data-testid="aspect-lines"]').exists()).toBe(false)
+  })
+
+  it('places zoom controls before the display mode options', () => {
+    const wrapper = mountChartWheel()
+    const toolbarText = wrapper.get('[data-testid="chart-display-mode"]').text()
+
+    expect(toolbarText.indexOf('100%')).toBeLessThan(toolbarText.indexOf('Clean'))
   })
 
   it('defaults simple charts to clean mode on small screens', async () => {
@@ -156,9 +164,22 @@ describe('chart display modes', () => {
   it('uses the same glyph size for natal planets', () => {
     const wrapper = mountChartWheel()
     const sun = wrapper.get('[data-testid="planet-glyph-Sun"] text[data-role="symbol"]')
+    const venus = wrapper.get('[data-testid="planet-glyph-Venus"] text[data-role="symbol"]')
     const mars = wrapper.get('[data-testid="planet-glyph-Mars"] text[data-role="symbol"]')
 
+    expect(sun.attributes('font-size')).toBe(venus.attributes('font-size'))
     expect(sun.attributes('font-size')).toBe(mars.attributes('font-size'))
+    expect(venus.attributes('transform')).toContain('scale(1.16)')
+    expect(mars.attributes('transform')).toContain('scale(1.16)')
+  })
+
+  it('renders planet positions without exact-point leader marks', () => {
+    const wrapper = mountChartWheel()
+    const sun = wrapper.get('[data-testid="planet-glyph-Sun"]')
+
+    expect(sun.find('line').exists()).toBe(false)
+    expect(sun.findAll('circle')).toHaveLength(1)
+    expect(sun.get('circle').classes()).toContain('planet-hit-target')
   })
 
   it('keeps aspect lines bounded to the central aspect circle', () => {
