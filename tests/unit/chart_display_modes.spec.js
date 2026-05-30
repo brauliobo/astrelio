@@ -116,6 +116,17 @@ describe('chart display modes', () => {
     expect(planetLabel.attributes('fill')).toBe('var(--chart-ink)')
   })
 
+  it('keeps house labels visually secondary to planet positions', () => {
+    const wrapper = mountChartWheel()
+    const houseNumbers = wrapper.get('[data-testid="house-numbers"]')
+    const planetDegree = wrapper.get('[data-testid="planet-glyph-Moon"] .planet-degree-label')
+
+    expect(houseNumbers.attributes('font-size')).toBe('7.5')
+    expect(houseNumbers.attributes('opacity')).toBe('var(--chart-house-number-opacity)')
+    expect(houseNumbers.find('circle').exists()).toBe(false)
+    expect(Number(planetDegree.attributes('font-size'))).toBeGreaterThan(Number(houseNumbers.attributes('font-size')))
+  })
+
   it('keeps aspect lines bounded to the central aspect circle', () => {
     const wrapper = mountChartWheel()
     const aspectLine = wrapper.get('[data-aspect="Sun-Mars-sextile"]')

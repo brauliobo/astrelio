@@ -84,13 +84,13 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
       :y2='item.glyph.y'
       :stroke='item.color'
       :stroke-width='glyphHighlightState(item.planet.name) === "active" ? 1.1 : 0.58'
-      :stroke-opacity='glyphHighlightState(item.planet.name) === "active" ? 0.76 : item.isCrowded ? 0.42 : 0.28'
+      :stroke-opacity='glyphHighlightState(item.planet.name) === "active" ? 0.82 : item.isCrowded ? 0.5 : 0.34'
       stroke-linecap='round'
     )
     circle(
       :cx='item.exact.x'
       :cy='item.exact.y'
-      r='1.35'
+      r='1.55'
       :fill='color'
       :fill-opacity='glyphHighlightState(item.planet.name) === "active" ? 1 : 0.72'
     )
@@ -109,7 +109,8 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
       :x='item.label.x'
       :y='item.label.y'
       :fill='item.labelColor'
-      :font-size='mapIndex === 0 ? 7.2 : 6.4'
+      :font-size='mapIndex === 0 ? 7.8 : 6.6'
+      font-weight='600'
       :text-anchor='item.labelAnchor'
       :data-visible='item.showDegreeLabel || glyphHighlightState(item.planet.name) === "active"'
       class='planet-degree-label'

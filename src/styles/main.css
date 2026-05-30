@@ -59,9 +59,8 @@
   --chart-cusp-line: #c7d3e2;
   --chart-ink: #f8fafc;
   --chart-ink-muted: #e2e8f0;
-  --chart-house-number-fill: #0f172a;
-  --chart-house-number-bg: #f8fafc;
-  --chart-house-number-stroke: #64748b;
+  --chart-house-number-fill: #cbd5e1;
+  --chart-house-number-opacity: 0.62;
   --chart-angle-label-bg: #0f172a;
   --chart-hit-target-fill: rgb(255 255 255 / 0.01);
   --chart-sun-stroke: #facc15;
@@ -130,9 +129,8 @@ html[data-theme="light"] {
   --chart-cusp-line: #64748b;
   --chart-ink: #111827;
   --chart-ink-muted: #334155;
-  --chart-house-number-fill: #0f172a;
-  --chart-house-number-bg: #f8fafc;
-  --chart-house-number-stroke: #cbd5e1;
+  --chart-house-number-fill: #475569;
+  --chart-house-number-opacity: 0.68;
   --chart-angle-label-bg: #fffaf0;
   --chart-hit-target-fill: rgb(15 23 42 / 0.01);
   --chart-sun-stroke: #facc15;
