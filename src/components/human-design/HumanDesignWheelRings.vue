@@ -5,10 +5,12 @@ import HumanDesignGateSector from './HumanDesignGateSector.vue'
 import HumanDesignIChingRing from './HumanDesignIChingRing.vue'
 import HumanDesignZodiacSector from './HumanDesignZodiacSector.vue'
 import { gateSegmentLayout, wheelRingRadii, zodiacSegmentLayout } from './humanDesignWheelGeometry.js'
+import { humanDesignPalette, humanDesignWheelPalette } from './humanDesignVisualTheme.js'
 
 const props = defineProps({
   chart: { type: Object, required: true },
   hover: { type: Object, default: null },
+  visualTheme: { type: String, default: 'dark' },
 })
 
 const emit = defineEmits(['hover', 'leave'])
@@ -17,6 +19,8 @@ const activeGates = computed(() => new Set(props.chart.gates || []))
 const personalityGates = computed(() => new Set(props.chart.personalityGates || []))
 const designGates = computed(() => new Set(props.chart.designGates || []))
 const mandalaGates = MANDALA_GATE_ORDER
+const palette = computed(() => humanDesignPalette(props.visualTheme))
+const wheelColors = computed(() => humanDesignWheelPalette(props.visualTheme))
 
 const gateSegments = computed(() =>
   gateSegmentLayout({ inner: wheelRingRadii.gateInner, outer: wheelRingRadii.gateOuter, labelRadius: 406 }).map((segment) => {
@@ -31,9 +35,11 @@ const gateSegments = computed(() =>
       active,
       personality,
       design,
-      fill: active ? (personality && design ? 'rgba(95,78,70,0.42)' : design ? 'rgba(216,79,81,0.48)' : 'rgba(111,160,143,0.42)') : 'transparent',
-      hoverFill: design ? 'rgba(239,85,87,0.95)' : 'rgba(248,250,252,0.88)',
-      text: active ? 'rgba(248,250,252,0.76)' : 'rgba(226,232,240,0.28)',
+      fill: active ? (personality && design ? wheelColors.value.gateBoth : design ? wheelColors.value.gateDesign : wheelColors.value.gatePersonality) : 'transparent',
+      hoverFill: design ? 'rgba(239,85,87,0.95)' : wheelColors.value.gateHover,
+      hoverStroke: palette.value.highlight,
+      sectorStroke: wheelColors.value.sectorStroke,
+      text: active ? wheelColors.value.activeText : wheelColors.value.inactiveText,
     }
   })
 )
@@ -46,7 +52,8 @@ const zodiacSegments = computed(() =>
     const index = segment.index
     return {
       ...segment,
-      fill: index % 4 === 0 ? 'rgba(250,204,21,0.065)' : index % 4 === 1 ? 'rgba(45,212,191,0.055)' : index % 4 === 2 ? 'rgba(125,211,252,0.055)' : 'rgba(248,113,113,0.055)',
+      fill: wheelColors.value.zodiacFills[index % wheelColors.value.zodiacFills.length],
+      stroke: wheelColors.value.zodiacStroke,
     }
   })
 )
@@ -54,11 +61,17 @@ const zodiacSegments = computed(() =>
 
 <template lang="pug">
 g.hd-wheel-rings
-  circle(cx='520' cy='520' :r='wheelRingRadii.outerBorder' fill='transparent' stroke='rgba(148,163,184,0.12)')
-  HumanDesignIChingRing(:gates='mandalaGates' :active-gates='chart.gates || []' :radius='wheelRingRadii.ichingRadius')
-  circle(cx='520' cy='520' :r='wheelRingRadii.gateOuter' fill='transparent' stroke='rgba(148,163,184,0.11)')
-  circle(cx='520' cy='520' :r='wheelRingRadii.gateInner' fill='transparent' stroke='rgba(148,163,184,0.11)')
-  circle(cx='520' cy='520' :r='wheelRingRadii.zodiacInner' fill='transparent' stroke='rgba(148,163,184,0.12)')
+  circle(cx='520' cy='520' :r='wheelRingRadii.outerBorder' fill='transparent' :stroke='wheelColors.ringStroke')
+  HumanDesignIChingRing(
+    :gates='mandalaGates'
+    :active-gates='chart.gates || []'
+    :radius='wheelRingRadii.ichingRadius'
+    :color='wheelColors.iching'
+    :active-color='wheelColors.ichingActive'
+  )
+  circle(cx='520' cy='520' :r='wheelRingRadii.gateOuter' fill='transparent' :stroke='wheelColors.ringStroke')
+  circle(cx='520' cy='520' :r='wheelRingRadii.gateInner' fill='transparent' :stroke='wheelColors.ringStroke')
+  circle(cx='520' cy='520' :r='wheelRingRadii.zodiacInner' fill='transparent' :stroke='wheelColors.ringStroke')
   g(data-testid='hd-wheel-zodiac')
     HumanDesignZodiacSector(
       v-for='segment in zodiacSegments'
@@ -71,7 +84,7 @@ g.hd-wheel-rings
       :x='segment.label.x'
       :y='segment.label.y + 7'
       text-anchor='middle'
-      fill='rgba(226,232,240,0.46)'
+      :fill='wheelColors.signText'
       font-size='22'
     ) {{ segment.sign }}
   g(data-testid='hd-wheel-rays')
@@ -82,9 +95,9 @@ g.hd-wheel-rings
       :y1='segment.ray.a.y'
       :x2='segment.ray.b.x'
       :y2='segment.ray.b.y'
-      :stroke='isGateHovered(segment.gate) ? "#f8fafc" : segment.active ? (segment.design ? "#ef5557" : "#f8fafc") : "rgba(148,163,184,0.12)"'
-      :stroke-width='isGateHovered(segment.gate) ? 3 : segment.active ? 1.6 : 0.65'
-      :stroke-opacity='isGateHovered(segment.gate) ? 0.48 : segment.active ? 0.11 : hasGateHover ? 0.04 : 0.11'
+      :stroke='isGateHovered(segment.gate) ? palette.highlight : wheelColors.inactiveRay'
+      :stroke-width='isGateHovered(segment.gate) ? 1.5 : 0.55'
+      :stroke-opacity='isGateHovered(segment.gate) ? 0.42 : hasGateHover ? 0.03 : 0.16'
     )
   g(data-testid='hd-wheel-gates')
     HumanDesignGateSector(
@@ -99,12 +112,12 @@ g.hd-wheel-rings
     line(
       v-for='segment in gateSegments'
       :key='`line-${segment.gate}`'
-      :x1='segment.line.a.x'
-      :y1='segment.line.a.y'
-      :x2='segment.line.b.x'
-      :y2='segment.line.b.y'
-      :stroke='isGateHovered(segment.gate) ? "#f8fafc" : segment.active ? "rgba(245,158,11,0.54)" : "rgba(148,163,184,0.09)"'
-      :stroke-width='isGateHovered(segment.gate) ? 1.8 : segment.active ? 0.95 : 0.5'
+      :x1='segment.divider.a.x'
+      :y1='segment.divider.a.y'
+      :x2='segment.divider.b.x'
+      :y2='segment.divider.b.y'
+      :stroke='isGateHovered(segment.gate) ? palette.highlight : segment.active ? wheelColors.activeLine : wheelColors.inactiveLine'
+      :stroke-width='isGateHovered(segment.gate) ? 1.5 : segment.active ? 0.85 : 0.55'
       :stroke-opacity='hasGateHover && !isGateHovered(segment.gate) ? 0.28 : 1'
     )
     text(
@@ -113,7 +126,7 @@ g.hd-wheel-rings
       :x='segment.label.x'
       :y='segment.label.y + 5'
       text-anchor='middle'
-      :fill='isGateHovered(segment.gate) ? "#ffffff" : segment.text'
+      :fill='isGateHovered(segment.gate) ? palette.highlight : segment.text'
       :font-size='isGateHovered(segment.gate) ? 16 : segment.active ? 12.5 : 11'
       :font-weight='isGateHovered(segment.gate) || segment.active ? 800 : 500'
       :opacity='hasGateHover && !isGateHovered(segment.gate) ? 0.28 : 1'

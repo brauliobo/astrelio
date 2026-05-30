@@ -21,6 +21,8 @@ export const polar = (radius, angle, center = wheelCenter) => {
   return {
     x: center + radius * Math.cos(radians),
     y: center + radius * Math.sin(radians),
+    radius,
+    angle,
   }
 }
 
@@ -56,6 +58,7 @@ export const gateSegmentLayout = ({ inner = 390, outer = 438, labelRadius = 415 
     const startAngle = angleForMandalaIndex(index)
     const endAngle = angleForMandalaIndex(index + 1)
     const midAngle = angleForMandalaIndex(index + 0.5)
+    const dividerInner = Math.min(inner, wheelRingRadii.zodiacInner)
     return {
       gate,
       index,
@@ -63,8 +66,10 @@ export const gateSegmentLayout = ({ inner = 390, outer = 438, labelRadius = 415 
       endAngle,
       midAngle,
       path: arcPath(inner, outer, startAngle, endAngle),
-      line: { a: polar(inner - 28, startAngle), b: polar(outer + 6, startAngle) },
-      ray: { a: polar(170, midAngle), b: polar(inner - 48, midAngle) },
+      dividerAngle: startAngle,
+      rayAngle: startAngle,
+      divider: { a: polar(dividerInner, startAngle), b: polar(wheelRingRadii.outerBorder, startAngle) },
+      ray: { a: polar(178, startAngle), b: polar(dividerInner, startAngle) },
       label: polar(labelRadius, midAngle),
     }
   })

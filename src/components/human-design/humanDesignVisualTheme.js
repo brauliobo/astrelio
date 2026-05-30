@@ -28,6 +28,30 @@ export const humanDesignPalette = (mode = 'dark') => {
   }
 }
 
+export const humanDesignWheelPalette = (mode = 'dark') => {
+  const light = mode === 'light'
+  return {
+    ringStroke: light ? 'rgba(71,85,105,0.24)' : 'rgba(148,163,184,0.12)',
+    signText: light ? 'rgba(15,23,42,0.54)' : 'rgba(226,232,240,0.46)',
+    gateBoth: light ? 'rgba(95,78,70,0.20)' : 'rgba(95,78,70,0.42)',
+    gateDesign: light ? 'rgba(216,79,81,0.22)' : 'rgba(216,79,81,0.48)',
+    gatePersonality: light ? 'rgba(15,23,42,0.12)' : 'rgba(111,160,143,0.42)',
+    gateHover: light ? 'rgba(15,23,42,0.84)' : 'rgba(248,250,252,0.88)',
+    activeText: light ? 'rgba(15,23,42,0.74)' : 'rgba(248,250,252,0.76)',
+    inactiveText: light ? 'rgba(71,85,105,0.42)' : 'rgba(226,232,240,0.28)',
+    inactiveRay: light ? 'rgba(71,85,105,0.12)' : 'rgba(148,163,184,0.10)',
+    inactiveLine: light ? 'rgba(71,85,105,0.18)' : 'rgba(148,163,184,0.13)',
+    activeLine: light ? 'rgba(180,83,9,0.58)' : 'rgba(245,158,11,0.48)',
+    sectorStroke: light ? 'rgba(15,23,42,0.08)' : 'rgba(248,250,252,0.075)',
+    zodiacStroke: light ? 'rgba(15,23,42,0.06)' : 'rgba(248,250,252,0.07)',
+    iching: light ? 'rgba(71,85,105,0.32)' : 'rgba(203,213,225,0.28)',
+    ichingActive: light ? 'rgba(15,23,42,0.72)' : 'rgba(248,250,252,0.74)',
+    zodiacFills: light
+      ? ['rgba(250,204,21,0.10)', 'rgba(13,148,136,0.08)', 'rgba(2,132,199,0.08)', 'rgba(220,38,38,0.08)']
+      : ['rgba(250,204,21,0.065)', 'rgba(45,212,191,0.055)', 'rgba(125,211,252,0.055)', 'rgba(248,113,113,0.055)'],
+  }
+}
+
 export const activationTone = ({ design = false, personality = false, mode = 'dark' } = {}) => {
   const palette = humanDesignPalette(mode)
   if (design && !personality) {

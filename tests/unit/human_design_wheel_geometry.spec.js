@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { mandalaAngleForActivation, mandalaAngleForLongitude, mandalaIndexForGate, referenceBrauliWheelPositions, zodiacSegmentLayout } from '../../src/components/human-design/humanDesignWheelGeometry.js'
+import {
+  gateSegmentLayout,
+  mandalaAngleForActivation,
+  mandalaAngleForLongitude,
+  mandalaIndexForGate,
+  referenceBrauliWheelPositions,
+  wheelRingRadii,
+  zodiacSegmentLayout,
+} from '../../src/components/human-design/humanDesignWheelGeometry.js'
 import { activationFromLongitude } from '../../src/lib/human-design/activations.js'
 import { SKY_PLANETS, skyLongitudeForHumanDesignLongitude, skyLongitudeForPosition, skyRadiusForBounds } from '../../src/lib/sky/scene.js'
 
@@ -57,5 +65,20 @@ describe('Human Design wheel geometry', () => {
   it('uses photo texture specs for every sky planet while retaining halo colors', () => {
     expect(SKY_PLANETS).toHaveLength(10)
     expect(SKY_PLANETS.every(planet => planet.photo && planet.image?.startsWith('/planets/') && planet.texture?.length === 3 && planet.color)).toBe(true)
+  })
+
+  it('keeps gate dividers and reference rays on sector boundaries', () => {
+    const [segment] = gateSegmentLayout({
+      inner: wheelRingRadii.gateInner,
+      outer: wheelRingRadii.gateOuter,
+      labelRadius: 406,
+    })
+
+    expect(segment.dividerAngle).toBe(segment.startAngle)
+    expect(segment.rayAngle).toBe(segment.startAngle)
+    expect(segment.divider.a.radius).toBe(wheelRingRadii.zodiacInner)
+    expect(segment.divider.b.radius).toBe(wheelRingRadii.outerBorder)
+    expect(segment.ray.a.radius).toBeLessThan(segment.ray.b.radius)
+    expect(segment.ray.b.radius).toBe(wheelRingRadii.zodiacInner)
   })
 })
