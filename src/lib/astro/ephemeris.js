@@ -1,4 +1,4 @@
-import { Body, Ecliptic, GeoVector, MakeTime } from 'astronomy-engine'
+import { Body, Ecliptic, EclipticGeoMoon, GeoVector, MakeTime } from 'astronomy-engine'
 import { norm360, toSidereal } from './zodiac.js'
 import { calcHouses } from './houses.js'
 
@@ -39,6 +39,36 @@ const meanNode = (jd) => {
   return norm360(125.0445479 - 1934.1362891 * T + 0.0020754 * T * T)
 }
 
+const moonEclipticVector = (jd) => {
+  const { lon, lat, dist } = EclipticGeoMoon(jdToDate(jd))
+  const lonRad = lon * Math.PI / 180
+  const latRad = lat * Math.PI / 180
+  const radius = dist * Math.cos(latRad)
+  return [
+    radius * Math.cos(lonRad),
+    radius * Math.sin(lonRad),
+    dist * Math.sin(latRad),
+  ]
+}
+
+const trueNode = (jd) => {
+  const dt = 1 / 1440
+  const r = moonEclipticVector(jd)
+  const prev = moonEclipticVector(jd - dt)
+  const next = moonEclipticVector(jd + dt)
+  const v = [
+    (next[0] - prev[0]) / (2 * dt),
+    (next[1] - prev[1]) / (2 * dt),
+    (next[2] - prev[2]) / (2 * dt),
+  ]
+  const h = [
+    r[1] * v[2] - r[2] * v[1],
+    r[2] * v[0] - r[0] * v[2],
+    r[0] * v[1] - r[1] * v[0],
+  ]
+  return norm360(Math.atan2(h[0], -h[1]) * 180 / Math.PI)
+}
+
 const meanLilith = (jd) => {
   const T = (jd - 2451545) / 36525
   return norm360(83.353 + 4069.013711 * T)
@@ -72,7 +102,7 @@ export const computeChart = (
       retrograde: s < 0
     }
   })
-  const node = meanNode(jdUt)
+  const node = opts.nodeMode === 'true' ? trueNode(jdUt) : meanNode(jdUt)
   positions.push({ name: 'NorthNode', longitude: sidereal(node, jdUt, opts.zodiac),                latitude: 0, speed: -0.053, retrograde: true })
   positions.push({ name: 'SouthNode', longitude: sidereal(norm360(node + 180), jdUt, opts.zodiac), latitude: 0, speed: -0.053, retrograde: true })
   positions.push({ name: 'Lilith',    longitude: sidereal(meanLilith(jdUt), jdUt, opts.zodiac),    latitude: 0, speed:  0.111, retrograde: false })

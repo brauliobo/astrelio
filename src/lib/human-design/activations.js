@@ -79,11 +79,13 @@ export const personalityDesignCharts = (jdUt, lat, lon) => {
   const personalityChart = computeChart(jdUt, lat, lon, {
     zodiac: 'tropical',
     houseSystem: 'whole_sign',
+    nodeMode: 'true',
   })
   const designJd = designJdForPersonalitySun(jdUt)
   const designChart = computeChart(designJd, lat, lon, {
     zodiac: 'tropical',
     houseSystem: 'whole_sign',
+    nodeMode: 'true',
   })
 
   return {
