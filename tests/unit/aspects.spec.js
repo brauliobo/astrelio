@@ -43,4 +43,16 @@ describe('aspects', () => {
     expect(aspect.strength).toBeGreaterThan(0)
     expect(typeof aspect.applying).toBe('boolean')
   })
+
+  it('can restrict to major aspects', () => {
+    const chart = { positions: [mk('Sun', 0), mk('Moon', 150)] }
+    expect(naturalAspects(chart)).toHaveLength(1)
+    expect(naturalAspects(chart, { aspectSet: 'major' })).toHaveLength(0)
+  })
+
+  it('can exclude modern planets and points', () => {
+    const chart = { positions: [mk('Sun', 0), mk('Uranus', 180)] }
+    expect(naturalAspects(chart)).toHaveLength(1)
+    expect(naturalAspects(chart, { includeModernPlanets: false })).toHaveLength(0)
+  })
 })

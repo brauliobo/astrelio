@@ -26,8 +26,8 @@ const sr = computed(() => {
   return solarReturnChartForNatal(natal.value.jdUt, near, person.value.lat, person.value.lon, { zodiac: settings.zodiac, houseSystem: settings.houseSystem })
 })
 
-const srAspects = computed(() => natal.value && sr.value ? crossAspects(natal.value, sr.value) : [])
-const srNaturalAspects = computed(() => sr.value ? naturalAspects(sr.value) : [])
+const srAspects = computed(() => natal.value && sr.value ? crossAspects(natal.value, sr.value, settings.aspectOptions) : [])
+const srNaturalAspects = computed(() => sr.value ? naturalAspects(sr.value, settings.aspectOptions) : [])
 const returnDate = computed(() => {
   if (!sr.value) return ''
   const date = new Date((sr.value.jdUt - 2440587.5) * 86_400_000)
@@ -60,5 +60,6 @@ section.solar-return(data-testid='solar-return-page')
       :aspects='srAspects'
       :base-label='t("chart.natal_positions")'
       :comparison-label='t("chart.solar_return_positions")'
+      :aspect-options='settings.aspectOptions'
     )
 </template>

@@ -12,6 +12,11 @@ const REF = {
   lon:             -45.88
 }
 
+const angularDelta = (actual, expected) => {
+  const delta = Math.abs(norm360(actual - expected))
+  return Math.min(delta, 360 - delta)
+}
+
 describe('houses', () => {
   it('cusp 1 equals ascendant, cusp 10 equals MC', () => {
     const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
@@ -70,8 +75,30 @@ describe('houses', () => {
     const expected = [117.8, 154.4, 190.6, 221.6, 247.7, 271.9, 297.8, 334.4, 10.6, 41.6, 67.7, 91.9]
 
     h.cusps.forEach((cusp, i) => {
-      const delta = Math.abs(norm360(cusp - expected[i]))
-      expect(Math.min(delta, 360 - delta)).toBeLessThan(1)
+      expect(angularDelta(cusp, expected[i])).toBeLessThan(1)
+    })
+  })
+
+  it('koch cusps match Swiss Ephemeris reference values', () => {
+    const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
+    const h = calcHouses('koch', jd, REF.lat, REF.lon)
+    const expected = [
+      117.849528605,
+      149.841857192,
+      186.289507513,
+      221.631974221,
+      245.964458929,
+      270.681467184,
+      297.849528605,
+      329.841857192,
+      6.289507513,
+      41.631974221,
+      65.964458929,
+      90.681467184,
+    ]
+
+    h.cusps.forEach((cusp, i) => {
+      expect(angularDelta(cusp, expected[i])).toBeLessThan(0.005)
     })
   })
 })

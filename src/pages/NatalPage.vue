@@ -12,6 +12,7 @@ import ChartWheel from '../components/chart/ChartWheel.vue'
 import PlanetList from '../components/chart/PlanetList.vue'
 import AspectTable from '../components/chart/AspectTable.vue'
 import ChartInsight from '../components/chart/ChartInsight.vue'
+import InterpretationPanel from '../components/chart/InterpretationPanel.vue'
 
 const { t }    = useI18n()
 const people   = usePeopleStore()
@@ -21,7 +22,7 @@ const settings = useSettingsStore()
 const person  = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
 const chart   = useNatalChart(person, settings)
 const phase   = computed(() => chart.value ? t(`moon_phase.${moonPhaseLabel(chart.value.jdUt)}`) : '')
-const aspects = computed(() => chart.value ? naturalAspects(chart.value) : [])
+const aspects = computed(() => chart.value ? naturalAspects(chart.value, settings.aspectOptions) : [])
 </script>
 
 <template lang="pug">
@@ -40,8 +41,9 @@ section.natal-page(data-testid='natal-page')
       ) {{ t('report.open') }}
     .grid.gap-6(class='lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]')
       .ui-panel
-        ChartWheel(:natal='chart' v-if='chart')
+        ChartWheel(:natal='chart' :aspect-options='settings.aspectOptions' v-if='chart')
       ChartInsight(:chart='chart' :aspects='aspects' :phase-label='phase' v-if='chart')
+    InterpretationPanel.mt-6(:chart='chart' :aspects='aspects' v-if='chart')
     .grid.gap-6.mt-6(class='xl:grid-cols-[minmax(320px,0.8fr)_minmax(0,1fr)]')
       .ui-panel
         PlanetList(:chart='chart' v-if='chart')

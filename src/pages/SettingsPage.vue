@@ -2,6 +2,7 @@
 import { useI18n } from 'vue-i18n'
 import { useSettingsStore } from '../stores/settings.js'
 import { usePeopleStore } from '../stores/people.js'
+import BackupPanel from '../components/export/BackupPanel.vue'
 
 const { t, locale } = useI18n()
 const settings = useSettingsStore()
@@ -13,6 +14,12 @@ const onLocale = (e) => {
 }
 
 const houses = ['placidus', 'koch', 'porphyry', 'regiomontanus', 'equal', 'whole_sign']
+const aspectSets = ['all', 'major']
+const orbScales = [
+  { value: 0.75, key: 'tight' },
+  { value: 1, key: 'standard' },
+  { value: 1.25, key: 'wide' },
+]
 
 const reset = () => {
   if (confirm(t('settings.reset') + '?')) {
@@ -51,6 +58,23 @@ section.settings.max-w-md(data-testid='settings-page')
       )
         option(value='tropical') {{ t('settings.tropical') }}
         option(value='sidereal') {{ t('settings.sidereal') }}
+    .ui-panel
+      h2.text-sm.font-semibold.text-slate-100.mb-3 {{ t('settings.aspect_options') }}
+      .grid.gap-3
+        div
+          label.block.text-xs.text-slate-400.mb-1 {{ t('settings.aspect_set') }}
+          select.ui-control.ui-control-md.w-full(v-model='settings.aspectSet' data-testid='setting-aspect-set')
+            option(v-for='set in aspectSets' :key='set' :value='set') {{ t(`settings.aspect_sets.${set}`) }}
+        div
+          label.block.text-xs.text-slate-400.mb-1 {{ t('settings.orb_width') }}
+          select.ui-control.ui-control-md.w-full(v-model.number='settings.orbScale' data-testid='setting-orb-scale')
+            option(v-for='scale in orbScales' :key='scale.key' :value='scale.value') {{ t(`settings.orb_scales.${scale.key}`) }}
+        label.flex.items-center.gap-2.text-sm.text-slate-300
+          input(type='checkbox' v-model='settings.applyingOnly' data-testid='setting-applying-only')
+          | {{ t('settings.applying_only') }}
+        label.flex.items-center.gap-2.text-sm.text-slate-300
+          input(type='checkbox' v-model='settings.includeModernPlanets' data-testid='setting-modern-planets')
+          | {{ t('settings.include_modern_planets') }}
     label.flex.items-center.gap-2.text-sm.text-slate-300
       input(type='checkbox' v-model='settings.skyEnabled' data-testid='setting-sky')
       | {{ t('settings.sky_bg') }}
@@ -59,4 +83,5 @@ section.settings.max-w-md(data-testid='settings-page')
       @click='reset'
       data-testid='btn-reset'
     ) {{ t('settings.reset') }}
+    BackupPanel
 </template>

@@ -54,7 +54,7 @@ const onSubmit = (data) => {
 
 const open = (id) => {
   session.setActive(id)
-  router.push('/natal')
+  router.push({ name: 'person', params: { id } })
 }
 
 const clearUndo = () => {

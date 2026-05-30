@@ -29,7 +29,7 @@ const transit = computed(() => person.value
   ? transitsFor(dateMs.value, person.value.lat, person.value.lon, { zodiac: settings.zodiac, houseSystem: settings.houseSystem })
   : null)
 
-const aspects = computed(() => natal.value && transit.value ? crossAspects(natal.value, transit.value) : [])
+const aspects = computed(() => natal.value && transit.value ? crossAspects(natal.value, transit.value, settings.aspectOptions) : [])
 </script>
 
 <template lang="pug">
@@ -52,7 +52,7 @@ section.transits-page(data-testid='transits-page')
     ComparisonInsightPanel.mb-6(:aspects='aspects' mode='transit')
     .grid.gap-6(class='lg:grid-cols-2')
       .ui-panel
-        Biwheel(:natal='natal' :overlay='transit' v-if='natal && transit')
+        Biwheel(:natal='natal' :overlay='transit' :aspect-options='settings.aspectOptions' v-if='natal && transit')
       .ui-panel(v-if='aspects.length')
         AspectTable(:aspects='aspects')
 </template>

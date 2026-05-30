@@ -21,7 +21,7 @@ const personB = computed(() => people.byId(session.comparePersonId) || people.so
 const chartA = useNatalChart(personA, settings)
 const chartB = useNatalChart(personB, settings)
 
-const aspects = computed(() => chartA.value && chartB.value ? synastryAspects(chartA.value, chartB.value) : [])
+const aspects = computed(() => chartA.value && chartB.value ? synastryAspects(chartA.value, chartB.value, settings.aspectOptions) : [])
 
 const compareWith = ref(session.comparePersonId)
 const onChange = (e) => { session.setCompare(e.target.value); compareWith.value = e.target.value }
@@ -44,7 +44,7 @@ section.synastry-page(data-testid='synastry-page')
     ComparisonInsightPanel.mb-6(:aspects='aspects' mode='synastry')
     .grid.gap-6(class='lg:grid-cols-2')
       .ui-panel
-        Biwheel(:natal='chartA' :overlay='chartB' v-if='chartA && chartB')
+        Biwheel(:natal='chartA' :overlay='chartB' :aspect-options='settings.aspectOptions' v-if='chartA && chartB')
       .ui-panel(v-if='aspects.length')
         AspectTable(:aspects='aspects')
 </template>

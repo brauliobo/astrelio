@@ -9,6 +9,7 @@ import AppLogo from './components/AppLogo.vue'
 
 const { t } = useI18n()
 const settings = useSettingsStore()
+settings.normalize()
 const people = usePeopleStore()
 const session = useSessionStore()
 const activePerson = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
@@ -20,6 +21,9 @@ const links = computed(() => [
   { to: '/transits',     label: t('nav.transits'),     id: 'transits' },
   { to: '/progressions', label: t('nav.progressions'), id: 'progressions' },
   { to: '/solar-return', label: t('nav.solar_return'), id: 'solar-return' },
+  { to: '/profections',  label: t('techniques.nav.profections'), id: 'profections' },
+  { to: '/solar-arc',    label: t('techniques.nav.solar_arc'), id: 'solar-arc' },
+  { to: '/lunar-return', label: t('techniques.nav.lunar_return'), id: 'lunar-return' },
   { to: '/synastry',     label: t('nav.synastry'),     id: 'synastry' },
   { to: '/settings',     label: t('nav.settings'),     id: 'settings' }
 ])
@@ -27,7 +31,12 @@ const links = computed(() => [
 
 <template lang="pug">
 .app-shell.relative.min-h-dvh.flex.flex-col
-  SkyBackground.fixed.inset-0.z-0(:person='activePerson' v-if='settings.skyEnabled')
+  SkyBackground.fixed.inset-0.z-0(
+    :person='activePerson'
+    :zodiac='settings.zodiac'
+    :house-system='settings.houseSystem'
+    v-if='settings.skyEnabled'
+  )
   header.sticky.top-0.z-20.backdrop-blur-md.border-b(class='bg-night/70 border-white/5')
     nav.mx-auto.max-w-6xl.px-4.py-3.flex.items-center.gap-3.overflow-x-auto
       RouterLink(to='/' data-testid='brand' aria-label='Astrelio')

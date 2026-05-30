@@ -2,6 +2,13 @@ import { norm360 } from './zodiac.js'
 
 const D2R = Math.PI / 180
 const R2D = 180 / Math.PI
+const VERY_SMALL = 1e-10
+
+const sind = (deg) => Math.sin(deg * D2R)
+const cosd = (deg) => Math.cos(deg * D2R)
+const tand = (deg) => Math.tan(deg * D2R)
+const asind = (x) => Math.asin(x) * R2D
+const atand = (x) => Math.atan(x) * R2D
 
 const obliquity = (jd) => {
   const T = (jd - 2451545) / 36525
@@ -34,6 +41,37 @@ const ascMcRaw = (jd, lat, lon) => {
 
 const longitudeFromRightAscension = (ra, obl) =>
   norm360(Math.atan2(Math.sin(ra) / Math.cos(obl), Math.cos(ra)) * R2D)
+
+const eclipticCrossing = (x, poleHeight, sinObl, cosObl) => {
+  const xDeg = norm360(x)
+  const quadrant = Math.floor(xDeg / 90) + 1
+  if (Math.abs(90 - poleHeight) < VERY_SMALL) return 180
+  if (Math.abs(90 + poleHeight) < VERY_SMALL) return 0
+
+  let crossing
+  if (quadrant === 1) {
+    crossing = eclipticCrossingQ1(xDeg, poleHeight, sinObl, cosObl)
+  } else if (quadrant === 2) {
+    crossing = 180 - eclipticCrossingQ1(180 - xDeg, -poleHeight, sinObl, cosObl)
+  } else if (quadrant === 3) {
+    crossing = 180 + eclipticCrossingQ1(xDeg - 180, -poleHeight, sinObl, cosObl)
+  } else {
+    crossing = 360 - eclipticCrossingQ1(360 - xDeg, poleHeight, sinObl, cosObl)
+  }
+  return norm360(Math.abs(crossing - 360) < VERY_SMALL ? 0 : crossing)
+}
+
+const eclipticCrossingQ1 = (x, poleHeight, sinObl, cosObl) => {
+  let cotLongitude = -tand(poleHeight) * sinObl + cosObl * cosd(x)
+  if (Math.abs(cotLongitude) < VERY_SMALL) cotLongitude = 0
+
+  const sinX = Math.abs(sind(x)) < VERY_SMALL ? 0 : sind(x)
+  if (sinX === 0) return cotLongitude < 0 ? 180 - VERY_SMALL : VERY_SMALL
+  if (cotLongitude === 0) return sinX < 0 ? -90 : 90
+
+  const crossing = atand(sinX / cotLongitude)
+  return crossing < 0 ? 180 + crossing : crossing
+}
 
 const declinationFromLongitude = (lambda, obl) =>
   Math.asin(Math.sin(lambda) * Math.sin(obl))
@@ -107,10 +145,34 @@ const placidusCusps = (jd, lat, lon) => {
   return cusps
 }
 
-/** Koch: approximated via Porphyry; precise port can replace this. */
+/** Koch / Birthplace houses, ported from the Swiss Ephemeris cusp formula. */
 const kochCusps = (jd, lat, lon) => {
   const { ascendant, mc } = ascMcRaw(jd, lat, lon)
-  return porphyryCusps(ascendant, mc)
+  const oblDeg = obliquity(jd)
+  if (Math.abs(lat) >= 90 - oblDeg) return porphyryCusps(ascendant, mc)
+
+  const armcDeg = lst(jd, lon)
+  const sinObl = sind(oblDeg)
+  const cosObl = cosd(oblDeg)
+  const sinA = Math.max(-1, Math.min(1, sind(mc) * sinObl / cosd(lat)))
+  const cosA = Math.sqrt(1 - sinA * sinA)
+  const c = atand(tand(lat) / cosA)
+  const ad3 = asind(sind(c) * sinA) / 3
+
+  const cusps = new Array(12)
+  cusps[0] = ascendant
+  cusps[9] = mc
+  cusps[10] = eclipticCrossing(armcDeg + 30 - 2 * ad3, lat, sinObl, cosObl)
+  cusps[11] = eclipticCrossing(armcDeg + 60 - ad3, lat, sinObl, cosObl)
+  cusps[1] = eclipticCrossing(armcDeg + 120 + ad3, lat, sinObl, cosObl)
+  cusps[2] = eclipticCrossing(armcDeg + 150 + 2 * ad3, lat, sinObl, cosObl)
+  cusps[3] = norm360(mc + 180)
+  cusps[4] = norm360(cusps[10] + 180)
+  cusps[5] = norm360(cusps[11] + 180)
+  cusps[6] = norm360(ascendant + 180)
+  cusps[7] = norm360(cusps[1] + 180)
+  cusps[8] = norm360(cusps[2] + 180)
+  return cusps
 }
 
 const regiomontanusCusps = (jd, lat, lon) => {

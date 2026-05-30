@@ -6,10 +6,28 @@ export const useSettingsStore = defineStore('settings', {
     houseSystem: 'placidus',
     zodiac:      'tropical',
     skyEnabled:  true,
-    theme:       'dark'
+    theme:       'dark',
+    aspectSet:   'all',
+    orbScale:    1,
+    applyingOnly: false,
+    includeModernPlanets: true
   }),
+  getters: {
+    aspectOptions: (state) => ({
+      aspectSet: state.aspectSet,
+      orbScale: state.orbScale,
+      applyingOnly: state.applyingOnly,
+      includeModernPlanets: state.includeModernPlanets,
+    })
+  },
   actions: {
     setLocale(l) { this.locale = l; localStorage.setItem('astrelio_locale', l) },
+    normalize() {
+      this.aspectSet ??= 'all'
+      this.orbScale ??= 1
+      this.applyingOnly ??= false
+      this.includeModernPlanets ??= true
+    },
     reset() {
       this.$reset()
       localStorage.removeItem('astrelio_locale')

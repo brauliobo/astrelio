@@ -34,7 +34,15 @@ export const seedSettings = async (page, locale = 'pt-BR') => {
   await page.addInitScript((loc) => {
     if (!localStorage.getItem('astrelio_locale'))   localStorage.setItem('astrelio_locale', loc)
     if (!localStorage.getItem('astrelio_settings')) localStorage.setItem('astrelio_settings', JSON.stringify({
-      locale: loc, houseSystem: 'placidus', zodiac: 'tropical', skyEnabled: false, theme: 'dark'
+      locale: loc,
+      houseSystem: 'placidus',
+      zodiac: 'tropical',
+      skyEnabled: false,
+      theme: 'dark',
+      aspectSet: 'all',
+      orbScale: 1,
+      applyingOnly: false,
+      includeModernPlanets: true
     }))
   }, locale)
 }

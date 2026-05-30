@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { ianaOffsetMinutes, inferIanaZone, localToUtcMs, offsetMinutesForPerson } from '../../src/lib/astro/timezones.js'
+import {
+  ianaOffsetMinutes,
+  inferIanaZone,
+  localToUtcMs,
+  offsetMinutesForPerson,
+  resolveIanaLocalTime,
+} from '../../src/lib/astro/timezones.js'
 
 describe('timezones', () => {
   it('resolves historical Brazil DST with IANA data', () => {
@@ -17,6 +23,27 @@ describe('timezones', () => {
 
   it('throws instead of silently using UTC for invalid IANA zones', () => {
     expect(() => ianaOffsetMinutes('2024-01-01T12:00', 'America/Not_A_Zone')).toThrow(/invalid IANA timezone/)
+  })
+
+  it('throws for invalid ISO local times', () => {
+    expect(() => ianaOffsetMinutes('not-a-date', 'America/New_York')).toThrow(/invalid ISO/)
+  })
+
+  it('rejects nonexistent local times during spring-forward gaps', () => {
+    expect(() => ianaOffsetMinutes('2024-03-10T02:30', 'America/New_York')).toThrow(/nonexistent local time/)
+  })
+
+  it('handles ambiguous local times during fall-back overlaps explicitly', () => {
+    expect(ianaOffsetMinutes('2024-11-03T01:30', 'America/New_York')).toBe(-240)
+    expect(ianaOffsetMinutes('2024-11-03T01:30', 'America/New_York', { disambiguation: 'later' })).toBe(-300)
+    expect(() => {
+      resolveIanaLocalTime('2024-11-03T01:30', 'America/New_York', { disambiguation: 'reject' })
+    }).toThrow(/ambiguous local time/)
+  })
+
+  it('resolves half-hour IANA zones', () => {
+    expect(ianaOffsetMinutes('2024-07-01T12:00', 'Asia/Kolkata')).toBe(330)
+    expect(ianaOffsetMinutes('2024-07-01T12:00', 'Australia/Adelaide')).toBe(570)
   })
 
   it('converts local civil time and numeric offset to UTC milliseconds', () => {
