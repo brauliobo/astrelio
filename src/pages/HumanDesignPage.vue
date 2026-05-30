@@ -9,6 +9,7 @@ import { buildHumanDesignTransitChart, humanDesignTeamAnalysis, humanDesignTrans
 import { humanDesignValueLabel } from '../lib/human-design/labels.js'
 import ActivationTable from '../components/human-design/ActivationTable.vue'
 import CircuitStreamPanel from '../components/human-design/CircuitStreamPanel.vue'
+import CorrelationPanel from '../components/human-design/CorrelationPanel.vue'
 import DetailTables from '../components/human-design/DetailTables.vue'
 import GateExplorer from '../components/human-design/GateExplorer.vue'
 import IncarnationCrossPanel from '../components/human-design/IncarnationCrossPanel.vue'
@@ -32,13 +33,44 @@ const selectedTeamIds = ref([])
 
 const person = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
 const chart = computed(() => modalityChart('humanDesign', person.value))
+const strategyKeys = {
+  'Wait to respond': 'wait_to_respond',
+  'Wait to respond, then inform': 'wait_to_respond_inform',
+  'Inform before acting': 'inform_before_acting',
+  'Wait for recognition and invitation': 'wait_for_invitation',
+  'Wait through the lunar cycle': 'wait_lunar_cycle',
+}
+const crossGeometryKeys = {
+  'Right Angle': 'right_angle',
+  Juxtaposition: 'juxtaposition',
+  'Left Angle': 'left_angle',
+}
+const crossNameKeys = {
+  Revolution: 'revolution',
+}
+const translatedStrategy = strategy => {
+  const key = strategyKeys[strategy]
+  return key ? t(`human_design.strategies.${key}`) : strategy
+}
+const translatedCrossName = cross => {
+  if (!cross?.name) return '—'
+  const geometryKey = crossGeometryKeys[cross.geometry]
+  if (!geometryKey) return cross.name
+  const rawName = cross.name.replace(`${cross.geometry} Cross of `, '')
+  const nameKey = crossNameKeys[rawName]
+  const translatedName = nameKey ? t(`human_design.cross_names.${nameKey}`) : rawName
+  return t('human_design.cross_name_format', {
+    geometry: t(`human_design.cross_geometries.${geometryKey}`),
+    name: translatedName,
+  })
+}
 const summaryRows = computed(() => chart.value ? [
   { label: t('human_design.type'), value: humanDesignValueLabel(t, 'type', chart.value.type), testId: 'hd-type' },
   { label: t('human_design.authority'), value: humanDesignValueLabel(t, 'authority', chart.value.authority), testId: 'hd-authority' },
   { label: t('human_design.profile'), value: chart.value.profile, testId: 'hd-profile' },
   { label: t('human_design.definition'), value: humanDesignValueLabel(t, 'definition', chart.value.definition), testId: 'hd-definition' },
-  { label: t('human_design.strategy'), value: chart.value.strategy, testId: 'hd-strategy' },
-  { label: t('human_design.incarnation_cross'), value: chart.value.incarnationCross?.name || '—', testId: 'hd-cross' },
+  { label: t('human_design.strategy'), value: translatedStrategy(chart.value.strategy), testId: 'hd-strategy' },
+  { label: t('human_design.incarnation_cross'), value: translatedCrossName(chart.value.incarnationCross), testId: 'hd-cross' },
 ] : [])
 
 const tabs = computed(() => [
@@ -51,6 +83,7 @@ const tabs = computed(() => [
   { id: 'variables', label: t('human_design.tabs.variables') },
   { id: 'cross', label: t('human_design.tabs.cross') },
   { id: 'transits', label: t('human_design.tabs.transits') },
+  { id: 'correlations', label: t('human_design.tabs.correlations') },
   { id: 'team', label: t('human_design.tabs.team') },
 ])
 
@@ -101,14 +134,14 @@ section.human-design-page(data-testid='human-design-page')
         p.text-xs.text-slate-400.mt-1 {{ t('human_design.subtitle') }}
       ModalityRouteSwitch(active='humanDesign')
 
-    .grid.gap-3(class='sm:grid-cols-2 lg:grid-cols-3')
+    .grid.gap-2(class='sm:grid-cols-2 lg:grid-cols-6')
       .rounded.border.p-3(
         v-for='row in summaryRows'
         :key='row.testId'
         class='border-white/10 bg-white/5'
       )
         .text-xs.uppercase.tracking-wide.text-slate-500 {{ row.label }}
-        .mt-1.text-lg.font-semibold.text-slate-100(:data-testid='row.testId') {{ row.value }}
+        .mt-1.text-sm.font-semibold.leading-snug.text-slate-100(:data-testid='row.testId') {{ row.value }}
 
     .flex.flex-wrap.gap-1.rounded-lg.border.p-1(class='border-white/10 bg-white/5' data-testid='human-design-tabs')
       button.rounded-md.px-3.text-xs.font-medium(
@@ -130,7 +163,6 @@ section.human-design-page(data-testid='human-design-page')
         )
       VariableSummary(:variables='chart.variables')
       InsightPanel(:chart='chart')
-      ActivationTable(:chart='chart' :glyph-renderer='settings.planetGlyphRenderer')
 
     .ui-panel(v-else-if='activeTab === "bodygraph"')
       .grid.gap-5(class='xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.55fr)]')
@@ -180,6 +212,13 @@ section.human-design-page(data-testid='human-design-page')
         :connection='transitConnection'
         v-model:date-input='transitDateInput'
         @now='setTransitNow'
+      )
+
+    .ui-panel(v-else-if='activeTab === "correlations"')
+      CorrelationPanel(
+        :chart='chart'
+        :transit-chart='transitChart'
+        :transit-connection='transitConnection'
       )
 
     .ui-panel(v-else)

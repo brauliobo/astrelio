@@ -1,4 +1,6 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
+
 defineProps({
   analysis: { type: Object, default: null },
   people: { type: Array, default: () => [] },
@@ -6,6 +8,7 @@ defineProps({
 })
 
 const emit = defineEmits(['toggle'])
+const { t } = useI18n()
 const isSelected = (id, selectedIds) => selectedIds.includes(id)
 </script>
 
@@ -21,7 +24,7 @@ const isSelected = (id, selectedIds) => selectedIds.includes(id)
     ) {{ person.name }}
   .grid.gap-4(v-if='analysis' class='lg:grid-cols-2')
     section
-      h3.text-sm.font-semibold.text-slate-100.mb-3 Penta gates · {{ analysis.pentaPercent }}%
+      h3.text-sm.font-semibold.text-slate-100.mb-3 {{ t('human_design.penta_gates') }} · {{ analysis.pentaPercent }}%
       .grid.grid-cols-2.gap-2(class='sm:grid-cols-3')
         .rounded.border.p-2.text-xs(
           v-for='item in analysis.pentaCoverage'
@@ -29,9 +32,9 @@ const isSelected = (id, selectedIds) => selectedIds.includes(id)
           :class='item.covered ? "border-amber-300/30 bg-amber-300/10 text-amber-100" : "border-white/10 bg-white/5 text-slate-400"'
         )
           .font-semibold {{ item.gate }} · {{ item.name }}
-          .mt-1 {{ item.owners.length ? `${item.owners.length} member(s)` : 'open' }}
+          .mt-1 {{ item.owners.length ? t('human_design.member_count', { count: item.owners.length }) : t('human_design.open_state') }}
     section
-      h3.text-sm.font-semibold.text-slate-100.mb-3 Composite channels
+      h3.text-sm.font-semibold.text-slate-100.mb-3 {{ t('human_design.composite_channels') }}
       .grid.gap-2.text-xs
         .rounded.border.p-2(
           v-for='channel in analysis.compositeChannels'
@@ -40,5 +43,5 @@ const isSelected = (id, selectedIds) => selectedIds.includes(id)
         )
           .text-slate-100 {{ channel.channel }} · {{ channel.name }}
           .text-slate-400 {{ channel.centers.join(' / ') }}
-        p.text-slate-400(v-if='!analysis.compositeChannels.length') No team composite channels yet.
+        p.text-slate-400(v-if='!analysis.compositeChannels.length') {{ t('human_design.no_team_channels') }}
 </template>

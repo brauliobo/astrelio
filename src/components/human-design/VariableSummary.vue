@@ -1,7 +1,19 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
+
 defineProps({
   variables: { type: Array, default: () => [] },
 })
+
+const { t } = useI18n()
+const variableLabel = variable => t(`human_design.variable_labels.${variable.id}.label`)
+const variableSubtitle = variable => t(`human_design.variable_labels.${variable.id}.subtitle`)
+const variableColorLabel = variable => {
+  if (!variable?.id || !variable?.color) return variable?.colorLabel || variable?.code || ''
+  const key = `human_design.variable_colors.${variable.id}.${variable.color}`
+  const translated = t(key)
+  return translated === key ? variable.colorLabel || variable.code : translated
+}
 </script>
 
 <template lang="pug">
@@ -14,20 +26,20 @@ defineProps({
     )
       .flex.items-center.justify-between.gap-2
         div
-          h3.text-sm.font-semibold.text-slate-100 {{ variable.label }}
-          p.text-xs.text-slate-500 {{ variable.subtitle }}
+          h3.text-sm.font-semibold.text-slate-100 {{ variableLabel(variable) }}
+          p.text-xs.text-slate-500 {{ variableSubtitle(variable) }}
         .hd-variable__arrow(:class='variable.orientation') {{ variable.orientation === 'left' ? '‹' : '›' }}
       .mt-3.grid.grid-cols-3.gap-2.text-xs
         div
-          .text-slate-500 Color
+          .text-slate-500 {{ t('human_design.color') }}
           .text-slate-200 {{ variable.color || '-' }}
         div
-          .text-slate-500 Tone
+          .text-slate-500 {{ t('human_design.tone') }}
           .text-slate-200 {{ variable.tone || '-' }}
         div
-          .text-slate-500 Base
+          .text-slate-500 {{ t('human_design.base') }}
           .text-slate-200 {{ variable.base || '-' }}
-      p.mt-3.text-xs.leading-5.text-slate-400 {{ variable.colorLabel || variable.code }}
+      p.mt-3.text-xs.leading-5.text-slate-400 {{ variableColorLabel(variable) }}
 </template>
 
 <style scoped>

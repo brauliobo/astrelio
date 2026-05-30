@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { activationCode } from '../../lib/human-design/activations.js'
 import DetailTables from './DetailTables.vue'
 
@@ -10,6 +11,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:dateInput', 'now'])
+const { t } = useI18n()
 const activationRows = computed(() => props.connection?.activationWatch || [])
 const completedChannels = computed(() => props.connection?.completedChannels || [])
 const activatedNatalGates = computed(() => props.connection?.activatedNatalGates || [])
@@ -31,20 +33,20 @@ const changeActivationCode = activation => activation ? activationCode(activatio
       class='bg-white/10 hover:bg-white/15'
       @click='emit("now")'
       data-testid='hd-transit-now'
-    ) Now
+    ) {{ t('human_design.now') }}
   .grid.gap-4(class='lg:grid-cols-2')
     section
-      h3.text-sm.font-semibold.text-slate-100.mb-3 Activation watch
+      h3.text-sm.font-semibold.text-slate-100.mb-3 {{ t('human_design.activation_watch') }}
       .overflow-x-auto
         table.w-full.text-sm
           thead.text-xs.text-slate-500
             tr.border-b(class='border-white/10')
-              th.py-2.pr-3.text-left Planet
-              th.py-2.px-3.text-left Code
-              th.py-2.px-3.text-left Gate
-              th.py-2.px-3.text-left Color
-              th.py-2.px-3.text-left Tone
-              th.py-2.pl-3.text-left Base
+              th.py-2.pr-3.text-left {{ t('human_design.planet') }}
+              th.py-2.px-3.text-left {{ t('human_design.code') }}
+              th.py-2.px-3.text-left {{ t('human_design.gate') }}
+              th.py-2.px-3.text-left {{ t('human_design.color') }}
+              th.py-2.px-3.text-left {{ t('human_design.tone') }}
+              th.py-2.pl-3.text-left {{ t('human_design.base') }}
           tbody.divide-y(class='divide-white/10')
             tr(v-for='activation in activationRows' :key='activation.planet')
               td.py-2.pr-3.text-slate-100 {{ activation.planet }}
@@ -54,10 +56,10 @@ const changeActivationCode = activation => activation ? activationCode(activatio
               td.py-2.px-3.text-slate-400 {{ activation.tone || '—' }}
               td.py-2.pl-3.text-slate-400 {{ activation.base || '—' }}
     section
-      h3.text-sm.font-semibold.text-slate-100.mb-3 Composite effects
+      h3.text-sm.font-semibold.text-slate-100.mb-3 {{ t('human_design.composite_effects') }}
       .grid.gap-3.text-sm
         .rounded.border.p-3(class='border-white/10 bg-white/5')
-          .text-xs.uppercase.text-slate-500 Completed channels
+          .text-xs.uppercase.text-slate-500 {{ t('human_design.completed_channels') }}
           .mt-2.flex.flex-wrap.gap-2
             span.rounded-full.px-2.py-1.text-xs(
               v-for='channel in completedChannels'
@@ -66,7 +68,7 @@ const changeActivationCode = activation => activation ? activationCode(activatio
             ) {{ channel }}
             span.text-xs.text-slate-500(v-if='!completedChannels.length') —
         .rounded.border.p-3(class='border-white/10 bg-white/5')
-          .text-xs.uppercase.text-slate-500 Activated natal gates
+          .text-xs.uppercase.text-slate-500 {{ t('human_design.activated_natal_gates') }}
           .mt-2.flex.flex-wrap.gap-2
             span.rounded-full.px-2.py-1.text-xs(
               v-for='gate in activatedNatalGates'
@@ -74,7 +76,7 @@ const changeActivationCode = activation => activation ? activationCode(activatio
               class='bg-sky-300/10 text-sky-100'
             ) {{ gate }}
             span.text-xs.text-slate-500(v-if='!activatedNatalGates.length') —
-      h3.text-sm.font-semibold.text-slate-100.mt-5.mb-3 Next line changes
+      h3.text-sm.font-semibold.text-slate-100.mt-5.mb-3 {{ t('human_design.next_line_changes') }}
       .grid.gap-2
         .rounded.border.p-2.text-xs(
           v-for='change in connection?.nextChanges?.slice(0, 8)'

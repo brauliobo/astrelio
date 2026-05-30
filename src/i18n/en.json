@@ -165,6 +165,90 @@
     "cross_direction": "Cross direction",
     "cross_direction_note": "This summarizes the four Sun/Earth anchors as structural metadata; interpretation text remains original and non-deterministic.",
     "cross_unavailable": "Incarnation cross data is not available for this chart.",
+    "color": "Color",
+    "tone": "Tone",
+    "base": "Base",
+    "line": "Line",
+    "lines": "Lines",
+    "state": "State",
+    "active_gates": "Active gates",
+    "theme": "Theme",
+    "channel": "Channel",
+    "circuit": "Circuit",
+    "stream": "Stream",
+    "source": "Source",
+    "defined": "Defined",
+    "open_state": "Open",
+    "now": "Now",
+    "activation_watch": "Activation watch",
+    "composite_effects": "Composite effects",
+    "completed_channels": "Completed channels",
+    "activated_natal_gates": "Activated natal gates",
+    "next_line_changes": "Next line changes",
+    "penta_gates": "Penta gates",
+    "member_count": "{count} member(s)",
+    "no_team_channels": "No team composite channels yet.",
+    "orientations": {
+      "left": "Left",
+      "right": "Right",
+      "unknown": "Unknown"
+    },
+    "strategies": {
+      "wait_to_respond": "Wait to respond",
+      "wait_to_respond_inform": "Wait to respond, then inform",
+      "inform_before_acting": "Inform before acting",
+      "wait_for_invitation": "Wait for recognition and invitation",
+      "wait_lunar_cycle": "Wait through the lunar cycle"
+    },
+    "cross_geometries": {
+      "right_angle": "Right Angle Cross",
+      "juxtaposition": "Juxtaposition Cross",
+      "left_angle": "Left Angle Cross"
+    },
+    "cross_names": {
+      "revolution": "Revolution"
+    },
+    "cross_name_format": "{geometry} of {name}",
+    "variable_labels": {
+      "digestion": { "label": "Digestion", "subtitle": "Determination" },
+      "environment": { "label": "Environment", "subtitle": "Environment" },
+      "motivation": { "label": "Motivation", "subtitle": "Awareness" },
+      "perspective": { "label": "Perspective", "subtitle": "View" }
+    },
+    "variable_colors": {
+      "digestion": {
+        "1": "Appetite",
+        "2": "Taste",
+        "3": "Thirst",
+        "4": "Touch",
+        "5": "Sound",
+        "6": "Light"
+      },
+      "environment": {
+        "1": "Caves",
+        "2": "Markets",
+        "3": "Kitchens",
+        "4": "Mountains",
+        "5": "Valleys",
+        "6": "Shores"
+      },
+      "motivation": {
+        "1": "Fear",
+        "2": "Hope",
+        "3": "Desire",
+        "4": "Need",
+        "5": "Guilt",
+        "6": "Innocence"
+      },
+      "perspective": {
+        "1": "Survival",
+        "2": "Possibility",
+        "3": "Power",
+        "4": "Wanting",
+        "5": "Probability",
+        "6": "Personal"
+      }
+    },
     "tabs": {
       "overview": "Overview",
       "bodygraph": "Bodygraph",
@@ -175,7 +259,45 @@
       "variables": "Variables",
       "cross": "Cross",
       "transits": "Transits",
+      "correlations": "Correlations",
       "team": "Team"
+    },
+    "correlations": {
+      "title": "Correlation workspace",
+      "note": "Compact lenses that connect gates, lines, planets, variables, relationships, and transits without copying source commentary.",
+      "clean_room_notice": "Reference-book structure is used only for terms and organization. These correlations are original, non-medical, and should be read as pattern prompts.",
+      "no_data": "No correlation data is available yet.",
+      "active_gates": "Active gates",
+      "defined_channels": "Channels",
+      "transit_hits": "Transit hits",
+      "completed_channels": "Completions",
+      "diary": "Gate-to-event diary",
+      "line_pattern": "Line pattern",
+      "planet_weighting": "Planet weighting",
+      "harmonic_completion": "Harmonic completion",
+      "circuit_balance": "Circuit balance",
+      "cross_resonance": "Cross resonance",
+      "variable_consistency": "Variable consistency",
+      "relationship_overlays": "Relationship overlays",
+      "transit_theme_clustering": "Transit theme clustering",
+      "astrology_bridge": "Astrology bridge",
+      "diary_item": "{center}: journal repeated events against gates {gates}.",
+      "line_pattern_item": "Line {line}: {count} activation(s), gates {gates}.",
+      "planet_weight_item": "{planet}: gate {gate}.{line}, weight {weight}.",
+      "transit_completion_item": "Current transit completes channel {channel}.",
+      "harmonic_item": "Gate {gate} watches harmonic {harmonic} for channel {channel}.",
+      "circuit_item": "{circuit}: {count} channel(s); streams {streams}.",
+      "cross_name_item": "{name}.",
+      "cross_gate_item": "Cross gates: {gates}.",
+      "cross_channel_item": "{count} defined channel(s) touch the cross gates.",
+      "cross_transit_item": "Current transits activate cross gate(s): {gates}.",
+      "variable_orientation_item": "Orientation mix: {left} left, {right} right.",
+      "variable_item": "{label}: {orientation}, color {color}, tone {tone}, base {base}.",
+      "relationship_open_item": "Open-center overlay focus: {centers}.",
+      "relationship_hanging_item": "Relationship charts should watch harmonic completions for gates {gates}.",
+      "relationship_note_item": "Pair overlays can compare open centers, hanging gates, cross gates, and repeated lines.",
+      "transit_cluster_item": "{center}: {count} current transit activation(s).",
+      "astrology_bridge_item": "{planet}: pair zodiac transit/aspect context with Human Design code {code} at gate {gate}."
     },
     "types": {
       "generator": "Generator",

@@ -125,13 +125,13 @@ watch(gates, value => {
               td.py-2.px-3.text-slate-400 {{ activation.planetMeaning }}
               td.py-2.pl-3.text-slate-400
                 template(v-if='activation.mandala')
-                  | Gate {{ activation.mandala.gateDegrees }}° · Line {{ activation.mandala.lineDegrees }}°
+                  | {{ t('human_design.gate') }} {{ activation.mandala.gateDegrees }}° · {{ t('human_design.line') }} {{ activation.mandala.lineDegrees }}°
                 template(v-else) —
 
       details.mt-4.rounded.border.p-3(class='border-white/10')
         summary.cursor-pointer.text-sm.font-medium.text-slate-200 {{ t('human_design.exaltation_lens') }}
         .grid.gap-2.mt-3.text-xs.text-slate-400
           p(v-for='line in lineRows' :key='line.line')
-            span.text-slate-200 Line {{ line.line }}:
+            span.text-slate-200 {{ t('human_design.line') }} {{ line.line }}:
             |  {{ line.exaltationTheme || line.summary }} / {{ line.detrimentTheme || t('human_design.metadata_pending') }}
 </template>

@@ -1,7 +1,16 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
+
 defineProps({
   variables: { type: Array, default: () => [] },
 })
+
+const { t } = useI18n()
+const variableLabel = variable => {
+  const key = `human_design.variable_labels.${variable.id}.label`
+  const translated = t(key)
+  return translated === key ? variable.label : translated
+}
 
 const positionClass = {
   digestion: 'top-left',
@@ -20,7 +29,7 @@ g(data-testid='hd-variable-arrows')
     :data-variable='variable.id'
     :data-orientation='variable.orientation'
   )
-    title {{ variable.label }} · {{ variable.orientation }}
+    title {{ variableLabel(variable) }} · {{ t(`human_design.orientations.${variable.orientation}`) }}
     path(
       v-if='variable.orientation === "left"'
       d='M18 8 L4 18 L18 28'
@@ -54,18 +63,18 @@ g(data-testid='hd-variable-arrows')
 }
 
 .hd-variable-arrow.top-left {
-  transform: translate(424px, 252px);
+  transform: translate(350px, 252px);
 }
 
 .hd-variable-arrow.bottom-left {
-  transform: translate(424px, 304px);
+  transform: translate(350px, 310px);
 }
 
 .hd-variable-arrow.top-right {
-  transform: translate(562px, 252px);
+  transform: translate(642px, 252px);
 }
 
 .hd-variable-arrow.bottom-right {
-  transform: translate(562px, 304px);
+  transform: translate(642px, 310px);
 }
 </style>
