@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import BodygraphCore from '../../src/components/human-design/BodygraphCore.vue'
 import BodygraphChannels from '../../src/components/human-design/BodygraphChannels.vue'
 import { CHANNEL_CENTERS } from '../../src/lib/human-design/constants.js'
-import { channelCurve, channelSegments, gateSegmentCurve } from '../../src/components/human-design/bodygraphChannelGeometry.js'
+import { channelCurve, channelSegments, gateLaneStrokeCurve, gateSegmentCurve } from '../../src/components/human-design/bodygraphChannelGeometry.js'
 import en from '../../src/i18n/en.json'
 import ptBR from '../../src/i18n/pt-BR.json'
 
@@ -38,8 +38,6 @@ const definedGatePath = (wrapper, gate) =>
   definedPaths(wrapper).find(path => Number(path.attributes('data-gate')) === gate)
 const definedGateParts = (wrapper, gate) =>
   definedPaths(wrapper).filter(path => Number(path.attributes('data-gate')) === gate)
-const gateSplitClips = (wrapper, gate) =>
-  wrapper.findAll(`[data-testid="bodygraph-split-clip"][data-gate="${gate}"]`)
 const definedGates = wrapper =>
   definedPaths(wrapper).map(path => Number(path.attributes('data-gate'))).sort((a, b) => a - b)
 
@@ -152,30 +150,41 @@ describe('Human Design bodygraph visual painting', () => {
     }), { visualTheme: 'light' })
 
     const gate28 = definedGatePath(wrapper, 28)
-    expect(gate28.attributes('fill')).toBe('#dd4f52')
-    expect(definedGateParts(wrapper, 28).map(path => path.attributes('fill'))).toEqual(['#dd4f52', '#111111'])
+    expect(gate28.attributes('stroke')).toBe('#dd4f52')
+    expect(definedGateParts(wrapper, 28).map(path => path.attributes('stroke'))).toEqual(['#dd4f52', '#111111'])
     expect(definedGatePath(wrapper, 38).attributes('fill')).toBe('#dd4f52')
   })
 
-  it('splits gate 28 channel paint into red and personality contrast halves like the marker', () => {
+  it('paints gate 28 both activations as two full parallel lanes', () => {
     const wrapper = mountChannels(chartFor({
       channels: ['28-38'],
       designGates: [28, 38],
       personalityGates: [28],
     }))
     const paths = definedGateParts(wrapper, 28)
-    const clips = gateSplitClips(wrapper, 28)
-    const rects = clips.map(clip => clip.get('rect'))
 
     expect(paths).toHaveLength(2)
-    expect(paths.map(path => path.attributes('fill'))).toEqual(['#dd4f52', '#f8fafc'])
+    expect(paths.map(path => path.attributes('stroke'))).toEqual(['#dd4f52', '#f8fafc'])
     expect(paths.map(path => path.attributes('data-part'))).toEqual(['design', 'personality'])
-    expect(paths.every(path => path.attributes('clip-path')?.startsWith('url(#clip-'))).toBe(true)
-    expect(clips).toHaveLength(2)
-    expect(clips.every(clip => clip.attributes('data-axis') === 'x')).toBe(true)
-    expect(rects[0].attributes('y')).toBe(rects[1].attributes('y'))
-    expect(rects[0].attributes('height')).toBe(rects[1].attributes('height'))
-    expect(Number(rects[0].attributes('x'))).toBeLessThan(Number(rects[1].attributes('x')))
+    expect(paths.map(path => path.attributes('d'))).toEqual([gateLaneStrokeCurve[28], gateLaneStrokeCurve[28]])
+    expect(paths.map(path => path.attributes('data-axis'))).toEqual(['x', 'x'])
+    expect(paths.map(path => path.attributes('fill'))).toEqual(['none', 'none'])
+    expect(paths.every(path => path.attributes('stroke-linecap') === 'butt')).toBe(true)
+    expect(paths.every(path => path.attributes('clip-path'))).toBe(false)
+    expect(paths[0].attributes('transform')).toMatch(/^translate\(-/)
+    expect(paths[1].attributes('transform')).toMatch(/^translate\(/)
+    expect(paths[0].attributes('transform')).not.toBe(paths[1].attributes('transform'))
+  })
+
+  it('paints open channels with one opaque inactive color so overlapping paths do not darken', () => {
+    const wrapper = mountChannels(chartFor({
+      channels: [],
+      designGates: [],
+      personalityGates: [],
+    }))
+
+    expect(basePaths(wrapper).every(path => path.attributes('fill') === '#303039')).toBe(true)
+    expect(basePaths(wrapper).every(path => path.attributes('fill-opacity') === '1')).toBe(true)
   })
 
   it('uses the reference brown Solar Plexus center and muted center number colors', () => {

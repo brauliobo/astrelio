@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { CHANNEL_CENTERS } from '../../lib/human-design/constants.js'
 import BodygraphChannelLayer from './BodygraphChannelLayer.vue'
-import { channelCurve, channelSegments, gateSegmentBounds, gateSegmentCurve } from './bodygraphChannelGeometry.js'
+import { channelCurve, channelSegments, gateLaneStrokeCurve, gateSegmentBounds, gateSegmentCurve } from './bodygraphChannelGeometry.js'
 import { activationTone, humanDesignPalette } from './humanDesignVisualTheme.js'
 
 const props = defineProps({
@@ -63,7 +63,7 @@ const channelLines = computed(() =>
       fill,
       highlightFill: defined ? fill : palette.value.highlight,
       tone: defined ? tone.kind : 'open',
-      opacity: defined ? 0.96 : props.openOpacity,
+      opacity: defined ? 0.96 : 1,
     }
   }).filter(item => item.d)
 )
@@ -86,6 +86,7 @@ const activeGateSegments = computed(() =>
         defined: true,
         fill: tone.fill,
         highlightFill: tone.fill,
+        laneD: gateLaneStrokeCurve[gate],
         tone: tone.kind,
         parts: tone.parts,
         splitBounds: gateSegmentBounds[gate],

@@ -9,7 +9,7 @@ export const humanDesignPalette = (mode = 'dark') => {
     contrastText,
     design: '#dd4f52',
     designText: '#fff7f7',
-    inactiveChannel: light ? '#d1d5db' : '#1b1b1f',
+    inactiveChannel: light ? '#d1d5db' : '#303039',
     inactiveGate: 'transparent',
     muted: light ? '#6b7280' : '#55555a',
     highlight: light ? '#111111' : '#f8fafc',

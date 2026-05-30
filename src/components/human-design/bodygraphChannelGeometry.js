@@ -121,6 +121,10 @@ const gateSegmentSourcePaths = {
   '64': 'M918,249.294H945V274.294H918Z',
 }
 
+const gateLaneStrokeSourcePaths = {
+  '28': 'M516,1599.328 C532.16,1640.895 558.056,1686.651 598.238,1728.797 C610.668,1741.823 623.229,1753.421 635.701,1763.651',
+}
+
 const fmt = value => Number.parseFloat(value.toFixed(3)).toString()
 const absoluteX = value => fmt(value * SOURCE_SCALE + SOURCE_OFFSET_X)
 const absoluteY = value => fmt(value * SOURCE_SCALE + SOURCE_OFFSET_Y)
@@ -183,12 +187,97 @@ export const gateSegmentCurve = Object.fromEntries(
   Object.entries(gateSegmentSourcePaths).map(([gate, path]) => [Number(gate), transformSourcePath(path)])
 )
 
+export const gateLaneStrokeCurve = Object.fromEntries(
+  Object.entries(gateLaneStrokeSourcePaths).map(([gate, path]) => [Number(gate), transformSourcePath(path)])
+)
+
+const isCommandToken = token => /^[a-zA-Z]$/.test(token)
+const isRelativeCommand = command => command === command.toLowerCase()
+
+const resolvedPoint = (current, x, y, relativeCommand) => ({
+  x: relativeCommand ? current.x + x : x,
+  y: relativeCommand ? current.y + y : y,
+})
+
 export const pathBounds = (path) => {
-  const values = tokenizePath(path).filter(token => !/^[a-zA-Z]$/.test(token)).map(Number)
+  const tokens = tokenizePath(path)
   const points = []
-  for (let index = 0; index < values.length - 1; index += 2) {
-    if (Number.isFinite(values[index]) && Number.isFinite(values[index + 1])) {
-      points.push({ x: values[index], y: values[index + 1] })
+  const addPoint = (point) => {
+    if (Number.isFinite(point.x) && Number.isFinite(point.y)) points.push(point)
+  }
+  let index = 0
+  let command = ''
+  let current = { x: 0, y: 0 }
+  let subpathStart = current
+
+  while (index < tokens.length) {
+    if (isCommandToken(tokens[index])) {
+      command = tokens[index]
+      index += 1
+    }
+
+    const upperCommand = command.toUpperCase()
+    const relativeCommand = isRelativeCommand(command)
+
+    if (upperCommand === 'Z') {
+      current = subpathStart
+      continue
+    }
+
+    while (index < tokens.length && !isCommandToken(tokens[index])) {
+      if (upperCommand === 'M' || upperCommand === 'L' || upperCommand === 'T') {
+        const point = resolvedPoint(current, Number(tokens[index]), Number(tokens[index + 1]), relativeCommand)
+        addPoint(point)
+        current = point
+        if (upperCommand === 'M') subpathStart = point
+        index += 2
+      } else if (upperCommand === 'H') {
+        const point = {
+          x: relativeCommand ? current.x + Number(tokens[index]) : Number(tokens[index]),
+          y: current.y,
+        }
+        addPoint(point)
+        current = point
+        index += 1
+      } else if (upperCommand === 'V') {
+        const point = {
+          x: current.x,
+          y: relativeCommand ? current.y + Number(tokens[index]) : Number(tokens[index]),
+        }
+        addPoint(point)
+        current = point
+        index += 1
+      } else if (upperCommand === 'C') {
+        const origin = current
+        const controlA = resolvedPoint(origin, Number(tokens[index]), Number(tokens[index + 1]), relativeCommand)
+        const controlB = resolvedPoint(origin, Number(tokens[index + 2]), Number(tokens[index + 3]), relativeCommand)
+        const point = resolvedPoint(origin, Number(tokens[index + 4]), Number(tokens[index + 5]), relativeCommand)
+        addPoint(controlA)
+        addPoint(controlB)
+        addPoint(point)
+        current = point
+        index += 6
+      } else if (upperCommand === 'S' || upperCommand === 'Q') {
+        const origin = current
+        const control = resolvedPoint(origin, Number(tokens[index]), Number(tokens[index + 1]), relativeCommand)
+        const point = resolvedPoint(origin, Number(tokens[index + 2]), Number(tokens[index + 3]), relativeCommand)
+        addPoint(control)
+        addPoint(point)
+        current = point
+        index += 4
+      } else if (upperCommand === 'A') {
+        const origin = current
+        const radiusX = Math.abs(Number(tokens[index]))
+        const radiusY = Math.abs(Number(tokens[index + 1]))
+        const point = resolvedPoint(origin, Number(tokens[index + 5]), Number(tokens[index + 6]), relativeCommand)
+        addPoint({ x: Math.min(origin.x, point.x) - radiusX, y: Math.min(origin.y, point.y) - radiusY })
+        addPoint({ x: Math.max(origin.x, point.x) + radiusX, y: Math.max(origin.y, point.y) + radiusY })
+        addPoint(point)
+        current = point
+        index += 7
+      } else {
+        break
+      }
     }
   }
 
