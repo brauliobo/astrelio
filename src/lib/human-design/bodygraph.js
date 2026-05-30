@@ -1,6 +1,7 @@
 import { localToJdUt, offsetMinutesForPerson } from '../astro/timezones.js'
 import { activationsForChart, channelKey, personalityDesignCharts } from './activations.js'
 import { CENTER_COORDS, CENTERS, CHANNEL_CENTERS, CHANNEL_CIRCUITS, HARMONIC_GATES } from './constants.js'
+import { deriveHumanDesignCorrelations } from './correlations.js'
 import { enrichHumanDesignChart } from './details.js'
 
 const sortedUnique = values => [...new Set(values)].sort()
@@ -110,7 +111,7 @@ export const deriveHumanDesignGraph = ({ personId, personName, birthJd, designJd
   const channels = channelsForGates(gates)
   const centers = centersForChannels(channels)
 
-  return enrichHumanDesignChart({
+  const enriched = enrichHumanDesignChart({
     personId,
     personName,
     birthJd,
@@ -131,6 +132,11 @@ export const deriveHumanDesignGraph = ({ personId, personName, birthJd, designJd
     designGates,
     circuits: circuitriesFor(channels),
   })
+
+  return {
+    ...enriched,
+    correlations: deriveHumanDesignCorrelations(enriched),
+  }
 }
 
 export const buildHumanDesignChart = (person) => {
@@ -160,6 +166,29 @@ export {
   humanDesignTeamAnalysis,
   humanDesignTransitConnection,
 } from './details.js'
+export {
+  bridgeAstrologyHumanDesign,
+  circuitStreamBalance,
+  deriveHumanDesignCorrelations,
+  harmonicCompletionTiming,
+  humanDesignAstrologyBridge,
+  humanDesignConnectionCorrelations,
+  humanDesignCircuitStreamBalance,
+  humanDesignEventDiaryCorrelations,
+  humanDesignEventCorrelations,
+  humanDesignHarmonicCompletionTiming,
+  humanDesignIncarnationCrossResonance,
+  humanDesignLinePatternAnalysis,
+  humanDesignPlanetGateWeighting,
+  humanDesignRelationshipActivationOverlay,
+  humanDesignTransitThemeClusters,
+  humanDesignTransitCorrelations,
+  humanDesignVariableConsistencyChecks,
+  incarnationCrossResonance,
+  linePatternAnalysis,
+  planetGateWeighting,
+  variableConsistencyChecks,
+} from './correlations.js'
 export {
   activationLibraryEntry,
   channelLibraryEntry,
