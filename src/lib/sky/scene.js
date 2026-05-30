@@ -3,6 +3,7 @@ import { msToJd } from '../astro/timezones.js'
 import { norm360 } from '../astro/zodiac.js'
 import { activationFromLongitude } from '../human-design/activations.js'
 import { mandalaAngleForActivation } from '../../components/human-design/humanDesignWheelGeometry.js'
+import { moonPhaseLighting, moonPhaseLitPoints } from './moonPhase.js'
 
 const STAR_COUNT = 520
 const CHART_SELECTOR = '[data-testid="chart-wheel-svg"]'
@@ -257,7 +258,9 @@ const drawPlanet = (ctx, cx, cy, radius, shiftedLongitude, planet, label, image 
   ctx.arc(point.x, point.y, planet.radius, 0, Math.PI * 2)
   ctx.fill()
 
-  if (image?.complete && image.naturalWidth > 0) {
+  if (planet.name === 'Moon') {
+    drawMoonPhaseImage(ctx, point, planet, image, planet.phaseFraction)
+  } else if (image?.complete && image.naturalWidth > 0) {
     drawPlanetImage(ctx, point, planet, image)
   } else {
     drawPlanetPhotoTexture(ctx, point, planet)
@@ -310,6 +313,70 @@ const drawPlanetImage = (ctx, point, planet, image) => {
     diameter,
     diameter
   )
+  ctx.restore()
+}
+
+const traceMoonPhasePath = (ctx, point, radius, phaseFraction) => {
+  const points = moonPhaseLitPoints(phaseFraction, radius * 2)
+  ctx.beginPath()
+  points.forEach((phasePoint, index) => {
+    const x = point.x - radius + phasePoint.x
+    const y = point.y - radius + phasePoint.y
+    if (index === 0) ctx.moveTo(x, y)
+    else ctx.lineTo(x, y)
+  })
+  ctx.closePath()
+}
+
+const drawMoonPhaseImage = (ctx, point, planet, image, phaseFraction = 0) => {
+  const r = planet.radius
+  const diameter = r * 2
+  const lighting = moonPhaseLighting(phaseFraction)
+  ctx.save()
+  ctx.beginPath()
+  ctx.arc(point.x, point.y, r, 0, Math.PI * 2)
+  ctx.clip()
+
+  if (image?.complete && image.naturalWidth > 0) {
+    const sourceSize = Math.min(image.naturalWidth, image.naturalHeight)
+    const sx = (image.naturalWidth - sourceSize) / 2
+    const sy = (image.naturalHeight - sourceSize) / 2
+    ctx.globalAlpha = 0.36
+    ctx.filter = 'brightness(45%) saturate(65%)'
+    ctx.drawImage(image, sx, sy, sourceSize, sourceSize, point.x - r, point.y - r, diameter, diameter)
+    ctx.filter = 'none'
+
+    ctx.save()
+    traceMoonPhasePath(ctx, point, r, phaseFraction)
+    ctx.clip()
+    ctx.globalAlpha = lighting.litAlpha
+    ctx.drawImage(image, sx, sy, sourceSize, sourceSize, point.x - r, point.y - r, diameter, diameter)
+    ctx.restore()
+  } else {
+    drawPlanetPhotoTexture(ctx, point, planet)
+    ctx.save()
+    traceMoonPhasePath(ctx, point, r, phaseFraction)
+    ctx.clip()
+    ctx.globalAlpha = lighting.litAlpha * 0.52
+    ctx.fillStyle = 'rgba(248,250,252,0.72)'
+    ctx.fillRect(point.x - r, point.y - r, diameter, diameter)
+    ctx.restore()
+  }
+
+  ctx.globalAlpha = lighting.shadowAlpha
+  ctx.fillStyle = 'rgba(2,6,23,0.58)'
+  ctx.globalCompositeOperation = 'multiply'
+  ctx.beginPath()
+  ctx.arc(point.x, point.y, r, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.globalCompositeOperation = 'source-over'
+
+  ctx.globalAlpha = lighting.rimAlpha
+  ctx.strokeStyle = 'rgba(219,234,254,0.88)'
+  ctx.lineWidth = Math.max(0.7, r * 0.1)
+  ctx.beginPath()
+  ctx.arc(point.x, point.y, r - ctx.lineWidth / 2, 0, Math.PI * 2)
+  ctx.stroke()
   ctx.restore()
 }
 
@@ -370,7 +437,13 @@ const drawPlanetPhotoTexture = (ctx, point, planet) => {
   }
 }
 
-export const createSkyScene = (canvas) => {
+const moonPhaseFractionFromPositions = (positionsByName) => {
+  const sun = positionsByName.get('Sun')
+  const moon = positionsByName.get('Moon')
+  return sun && moon ? norm360(moon.longitude - sun.longitude) / 360 : 0
+}
+
+export const createSkyScene = (canvas, options = {}) => {
   const ctx = canvas.getContext('2d')
   const stars = makeStars()
   let context = {
@@ -436,16 +509,29 @@ export const createSkyScene = (canvas) => {
 
     const planetRadius = Math.max(bounds.chartRadius * 1.42, bounds.skyRadius * 0.78)
     const byName = new Map((chart?.positions || []).map(item => [item.name, item]))
+    const moonPhaseFraction = moonPhaseFractionFromPositions(byName)
     for (const planet of SKY_PLANETS) {
       const position = byName.get(planet.name)
       if (!position) continue
+      const phaseFraction = planet.name === 'Moon' ? moonPhaseFraction : null
+      if (planet.name === 'Moon') {
+        const longitude = skyLongitudeForPosition({ longitude: position.longitude, mode: context.mode, wheelShift })
+        const point = polarPoint(bounds.cx, bounds.cy, planetRadius, longitude)
+        options.onMoonFrame?.({
+          x: point.x,
+          y: point.y,
+          size: Math.max(18, planet.radius * 2.4),
+          phaseFraction,
+          illumination: moonPhaseLighting(phaseFraction).illumination,
+        })
+      }
       drawPlanet(
         ctx,
         bounds.cx,
         bounds.cy,
         planetRadius,
         skyLongitudeForPosition({ longitude: position.longitude, mode: context.mode, wheelShift }),
-        planet,
+        { ...planet, phaseFraction },
         context.planetLabels[planet.name] || planet.name,
         planetImages?.get(planet.name),
         palette
@@ -469,6 +555,7 @@ export const createSkyScene = (canvas) => {
       cancelAnimationFrame(raf)
       window.clearInterval(pulse)
       window.removeEventListener('resize', schedule)
+      options.onMoonFrame?.(null)
     },
     setContext(next) {
       context = {

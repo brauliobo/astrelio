@@ -1,8 +1,9 @@
 <script setup>
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { offsetMinutesForPerson, localToUtcMs } from '../../lib/astro/timezones.js'
 import { createSkyScene } from '../../lib/sky/scene.js'
+import MoonPhaseImage from './MoonPhaseImage.vue'
 
 const props = defineProps({
   person: { type: Object, default: null },
@@ -13,8 +14,17 @@ const props = defineProps({
 })
 
 const canvas = ref(null)
+const moonFrame = ref(null)
 const { t, locale } = useI18n()
 let handle  = null
+
+const moonStyle = computed(() => {
+  if (!moonFrame.value) return null
+  return {
+    left: `${moonFrame.value.x}px`,
+    top: `${moonFrame.value.y}px`,
+  }
+})
 
 const planetLabels = () => Object.fromEntries(
   ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto']
@@ -54,13 +64,20 @@ onMounted(async () => {
   if (window.matchMedia?.('(prefers-reduced-data: reduce)').matches) return
   await new Promise(r => requestAnimationFrame(r))
   try {
-    handle = createSkyScene(canvas.value)
+    handle = createSkyScene(canvas.value, {
+      onMoonFrame: frame => {
+        moonFrame.value = frame
+      },
+    })
     applyContext()
   }
   catch (e) { console.warn('sky disabled:', e) }
 })
 
-onBeforeUnmount(() => handle?.dispose?.())
+onBeforeUnmount(() => {
+  handle?.dispose?.()
+  moonFrame.value = null
+})
 watch(() => [props.person, props.zodiac, props.houseSystem, props.mode, props.theme, locale.value], applyContext, { deep: true })
 </script>
 
@@ -71,6 +88,13 @@ watch(() => [props.person, props.zodiac, props.houseSystem, props.mode, props.th
   :data-theme='theme'
 )
   canvas.block.w-full.h-full(ref='canvas')
+  MoonPhaseImage.sky-bg__moon(
+    v-if='moonFrame'
+    :phase='moonFrame.phaseFraction'
+    :size='moonFrame.size'
+    :style='moonStyle'
+    alt=''
+  )
   .gradient-overlay
 </template>
 
@@ -89,6 +113,12 @@ watch(() => [props.person, props.zodiac, props.houseSystem, props.mode, props.th
     radial-gradient(ellipse at center, rgba(11,10,26,0.08) 0%, rgba(11,10,26,0.18) 46%, rgba(11,10,26,0.55) 100%),
     linear-gradient(180deg, rgba(11,10,26,0) 0%, rgba(11,10,26,0.28) 70%, rgba(11,10,26,0.82) 100%);
   pointer-events: none;
+}
+
+.sky-bg__moon {
+  position: absolute;
+  z-index: 1;
+  transform: translate(-50%, -50%);
 }
 
 .sky-bg[data-theme='light'] .gradient-overlay {
