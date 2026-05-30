@@ -134,6 +134,7 @@ const transit = computed(() => person.value
   ? transitsFor(transitDateMs.value, person.value.lat, person.value.lon, {
     zodiac: settings.zodiac,
     houseSystem: settings.houseSystem,
+    nodeMode: settings.nodeMode,
   })
   : null
 )
@@ -149,6 +150,7 @@ const progressed = computed(() => {
   return secondaryProgression(natalJdUt, progressionDateMs.value, birthMs, person.value.lat, person.value.lon, {
     zodiac: settings.zodiac,
     houseSystem: settings.houseSystem,
+    nodeMode: settings.nodeMode,
   })
 })
 const progressionAspects = computed(() =>
@@ -161,6 +163,7 @@ const solarReturn = computed(() => {
   return solarReturnChartForNatal(natal.value.jdUt, near, person.value.lat, person.value.lon, {
     zodiac: settings.zodiac,
     houseSystem: settings.houseSystem,
+    nodeMode: settings.nodeMode,
   })
 })
 const solarReturnAspects = computed(() =>
@@ -186,6 +189,7 @@ const directed = computed(() => {
   return solarArcDirections(natal.value, natalJdUt, solarArcDateMs.value, birthMs, person.value.lat, person.value.lon, {
     zodiac: settings.zodiac,
     houseSystem: settings.houseSystem,
+    nodeMode: settings.nodeMode,
   })
 })
 const solarArcAspects = computed(() =>
@@ -198,6 +202,7 @@ const lunarReturn = computed(() => {
   return lunarReturnChartForNatal(natal.value.jdUt, lunarReturnDateMs.value, person.value.lat, person.value.lon, {
     zodiac: settings.zodiac,
     houseSystem: settings.houseSystem,
+    nodeMode: settings.nodeMode,
   })
 })
 const lunarReturnAspects = computed(() =>
@@ -257,7 +262,7 @@ section.timing-page(data-testid='timing-page')
           @click='transitDateInput = new Date().toISOString().slice(0,16)'
           data-testid='btn-now'
         ) {{ t('common.now') }}
-      ComparisonInsightPanel.mb-6(:aspects='transitAspects' mode='transit')
+      ComparisonInsightPanel.mb-6(:aspects='transitAspects' :base='natal' :comparison='transit' mode='transit')
       .ui-panel.mb-6(v-if='natal && transit')
         AspectMatrix(
           :base='natal'

@@ -15,6 +15,7 @@ const onLocale = (e) => {
 }
 
 const houses = ['placidus', 'koch', 'porphyry', 'regiomontanus', 'equal', 'whole_sign']
+const nodeModes = ['mean', 'true']
 const aspectSets = ['all', 'major']
 const orbScales = [
   { value: 0.75, key: 'tight' },
@@ -117,6 +118,13 @@ section.settings.max-w-lg(data-testid='settings-page')
           )
             option(value='tropical') {{ t('settings.tropical') }}
             option(value='sidereal') {{ t('settings.sidereal') }}
+        div
+          label.block.text-xs.text-slate-400.mb-1 {{ t('settings.node_mode') }}
+          select.ui-control.ui-control-md.w-full(
+            v-model='settings.nodeMode'
+            data-testid='setting-node-mode'
+          )
+            option(v-for='mode in nodeModes' :key='mode' :value='mode') {{ t(`settings.node_modes.${mode}`) }}
         div
           label.block.text-xs.text-slate-400.mb-1 {{ copy.glyphRenderer }}
           select.ui-control.ui-control-md.w-full(

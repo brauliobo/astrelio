@@ -1,7 +1,7 @@
 <script setup>
-import { computed, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRoute, useRouter } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
 import { useSettingsStore } from '../stores/settings.js'
@@ -25,6 +25,9 @@ const router   = useRouter()
 const people   = usePeopleStore()
 const session  = useSessionStore()
 const settings = useSettingsStore()
+const chartPanelRef = ref(null)
+const sidePanelMaxHeight = ref('')
+let chartPanelObserver = null
 
 const savedPerson = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
 const hasRoutePerson = computed(() => hasPersonRouteQuery(route.query))
@@ -35,12 +38,32 @@ const transit = computed(() => person.value
   ? transitsFor(session.transitDateMs || Date.now(), person.value.lat, person.value.lon, {
     zodiac: settings.zodiac,
     houseSystem: settings.houseSystem,
+    nodeMode: settings.nodeMode,
   })
   : null
 )
 const phase   = computed(() => chart.value ? t(`moon_phase.${moonPhaseLabel(chart.value.jdUt)}`) : '')
 const aspects = computed(() => chart.value ? naturalAspects(chart.value, settings.aspectOptions) : [])
 const birthHeader = computed(() => birthHeaderForPerson(person.value))
+const sidePanelStyle = computed(() =>
+  sidePanelMaxHeight.value ? { '--natal-wheel-panel-height': sidePanelMaxHeight.value } : {}
+)
+
+const updateSidePanelHeight = () => {
+  const height = chartPanelRef.value?.getBoundingClientRect?.().height || 0
+  sidePanelMaxHeight.value = height ? `${Math.round(height)}px` : ''
+}
+
+const observeChartPanel = async () => {
+  await nextTick()
+  chartPanelObserver?.disconnect()
+  chartPanelObserver = null
+  updateSidePanelHeight()
+
+  if (!chartPanelRef.value || typeof ResizeObserver === 'undefined') return
+  chartPanelObserver = new ResizeObserver(updateSidePanelHeight)
+  chartPanelObserver.observe(chartPanelRef.value)
+}
 
 watch(savedPerson, (next) => {
   if (!next || hasRoutePerson.value) return
@@ -55,6 +78,20 @@ watch(routePerson, (next) => {
 
   session.setActive(registered.id)
 }, { immediate: true })
+
+watch(chart, () => {
+  observeChartPanel()
+}, { flush: 'post' })
+
+onMounted(() => {
+  observeChartPanel()
+  window.addEventListener('resize', updateSidePanelHeight)
+})
+
+onBeforeUnmount(() => {
+  chartPanelObserver?.disconnect()
+  window.removeEventListener('resize', updateSidePanelHeight)
+})
 </script>
 
 <template lang="pug">
@@ -67,26 +104,33 @@ section.natal-page(data-testid='natal-page')
         h1.text-xl.font-semibold.text-slate-100.mb-1 {{ t('chart.natal_for', { name: person.name }) }}
         p.text-xs.text-slate-400 {{ birthHeader }}
       .flex.flex-wrap.items-center.gap-2
+        RouterLink.rounded.px-3.py-2.text-sm.text-slate-300(
+          to='/report'
+          class='bg-white/5 hover:bg-white/10 hover:text-white'
+          data-testid='open-report'
+        ) {{ t('report.open') }}
         ModalityRouteSwitch(active='astrology')
     .grid.gap-6(class='xl:grid-cols-[minmax(220px,0.58fr)_minmax(460px,1fr)_minmax(220px,0.58fr)] xl:items-start')
-      Insight.order-2(
+      Insight.order-2.natal-side-panel(
         class='xl:order-1'
+        :style='sidePanelStyle'
         :chart='chart'
         :aspects='aspects'
         :phase-label='phase'
         panel='left'
         v-if='chart'
       )
-      .ui-panel.order-1(class='xl:order-2' data-testid='natal-chart-panel')
+      .ui-panel.order-1(ref='chartPanelRef' class='xl:order-2' data-testid='natal-chart-panel')
         Wheel(
           :natal='chart'
           :overlay='transit'
           :aspect-options='settings.aspectOptions'
           :planet-glyph-renderer='settings.planetGlyphRenderer'
           v-if='chart'
-        )
-      Insight.order-3(
+      )
+      Insight.order-3.natal-side-panel(
         class='xl:order-3'
+        :style='sidePanelStyle'
         :chart='chart'
         :aspects='aspects'
         :phase-label='phase'
@@ -110,3 +154,13 @@ section.natal-page(data-testid='natal-page')
       .ui-panel(v-if='aspects.length')
         AspectTable(:aspects='aspects')
 </template>
+
+<style scoped>
+@media (min-width: 1280px) {
+  .natal-side-panel {
+    max-height: var(--natal-wheel-panel-height);
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+  }
+}
+</style>

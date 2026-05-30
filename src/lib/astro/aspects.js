@@ -9,7 +9,18 @@ export const ASPECT_DEFS = [
   { type: 'quincunx',    angle: 150, orb: 3, weight: 0.54 }
 ]
 
-const TIGHTER = new Set(['Chiron', 'NorthNode', 'SouthNode', 'Lilith', 'Ascendant', 'Midheaven', 'Fortune'])
+const TIGHTER = new Set([
+  'Chiron',
+  'NorthNode',
+  'SouthNode',
+  'Lilith',
+  'Ascendant',
+  'Midheaven',
+  'Fortune',
+  'Spirit',
+  'Vertex',
+  'EastPoint',
+])
 const MODERN = new Set(['Uranus', 'Neptune', 'Pluto', 'Chiron', 'Lilith'])
 const MAJOR_TYPES = new Set(['conjunction', 'opposition', 'trine', 'square', 'sextile'])
 

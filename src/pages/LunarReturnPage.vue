@@ -30,6 +30,7 @@ const lunarReturn = computed(() => {
   return lunarReturnChartForNatal(natal.value.jdUt, dateMs.value, person.value.lat, person.value.lon, {
     zodiac: settings.zodiac,
     houseSystem: settings.houseSystem,
+    nodeMode: settings.nodeMode,
   })
 })
 

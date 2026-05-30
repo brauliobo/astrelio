@@ -33,6 +33,7 @@ const directed = computed(() => {
   return solarArcDirections(natal.value, natalJdUt, dateMs.value, birthMs, person.value.lat, person.value.lon, {
     zodiac: settings.zodiac,
     houseSystem: settings.houseSystem,
+    nodeMode: settings.nodeMode,
   })
 })
 

@@ -23,7 +23,7 @@ const year   = ref(new Date().getFullYear())
 const sr = computed(() => {
   if (!person.value || !natal.value) return null
   const near = new Date(`${year.value}-01-15T12:00Z`).getTime()
-  return solarReturnChartForNatal(natal.value.jdUt, near, person.value.lat, person.value.lon, { zodiac: settings.zodiac, houseSystem: settings.houseSystem })
+  return solarReturnChartForNatal(natal.value.jdUt, near, person.value.lat, person.value.lon, settings.chartOptions)
 })
 
 const srAspects = computed(() => natal.value && sr.value ? crossAspects(natal.value, sr.value, settings.aspectOptions) : [])

@@ -26,7 +26,7 @@ const dateInput = computed({
 })
 
 const transit = computed(() => person.value
-  ? transitsFor(dateMs.value, person.value.lat, person.value.lon, { zodiac: settings.zodiac, houseSystem: settings.houseSystem })
+  ? transitsFor(dateMs.value, person.value.lat, person.value.lon, settings.chartOptions)
   : null)
 
 const aspects = computed(() => natal.value && transit.value ? crossAspects(natal.value, transit.value, settings.aspectOptions) : [])
@@ -49,7 +49,7 @@ section.transits-page(data-testid='transits-page')
         @click='dateInput = new Date().toISOString().slice(0,16)'
         data-testid='btn-now'
       ) {{ t('common.now') }}
-    ComparisonInsightPanel.mb-6(:aspects='aspects' mode='transit')
+    ComparisonInsightPanel.mb-6(:aspects='aspects' :base='natal' :comparison='transit' mode='transit')
     .grid.gap-6(class='lg:grid-cols-2')
       .ui-panel
         Biwheel(

@@ -60,6 +60,43 @@ describe('ephemeris', () => {
     }
   })
 
+  it('computes tropical point longitudes in zodiac range', () => {
+    const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
+    const c = computeChart(jd, REF.lat, REF.lon, { zodiac: 'tropical', houseSystem: 'placidus' })
+    const expected = {
+      fortune: 163.908712,
+      spirit: 71.797435,
+      vertex: 332.815122,
+      eastPoint: 126.802239,
+    }
+
+    for (const [point, longitude] of Object.entries(expected)) {
+      expect(c[point]).toBeGreaterThanOrEqual(0)
+      expect(c[point]).toBeLessThan(360)
+      expect(c[point]).toBeCloseTo(longitude, 5)
+    }
+  })
+
+  it('selects mean or true lunar node mode for tropical charts', () => {
+    const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
+    const mean = computeChart(jd, REF.lat, REF.lon, {
+      zodiac: 'tropical',
+      houseSystem: 'placidus',
+      nodeMode: 'mean',
+    })
+    const trueNode = computeChart(jd, REF.lat, REF.lon, {
+      zodiac: 'tropical',
+      houseSystem: 'placidus',
+      nodeMode: 'true',
+    })
+
+    expect(mean.nodeMode).toBe('mean')
+    expect(trueNode.nodeMode).toBe('true')
+    expect(mean.positions.find(p => p.name === 'NorthNode').longitude).toBeCloseTo(33.552883, 5)
+    expect(trueNode.positions.find(p => p.name === 'NorthNode').longitude).toBeCloseTo(32.305137, 5)
+    expect(trueNode.positions.find(p => p.name === 'SouthNode').longitude).toBeCloseTo(212.305137, 5)
+  })
+
   it('pins retrograde state and sidereal ayanamsa shift', () => {
     const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
     const tropical = computeChart(jd, REF.lat, REF.lon, { zodiac: 'tropical', houseSystem: 'placidus' })

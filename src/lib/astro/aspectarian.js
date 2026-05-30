@@ -18,10 +18,13 @@ export const ASPECTARIAN_POINT_ORDER = [
   'Ascendant',
   'Midheaven',
   'Fortune',
+  'Spirit',
+  'Vertex',
+  'EastPoint',
 ]
 
 export const ASPECTARIAN_BODY_ORDER = ASPECTARIAN_POINT_ORDER
-  .filter(name => !['Ascendant', 'Midheaven', 'Fortune'].includes(name))
+  .filter(name => !['Ascendant', 'Midheaven', 'Fortune', 'Spirit', 'Vertex', 'EastPoint'].includes(name))
 
 const pointSortIndex = new Map(ASPECTARIAN_POINT_ORDER.map((name, index) => [name, index]))
 
@@ -31,8 +34,17 @@ const bodyByName = (chart, name) =>
 export const fortuneLongitude = (chart) => {
   const sun = bodyByName(chart, 'Sun')
   const moon = bodyByName(chart, 'Moon')
+  if (typeof chart?.fortune === 'number') return norm360(chart.fortune)
   if (!chart || !sun || !moon || typeof chart.ascendant !== 'number') return null
   return norm360(chart.ascendant + moon.longitude - sun.longitude)
+}
+
+export const spiritLongitude = (chart) => {
+  const sun = bodyByName(chart, 'Sun')
+  const moon = bodyByName(chart, 'Moon')
+  if (typeof chart?.spirit === 'number') return norm360(chart.spirit)
+  if (!chart || !sun || !moon || typeof chart.ascendant !== 'number') return null
+  return norm360(chart.ascendant + sun.longitude - moon.longitude)
 }
 
 const syntheticPoint = (name, longitude) => longitude === null || longitude === undefined
@@ -60,8 +72,13 @@ export const chartAspectPoints = (chart, options = {}) => {
   if (includeAngles) {
     byName.set('Ascendant', syntheticPoint('Ascendant', chart.ascendant))
     byName.set('Midheaven', syntheticPoint('Midheaven', chart.mc))
+    byName.set('Vertex', syntheticPoint('Vertex', chart.vertex))
+    byName.set('EastPoint', syntheticPoint('EastPoint', chart.eastPoint))
   }
-  if (includeFortune) byName.set('Fortune', syntheticPoint('Fortune', fortuneLongitude(chart)))
+  if (includeFortune) {
+    byName.set('Fortune', syntheticPoint('Fortune', fortuneLongitude(chart)))
+    byName.set('Spirit', syntheticPoint('Spirit', spiritLongitude(chart)))
+  }
 
   return ASPECTARIAN_POINT_ORDER
     .map(name => byName.get(name))
@@ -76,7 +93,11 @@ export const aspectMatrix = (baseChart, comparisonChart = null, options = {}) =>
   const rows = sameChart
     ? columns
     : chartAspectPoints(comparisonChart, { ...options, includeAngles: false, includeFortune: false })
-  const matrixOptions = { ...options, aspectSet: 'major', applyingOnly: false }
+  const matrixOptions = {
+    ...options,
+    aspectSet: options.aspectSet ?? 'major',
+    applyingOnly: options.applyingOnly ?? false,
+  }
 
   return {
     columns,

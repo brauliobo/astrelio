@@ -18,6 +18,7 @@ const astrologyChart = (person, settings = {}) => {
   return computeChart(jd, person.lat, person.lon, {
     zodiac: settings.zodiac || 'tropical',
     houseSystem: settings.houseSystem || 'placidus',
+    nodeMode: settings.nodeMode,
   })
 }
 

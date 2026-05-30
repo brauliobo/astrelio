@@ -47,8 +47,15 @@ export const seedSettings = async (page, locale = 'pt-BR') => {
   }, locale)
 }
 
-export const seedSession = async (page, activeId, compareId = null) => {
-  await page.addInitScript(([a, c]) => {
-    window.__ASTRELIO_SEED_SESSION__ = { activePersonId: a, comparePersonId: c }
-  }, [activeId, compareId])
+export const seedSession = async (page, activeId, compareId = null, options = {}) => {
+  await page.addInitScript(([a, c, opts]) => {
+    const value = {
+      activePersonId: a,
+      comparePersonId: c,
+      transitDateMs: opts.transitDateMs ?? null,
+      progressionDateMs: opts.progressionDateMs ?? null,
+    }
+    window.__ASTRELIO_SEED_SESSION__ = value
+    if (!localStorage.getItem('session')) localStorage.setItem('session', JSON.stringify(value))
+  }, [activeId, compareId, options])
 }

@@ -56,6 +56,40 @@ describe('interpretations', () => {
     expect(row.textKey).toBe('interpretations.sentences.transit_aspect')
   })
 
+  it('uses chart context to rank transit contacts beyond raw orb strength', () => {
+    const natal = {
+      zodiac: 'tropical',
+      ascendant: 0,
+      mc: 90,
+      cusps: Array.from({ length: 12 }, (_, index) => index * 30),
+      positions: [mk('Sun', 5), mk('Moon', 100)],
+    }
+    const transit = {
+      zodiac: 'tropical',
+      ascendant: 0,
+      mc: 90,
+      cusps: natal.cusps,
+      positions: [
+        { ...mk('Moon', 5), speed: 13 },
+        { ...mk('Saturn', 6), speed: 0.03 },
+      ],
+    }
+    const transitAspects = [
+      { a: 'Sun', b: 'Moon', type: 'conjunction', delta: 0.1, orb: 8, strength: 0.99, applying: false },
+      { a: 'Sun', b: 'Saturn', type: 'conjunction', delta: 1.8, orb: 8, strength: 0.77, applying: true },
+    ]
+
+    const [row] = comparisonAspectInterpretations(transitAspects, 'transit', {
+      limit: 1,
+      baseChart: natal,
+      comparisonChart: transit,
+    })
+
+    expect(row.primaryPlanet).toBe('Saturn')
+    expect(row.aspect.rank.transitHouse).toBe(1)
+    expect(row.aspect.rank.natalImportance).toBeGreaterThan(0.9)
+  })
+
   it('groups exact slow-planet progression self contacts behind meaningful contacts', () => {
     const progressionAspects = [
       { a: 'Uranus', b: 'Uranus', type: 'conjunction', delta: 0, strength: 1 },

@@ -5,6 +5,7 @@ const SETTINGS_KEYS = [
   'locale',
   'houseSystem',
   'zodiac',
+  'nodeMode',
   'skyEnabled',
   'theme',
   'aspectSet',

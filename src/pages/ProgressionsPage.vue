@@ -31,7 +31,7 @@ const progressed = computed(() => {
   const tzOffsetMinutes = offsetMinutesForPerson(person.value)
   const birthMs   = localToUtcMs(person.value.isoLocal, tzOffsetMinutes)
   const natalJdUt = localToJdUt(person.value.isoLocal, tzOffsetMinutes)
-  return secondaryProgression(natalJdUt, dateMs.value, birthMs, person.value.lat, person.value.lon, { zodiac: settings.zodiac, houseSystem: settings.houseSystem })
+  return secondaryProgression(natalJdUt, dateMs.value, birthMs, person.value.lat, person.value.lon, settings.chartOptions)
 })
 
 const aspects = computed(() => natal.value && progressed.value ? crossAspects(natal.value, progressed.value, settings.aspectOptions) : [])

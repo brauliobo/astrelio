@@ -5,6 +5,7 @@ export const SETTING_PRESETS = {
   simple: {
     houseSystem: 'equal',
     zodiac: 'tropical',
+    nodeMode: 'mean',
     skyEnabled: false,
     aspectSet: 'major',
     orbScale: 0.75,
@@ -14,6 +15,7 @@ export const SETTING_PRESETS = {
   traditional: {
     houseSystem: 'whole_sign',
     zodiac: 'tropical',
+    nodeMode: 'mean',
     skyEnabled: false,
     aspectSet: 'major',
     orbScale: 1,
@@ -23,6 +25,7 @@ export const SETTING_PRESETS = {
   modern: {
     houseSystem: 'placidus',
     zodiac: 'tropical',
+    nodeMode: 'mean',
     skyEnabled: true,
     aspectSet: 'all',
     orbScale: 1,
@@ -32,6 +35,7 @@ export const SETTING_PRESETS = {
   technical: {
     houseSystem: 'regiomontanus',
     zodiac: 'sidereal',
+    nodeMode: 'mean',
     skyEnabled: true,
     aspectSet: 'all',
     orbScale: 1.25,
@@ -41,6 +45,7 @@ export const SETTING_PRESETS = {
   print: {
     houseSystem: 'placidus',
     zodiac: 'tropical',
+    nodeMode: 'mean',
     skyEnabled: false,
     aspectSet: 'major',
     orbScale: 0.75,
@@ -54,6 +59,7 @@ export const SETTING_PRESET_KEYS = Object.keys(SETTING_PRESETS)
 const PRESET_FIELDS = [
   'houseSystem',
   'zodiac',
+  'nodeMode',
   'skyEnabled',
   'aspectSet',
   'orbScale',
@@ -69,6 +75,7 @@ export const useSettingsStore = defineStore('settings', {
     locale:      detectLocale(),
     houseSystem: 'placidus',
     zodiac:      'tropical',
+    nodeMode:    'mean',
     skyEnabled:  true,
     theme:       'dark',
     aspectSet:   'all',
@@ -92,6 +99,11 @@ export const useSettingsStore = defineStore('settings', {
       orbScale: state.orbScale,
       applyingOnly: state.applyingOnly,
       includeModernPlanets: state.includeModernPlanets,
+    }),
+    chartOptions: (state) => ({
+      zodiac: state.zodiac,
+      houseSystem: state.houseSystem,
+      nodeMode: state.nodeMode === 'true' ? 'true' : 'mean',
     })
   },
   actions: {
@@ -103,6 +115,7 @@ export const useSettingsStore = defineStore('settings', {
     normalize() {
       this.locale = normalizeLocale(this.locale)
       this.aspectSet ??= 'all'
+      this.nodeMode = this.nodeMode === 'true' ? 'true' : 'mean'
       this.orbScale ??= 1
       this.applyingOnly ??= false
       this.includeModernPlanets ??= true

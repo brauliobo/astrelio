@@ -11,8 +11,9 @@ export const useNatalChart = (personGetter, settings) =>
     const p = personGetter.value
     if (!p) return null
     const jd = localToJdUt(p.isoLocal, offsetMinutesForPerson(p))
-    return computeChart(jd, p.lat, p.lon, {
-      zodiac:      settings.zodiac,
-      houseSystem: settings.houseSystem
+    return computeChart(jd, p.lat, p.lon, settings.chartOptions || {
+      zodiac: settings.zodiac,
+      houseSystem: settings.houseSystem,
+      nodeMode: settings.nodeMode,
     })
   })

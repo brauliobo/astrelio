@@ -18,6 +18,10 @@ export const solarArcChart = (natalChart, arcDegrees) => ({
   solarArc: arcDegrees,
   ascendant: norm360(natalChart.ascendant + arcDegrees),
   mc: norm360(natalChart.mc + arcDegrees),
+  fortune: typeof natalChart.fortune === 'number' ? norm360(natalChart.fortune + arcDegrees) : natalChart.fortune,
+  spirit: typeof natalChart.spirit === 'number' ? norm360(natalChart.spirit + arcDegrees) : natalChart.spirit,
+  vertex: typeof natalChart.vertex === 'number' ? norm360(natalChart.vertex + arcDegrees) : natalChart.vertex,
+  eastPoint: typeof natalChart.eastPoint === 'number' ? norm360(natalChart.eastPoint + arcDegrees) : natalChart.eastPoint,
   cusps: natalChart.cusps.map(cusp => norm360(cusp + arcDegrees)),
   positions: natalChart.positions.map(position => ({
     ...position,

@@ -5,6 +5,8 @@ import { comparisonAspectInterpretations } from '../../lib/astro/interpretations
 
 const props = defineProps({
   aspects: { type: Array, default: () => [] },
+  base: { type: Object, default: null },
+  comparison: { type: Object, default: null },
   mode: {
     type: String,
     required: true,
@@ -16,7 +18,11 @@ const props = defineProps({
 const { t } = useI18n()
 
 const interpretedAspects = computed(() =>
-  comparisonAspectInterpretations(props.aspects, props.mode, { limit: props.limit })
+  comparisonAspectInterpretations(props.aspects, props.mode, {
+    limit: props.limit,
+    baseChart: props.base,
+    comparisonChart: props.comparison,
+  })
 )
 
 const dominantAspect = computed(() => {
@@ -66,13 +72,22 @@ const rows = computed(() => interpretedAspects.value.map((item, index) => {
       secondary: t(`planets.${item.secondaryPlanet}`),
       tone: t(item.toneKey),
     }),
-    meta: t('comparison_insights.aspect_meta', {
-      a: t(`planets.${aspect.a}`),
-      aspect: t(`aspects.${aspect.type}`),
-      b: t(`planets.${aspect.b}`),
-      orb: aspect.delta.toFixed(2),
-      motion: aspect.applying ? t('aspects.applying') : t('aspects.separating'),
-    }),
+    meta: item.kind === 'transit' && aspect.rank?.transitHouse
+      ? t('comparison_insights.transit_aspect_meta', {
+        a: t(`planets.${aspect.a}`),
+        aspect: t(`aspects.${aspect.type}`),
+        b: t(`planets.${aspect.b}`),
+        orb: aspect.delta.toFixed(2),
+        motion: aspect.applying ? t('aspects.applying') : t('aspects.separating'),
+        house: aspect.rank.transitHouse,
+      })
+      : t('comparison_insights.aspect_meta', {
+        a: t(`planets.${aspect.a}`),
+        aspect: t(`aspects.${aspect.type}`),
+        b: t(`planets.${aspect.b}`),
+        orb: aspect.delta.toFixed(2),
+        motion: aspect.applying ? t('aspects.applying') : t('aspects.separating'),
+      }),
   }
 }))
 </script>

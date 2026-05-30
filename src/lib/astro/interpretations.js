@@ -1,6 +1,6 @@
 import { houseOf } from './houses.js'
 import { signIndex } from './zodiac.js'
-import { topAspects } from './analysis.js'
+import { rankTransitAspects, topAspects } from './analysis.js'
 
 export const INTERPRETED_PLANETS = [
   'Sun',
@@ -98,9 +98,16 @@ const progressionBackgroundGroup = (aspects) => ({
   metaKey: 'comparison_insights.groups.progression_slow_self.meta',
 })
 
-export const comparisonAspectInterpretations = (aspects = [], mode, { limit = 3 } = {}) => {
+export const comparisonAspectInterpretations = (aspects = [], mode, options = {}) => {
+  const { limit = 3 } = options
+
   if (!comparisonModes.has(mode)) return []
   if (limit <= 0) return []
+
+  if (mode === 'transit' && options.baseChart && options.comparisonChart) {
+    return rankTransitAspects(aspects, options.baseChart, options.comparisonChart, limit)
+      .map((aspect, index) => comparisonAspectRow(aspect, mode, index))
+  }
 
   if (mode === 'progression') {
     const rankedAspects = topAspects(aspects, aspects.length)

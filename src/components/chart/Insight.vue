@@ -15,6 +15,7 @@ const { t, tm } = useI18n()
 const signs = computed(() => tm('zodiac.signs'))
 const signature = computed(() => chartSignature(props.chart))
 const angles = computed(() => anglePlacements(props.chart))
+const tropical = computed(() => signature.value.tropical)
 
 const fmtDegree = (lon) => {
   const d = degInSign(lon)
@@ -59,6 +60,19 @@ const placementRows = computed(() => {
 })
 
 const houseRows = computed(() => signature.value.houses.filter(row => row.value > 0).slice(0, 4))
+const chartRuler = computed(() => tropical.value?.chartRuler || null)
+const houseRulerRows = computed(() => {
+  const rulers = tropical.value?.houseRulers || []
+  return houseRows.value
+    .map(row => rulers[row.house - 1])
+    .filter(Boolean)
+})
+const sect = computed(() => tropical.value?.sect || null)
+const hemisphereRows = computed(() => [
+  signature.value.hemisphereEmphasis.horizontal,
+  signature.value.hemisphereEmphasis.vertical,
+].filter(Boolean))
+const dignityRows = computed(() => tropical.value?.dignityBasics?.slice(0, 4) || [])
 const featuredAspects = computed(() => topAspects(props.aspects, 4))
 const showPrimary = computed(() => props.panel !== 'right')
 const showDetails = computed(() => props.panel !== 'left')
@@ -110,6 +124,37 @@ const pct = (share) => `${Math.round(share * 100)}%`
           v-for='row in houseRows'
           :key='row.house'
         ) {{ t('analysis.house_n', { house: row.house }) }} · {{ row.value }}
+    section(v-if='chartRuler')
+      h3.text-xs.font-semibold.text-slate-300.mb-3 {{ t('analysis.chart_ruler') }}
+      .text-xs.text-slate-300
+        span.text-slate-100 {{ t(`planets.${chartRuler.planet}`) }}
+        span.text-slate-500  ·
+        span {{ signs[chartRuler.signIndex] }}
+        span.text-slate-500  ·
+        span {{ t('analysis.house_n', { house: chartRuler.house }) }}
+      p.mt-1.text-xs.text-slate-500 {{ t('analysis.ruler_of_asc', { sign: signs[chartRuler.ascSignIndex] }) }}
+    section(v-if='sect')
+      h3.text-xs.font-semibold.text-slate-300.mb-3 {{ t('analysis.sect_hemispheres') }}
+      .flex.flex-wrap.gap-2
+        span.rounded-full.px-2.py-1.text-xs.text-slate-300(class='bg-white/5')
+          | {{ t(`analysis.sect_types.${sect.type}`) }} · {{ t(`planets.${sect.light}`) }}
+        span.rounded-full.px-2.py-1.text-xs.text-slate-300(
+          class='bg-white/5'
+          v-for='row in hemisphereRows'
+          :key='row.key'
+        ) {{ t(`analysis.hemispheres.${row.key}`) }} · {{ pct(row.share) }}
+      p.mt-2.text-xs.text-slate-500
+        | {{ t('analysis.sect_detail', { benefic: t(`planets.${sect.benefic}`), malefic: t(`planets.${sect.maleficInSect}`) }) }}
+    section(v-if='houseRulerRows.length')
+      h3.text-xs.font-semibold.text-slate-300.mb-3 {{ t('analysis.house_rulers') }}
+      .grid.gap-1
+        .text-xs.text-slate-300(v-for='row in houseRulerRows' :key='row.house')
+          span.text-slate-500 {{ t('analysis.house_n', { house: row.house }) }}
+          span.text-slate-500  ·
+          span.text-slate-100 {{ t(`planets.${row.ruler}`) }}
+          span(v-if='row.rulerHouse')
+            span.text-slate-500  ·
+            span {{ t('analysis.house_n', { house: row.rulerHouse }) }}
     section
       h3.text-xs.font-semibold.text-slate-300.mb-3 {{ t('analysis.angularity') }}
       .grid.gap-1(v-if='signature.angularPlanets.length')
@@ -125,16 +170,25 @@ const pct = (share) => `${Math.round(share * 100)}%`
           :key='name'
         ) {{ t(`planets.${name}`) }} ℞
       p.text-xs.text-slate-500(v-else) {{ t('analysis.no_retrogrades') }}
+    section(v-if='dignityRows.length')
+      h3.text-xs.font-semibold.text-slate-300.mb-3 {{ t('analysis.dignity_basics') }}
+      .grid.gap-1
+        .text-xs.text-slate-300(v-for='row in dignityRows' :key='`${row.planet}-${row.dignities.join("-")}`')
+          span.text-slate-100 {{ t(`planets.${row.planet}`) }}
+          span.text-slate-500  ·
+          span {{ row.dignities.map(dignity => t(`analysis.dignities.${dignity}`)).join(', ') }}
+          span.text-slate-500  ·
+          span {{ signs[row.signIndex] }}
   section.mt-5(v-if='showDetails && featuredAspects.length')
     h3.text-xs.font-semibold.text-slate-300.mb-3 {{ t('analysis.top_aspects') }}
     .grid.gap-2(:class='aspectGridClass')
       .text-xs.text-slate-300(v-for='aspect in featuredAspects' :key='`${aspect.a}-${aspect.b}-${aspect.type}`')
         span.text-slate-100 {{ t(`planets.${aspect.a}`) }}
-        span.text-slate-500  · 
+        span.text-slate-500  ·
         span {{ t(`aspects.${aspect.type}`) }}
-        span.text-slate-500  · 
+        span.text-slate-500  ·
         span.text-slate-100 {{ t(`planets.${aspect.b}`) }}
-        span.text-slate-500  · 
+        span.text-slate-500  ·
         span.tabular-nums {{ aspect.delta.toFixed(2) }}°
 </template>
 
