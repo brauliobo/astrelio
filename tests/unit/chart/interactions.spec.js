@@ -17,6 +17,9 @@ vi.mock('../../../src/components/chart/DisplayMode.vue', () => ({
 
 const messages = {
   en: {
+    analysis: {
+      house_n: 'House {house}',
+    },
     common: { all: 'All' },
     chart: {
       asc: 'ASC',
@@ -44,6 +47,62 @@ const messages = {
       separating: 'Separating',
       sextile: 'Sextile',
       tight: 'Tight',
+    },
+    houses: {
+      numbered_name: 'House {house} · {name}',
+      names: [
+        'Identity',
+        'Resources',
+        'Communication',
+        'Home',
+        'Creativity',
+        'Work and health',
+        'Partnerships',
+        'Shared resources',
+        'Beliefs and travel',
+        'Career',
+        'Community',
+        'Retreat',
+      ],
+    },
+  },
+  'pt-BR': {
+    analysis: {
+      house_n: 'Casa {house}',
+    },
+    chart: {
+      asc: 'ASC',
+      mc: 'MC',
+      transit_orbit: 'Trânsitos',
+    },
+    zodiac: {
+      signs: ['Áries', 'Touro', 'Gêmeos', 'Câncer', 'Leão', 'Virgem', 'Libra', 'Escorpião', 'Sagitário', 'Capricórnio', 'Aquário', 'Peixes'],
+    },
+    planets: {
+      Sun: 'Sol',
+      Moon: 'Lua',
+      Mars: 'Marte',
+      Fortune: 'Fortuna',
+    },
+    aspects: {
+      sextile: 'Sextil',
+    },
+    houses: {
+      numbered_name: 'Casa {house} · {name}',
+      names: [
+        'Identidade',
+        'Recursos',
+        'Comunicação',
+        'Lar',
+        'Criatividade',
+        'Trabalho e saúde',
+        'Parcerias',
+        'Recursos compartilhados',
+        'Crenças e viagens',
+        'Carreira',
+        'Comunidade',
+        'Recolhimento',
+      ],
     },
   },
 }
@@ -106,7 +165,23 @@ describe('chart interactions', () => {
     expect(wrapper.get('[data-aspect-row="Sun-Mars-sextile"]').attributes('data-highlight')).toBe('active')
     expect(wrapper.get('[data-aspect="Sun-Mars-sextile"]').attributes('data-highlight')).toBe('active')
     expect(wrapper.get('[data-testid="planet-glyph-Moon"]').attributes('data-highlight')).toBe('dimmed')
-    expect(wrapper.get('[data-testid="chart-selection-summary"]').text()).toContain('Sun 23°49′ Aquarius · House 7')
+    expect(wrapper.get('[data-testid="chart-selection-summary"]').text()).toContain('Sun 23°49′ Aquarius · House 7 · Partnerships')
+  })
+
+  it('localizes selected house labels with house names', async () => {
+    const wrapper = mount(Wheel, {
+      props: { natal: chart },
+      global: {
+        plugins: [createI18n({ legacy: false, locale: 'pt-BR', messages })],
+      },
+    })
+
+    await wrapper.get('[data-testid="planet-glyph-Sun"]').trigger('mouseenter')
+    await nextTick()
+
+    const summary = wrapper.get('[data-testid="chart-selection-summary"]').text()
+    expect(summary).toContain('Sol 23°49′ Aquário · Casa 7 · Parcerias')
+    expect(summary).not.toContain('House 7')
   })
 
   it('pins and clears aspect highlight state from click', async () => {

@@ -70,7 +70,7 @@ section.synastry-page(data-testid='synastry-page')
       ) {{ t('modalities.human_design') }}
 
     template(v-if='relationshipModality === "astrology"')
-      ComparisonInsightPanel.mb-6(:aspects='aspects' mode='synastry')
+      ComparisonInsightPanel.mb-6(:aspects='aspects' :base='chartA' :comparison='chartB' mode='synastry')
       .grid.gap-6(class='lg:grid-cols-2')
         .ui-panel
           Biwheel(

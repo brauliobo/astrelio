@@ -298,7 +298,7 @@ section.timing-page(data-testid='timing-page')
           @click='progressionDateInput = new Date().toISOString().slice(0,10)'
           data-testid='btn-today'
         ) {{ t('common.today') }}
-      ComparisonInsightPanel.mb-6(:aspects='progressionAspects' mode='progression')
+      ComparisonInsightPanel.mb-6(:aspects='progressionAspects' :base='natal' :comparison='progressed' mode='progression')
       Comparison(
         v-if='natal && progressed'
         :base='natal'

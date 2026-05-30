@@ -10,13 +10,25 @@ const props = defineProps({
   aspectKey: { type: String, default: '' },
 })
 
-const { t, tm } = useI18n()
+const { t, tm, te } = useI18n()
 const signs = computed(() => tm('zodiac.signs'))
+const houseNames = computed(() => {
+  const names = tm('houses.names')
+  return Array.isArray(names) ? names : []
+})
 
 const label = (scope, key) => {
   const path = `${scope}.${key}`
-  const translated = t(path)
-  return translated === path ? key : translated
+  return te(path) ? t(path) : key
+}
+
+const houseLabel = (house) => {
+  const base = te('analysis.house_n') ? t('analysis.house_n', { house }) : `House ${house}`
+  const name = houseNames.value[house - 1] || ''
+  if (!name) return base
+  return te('houses.numbered_name')
+    ? t('houses.numbered_name', { house, name })
+    : `${base} · ${name}`
 }
 
 const formatDegree = (longitude) => {
@@ -57,7 +69,7 @@ const placements = computed(() =>
     return {
       name,
       label: label('planets', name),
-      detail: `${formatDegree(position.longitude)} ${sign} · House ${house}`,
+      detail: `${formatDegree(position.longitude)} ${sign} · ${houseLabel(house)}`,
     }
   })
 )

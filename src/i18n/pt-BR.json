@@ -713,6 +713,12 @@
     "horizon": "Assinatura do horizonte",
     "meridian": "Direção pública",
     "house_n": "Casa {house}",
+    "detail_tabs": {
+      "label": "Seções da análise",
+      "patterns": "Padrões",
+      "factors": "Fatores",
+      "houses": "Casas"
+    },
     "element_balance": "Equilíbrio elemental",
     "modality_balance": "Ritmo modal",
     "house_emphasis": "Ênfase por casa",
@@ -759,6 +765,46 @@
       "mc": "MC",
       "desc": "DESC",
       "ic": "FC"
+    }
+  },
+  "house_correlations": {
+    "title": "Correlações das casas",
+    "subtitle": "Vínculos psicológicos modernos entre casas, planetas, regentes, sobreposições e aspectos.",
+    "all_houses": "Todas as 12 casas",
+    "empty": "Nenhuma correlação de casas está disponível para este mapa.",
+    "occupants": "Ocupantes",
+    "ruler": "Regente",
+    "in_house": "na casa {house}",
+    "activators": "Ativadores",
+    "aspects": "Aspectos",
+    "modes": {
+      "natal": "Padrão natal",
+      "timing": "Ativação temporal",
+      "relationship": "Sobreposição relacional"
+    },
+    "topics": {
+      "1": "Identidade, corpo, estilo pessoal e primeiras respostas.",
+      "2": "Recursos, valores, autoestima, posses e estabilidade.",
+      "3": "Comunicação, aprendizado, irmãos, vizinhos e movimento diário.",
+      "4": "Lar, raízes, privacidade, ancestralidade e bases emocionais.",
+      "5": "Criatividade, romance, jogo, prazer, crianças e autoexpressão.",
+      "6": "Ritmo de trabalho, saúde, serviço, hábitos, técnica e habilidade prática.",
+      "7": "Parcerias, acordos, projeção, atração e espelhos diretos.",
+      "8": "Intimidade, confiança, recursos compartilhados, luto, reparo e transformação.",
+      "9": "Crenças, estudo, viagens, publicação, filosofia e sentido de longo alcance.",
+      "10": "Carreira, reputação, responsabilidade, vocação e contribuição pública.",
+      "11": "Amizades, grupos, redes, esperanças, alianças e objetivos coletivos.",
+      "12": "Recolhimento, sonhos, padrões ocultos, solitude, compaixão e liberação."
+    },
+    "reasons": {
+      "occupant": "{planet} ocupa esta casa e dá ênfase psicológica direta a ela.",
+      "ruler": "{ruler} rege esta casa e leva sua agenda pela casa {rulerHouse}.",
+      "ruler_placement": "{ruler} traz temas da casa {house} para esta casa por regência.",
+      "aspect": "{planet} se vincula a {partner} por {aspect}, reforçando este padrão de casa.",
+      "timing": "{planet} ativa esta casa natal neste momento.",
+      "timing_aspect": "{planet} aspecta {partner} natal por {aspect}, temporizando este tema de casa.",
+      "relationship": "{planet} do outro mapa cai nesta casa.",
+      "relationship_aspect": "{planet} contata {partner} por {aspect}, ligando esta casa ao padrão relacional."
     }
   },
   "comparison_insights": {
@@ -976,7 +1022,22 @@
     "porphyry": "Porfírio",
     "regiomontanus": "Regiomontano",
     "equal": "Igual",
-    "whole_sign": "Signo inteiro"
+    "whole_sign": "Signo inteiro",
+    "numbered_name": "Casa {house} · {name}",
+    "names": [
+      "Identidade",
+      "Recursos",
+      "Comunicação",
+      "Lar",
+      "Criatividade",
+      "Trabalho e saúde",
+      "Parcerias",
+      "Recursos compartilhados",
+      "Crenças e viagens",
+      "Carreira",
+      "Comunidade",
+      "Recolhimento"
+    ]
   },
   "zodiac": {
     "tropical": "Tropical",

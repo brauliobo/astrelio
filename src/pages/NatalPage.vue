@@ -6,7 +6,7 @@ import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
 import { useSettingsStore } from '../stores/settings.js'
 import { useNatalChart } from '../composables/useChart.js'
-import { naturalAspects } from '../lib/astro/aspects.js'
+import { crossAspects, naturalAspects } from '../lib/astro/aspects.js'
 import { transitsFor } from '../lib/astro/transits.js'
 import { moonPhaseLabel } from '../lib/astro/ephemeris.js'
 import { birthHeaderForPerson } from '../lib/people/labels.js'
@@ -44,6 +44,10 @@ const transit = computed(() => person.value
 )
 const phase   = computed(() => chart.value ? t(`moon_phase.${moonPhaseLabel(chart.value.jdUt)}`) : '')
 const aspects = computed(() => chart.value ? naturalAspects(chart.value, settings.aspectOptions) : [])
+const transitAspects = computed(() => chart.value && transit.value
+  ? crossAspects(chart.value, transit.value, settings.aspectOptions)
+  : []
+)
 const birthHeader = computed(() => birthHeaderForPerson(person.value))
 const sidePanelStyle = computed(() =>
   sidePanelMaxHeight.value ? { '--natal-wheel-panel-height': sidePanelMaxHeight.value } : {}
@@ -117,6 +121,9 @@ section.natal-page(data-testid='natal-page')
         :chart='chart'
         :aspects='aspects'
         :phase-label='phase'
+        :timing-chart='transit'
+        :timing-aspects='transitAspects'
+        timing-mode='transit'
         panel='left'
         v-if='chart'
       )
@@ -134,6 +141,9 @@ section.natal-page(data-testid='natal-page')
         :chart='chart'
         :aspects='aspects'
         :phase-label='phase'
+        :timing-chart='transit'
+        :timing-aspects='transitAspects'
+        timing-mode='transit'
         panel='right'
         v-if='chart'
       )

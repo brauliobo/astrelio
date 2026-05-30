@@ -1,14 +1,22 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { anglePlacements, chartSignature, placementFor, topAspects } from '../../lib/astro/analysis.js'
+import { combinedHouseCorrelations } from '../../lib/astro/house-correlations.js'
 import { degInSign } from '../../lib/astro/zodiac.js'
+import HouseCorrelationPanel from './HouseCorrelationPanel.vue'
 
 const props = defineProps({
   chart: { type: Object, required: true },
   aspects: { type: Array, default: () => [] },
   phaseLabel: { type: String, default: '' },
   panel: { type: String, default: 'full' },
+  timingChart: { type: Object, default: null },
+  timingAspects: { type: Array, default: () => [] },
+  timingMode: { type: String, default: 'transit' },
+  relationshipChart: { type: Object, default: null },
+  relationshipAspects: { type: Array, default: () => [] },
+  houseCorrelations: { type: Object, default: null },
 })
 
 const { t, tm } = useI18n()
@@ -16,6 +24,7 @@ const signs = computed(() => tm('zodiac.signs'))
 const signature = computed(() => chartSignature(props.chart))
 const angles = computed(() => anglePlacements(props.chart))
 const tropical = computed(() => signature.value.tropical)
+const activeDetailTab = ref('patterns')
 
 const fmtDegree = (lon) => {
   const d = degInSign(lon)
@@ -74,14 +83,32 @@ const hemisphereRows = computed(() => [
 ].filter(Boolean))
 const dignityRows = computed(() => tropical.value?.dignityBasics?.slice(0, 4) || [])
 const featuredAspects = computed(() => topAspects(props.aspects, 4))
+const correlations = computed(() =>
+  props.houseCorrelations || combinedHouseCorrelations({
+    natalChart: props.chart,
+    natalAspects: props.aspects,
+    timingChart: props.timingChart,
+    timingAspects: props.timingAspects,
+    timingMode: props.timingMode,
+    relationshipChart: props.relationshipChart,
+    relationshipAspects: props.relationshipAspects,
+  })
+)
 const showPrimary = computed(() => props.panel !== 'right')
 const showDetails = computed(() => props.panel !== 'left')
+const useDetailTabs = computed(() => props.panel === 'right')
+const detailTabs = [
+  { key: 'patterns', labelKey: 'analysis.detail_tabs.patterns' },
+  { key: 'factors', labelKey: 'analysis.detail_tabs.factors' },
+  { key: 'houses', labelKey: 'analysis.detail_tabs.houses' },
+]
 const placementGridClass = computed(() => props.panel === 'full' ? 'lg:grid-cols-4' : 'grid-cols-2')
 const balanceGridClass = computed(() => props.panel === 'full' ? 'lg:grid-cols-2' : '')
 const detailGridClass = computed(() => props.panel === 'full' ? 'lg:grid-cols-3' : '')
 const aspectGridClass = computed(() => props.panel === 'full' ? 'sm:grid-cols-2' : '')
 
 const pct = (share) => `${Math.round(share * 100)}%`
+const showDetailTab = tab => !useDetailTabs.value || activeDetailTab.value === tab
 </script>
 
 <template lang="pug">
@@ -115,7 +142,23 @@ const pct = (share) => `${Math.round(share * 100)}%`
           .h-2.rounded-full(class='bg-white/10')
             .h-2.rounded-full.bg-sky-300(:style='{ width: pct(row.share) }')
           .text-xs.text-right.text-slate-400.tabular-nums {{ pct(row.share) }}
-  .grid.gap-5(:class='[showPrimary ? "mt-5" : "", detailGridClass]' v-if='showDetails')
+  .chart-insight__tabs.mt-1.mb-4(
+    v-if='showDetails && useDetailTabs'
+    role='tablist'
+    :aria-label='t("analysis.detail_tabs.label")'
+    data-testid='insight-detail-tabs'
+  )
+    button.chart-insight__tab(
+      v-for='tab in detailTabs'
+      :key='tab.key'
+      type='button'
+      role='tab'
+      :aria-selected='activeDetailTab === tab.key'
+      :data-testid='`insight-tab-${tab.key}`'
+      :class='activeDetailTab === tab.key ? "chart-insight__tab--active" : ""'
+      @click='activeDetailTab = tab.key'
+    ) {{ t(tab.labelKey) }}
+  .grid.gap-5(:class='[showPrimary ? "mt-5" : "", detailGridClass]' v-if='showDetails && showDetailTab("patterns")')
     section
       h3.text-xs.font-semibold.text-slate-300.mb-3 {{ t('analysis.house_emphasis') }}
       .flex.flex-wrap.gap-2
@@ -155,6 +198,7 @@ const pct = (share) => `${Math.round(share * 100)}%`
           span(v-if='row.rulerHouse')
             span.text-slate-500  ·
             span {{ t('analysis.house_n', { house: row.rulerHouse }) }}
+  .grid.gap-5(:class='[showPrimary ? "mt-5" : "", detailGridClass]' v-if='showDetails && showDetailTab("factors")')
     section
       h3.text-xs.font-semibold.text-slate-300.mb-3 {{ t('analysis.angularity') }}
       .grid.gap-1(v-if='signature.angularPlanets.length')
@@ -179,7 +223,7 @@ const pct = (share) => `${Math.round(share * 100)}%`
           span {{ row.dignities.map(dignity => t(`analysis.dignities.${dignity}`)).join(', ') }}
           span.text-slate-500  ·
           span {{ signs[row.signIndex] }}
-  section.mt-5(v-if='showDetails && featuredAspects.length')
+  section.mt-5(v-if='showDetails && showDetailTab("factors") && featuredAspects.length')
     h3.text-xs.font-semibold.text-slate-300.mb-3 {{ t('analysis.top_aspects') }}
     .grid.gap-2(:class='aspectGridClass')
       .text-xs.text-slate-300(v-for='aspect in featuredAspects' :key='`${aspect.a}-${aspect.b}-${aspect.type}`')
@@ -190,9 +234,48 @@ const pct = (share) => `${Math.round(share * 100)}%`
         span.text-slate-100 {{ t(`planets.${aspect.b}`) }}
         span.text-slate-500  ·
         span.tabular-nums {{ aspect.delta.toFixed(2) }}°
+  HouseCorrelationPanel.mt-5(
+    v-if='showDetails && showDetailTab("houses")'
+    :correlations='correlations'
+  )
 </template>
 
 <style scoped>
+.chart-insight__tabs {
+  background: color-mix(in srgb, var(--app-panel-muted, #ffffff) 8%, transparent);
+  border: 1px solid var(--app-border);
+  border-radius: 0.5rem;
+  display: grid;
+  gap: 0.25rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 0.25rem;
+}
+
+.chart-insight__tab {
+  border-radius: 0.375rem;
+  color: var(--app-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  min-height: 1.875rem;
+  padding: 0.25rem 0.375rem;
+}
+
+.chart-insight__tab:hover,
+.chart-insight__tab:focus-visible {
+  background: var(--chart-control-hover-bg);
+  color: var(--app-fg);
+}
+
+.chart-insight__tab:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+.chart-insight__tab--active {
+  background: var(--chart-control-bg);
+  color: var(--app-fg);
+}
+
 .insight-retrograde-chip {
   color: var(--chart-retrograde-text);
 }

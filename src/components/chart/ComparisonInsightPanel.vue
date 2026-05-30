@@ -1,7 +1,9 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { relationshipHouseCorrelations, timingHouseCorrelations } from '../../lib/astro/house-correlations.js'
 import { comparisonAspectInterpretations } from '../../lib/astro/interpretations.js'
+import HouseCorrelationPanel from './HouseCorrelationPanel.vue'
 
 const props = defineProps({
   aspects: { type: Array, default: () => [] },
@@ -37,6 +39,12 @@ const dominantAspect = computed(() => {
 })
 
 const applyingCount = computed(() => props.aspects.filter(aspect => aspect.applying).length)
+const houseCorrelations = computed(() => {
+  if (!props.base || !props.comparison) return null
+  return props.mode === 'synastry'
+    ? relationshipHouseCorrelations(props.base, props.comparison, props.aspects)
+    : timingHouseCorrelations(props.base, props.comparison, props.aspects, props.mode)
+})
 
 const localizedPlanetList = planets =>
   planets.map(planet => t(`planets.${planet}`)).join(', ')
@@ -125,4 +133,8 @@ const rows = computed(() => interpretedAspects.value.map((item, index) => {
 
   p.text-sm.text-slate-400(v-else data-testid='comparison-insight-empty')
     | {{ t(`comparison_insights.empty.${mode}`) }}
+  HouseCorrelationPanel.mt-5(
+    v-if='houseCorrelations'
+    :correlations='houseCorrelations'
+  )
 </template>

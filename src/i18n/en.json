@@ -713,6 +713,12 @@
     "horizon": "Horizon signature",
     "meridian": "Public direction",
     "house_n": "House {house}",
+    "detail_tabs": {
+      "label": "Insight sections",
+      "patterns": "Patterns",
+      "factors": "Factors",
+      "houses": "Houses"
+    },
     "element_balance": "Element balance",
     "modality_balance": "Modality rhythm",
     "house_emphasis": "House emphasis",
@@ -759,6 +765,46 @@
       "mc": "MC",
       "desc": "DESC",
       "ic": "IC"
+    }
+  },
+  "house_correlations": {
+    "title": "House correlations",
+    "subtitle": "Modern psychological links between houses, planets, rulers, overlays, and aspects.",
+    "all_houses": "All 12 houses",
+    "empty": "No house correlations are available for this chart.",
+    "occupants": "Occupants",
+    "ruler": "Ruler",
+    "in_house": "in house {house}",
+    "activators": "Activators",
+    "aspects": "Aspects",
+    "modes": {
+      "natal": "Natal pattern",
+      "timing": "Timing activation",
+      "relationship": "Relationship overlay"
+    },
+    "topics": {
+      "1": "Identity, embodiment, personal style, and first responses.",
+      "2": "Resources, values, self-worth, possessions, and stability.",
+      "3": "Communication, learning, siblings, neighbors, and daily movement.",
+      "4": "Home, roots, privacy, ancestry, and emotional foundations.",
+      "5": "Creativity, romance, play, pleasure, children, and self-expression.",
+      "6": "Work rhythm, health, service, habits, craft, and practical skill.",
+      "7": "Partnerships, agreements, projection, attraction, and direct mirrors.",
+      "8": "Intimacy, trust, shared resources, grief, repair, and transformation.",
+      "9": "Belief, study, travel, publishing, philosophy, and long-range meaning.",
+      "10": "Career, reputation, responsibility, vocation, and public contribution.",
+      "11": "Friendship, groups, networks, hopes, alliances, and collective aims.",
+      "12": "Retreat, dreams, hidden patterns, solitude, compassion, and release."
+    },
+    "reasons": {
+      "occupant": "{planet} occupies this house and gives it direct psychological emphasis.",
+      "ruler": "{ruler} rules this house and carries its agenda through house {rulerHouse}.",
+      "ruler_placement": "{ruler} brings house {house} topics into this house by rulership.",
+      "aspect": "{planet} links with {partner} by {aspect}, reinforcing this house pattern.",
+      "timing": "{planet} currently activates this natal house.",
+      "timing_aspect": "{planet} aspects natal {partner} by {aspect}, timing this house theme.",
+      "relationship": "{planet} from the other chart lands in this house.",
+      "relationship_aspect": "{planet} contacts {partner} by {aspect}, tying this house into the relationship pattern."
     }
   },
   "comparison_insights": {
@@ -976,7 +1022,22 @@
     "porphyry": "Porphyry",
     "regiomontanus": "Regiomontanus",
     "equal": "Equal",
-    "whole_sign": "Whole sign"
+    "whole_sign": "Whole sign",
+    "numbered_name": "House {house} · {name}",
+    "names": [
+      "Identity",
+      "Resources",
+      "Communication",
+      "Home",
+      "Creativity",
+      "Work and health",
+      "Partnerships",
+      "Shared resources",
+      "Beliefs and travel",
+      "Career",
+      "Community",
+      "Retreat"
+    ]
   },
   "zodiac": {
     "tropical": "Tropical",
