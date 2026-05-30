@@ -3,18 +3,18 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
-  aspects: { type: Array, required: true },
-  highlightedBodies: { type: Array, default: () => [] },
+  aspects:              { type: Array, required: true },
+  highlightedBodies:    { type: Array, default: () => [] },
   highlightedAspectKey: { type: String, default: '' },
 })
 const emit = defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 const { t } = useI18n()
-const filter = ref('all')
-const hoverHighlight = ref(null)
-const pinnedHighlight = ref(null)
-const sharedHoverHighlight = ref(null)
+const filter                = ref('all')
+const hoverHighlight        = ref(null)
+const pinnedHighlight       = ref(null)
+const sharedHoverHighlight  = ref(null)
 const sharedPinnedHighlight = ref(null)
-const chartHighlightEvent = 'astrelio-chart-highlight'
+const chartHighlightEvent   = 'astrelio-chart-highlight'
 
 const aspectKey = (aspect) => `${aspect.a}-${aspect.b}-${aspect.type}`
 
@@ -41,12 +41,12 @@ const filtered = computed(() => {
 
 const rows = computed(() => filtered.value.map(a => ({
   ...a,
-  aspectKey: aspectKey(a),
-  label: t(`aspects.${a.type}`),
-  pa:    t(`planets.${a.a}`),
-  pb:    t(`planets.${a.b}`),
-  delta: a.delta.toFixed(2),
-  state: a.applying ? t('aspects.applying') : t('aspects.separating'),
+  aspectKey:   aspectKey(a),
+  label:       t(`aspects.${a.type}`),
+  pa:          t(`planets.${a.a}`),
+  pb:          t(`planets.${a.b}`),
+  delta:       a.delta.toFixed(2),
+  state:       a.applying ? t('aspects.applying') : t('aspects.separating'),
   strengthPct: `${Math.round((a.strength || 0) * 100)}%`
 })))
 
@@ -65,12 +65,12 @@ const activeAspectKey = computed(() =>
 const hasHighlight = computed(() => activeBodies.value.size > 0 || Boolean(activeAspectKey.value))
 
 const highlightPayload = (row) => ({
-  bodies: [row.a, row.b],
+  bodies:    [row.a, row.b],
   aspectKey: row.aspectKey,
 })
 
 const normalizeHighlight = (payload) => ({
-  bodies: [...new Set(payload?.bodies || [])],
+  bodies:    [...new Set(payload?.bodies || [])],
   aspectKey: payload?.aspectKey || '',
 })
 
@@ -88,14 +88,14 @@ const onSharedHighlight = (event) => {
   const highlight = event.detail?.highlight ? normalizeHighlight(event.detail.highlight) : null
   if (event.detail?.pinned) {
     sharedPinnedHighlight.value = highlight
-    sharedHoverHighlight.value = null
+    sharedHoverHighlight.value  = null
   } else {
     sharedHoverHighlight.value = highlight
   }
 }
 
 const setHoverHighlight = (row) => {
-  const highlight = highlightPayload(row)
+  const highlight      = highlightPayload(row)
   hoverHighlight.value = highlight
   emit('highlight', highlight)
   broadcastHighlight(highlight)
@@ -108,15 +108,15 @@ const clearHoverHighlight = () => {
 }
 
 const togglePinnedHighlight = (row) => {
-  const highlight = highlightPayload(row)
+  const highlight       = highlightPayload(row)
   pinnedHighlight.value = pinnedHighlight.value && sameHighlight(pinnedHighlight.value, highlight) ? null : highlight
-  hoverHighlight.value = null
+  hoverHighlight.value  = null
   emit('toggle-highlight', highlight)
   broadcastHighlight(pinnedHighlight.value, true)
 }
 
 const rowTouchesActiveBody = (row) => activeBodies.value.has(row.a) || activeBodies.value.has(row.b)
-const rowHighlightState = (row) => {
+const rowHighlightState    = (row) => {
   if (!hasHighlight.value) return 'idle'
   if (activeAspectKey.value) return activeAspectKey.value === row.aspectKey ? 'active' : 'dimmed'
   return rowTouchesActiveBody(row) ? 'active' : 'dimmed'

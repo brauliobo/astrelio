@@ -1,8 +1,8 @@
 export const referenceBrauliWheelPositions = {
   person: {
-    isoLocal: '1986-02-12T18:10',
+    isoLocal:        '1986-02-12T18:10',
     tzOffsetMinutes: -120,
-    placeLabel: 'São José dos Campos, SP — Brasil',
+    placeLabel:      'São José dos Campos, SP — Brasil',
   },
   placements: [
     { layer: 'personality', planet: 'Sun', gate: 49, sign: '♒' },

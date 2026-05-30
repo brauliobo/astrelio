@@ -10,58 +10,58 @@ import {
 } from '../../lib/human-design/labels.js'
 
 const props = defineProps({
-  chart: { type: Object, required: true },
-  transitChart: { type: Object, default: null },
+  chart:             { type: Object, required: true },
+  transitChart:      { type: Object, default: null },
   transitConnection: { type: Object, default: null },
 })
 
 const { t } = useI18n()
 const variableLabel = variable => {
-  const key = `human_design.variable_labels.${variable.id}.label`
+  const key        = `human_design.variable_labels.${variable.id}.label`
   const translated = t(key)
   return translated === key ? variable.label : translated
 }
 const orientationLabel = orientation => {
-  const key = `human_design.orientations.${orientation || 'unknown'}`
+  const key        = `human_design.orientations.${orientation || 'unknown'}`
   const translated = t(key)
   return translated === key ? orientation || '-' : translated
 }
 
 const planetWeights = {
-  Sun: 6,
-  Earth: 6,
+  Sun:       6,
+  Earth:     6,
   NorthNode: 4,
   SouthNode: 4,
-  Moon: 3,
-  Mercury: 3,
-  Venus: 3,
-  Mars: 3,
-  Jupiter: 3,
-  Saturn: 3,
-  Uranus: 2,
-  Neptune: 2,
-  Pluto: 2,
+  Moon:      3,
+  Mercury:   3,
+  Venus:     3,
+  Mars:      3,
+  Jupiter:   3,
+  Saturn:    3,
+  Uranus:    2,
+  Neptune:   2,
+  Pluto:     2,
 }
 
 const sectionTestIds = {
-  diary: 'hd-correlation-event-diary',
+  diary:    'hd-correlation-event-diary',
   transits: 'hd-correlation-transit-clusters',
-  bridge: 'hd-correlation-astrology-bridge',
+  bridge:   'hd-correlation-astrology-bridge',
 }
 
-const external = computed(() => props.chart.correlationAnalysis || props.chart.correlations || {})
-const gates = computed(() => props.chart.details?.gates || [])
-const channels = computed(() => props.chart.details?.channels || [])
-const centers = computed(() => props.chart.details?.centers || [])
+const external    = computed(() => props.chart.correlationAnalysis || props.chart.correlations || {})
+const gates       = computed(() => props.chart.details?.gates || [])
+const channels    = computed(() => props.chart.details?.channels || [])
+const centers     = computed(() => props.chart.details?.centers || [])
 const activations = computed(() => {
   if (props.chart.details?.activations?.length) return props.chart.details.activations
   return gates.value.flatMap(gate =>
     (gate.activations || []).map(activation => ({
       ...activation,
-      gate: gate.gate,
-      name: gate.name,
+      gate:   gate.gate,
+      name:   gate.name,
       center: gate.center,
-      code: activation.code || activationCode({ ...activation, gate: gate.gate }),
+      code:   activation.code || activationCode({ ...activation, gate: gate.gate }),
     }))
   )
 })
@@ -97,7 +97,7 @@ const linePatternItems = computed(() => {
   return [...counts.values()]
     .sort((left, right) => right.count - left.count || left.line - right.line)
     .map(row => t('human_design.correlations.line_pattern_item', {
-      line: row.line,
+      line:  row.line,
       count: row.count,
       gates: [...new Set(row.gates)].slice(0, 6).join(', '),
     }))
@@ -116,8 +116,8 @@ const planetWeightItems = computed(() => {
     .slice(0, 7)
     .map(activation => t('human_design.correlations.planet_weight_item', {
       planet: activation.planet,
-      gate: activation.gate,
-      line: activation.line || '-',
+      gate:   activation.gate,
+      line:   activation.line || '-',
       weight: activation.weight,
     }))
 })
@@ -131,9 +131,9 @@ const harmonicItems = computed(() => {
   const hanging = gates.value
     .flatMap(gate => (gate.harmonicSuggestions || []).map(harmonic =>
       t('human_design.correlations.harmonic_item', {
-        gate: gate.gate,
+        gate:     gate.gate,
         harmonic: harmonic.gate,
-        channel: harmonic.channel,
+        channel:  harmonic.channel,
       })
     ))
   return topItems([...transitCompletions, ...hanging])
@@ -145,7 +145,7 @@ const circuitItems = computed(() => {
 
   const groups = new Map()
   for (const channel of channels.value) {
-    const key = channel.circuitGroup || channel.circuit || t('human_design.open_circuitry')
+    const key     = channel.circuitGroup || channel.circuit || t('human_design.open_circuitry')
     const current = groups.get(key) || { key, channels: [], streams: [] }
     current.channels.push(channel.channel)
     if (channel.stream) current.streams.push(channel.stream)
@@ -155,7 +155,7 @@ const circuitItems = computed(() => {
     .sort((left, right) => right.channels.length - left.channels.length || left.key.localeCompare(right.key))
     .map(group => t('human_design.correlations.circuit_item', {
       circuit: humanDesignValueLabel(t, 'circuitGroup', group.key) || humanDesignValueLabel(t, 'circuit', group.key) || group.key,
-      count: group.channels.length,
+      count:   group.channels.length,
       streams: [...new Set(group.streams)].slice(0, 3).map(stream => humanDesignStreamLabel(t, stream)).join(', ') || '-',
     }))
 })
@@ -164,8 +164,8 @@ const crossItems = computed(() => {
   const supplied = listFromExternal('crossResonance')
   if (supplied) return topItems(supplied)
 
-  const crossGates = props.chart.incarnationCross?.gates || []
-  const transitGates = new Set(props.transitChart?.gates || [])
+  const crossGates      = props.chart.incarnationCross?.gates || []
+  const transitGates    = new Set(props.transitChart?.gates || [])
   const definedChannels = channels.value.filter(channel =>
     (channel.gates || []).some(gate => crossGates.includes(gate))
   )
@@ -183,16 +183,16 @@ const variableItems = computed(() => {
   if (supplied) return topItems(supplied)
 
   const variables = props.chart.variables || []
-  const left = variables.filter(variable => variable.orientation === 'left').length
-  const right = variables.filter(variable => variable.orientation === 'right').length
+  const left      = variables.filter(variable => variable.orientation === 'left').length
+  const right     = variables.filter(variable => variable.orientation === 'right').length
   return [
     t('human_design.correlations.variable_orientation_item', { left, right }),
     ...variables.map(variable => t('human_design.correlations.variable_item', {
-      label: variableLabel(variable),
+      label:       variableLabel(variable),
       orientation: orientationLabel(variable.orientation),
-      color: variable.color || '-',
-      tone: variable.tone || '-',
-      base: variable.base || '-',
+      color:       variable.color || '-',
+      tone:        variable.tone || '-',
+      base:        variable.base || '-',
     })),
   ]
 })
@@ -202,7 +202,7 @@ const relationshipItems = computed(() => {
   if (supplied) return topItems(supplied)
 
   const openCenters = centers.value.filter(center => !center.defined).map(center => center.center)
-  const hanging = gates.value.filter(gate => gate.isHanging).map(gate => gate.gate)
+  const hanging     = gates.value.filter(gate => gate.isHanging).map(gate => gate.gate)
   return [
     openCenters.length ? t('human_design.correlations.relationship_open_item', { centers: humanDesignListLabel(t, 'center', openCenters) }) : '',
     hanging.length ? t('human_design.correlations.relationship_hanging_item', { gates: hanging.slice(0, 10).join(', ') }) : '',
@@ -214,7 +214,7 @@ const transitClusterItems = computed(() => {
   const supplied = listFromExternal('transitThemeClustering')
   if (supplied) return topItems(supplied)
 
-  const rows = props.transitConnection?.activationWatch || props.transitChart?.details?.activations || []
+  const rows     = props.transitConnection?.activationWatch || props.transitChart?.details?.activations || []
   const byCenter = new Map()
   for (const row of rows) {
     const key = row.center || t('human_design.open_state')
@@ -237,8 +237,8 @@ const astrologyBridgeItems = computed(() => {
     : activations.value
   return rows.slice(0, 7).map(row => t('human_design.correlations.astrology_bridge_item', {
     planet: row.planet,
-    code: row.code || activationCode(row),
-    gate: row.gate,
+    code:   row.code || activationCode(row),
+    gate:   row.gate,
   }))
 })
 
@@ -248,7 +248,7 @@ const diaryItems = computed(() => {
 
   const centerGroups = new Map()
   for (const gate of gates.value) {
-    const key = gate.center || t('human_design.center')
+    const key     = gate.center || t('human_design.center')
     const current = centerGroups.get(key) || []
     current.push(gate.gate)
     centerGroups.set(key, current)
@@ -258,7 +258,7 @@ const diaryItems = computed(() => {
     .slice(0, 5)
     .map(([center, centerGates]) => t('human_design.correlations.diary_item', {
       center: humanDesignValueLabel(t, 'center', center) || center,
-      gates: centerGates.slice(0, 8).join(', '),
+      gates:  centerGates.slice(0, 8).join(', '),
     }))
 })
 

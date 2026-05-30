@@ -3,12 +3,12 @@ import BodygraphChannelPath from './BodygraphChannelPath.vue'
 import { hoverMatchesChannel } from './bodygraphInteraction.js'
 
 defineProps({
-  lines: { type: Array, required: true },
-  hover: { type: Object, default: null },
-  hasHover: { type: Boolean, default: false },
+  lines:       { type: Array, required: true },
+  hover:       { type: Object, default: null },
+  hasHover:    { type: Boolean, default: false },
   strokeWidth: { type: Number, required: true },
-  testid: { type: String, required: true },
-  keyPrefix: { type: String, required: true },
+  testid:      { type: String, required: true },
+  keyPrefix:   { type: String, required: true },
 })
 
 const emit = defineEmits(['hover', 'leave'])

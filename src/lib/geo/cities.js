@@ -1,5 +1,5 @@
 const DATA_URL = `${import.meta.env.BASE_URL}data/cities.generated.json`
-const LIMIT = 8
+const LIMIT    = 8
 
 let citiesPromise
 
@@ -11,10 +11,10 @@ const normalize = (value) =>
     .trim()
 
 const toCity = (row) => ({
-  name: row[0],
-  lat: row[1],
-  lon: row[2],
-  ianaZone: row[3],
+  name:       row[0],
+  lat:        row[1],
+  lon:        row[2],
+  ianaZone:   row[3],
   population: row[4],
 })
 
@@ -30,7 +30,7 @@ export const loadCities = async () => {
 
 export const searchCities = async (query, limit = LIMIT) => {
   const cities = await loadCities()
-  const q = normalize(query || '')
+  const q      = normalize(query || '')
 
   if (q.length < 2) return cities.slice(0, limit).map(toCity)
 

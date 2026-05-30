@@ -3,14 +3,14 @@ import { computed } from 'vue'
 import { WHEEL_RADII, midpointLongitude, norm360, polarPoint } from './geometry.js'
 
 const props = defineProps({
-  cusps: { type: Array, required: true },
+  cusps:      { type: Array, required: true },
   wheelShift: { type: Number, required: true },
 })
 
 const labels = computed(() =>
   props.cusps.map((cusp, index) => {
     const longitude = midpointLongitude(cusp, props.cusps[(index + 1) % 12])
-    const point = polarPoint(WHEEL_RADII.houseInner + 10, norm360(longitude + props.wheelShift))
+    const point     = polarPoint(WHEEL_RADII.houseInner + 10, norm360(longitude + props.wheelShift))
     return { index, point, label: String(index + 1) }
   })
 )

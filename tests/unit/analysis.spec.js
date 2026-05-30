@@ -4,10 +4,10 @@ import { chartSignature, placementFor, rankTransitAspects, topAspects } from '..
 const mk = (name, longitude, speed = 1) => ({ name, longitude, latitude: 0, speed, retrograde: speed < 0 })
 
 const chart = {
-  zodiac: 'tropical',
+  zodiac:    'tropical',
   ascendant: 15,
-  mc: 100,
-  cusps: [15, 45, 75, 105, 135, 165, 195, 225, 255, 285, 315, 345],
+  mc:        100,
+  cusps:     [15, 45, 75, 105, 135, 165, 195, 225, 255, 285, 315, 345],
   positions: [
     mk('Sun', 10),
     mk('Moon', 132),
@@ -34,20 +34,20 @@ describe('chart analysis', () => {
     const signature = chartSignature(chart)
 
     expect(signature.tropical.chartRuler).toMatchObject({
-      planet: 'Mars',
+      planet:       'Mars',
       ascSignIndex: 0,
-      signIndex: 6,
-      house: 6,
+      signIndex:    6,
+      house:        6,
     })
     expect(signature.tropical.houseRulers[0]).toMatchObject({
-      house: 1,
-      signIndex: 0,
-      ruler: 'Mars',
+      house:      1,
+      signIndex:  0,
+      ruler:      'Mars',
       rulerHouse: 6,
     })
     expect(signature.tropical.sect).toMatchObject({
-      type: 'day',
-      light: 'Sun',
+      type:    'day',
+      light:   'Sun',
       benefic: 'Jupiter',
     })
     expect(signature.hemisphereEmphasis.horizontal.key).toBe('east')
@@ -71,17 +71,17 @@ describe('chart analysis', () => {
 
   it('ranks transit aspects by exactness, applying motion, speed, houses, and natal importance', () => {
     const natal = {
-      zodiac: 'tropical',
+      zodiac:    'tropical',
       ascendant: 0,
-      mc: 90,
-      cusps: Array.from({ length: 12 }, (_, index) => index * 30),
+      mc:        90,
+      cusps:     Array.from({ length: 12 }, (_, index) => index * 30),
       positions: [mk('Sun', 5), mk('Moon', 100)],
     }
     const transit = {
-      zodiac: 'tropical',
+      zodiac:    'tropical',
       ascendant: 0,
-      mc: 90,
-      cusps: natal.cusps,
+      mc:        90,
+      cusps:     natal.cusps,
       positions: [mk('Moon', 5, 13), mk('Saturn', 6, 0.03)],
     }
     const aspects = [
@@ -93,9 +93,9 @@ describe('chart analysis', () => {
 
     expect(ranked.b).toBe('Saturn')
     expect(ranked.rank).toMatchObject({
-      applying: true,
+      applying:     true,
       transitHouse: 1,
-      natalHouse: 1,
+      natalHouse:   1,
     })
     expect(ranked.rank.speed).toBeGreaterThan(0.85)
   })

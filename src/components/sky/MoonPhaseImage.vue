@@ -4,22 +4,22 @@ import { moonPhaseLighting, moonPhaseLitPathData } from '../../lib/sky/moonPhase
 
 const props = defineProps({
   phase: { type: Number, default: 0 },
-  src: { type: String, default: '/planets/moon.jpg' },
-  size: { type: Number, default: 32 },
+  src:   { type: String, default: '/planets/moon.jpg' },
+  size:  { type: Number, default: 32 },
   light: { type: Number, default: 1 },
-  alt: { type: String, default: 'Moon' },
+  alt:   { type: String, default: 'Moon' },
 })
 
-const clipId = `moon-phase-light-${useId()}`
-const clipUrl = `url(#${clipId})`
-const lighting = computed(() => moonPhaseLighting(props.phase, props.light))
-const litPath = computed(() => moonPhaseLitPathData(props.phase))
+const clipId    = `moon-phase-light-${useId()}`
+const clipUrl   = `url(#${clipId})`
+const lighting  = computed(() => moonPhaseLighting(props.phase, props.light))
+const litPath   = computed(() => moonPhaseLitPathData(props.phase))
 const rootStyle = computed(() => ({
-  '--moon-size': `${Math.max(1, props.size)}px`,
-  '--moon-glow-alpha': lighting.value.glowAlpha,
-  '--moon-rim-alpha': lighting.value.rimAlpha,
+  '--moon-size':         `${Math.max(1, props.size)}px`,
+  '--moon-glow-alpha':   lighting.value.glowAlpha,
+  '--moon-rim-alpha':    lighting.value.rimAlpha,
   '--moon-shadow-alpha': lighting.value.shadowAlpha,
-  '--moon-lit-alpha': lighting.value.litAlpha,
+  '--moon-lit-alpha':    lighting.value.litAlpha,
 }))
 </script>
 

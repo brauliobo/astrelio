@@ -17,10 +17,10 @@ describe('annual profections', () => {
   it('derives profected sign and traditional time lord from the ascendant sign', () => {
     const profection = annualProfection(15, '1986-02-12T18:10', '2026-05-29')
     expect(profection).toMatchObject({
-      age: 40,
+      age:            40,
       profectedHouse: 5,
-      sign: 4,
-      lord: 'Sun',
+      sign:           4,
+      lord:           'Sun',
     })
   })
 })

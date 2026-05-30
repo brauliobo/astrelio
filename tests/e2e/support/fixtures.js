@@ -34,14 +34,14 @@ export const seedSettings = async (page, locale = 'pt-BR') => {
   await page.addInitScript((loc) => {
     if (!localStorage.getItem('astrelio_locale'))   localStorage.setItem('astrelio_locale', loc)
     if (!localStorage.getItem('astrelio_settings')) localStorage.setItem('astrelio_settings', JSON.stringify({
-      locale: loc,
-      houseSystem: 'placidus',
-      zodiac: 'tropical',
-      skyEnabled: false,
-      theme: 'dark',
-      aspectSet: 'all',
-      orbScale: 1,
-      applyingOnly: false,
+      locale:               loc,
+      houseSystem:          'placidus',
+      zodiac:               'tropical',
+      skyEnabled:           false,
+      theme:                'dark',
+      aspectSet:            'all',
+      orbScale:             1,
+      applyingOnly:         false,
       includeModernPlanets: true
     }))
   }, locale)
@@ -50,9 +50,9 @@ export const seedSettings = async (page, locale = 'pt-BR') => {
 export const seedSession = async (page, activeId, compareId = null, options = {}) => {
   await page.addInitScript(([a, c, opts]) => {
     const value = {
-      activePersonId: a,
-      comparePersonId: c,
-      transitDateMs: opts.transitDateMs ?? null,
+      activePersonId:    a,
+      comparePersonId:   c,
+      transitDateMs:     opts.transitDateMs ?? null,
       progressionDateMs: opts.progressionDateMs ?? null,
     }
     window.__ASTRELIO_SEED_SESSION__ = value

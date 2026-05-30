@@ -3,9 +3,9 @@ import { useI18n } from 'vue-i18n'
 import { humanDesignValueLabel } from '../../lib/human-design/labels.js'
 
 defineProps({
-  center: { type: Object, required: true },
+  center:      { type: Object, required: true },
   highlighted: { type: Boolean, default: false },
-  dimmed: { type: Boolean, default: false },
+  dimmed:      { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['hover', 'leave'])

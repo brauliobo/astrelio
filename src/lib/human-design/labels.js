@@ -1,71 +1,71 @@
 const valueMaps = {
   type: {
-    Generator: 'generator',
+    Generator:               'generator',
     'Manifesting Generator': 'manifesting_generator',
-    Manifestor: 'manifestor',
-    Projector: 'projector',
-    Reflector: 'reflector',
+    Manifestor:              'manifestor',
+    Projector:               'projector',
+    Reflector:               'reflector',
   },
   authority: {
-    Emotional: 'emotional',
-    Sacral: 'sacral',
-    Splenic: 'splenic',
-    'Ego Projected': 'ego_projected',
+    Emotional:        'emotional',
+    Sacral:           'sacral',
+    Splenic:          'splenic',
+    'Ego Projected':  'ego_projected',
     'Self Projected': 'self_projected',
     'Sounding Board': 'sounding_board',
-    Lunar: 'lunar',
+    Lunar:            'lunar',
   },
   definition: {
-    'No Definition': 'none',
-    'Single Definition': 'single',
-    'Split Definition': 'split',
+    'No Definition':           'none',
+    'Single Definition':       'single',
+    'Split Definition':        'split',
     'Triple Split Definition': 'triple_split',
-    'Quad Split Definition': 'quad_split',
+    'Quad Split Definition':   'quad_split',
   },
   circuit: {
-    Individual: 'individual',
-    'Collective Logic': 'collective_logic',
+    Individual:            'individual',
+    'Collective Logic':    'collective_logic',
     'Collective Abstract': 'collective_abstract',
-    Tribal: 'tribal',
+    Tribal:                'tribal',
   },
   circuitGroup: {
-    Individual: 'individual',
-    Collective: 'collective',
-    Tribal: 'tribal',
+    Individual:  'individual',
+    Collective:  'collective',
+    Tribal:      'tribal',
     Integration: 'integration',
   },
   center: {
-    Head: 'head',
-    Ajna: 'ajna',
-    Throat: 'throat',
-    G: 'g',
-    Ego: 'ego',
+    Head:           'head',
+    Ajna:           'ajna',
+    Throat:         'throat',
+    G:              'g',
+    Ego:            'ego',
     'Solar Plexus': 'solar_plexus',
-    Spleen: 'spleen',
-    Sacral: 'sacral',
-    Root: 'root',
+    Spleen:         'spleen',
+    Sacral:         'sacral',
+    Root:           'root',
   },
   layer: {
     personality: 'personality',
-    design: 'design',
+    design:      'design',
     Personality: 'personality',
-    Design: 'design',
+    Design:      'design',
   },
   crossGeometry: {
     'Right Angle': 'right_angle',
     Juxtaposition: 'juxtaposition',
-    'Left Angle': 'left_angle',
+    'Left Angle':  'left_angle',
   },
 }
 
 const localeGroups = {
-  type: 'types',
-  authority: 'authorities',
-  definition: 'definitions',
-  circuit: 'circuits',
-  circuitGroup: 'circuit_groups',
-  center: 'centers',
-  layer: 'layers',
+  type:          'types',
+  authority:     'authorities',
+  definition:    'definitions',
+  circuit:       'circuits',
+  circuitGroup:  'circuit_groups',
+  center:        'centers',
+  layer:         'layers',
   crossGeometry: 'cross_geometries',
 }
 
@@ -118,8 +118,8 @@ export const humanDesignCrossNameLabel = (t, name, fallback = '') => {
 
 export const humanDesignCrossTitleLabel = (t, cross = {}) => {
   const geometry = humanDesignValueLabel(t, 'crossGeometry', cross.geometry)
-  const rawName = String(cross.name || '').replace(`${cross.geometry} Cross of `, '')
-  const name = humanDesignCrossNameLabel(t, rawName)
+  const rawName  = String(cross.name || '').replace(`${cross.geometry} Cross of `, '')
+  const name     = humanDesignCrossNameLabel(t, rawName)
   if (!geometry || !name) return cross.name || '—'
   return t('human_design.cross_name_format', { geometry, name })
 }

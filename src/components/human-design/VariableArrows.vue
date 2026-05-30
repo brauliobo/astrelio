@@ -7,15 +7,15 @@ defineProps({
 
 const { t } = useI18n()
 const variableLabel = variable => {
-  const key = `human_design.variable_labels.${variable.id}.label`
+  const key        = `human_design.variable_labels.${variable.id}.label`
   const translated = t(key)
   return translated === key ? variable.label : translated
 }
 
 const positionClass = {
-  digestion: 'top-left',
+  digestion:   'top-left',
   environment: 'bottom-left',
-  motivation: 'top-right',
+  motivation:  'top-right',
   perspective: 'bottom-right',
 }
 </script>

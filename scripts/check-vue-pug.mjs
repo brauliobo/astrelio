@@ -1,12 +1,12 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-const ROOT = new URL('../src', import.meta.url)
+const ROOT        = new URL('../src', import.meta.url)
 const TEMPLATE_RE = /<template\b([^>]*)>/g
 
 const vueFiles = async (dir) => {
   const entries = await readdir(dir, { withFileTypes: true })
-  const files = await Promise.all(entries.map(async (entry) => {
+  const files   = await Promise.all(entries.map(async (entry) => {
     const path = join(dir, entry.name)
     if (entry.isDirectory()) return vueFiles(path)
     return entry.isFile() && entry.name.endsWith('.vue') ? [path] : []
@@ -14,7 +14,7 @@ const vueFiles = async (dir) => {
   return files.flat()
 }
 
-const files = await vueFiles(ROOT.pathname)
+const files    = await vueFiles(ROOT.pathname)
 const failures = []
 
 for (const file of files) {

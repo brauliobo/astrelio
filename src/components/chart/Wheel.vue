@@ -12,28 +12,28 @@ import ZodiacRing from './wheel/ZodiacRing.vue'
 import { CENTER, VIEWBOX_SIZE, WHEEL_RADII, mapsFromProps, norm360 } from './wheel/geometry.js'
 
 const displayModes = ['clean', 'aspects', 'detailed', 'print']
-const zoomMin = 0.85
-const zoomMax = 1.6
-const zoomStep = 0.15
+const zoomMin      = 0.85
+const zoomMax      = 1.6
+const zoomStep     = 0.15
 const modeSettings = {
   clean: {
-    degrees: false,
-    aspects: false,
+    degrees:      false,
+    aspects:      false,
     pointDetails: false,
   },
   aspects: {
-    degrees: false,
-    aspects: true,
+    degrees:      false,
+    aspects:      true,
     pointDetails: true,
   },
   detailed: {
-    degrees: true,
-    aspects: true,
+    degrees:      true,
+    aspects:      true,
     pointDetails: true,
   },
   print: {
-    degrees: true,
-    aspects: false,
+    degrees:      true,
+    aspects:      false,
     pointDetails: true,
   },
 }
@@ -41,47 +41,47 @@ const modeSettings = {
 const normalizeMode = (mode) => displayModes.includes(mode) ? mode : 'auto'
 
 const props = defineProps({
-  natal: { type: Object, default: null },
-  overlay: { type: Object, default: null },
-  charts: { type: Array, default: () => [] },
-  size: { type: Number, default: 520 },
-  highlightedBodies: { type: Array, default: () => [] },
+  natal:                { type: Object, default: null },
+  overlay:              { type: Object, default: null },
+  charts:               { type: Array, default: () => [] },
+  size:                 { type: Number, default: 520 },
+  highlightedBodies:    { type: Array, default: () => [] },
   highlightedAspectKey: { type: String, default: '' },
-  aspectOptions: { type: Object, default: () => ({}) },
-  displayMode: { type: String, default: 'auto' },
-  showModeControls: { type: Boolean, default: true },
-  zodiacSymbols: { type: Array, default: null },
-  planetGlyphRenderer: { type: String, default: null },
-  showNakshatraRing: { type: Boolean, default: false },
-  defaultZoomBase: { type: Number, default: 1.3 },
+  aspectOptions:        { type: Object, default: () => ({}) },
+  displayMode:          { type: String, default: 'auto' },
+  showModeControls:     { type: Boolean, default: true },
+  zodiacSymbols:        { type: Array, default: null },
+  planetGlyphRenderer:  { type: String, default: null },
+  showNakshatraRing:    { type: Boolean, default: false },
+  defaultZoomBase:      { type: Number, default: 1.3 },
 })
 const emit = defineEmits(['highlight', 'clear-highlight', 'toggle-highlight', 'update:display-mode'])
 const { t } = useI18n()
 
-const hoverHighlight = ref(null)
-const pinnedHighlight = ref(null)
-const sharedHoverHighlight = ref(null)
+const hoverHighlight        = ref(null)
+const pinnedHighlight       = ref(null)
+const sharedHoverHighlight  = ref(null)
 const sharedPinnedHighlight = ref(null)
-const localDisplayMode = ref('')
-const isSmallScreen = ref(false)
-const zoomLevel = ref(1)
-const showExteriorOrbit = ref(false)
-const chartHighlightEvent = 'astrelio-chart-highlight'
-let smallScreenQuery = null
+const localDisplayMode      = ref('')
+const isSmallScreen         = ref(false)
+const zoomLevel             = ref(1)
+const showExteriorOrbit     = ref(false)
+const chartHighlightEvent   = 'astrelio-chart-highlight'
+let smallScreenQuery        = null
 
 const updateSmallScreen = () => {
   isSmallScreen.value = Boolean(smallScreenQuery?.matches)
 }
 
-const maps = computed(() => mapsFromProps(props))
+const maps                   = computed(() => mapsFromProps(props))
 const hasExteriorOrbitOption = computed(() => maps.value.some(map => map.exteriorOrbit))
-const visibleMaps = computed(() =>
+const visibleMaps            = computed(() =>
   maps.value.filter(map => !map.exteriorOrbit || showExteriorOrbit.value)
 )
-const baseChart = computed(() => maps.value[0]?.chart || null)
-const isSimpleChart = computed(() => visibleMaps.value.length === 1)
-const hasExteriorOrbit = computed(() => visibleMaps.value.some(map => map.exteriorOrbit))
-const zoomBase = computed(() => hasExteriorOrbit.value ? Math.min(props.defaultZoomBase, 1.08) : props.defaultZoomBase)
+const baseChart            = computed(() => maps.value[0]?.chart || null)
+const isSimpleChart        = computed(() => visibleMaps.value.length === 1)
+const hasExteriorOrbit     = computed(() => visibleMaps.value.some(map => map.exteriorOrbit))
+const zoomBase             = computed(() => hasExteriorOrbit.value ? Math.min(props.defaultZoomBase, 1.08) : props.defaultZoomBase)
 const automaticDisplayMode = computed(() =>
   isSimpleChart.value && isSmallScreen.value ? 'clean' : 'detailed'
 )
@@ -91,31 +91,31 @@ const activeDisplayMode = computed(() => {
   return propMode === 'auto' ? automaticDisplayMode.value : propMode
 })
 const displayOptions = computed(() => modeSettings[activeDisplayMode.value])
-const displayMaps = computed(() =>
+const displayMaps    = computed(() =>
   visibleMaps.value.map(map => ({
     ...map,
     showAspects: displayOptions.value.aspects && map.showAspects,
   }))
 )
 const wheelShift = computed(() => norm360(-(baseChart.value?.cusps?.[0] || 0)))
-const style = computed(() => ({
-  width: `${props.size}px`,
+const style      = computed(() => ({
+  width:    `${props.size}px`,
   maxWidth: '100%',
 }))
 const zoomViewBox = computed(() => {
   const viewSize = VIEWBOX_SIZE / (zoomBase.value * zoomLevel.value)
-  const offset = (VIEWBOX_SIZE - viewSize) / 2
+  const offset   = (VIEWBOX_SIZE - viewSize) / 2
   return [offset, offset, viewSize, viewSize]
     .map(value => Number(value.toFixed(3)))
     .join(' ')
 })
-const zoomPercent = computed(() => `${Math.round(zoomLevel.value * 100)}%`)
-const isZoomMin = computed(() => zoomLevel.value <= zoomMin)
-const isZoomMax = computed(() => zoomLevel.value >= zoomMax)
-const isZoomDefault = computed(() => zoomLevel.value === 1)
+const zoomPercent       = computed(() => `${Math.round(zoomLevel.value * 100)}%`)
+const isZoomMin         = computed(() => zoomLevel.value <= zoomMin)
+const isZoomMax         = computed(() => zoomLevel.value >= zoomMax)
+const isZoomDefault     = computed(() => zoomLevel.value === 1)
 const displayAttributes = computed(() => ({
-  'data-chart-mode': activeDisplayMode.value,
-  'data-show-degrees': String(displayOptions.value.degrees),
+  'data-chart-mode':         activeDisplayMode.value,
+  'data-show-degrees':       String(displayOptions.value.degrees),
   'data-show-point-details': String(displayOptions.value.pointDetails),
 }))
 const hasExternalHighlight = computed(() =>
@@ -132,7 +132,7 @@ const activeAspectKey = computed(() =>
 )
 
 const normalizeHighlight = (payload) => ({
-  bodies: [...new Set(payload?.bodies || [])],
+  bodies:    [...new Set(payload?.bodies || [])],
   aspectKey: payload?.aspectKey || '',
 })
 
@@ -145,7 +145,7 @@ const onSharedHighlight = (event) => {
   const highlight = event.detail?.highlight ? normalizeHighlight(event.detail.highlight) : null
   if (event.detail?.pinned) {
     sharedPinnedHighlight.value = highlight
-    sharedHoverHighlight.value = null
+    sharedHoverHighlight.value  = null
   } else {
     sharedHoverHighlight.value = highlight
   }
@@ -157,7 +157,7 @@ const sameHighlight = (a, b) =>
   a.bodies.every(body => b.bodies.includes(body))
 
 const setHoverHighlight = (payload) => {
-  const highlight = normalizeHighlight(payload)
+  const highlight      = normalizeHighlight(payload)
   hoverHighlight.value = highlight
   emit('highlight', highlight)
   broadcastHighlight(highlight)
@@ -170,9 +170,9 @@ const clearHoverHighlight = () => {
 }
 
 const togglePinnedHighlight = (payload) => {
-  const highlight = normalizeHighlight(payload)
+  const highlight       = normalizeHighlight(payload)
   pinnedHighlight.value = pinnedHighlight.value && sameHighlight(pinnedHighlight.value, highlight) ? null : highlight
-  hoverHighlight.value = null
+  hoverHighlight.value  = null
   emit('toggle-highlight', highlight)
   broadcastHighlight(pinnedHighlight.value, true)
 }
@@ -185,7 +185,7 @@ const selectDisplayMode = (mode) => {
 }
 
 const setZoom = (value) => {
-  const clamped = Math.min(zoomMax, Math.max(zoomMin, value))
+  const clamped   = Math.min(zoomMax, Math.max(zoomMin, value))
   zoomLevel.value = Number(clamped.toFixed(2))
 }
 

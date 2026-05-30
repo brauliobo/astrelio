@@ -5,45 +5,45 @@ import { PLANET_GLYPH_VIEWBOX_SIZE, normalizePlanetGlyphRenderer, planetGlyphSvg
 
 const props = defineProps({
   reference: { type: String, required: true },
-  symbol: { type: String, default: '' },
-  mode: { type: String, default: 'html' },
-  x: { type: Number, default: 0 },
-  y: { type: Number, default: 0 },
-  size: { type: Number, default: 18 },
-  color: { type: String, default: 'currentColor' },
-  weight: { type: [Number, String], default: 700 },
-  anchor: { type: String, default: 'middle' },
-  baseline: { type: String, default: 'middle' },
-  scale: { type: [Number, Object], default: 1 },
-  renderer: { type: String, default: null },
+  symbol:    { type: String, default: '' },
+  mode:      { type: String, default: 'html' },
+  x:         { type: Number, default: 0 },
+  y:         { type: Number, default: 0 },
+  size:      { type: Number, default: 18 },
+  color:     { type: String, default: 'currentColor' },
+  weight:    { type: [Number, String], default: 700 },
+  anchor:    { type: String, default: 'middle' },
+  baseline:  { type: String, default: 'middle' },
+  scale:     { type: [Number, Object], default: 1 },
+  renderer:  { type: String, default: null },
 })
 
 const activeRenderer = computed(() => normalizePlanetGlyphRenderer(props.renderer))
-const symbol = computed(() => {
+const symbol         = computed(() => {
   if (activeRenderer.value === 'utf8') return PLANET_SYMBOLS[props.reference] || props.reference.slice(0, 2)
   return props.symbol || PLANET_SYMBOLS[props.reference] || props.reference.slice(0, 2)
 })
 const svgMarkup = computed(() => planetGlyphSvg(props.reference))
-const scaleXY = computed(() => {
+const scaleXY   = computed(() => {
   if (typeof props.scale === 'number') return { x: props.scale, y: props.scale }
   return { x: props.scale?.x ?? 1, y: props.scale?.y ?? 1 }
 })
-const useSvgGlyph = computed(() => props.mode === 'svg' && activeRenderer.value === 'svg' && svgMarkup.value)
+const useSvgGlyph     = computed(() => props.mode === 'svg' && activeRenderer.value === 'svg' && svgMarkup.value)
 const useHtmlSvgGlyph = computed(() => props.mode !== 'svg' && activeRenderer.value === 'svg' && svgMarkup.value)
-const isUnscaled = computed(() => scaleXY.value.x === 1 && scaleXY.value.y === 1)
-const svgTransform = computed(() => isUnscaled.value
+const isUnscaled      = computed(() => scaleXY.value.x === 1 && scaleXY.value.y === 1)
+const svgTransform    = computed(() => isUnscaled.value
   ? null
   : `translate(${props.x} ${props.y}) scale(${scaleXY.value.x} ${scaleXY.value.y}) translate(${-props.x} ${-props.y})`
 )
 const svgIconTransform = computed(() => {
   const sizeScale = props.size / PLANET_GLYPH_VIEWBOX_SIZE
-  const halfBox = PLANET_GLYPH_VIEWBOX_SIZE / 2
+  const halfBox   = PLANET_GLYPH_VIEWBOX_SIZE / 2
   return `translate(${props.x} ${props.y}) scale(${sizeScale * scaleXY.value.x} ${sizeScale * scaleXY.value.y}) translate(${-halfBox} ${-halfBox})`
 })
 const htmlStyle = computed(() => ({
-  '--glyph-size': `${props.size}px`,
-  '--glyph-color': props.color,
-  '--glyph-weight': props.weight,
+  '--glyph-size':    `${props.size}px`,
+  '--glyph-color':   props.color,
+  '--glyph-weight':  props.weight,
   '--glyph-scale-x': scaleXY.value.x,
   '--glyph-scale-y': scaleXY.value.y,
 }))

@@ -6,23 +6,23 @@ import { createSkyScene } from '../../lib/sky/scene.js'
 import MoonPhaseImage from './MoonPhaseImage.vue'
 
 const props = defineProps({
-  person: { type: Object, default: null },
-  zodiac: { type: String, default: 'tropical' },
+  person:      { type: Object, default: null },
+  zodiac:      { type: String, default: 'tropical' },
   houseSystem: { type: String, default: 'placidus' },
-  mode: { type: String, default: 'astrology' },
-  theme: { type: String, default: 'dark' },
+  mode:        { type: String, default: 'astrology' },
+  theme:       { type: String, default: 'dark' },
 })
 
-const canvas = ref(null)
+const canvas    = ref(null)
 const moonFrame = ref(null)
 const { t, locale } = useI18n()
-let handle  = null
+let handle = null
 
 const moonStyle = computed(() => {
   if (!moonFrame.value) return null
   return {
     left: `${moonFrame.value.x}px`,
-    top: `${moonFrame.value.y}px`,
+    top:  `${moonFrame.value.y}px`,
   }
 })
 
@@ -35,26 +35,26 @@ const applyContext = () => {
   if (!handle) return
   if (!props.person) {
     handle.setContext({
-      date: new Date(),
-      lat: 0,
-      lon: 0,
-      zodiac: props.zodiac,
-      houseSystem: props.houseSystem,
-      mode: props.mode,
-      theme: props.theme,
+      date:         new Date(),
+      lat:          0,
+      lon:          0,
+      zodiac:       props.zodiac,
+      houseSystem:  props.houseSystem,
+      mode:         props.mode,
+      theme:        props.theme,
       planetLabels: planetLabels(),
     })
     return
   }
   const offset = offsetMinutesForPerson(props.person)
   handle.setContext({
-    date: new Date(localToUtcMs(props.person.isoLocal, offset)),
-    lat: props.person.lat,
-    lon: props.person.lon,
-    zodiac: props.zodiac,
-    houseSystem: props.houseSystem,
-    mode: props.mode,
-    theme: props.theme,
+    date:         new Date(localToUtcMs(props.person.isoLocal, offset)),
+    lat:          props.person.lat,
+    lon:          props.person.lon,
+    zodiac:       props.zodiac,
+    houseSystem:  props.houseSystem,
+    mode:         props.mode,
+    theme:        props.theme,
     planetLabels: planetLabels(),
   })
 }

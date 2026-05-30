@@ -7,18 +7,18 @@ import PlanetLayer from './PlanetLayer.vue'
 import { planetBandFor, planetPlacements } from './geometry.js'
 
 const props = defineProps({
-  map: { type: Object, required: true },
-  index: { type: Number, required: true },
-  count: { type: Number, required: true },
-  wheelShift: { type: Number, required: true },
-  highlightedBodies: { type: Array, default: () => [] },
+  map:                  { type: Object, required: true },
+  index:                { type: Number, required: true },
+  count:                { type: Number, required: true },
+  wheelShift:           { type: Number, required: true },
+  highlightedBodies:    { type: Array, default: () => [] },
   highlightedAspectKey: { type: String, default: '' },
-  aspectOptions: { type: Object, default: () => ({}) },
-  glyphRenderer: { type: String, default: null },
+  aspectOptions:        { type: Object, default: () => ({}) },
+  glyphRenderer:        { type: String, default: null },
 })
 defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 
-const band = computed(() => planetBandFor(props.map, props.index, props.count))
+const band       = computed(() => planetBandFor(props.map, props.index, props.count))
 const placements = computed(() =>
   planetPlacements(props.map.chart, props.wheelShift, band.value, props.map.planetSymbols || undefined)
 )

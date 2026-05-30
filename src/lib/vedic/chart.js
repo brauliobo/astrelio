@@ -30,8 +30,8 @@ const MODERN_BODY_KEYS = [
 
 const HOUSES = {
   whole_sign: 'W',
-  equal: 'A',
-  bhava: 'P',
+  equal:      'A',
+  bhava:      'P',
 }
 
 const jdToDate = (jd) => new Date((jd - 2440587.5) * 86_400_000)
@@ -41,21 +41,21 @@ const positionFor = (jd, name, body, flags) => {
   return {
     name,
     displayName: VEDIC_BODY_LABELS[name] || name,
-    longitude: norm360(position[0]),
-    latitude: position[1],
-    speed: position[3],
-    retrograde: position[3] < 0,
-    nakshatra: nakshatraOf(position[0]),
-    signIndex: signIndex(position[0]),
+    longitude:   norm360(position[0]),
+    latitude:    position[1],
+    speed:       position[3],
+    retrograde:  position[3] < 0,
+    nakshatra:   nakshatraOf(position[0]),
+    signIndex:   signIndex(position[0]),
   }
 }
 
 const siderealHouses = (jd, lat, lon, houseMode) => {
-  const hsys = HOUSES[houseMode] || HOUSES.whole_sign
-  const houses = swissHouses(jd, lat, lon, hsys, swiss.SEFLG_SIDEREAL)
+  const hsys      = HOUSES[houseMode] || HOUSES.whole_sign
+  const houses    = swissHouses(jd, lat, lon, hsys, swiss.SEFLG_SIDEREAL)
   const ascendant = norm360(houses.ascmc[0])
-  const mc = norm360(houses.ascmc[1])
-  const cusps = Array.from(houses.cusps).slice(1, 13).map(norm360)
+  const mc        = norm360(houses.ascmc[1])
+  const cusps     = Array.from(houses.cusps).slice(1, 13).map(norm360)
 
   if (houseMode === 'whole_sign') {
     const start = Math.floor(ascendant / 30) * 30
@@ -72,50 +72,50 @@ const siderealHouses = (jd, lat, lon, houseMode) => {
 export const buildVedicChart = async (person, settings = {}) => {
   if (!person) return null
 
-  const ayanamsha = settings.ayanamsha || 'lahiri'
-  const houseMode = settings.houseMode || 'whole_sign'
-  const nodeMode = settings.nodeMode === 'true' ? 'true' : 'mean'
+  const ayanamsha            = settings.ayanamsha || 'lahiri'
+  const houseMode            = settings.houseMode || 'whole_sign'
+  const nodeMode             = settings.nodeMode === 'true' ? 'true' : 'mean'
   const includeModernPlanets = !!settings.includeModernPlanets
-  const jdUt = localToJdUt(person.isoLocal, offsetMinutesForPerson(person))
+  const jdUt                 = localToJdUt(person.isoLocal, offsetMinutesForPerson(person))
 
   setSwissAyanamsha(ayanamsha)
-  const flags = swissFlags({ sidereal: true })
+  const flags     = swissFlags({ sidereal: true })
   const positions = BODY_KEYS
     .concat(includeModernPlanets ? MODERN_BODY_KEYS : [])
     .map(([name, body]) => positionFor(jdUt, name, body, flags))
 
   const nodeBody = nodeMode === 'true' ? SWISS_BODY.NorthNodeTrue : SWISS_BODY.NorthNodeMean
-  const rahu = positionFor(jdUt, 'NorthNode', nodeBody, flags)
-  const ketu = {
+  const rahu     = positionFor(jdUt, 'NorthNode', nodeBody, flags)
+  const ketu     = {
     ...rahu,
-    name: 'SouthNode',
+    name:        'SouthNode',
     displayName: VEDIC_BODY_LABELS.SouthNode,
-    longitude: norm360(rahu.longitude + 180),
-    latitude: -rahu.latitude,
-    nakshatra: nakshatraOf(rahu.longitude + 180),
-    signIndex: signIndex(rahu.longitude + 180),
+    longitude:   norm360(rahu.longitude + 180),
+    latitude:    -rahu.latitude,
+    nakshatra:   nakshatraOf(rahu.longitude + 180),
+    signIndex:   signIndex(rahu.longitude + 180),
   }
   positions.push(rahu, ketu)
 
-  const houses = siderealHouses(jdUt, person.lat, person.lon, houseMode)
-  const moon = positions.find(position => position.name === 'Moon')
+  const houses   = siderealHouses(jdUt, person.lat, person.lon, houseMode)
+  const moon     = positions.find(position => position.name === 'Moon')
   const targetJd = swissJulday()
-  const dashas = moon ? vimshottariDashas(moon.longitude, jdUt, targetJd) : null
+  const dashas   = moon ? vimshottariDashas(moon.longitude, jdUt, targetJd) : null
 
   return {
-    id: `vedic-${person.id || jdUt}`,
+    id:       `vedic-${person.id || jdUt}`,
     modality: 'vedic',
     jdUt,
-    lat: person.lat,
-    lon: person.lon,
+    lat:    person.lat,
+    lon:    person.lon,
     zodiac: 'sidereal',
     ayanamsha,
     ayanamshaValue: swiss.get_ayanamsa_ut(jdUt),
-    houseSystem: houseMode,
+    houseSystem:    houseMode,
     nodeMode,
     ascendant: houses.ascendant,
-    mc: houses.mc,
-    cusps: houses.cusps,
+    mc:        houses.mc,
+    cusps:     houses.cusps,
     positions,
     navamsa: navamsaPlacements(positions),
     dashas,

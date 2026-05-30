@@ -19,7 +19,7 @@ const settings = useSettingsStore()
 const person = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
 const natal  = useNatalChart(person, settings)
 
-const dateMs = ref(session.transitDateMs || Date.now())
+const dateMs    = ref(session.transitDateMs || Date.now())
 const dateInput = computed({
   get: () => new Date(dateMs.value).toISOString().slice(0, 16),
   set: (v) => { dateMs.value = new Date(v).getTime(); session.setTransitDate(dateMs.value) }

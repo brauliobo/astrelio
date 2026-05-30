@@ -5,7 +5,7 @@ import { CENTER, WHEEL_RADII, ZODIAC_SIGNS, polarPoint, norm360 } from './geomet
 
 const props = defineProps({
   wheelShift: { type: Number, required: true },
-  symbols: { type: Array, default: () => ZODIAC_SIGNS },
+  symbols:    { type: Array, default: () => ZODIAC_SIGNS },
 })
 
 const sectorFills = [
@@ -17,7 +17,7 @@ const sectorFills = [
 const sectors = computed(() =>
   props.symbols.map((symbol, index) => {
     const start = norm360(index * 30 + props.wheelShift)
-    const end = norm360((index + 1) * 30 + props.wheelShift)
+    const end   = norm360((index + 1) * 30 + props.wheelShift)
     const label = polarPoint((WHEEL_RADII.zodiacInner + WHEEL_RADII.zodiacOuter) / 2, index * 30 + 15 + props.wheelShift)
     return { symbol, index, start, end, label, fill: sectorFills[index % sectorFills.length] }
   })

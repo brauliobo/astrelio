@@ -3,14 +3,14 @@ import { activationCode, activationFromLongitude } from '../../../src/lib/human-
 import { buildHumanDesignChart } from '../../../src/lib/human-design/bodygraph.js'
 
 const referencePerson = {
-  id: 'ref-person',
-  name: 'Bráulio Oliveira',
-  isoLocal: '1986-02-12T18:10',
-  ianaZone: 'America/Sao_Paulo',
+  id:              'ref-person',
+  name:            'Bráulio Oliveira',
+  isoLocal:        '1986-02-12T18:10',
+  ianaZone:        'America/Sao_Paulo',
   tzOffsetMinutes: -120,
-  lat: -23.18,
-  lon: -45.88,
-  placeLabel: 'São José dos Campos, SP - Brasil',
+  lat:             -23.18,
+  lon:             -45.88,
+  placeLabel:      'São José dos Campos, SP - Brasil',
 }
 
 describe('Human Design activations', () => {

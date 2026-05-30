@@ -14,10 +14,10 @@ const onLocale = (e) => {
   locale.value = settings.locale
 }
 
-const houses = ['placidus', 'koch', 'porphyry', 'regiomontanus', 'equal', 'whole_sign']
-const nodeModes = ['mean', 'true']
+const houses     = ['placidus', 'koch', 'porphyry', 'regiomontanus', 'equal', 'whole_sign']
+const nodeModes  = ['mean', 'true']
 const aspectSets = ['all', 'major']
-const orbScales = [
+const orbScales  = [
   { value: 0.75, key: 'tight' },
   { value: 1, key: 'standard' },
   { value: 1.25, key: 'wide' },
@@ -25,36 +25,36 @@ const orbScales = [
 
 const labels = {
   en: {
-    preset: 'Preset',
-    custom: 'Custom',
-    simple: 'Simple',
-    traditional: 'Traditional',
-    modern: 'Modern',
-    technical: 'Technical',
-    print: 'Print',
-    advanced: 'Advanced settings',
-    backup: 'Backup and reset',
-    open: 'Open',
+    preset:        'Preset',
+    custom:        'Custom',
+    simple:        'Simple',
+    traditional:   'Traditional',
+    modern:        'Modern',
+    technical:     'Technical',
+    print:         'Print',
+    advanced:      'Advanced settings',
+    backup:        'Backup and reset',
+    open:          'Open',
     glyphRenderer: 'Planet glyphs',
-    glyphSvg: 'SVG symbols',
-    glyphUtf8: 'Unicode symbols',
-    glyphText: 'Text labels',
+    glyphSvg:      'SVG symbols',
+    glyphUtf8:     'Unicode symbols',
+    glyphText:     'Text labels',
   },
   pt: {
-    preset: 'Predefinição',
-    custom: 'Personalizado',
-    simple: 'Simples',
-    traditional: 'Tradicional',
-    modern: 'Moderno',
-    technical: 'Técnico',
-    print: 'Impressão',
-    advanced: 'Configurações avançadas',
-    backup: 'Backup e redefinição',
-    open: 'Abrir',
+    preset:        'Predefinição',
+    custom:        'Personalizado',
+    simple:        'Simples',
+    traditional:   'Tradicional',
+    modern:        'Moderno',
+    technical:     'Técnico',
+    print:         'Impressão',
+    advanced:      'Configurações avançadas',
+    backup:        'Backup e redefinição',
+    open:          'Abrir',
     glyphRenderer: 'Símbolos planetários',
-    glyphSvg: 'Símbolos SVG',
-    glyphUtf8: 'Símbolos Unicode',
-    glyphText: 'Rótulos de texto',
+    glyphSvg:      'Símbolos SVG',
+    glyphUtf8:     'Símbolos Unicode',
+    glyphText:     'Rótulos de texto',
   },
 }
 

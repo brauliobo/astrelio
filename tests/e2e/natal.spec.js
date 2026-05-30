@@ -44,22 +44,22 @@ test.describe('Natal chart', () => {
 
   test('reactively updates chart wheel colors when theme changes', async ({ page }) => {
     await page.goto('/#/natal')
-    const sign = page.locator('[data-testid="zodiac-ring"] text').first()
-    const center = page.locator('[data-testid="wheel-frame"] circle').nth(4)
+    const sign       = page.locator('[data-testid="zodiac-ring"] text').first()
+    const center     = page.locator('[data-testid="wheel-frame"] circle').nth(4)
     const retrograde = page.locator('.insight-retrograde-chip').first()
-    const modality = page.getByTestId('modality-astrology')
-    const darkFill = await sign.evaluate(el => getComputedStyle(el).fill)
+    const modality   = page.getByTestId('modality-astrology')
+    const darkFill   = await sign.evaluate(el => getComputedStyle(el).fill)
 
     await page.getByTestId('theme-toggle').click()
     await expect.poll(() => page.evaluate(() => document.documentElement.dataset.theme)).toBe('light')
 
-    const lightFill = await sign.evaluate(el => getComputedStyle(el).fill)
-    const centerFill = await center.evaluate(el => getComputedStyle(el).fill)
+    const lightFill       = await sign.evaluate(el => getComputedStyle(el).fill)
+    const centerFill      = await center.evaluate(el => getComputedStyle(el).fill)
     const retrogradeColor = await retrograde.evaluate(el => getComputedStyle(el).color)
-    const modalityStyles = await modality.evaluate(el => {
+    const modalityStyles  = await modality.evaluate(el => {
       const styles = getComputedStyle(el)
       return {
-        color: styles.color,
+        color:           styles.color,
         backgroundColor: styles.backgroundColor,
       }
     })
@@ -92,7 +92,7 @@ test.describe('Natal chart', () => {
       localStorage.setItem('astrelio_settings', JSON.stringify({
         ...settings,
         skyEnabled: true,
-        theme: 'light',
+        theme:      'light',
       }))
     })
 

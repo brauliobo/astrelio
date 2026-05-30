@@ -16,16 +16,16 @@ const astrologyChart = (person, settings = {}) => {
   if (!person) return null
   const jd = localToJdUt(person.isoLocal, offsetMinutesForPerson(person))
   return computeChart(jd, person.lat, person.lon, {
-    zodiac: settings.zodiac || 'tropical',
+    zodiac:      settings.zodiac || 'tropical',
     houseSystem: settings.houseSystem || 'placidus',
-    nodeMode: settings.nodeMode,
+    nodeMode:    settings.nodeMode,
   })
 }
 
 export const modalities = {
   astrology: {
-    id: 'astrology',
-    chart: astrologyChart,
+    id:             'astrology',
+    chart:          astrologyChart,
     interpretation: (chart, _person, settings = {}) =>
       natalInterpretationSections(chart, chart ? naturalAspects(chart, settings.aspectOptions) : []),
     connection: (chartA, chartB, settings = {}) => ({
@@ -33,17 +33,17 @@ export const modalities = {
     }),
   },
   humanDesign: {
-    id: 'humanDesign',
-    chart: buildHumanDesignChart,
-    interpretation: humanDesignInterpretationSections,
-    connection: humanDesignConnection,
+    id:                 'humanDesign',
+    chart:              buildHumanDesignChart,
+    interpretation:     humanDesignInterpretationSections,
+    connection:         humanDesignConnection,
     connectionInsights: humanDesignConnectionInsights,
   },
   vedic: {
-    id: 'vedic',
-    chart: buildVedicChart,
+    id:             'vedic',
+    chart:          buildVedicChart,
     interpretation: () => [],
-    connection: () => ({ aspects: [] }),
+    connection:     () => ({ aspects: [] }),
   },
 }
 

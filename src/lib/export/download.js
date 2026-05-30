@@ -13,12 +13,12 @@ export const timestampFilePart = (date = new Date()) =>
   date.toISOString().replace(/\.\d{3}Z$/, 'Z').replace(/[:.]/g, '-')
 
 export const downloadBlob = (blob, filename) => {
-  const url = window.URL.createObjectURL(blob)
+  const url  = window.URL.createObjectURL(blob)
   const link = document.createElement('a')
 
-  link.href = url
+  link.href     = url
   link.download = filename
-  link.rel = 'noopener'
+  link.rel      = 'noopener'
   document.body.appendChild(link)
   link.click()
   link.remove()

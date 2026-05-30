@@ -13,8 +13,8 @@ describe('secondaryProgression', () => {
     const for30y  = birthMs + 30 * 365.25 * 86_400_000
     const prog    = secondaryProgression(natalJd, for30y, birthMs, REF.lat, REF.lon, { zodiac: 'tropical', houseSystem: 'placidus' })
     const ref     = computeChart(natalJd + 30, REF.lat, REF.lon, { zodiac: 'tropical', houseSystem: 'placidus' })
-    const ps = prog.positions.find(p => p.name === 'Sun').longitude
-    const rs = ref.positions.find(p => p.name === 'Sun').longitude
+    const ps      = prog.positions.find(p => p.name === 'Sun').longitude
+    const rs      = ref.positions.find(p => p.name === 'Sun').longitude
     expect(Math.abs(ps - rs)).toBeLessThan(0.05)
   })
 })

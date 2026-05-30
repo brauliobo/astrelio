@@ -21,27 +21,27 @@ import { downloadPng, downloadSvg } from '../lib/export/chartImage.js'
 import { safeFilePart, timestampFilePart } from '../lib/export/download.js'
 
 const { t } = useI18n()
-const people = usePeopleStore()
-const session = useSessionStore()
+const people   = usePeopleStore()
+const session  = useSessionStore()
 const settings = useSettingsStore()
 
-const person = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
+const person     = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
 const natalRoute = computed(() => natalRouteForPerson(person.value))
-const chart = useNatalChart(person, settings)
-const transit = computed(() => person.value
+const chart      = useNatalChart(person, settings)
+const transit    = computed(() => person.value
   ? transitsFor(session.transitDateMs || Date.now(), person.value.lat, person.value.lon, {
-    zodiac: settings.zodiac,
+    zodiac:      settings.zodiac,
     houseSystem: settings.houseSystem,
-    nodeMode: settings.nodeMode,
+    nodeMode:    settings.nodeMode,
   })
   : null
 )
-const aspects = computed(() => chart.value ? naturalAspects(chart.value, settings.aspectOptions) : [])
-const phase = computed(() => chart.value ? t(`moon_phase.${moonPhaseLabel(chart.value.jdUt)}`) : '')
-const birthHeader = computed(() => birthHeaderForPerson(person.value))
-const systemLabel = computed(() => `${t(`settings.${settings.zodiac}`)} · ${t(`houses.${settings.houseSystem}`)}`)
-const reportRoot = ref(null)
-const exportStatus = ref('')
+const aspects        = computed(() => chart.value ? naturalAspects(chart.value, settings.aspectOptions) : [])
+const phase          = computed(() => chart.value ? t(`moon_phase.${moonPhaseLabel(chart.value.jdUt)}`) : '')
+const birthHeader    = computed(() => birthHeaderForPerson(person.value))
+const systemLabel    = computed(() => `${t(`settings.${settings.zodiac}`)} · ${t(`houses.${settings.houseSystem}`)}`)
+const reportRoot     = ref(null)
+const exportStatus   = ref('')
 const isExportingPng = ref(false)
 
 const printReport = () => window.print()

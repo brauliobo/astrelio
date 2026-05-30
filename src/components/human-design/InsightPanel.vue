@@ -5,7 +5,7 @@ import { humanDesignConnectionInsights, humanDesignInterpretationSections } from
 import { humanDesignValueLabel } from '../../lib/human-design/labels.js'
 
 const props = defineProps({
-  chart: { type: Object, default: null },
+  chart:      { type: Object, default: null },
   connection: { type: Object, default: null },
 })
 const { t } = useI18n()

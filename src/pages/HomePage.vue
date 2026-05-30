@@ -7,27 +7,27 @@ import { useSessionStore } from '../stores/session.js'
 import { natalRouteForPerson } from '../lib/people/routeQuery.js'
 
 const { t }   = useI18n()
-const router  = useRouter()
-const people  = usePeopleStore()
-const session = useSessionStore()
-const showForm = ref(false)
+const router             = useRouter()
+const people             = usePeopleStore()
+const session            = useSessionStore()
+const showForm           = ref(false)
 const dismissedEmptyForm = ref(false)
-const formMode = ref('new')
-const formPerson = ref(null)
+const formMode           = ref('new')
+const formPerson         = ref(null)
 const confirmingDeleteId = ref(null)
-const deleted = ref(null)
-const NatalForm = defineAsyncComponent(() => import('../components/form/NatalForm.vue'))
-let undoTimer = null
+const deleted            = ref(null)
+const NatalForm          = defineAsyncComponent(() => import('../components/form/NatalForm.vue'))
+let undoTimer            = null
 
-const list = computed(() => people.sorted)
+const list     = computed(() => people.sorted)
 const activeId = computed(() => {
   if (session.activePersonId && people.byId(session.activePersonId)) return session.activePersonId
   return list.value[0]?.id || null
 })
 const formVisible = computed(() => showForm.value || (!list.value.length && !dismissedEmptyForm.value))
 const formInitial = computed(() => formPerson.value)
-const formKey = computed(() => `${formMode.value}-${formPerson.value?.id || 'blank'}-${formPerson.value?.name || ''}`)
-const formTitle = computed(() => {
+const formKey     = computed(() => `${formMode.value}-${formPerson.value?.id || 'blank'}-${formPerson.value?.name || ''}`)
+const formTitle   = computed(() => {
   if (formMode.value === 'edit') return t('home.edit_title')
   if (formMode.value === 'duplicate') return t('home.duplicate_title')
   return list.value.length ? t('home.new_title') : t('home.empty_title')
@@ -64,29 +64,29 @@ const clearUndo = () => {
 }
 
 const openNew = () => {
-  formMode.value = 'new'
-  formPerson.value = null
+  formMode.value           = 'new'
+  formPerson.value         = null
   dismissedEmptyForm.value = false
-  showForm.value = true
+  showForm.value           = true
 }
 
 const edit = (person) => {
-  formMode.value = 'edit'
-  formPerson.value = { ...person }
-  showForm.value = true
+  formMode.value           = 'edit'
+  formPerson.value         = { ...person }
+  showForm.value           = true
   dismissedEmptyForm.value = false
 }
 
 const duplicate = (person) => {
-  formMode.value = 'duplicate'
-  formPerson.value = { ...person, id: null, name: t('home.copy_name', { name: person.name }) }
-  showForm.value = true
+  formMode.value           = 'duplicate'
+  formPerson.value         = { ...person, id: null, name: t('home.copy_name', { name: person.name }) }
+  showForm.value           = true
   dismissedEmptyForm.value = false
 }
 
 const closeForm = () => {
-  showForm.value = false
-  formMode.value = 'new'
+  showForm.value   = false
+  formMode.value   = 'new'
   formPerson.value = null
   if (!list.value.length) dismissedEmptyForm.value = true
 }
@@ -110,7 +110,7 @@ const remove = (id) => {
 
   undoTimer = setTimeout(() => {
     deleted.value = null
-    undoTimer = null
+    undoTimer     = null
   }, 8000)
 }
 

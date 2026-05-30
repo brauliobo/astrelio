@@ -23,17 +23,17 @@ const i18n = locale => createI18n({
 
 const mountInSvg = (component, props = {}) => mount({
   components: { Target: component },
-  template: '<svg><Target v-bind="props" /></svg>',
-  setup: () => ({ props }),
+  template:   '<svg><Target v-bind="props" /></svg>',
+  setup:      () => ({ props }),
 })
 
 describe('Human Design visual components', () => {
   it('uses one locale-backed modality switcher contract on modality pages', () => {
     const wrapper = mount(ModalityRouteSwitch, {
-      props: { active: 'humanDesign' },
+      props:  { active: 'humanDesign' },
       global: {
         plugins: [i18n('pt-BR')],
-        stubs: { RouterLink: { props: ['to'], template: '<a :href="to"><slot /></a>' } },
+        stubs:   { RouterLink: { props: ['to'], template: '<a :href="to"><slot /></a>' } },
       },
     })
 
@@ -47,13 +47,13 @@ describe('Human Design visual components', () => {
   it('renders active backgrounds only for gate sectors that have planets', () => {
     const wrapper = mountInSvg(WheelRings, {
       chart: {
-        gates: [49, 14, 28],
+        gates:            [49, 14, 28],
         personalityGates: [49, 28],
-        designGates: [14, 28],
+        designGates:      [14, 28],
       },
     })
-    const sectors = wrapper.findAll('[data-testid="mandala-gate-sector"]')
-    const active = sectors.filter(sector => sector.attributes('data-active') === 'true')
+    const sectors  = wrapper.findAll('[data-testid="mandala-gate-sector"]')
+    const active   = sectors.filter(sector => sector.attributes('data-active') === 'true')
     const inactive = sectors.filter(sector => sector.attributes('data-active') === 'false')
 
     expect(sectors).toHaveLength(64)
@@ -64,25 +64,25 @@ describe('Human Design visual components', () => {
   it('applies the Human Design wheel palette for dark and light themes', () => {
     const dark = mountInSvg(WheelRings, {
       chart: {
-        gates: [49, 14, 28],
+        gates:            [49, 14, 28],
         personalityGates: [49, 28],
-        designGates: [14, 28],
+        designGates:      [14, 28],
       },
     })
     const light = mountInSvg(WheelRings, {
       chart: {
-        gates: [49, 14, 28],
+        gates:            [49, 14, 28],
         personalityGates: [49, 28],
-        designGates: [14, 28],
+        designGates:      [14, 28],
       },
       visualTheme: 'light',
     })
 
-    const darkPalette = humanDesignWheelPalette('dark')
-    const lightPalette = humanDesignWheelPalette('light')
-    const darkPersonality = dark.find('[data-testid="mandala-gate-sector"][data-gate="49"]')
+    const darkPalette      = humanDesignWheelPalette('dark')
+    const lightPalette     = humanDesignWheelPalette('light')
+    const darkPersonality  = dark.find('[data-testid="mandala-gate-sector"][data-gate="49"]')
     const lightPersonality = light.find('[data-testid="mandala-gate-sector"][data-gate="49"]')
-    const lightZodiac = light.find('[data-testid="hd-zodiac-sector"]')
+    const lightZodiac      = light.find('[data-testid="hd-zodiac-sector"]')
 
     expect(darkPersonality.attributes('fill')).toBe(darkPalette.gatePersonality)
     expect(lightPersonality.attributes('fill')).toBe(lightPalette.gatePersonality)
@@ -99,9 +99,9 @@ describe('Human Design visual components', () => {
 
   it('builds the I Ching ring from SVG lines, not duplicated Unicode glyphs', () => {
     const wrapper = mountInSvg(IChingRing, {
-      gates: MANDALA_GATE_ORDER,
+      gates:       MANDALA_GATE_ORDER,
       activeGates: [49, 14],
-      radius: 489,
+      radius:      489,
     })
 
     expect(wrapper.findAll('[data-testid="iching-symbol"]')).toHaveLength(64)
@@ -113,11 +113,11 @@ describe('Human Design visual components', () => {
     const wrapper = mountInSvg(WheelPlanets, {
       chart: {
         personality: {
-          Sun: { planet: 'Sun', gate: 49, line: 6 },
+          Sun:     { planet: 'Sun', gate: 49, line: 6 },
           Mercury: { planet: 'Mercury', gate: 55, line: 4 },
-          Venus: { planet: 'Venus', gate: 44, line: 6 },
-          Mars: { planet: 'Mars', gate: 44, line: 2 },
-          Pluto: { planet: 'Pluto', gate: 28, line: 6 },
+          Venus:   { planet: 'Venus', gate: 44, line: 6 },
+          Mars:    { planet: 'Mars', gate: 44, line: 2 },
+          Pluto:   { planet: 'Pluto', gate: 28, line: 6 },
         },
         design: {},
       },
@@ -136,7 +136,7 @@ describe('Human Design visual components', () => {
   it('uses the shared glyph renderer for Human Design side columns and activation tables', () => {
     const chart = {
       personality: {
-        Moon: { planet: 'Moon', gate: 21, line: 1, color: 3, tone: 3, base: 3 },
+        Moon:    { planet: 'Moon', gate: 21, line: 1, color: 3, tone: 3, base: 3 },
         Mercury: { planet: 'Mercury', gate: 55, line: 4, color: 1, tone: 1, base: 2 },
       },
       design: {
@@ -146,13 +146,13 @@ describe('Human Design visual components', () => {
     const column = mount(ActivationColumns, {
       props: {
         chart,
-        side: 'personality',
+        side:          'personality',
         glyphRenderer: 'svg',
       },
       global: { plugins: [i18n('en')] },
     })
     const table = mount(ActivationTable, {
-      props: { chart, glyphRenderer: 'svg' },
+      props:  { chart, glyphRenderer: 'svg' },
       global: { plugins: [i18n('en')] },
     })
 
@@ -164,9 +164,9 @@ describe('Human Design visual components', () => {
   it('splits a design and personality gate into true half fills', () => {
     const wrapper = mountInSvg(BodygraphGates, {
       chart: {
-        gates: [28],
+        gates:            [28],
         personalityGates: [28],
-        designGates: [28],
+        designGates:      [28],
       },
     })
     const parts = wrapper.findAll('[data-testid="bodygraph-gate-part"][data-gate="28"]')
@@ -180,16 +180,16 @@ describe('Human Design visual components', () => {
     const wrapper = mount(InsightPanel, {
       props: {
         chart: {
-          type: 'Generator',
-          authority: 'Emotional',
-          profile: '6 / 2',
-          definition: 'Triple Split Definition',
-          circuits: ['Collective Logic'],
-          centers: ['Solar Plexus', 'Sacral', 'Root'],
-          channels: ['19-49', '30-41', '3-60'],
-          gates: [49],
+          type:             'Generator',
+          authority:        'Emotional',
+          profile:          '6 / 2',
+          definition:       'Triple Split Definition',
+          circuits:         ['Collective Logic'],
+          centers:          ['Solar Plexus', 'Sacral', 'Root'],
+          channels:         ['19-49', '30-41', '3-60'],
+          gates:            [49],
           personalityGates: [49],
-          designGates: [],
+          designGates:      [],
         },
       },
       global: { plugins: [i18n('pt-BR')] },

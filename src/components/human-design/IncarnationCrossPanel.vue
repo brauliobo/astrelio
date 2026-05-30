@@ -14,21 +14,21 @@ const props = defineProps({
 
 const { t } = useI18n()
 
-const cross = computed(() => props.chart.incarnationCross || null)
+const cross              = computed(() => props.chart.incarnationCross || null)
 const crossGeometryLabel = computed(() =>
   cross.value ? humanDesignValueLabel(t, 'crossGeometry', cross.value.geometry) : '—'
 )
 const crossQuarterName = computed(() => {
   const name = cross.value?.quarter?.name
   if (!name) return '—'
-  const key = `human_design.quarters.${name}`
+  const key        = `human_design.quarters.${name}`
   const translated = t(key)
   return translated === key ? name : translated
 })
 const crossQuarterTheme = computed(() => {
   const theme = cross.value?.quarter?.theme
   if (!theme) return ''
-  const key = `human_design.quarter_themes.${theme}`
+  const key        = `human_design.quarter_themes.${theme}`
   const translated = t(key)
   return translated === key ? theme : translated
 })

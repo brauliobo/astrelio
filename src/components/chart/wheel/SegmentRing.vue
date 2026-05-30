@@ -2,17 +2,17 @@
 import Arc from './Arc.vue'
 
 defineProps({
-  sectors: { type: Array, required: true },
+  sectors:     { type: Array, required: true },
   innerRadius: { type: Number, required: true },
   outerRadius: { type: Number, required: true },
-  stroke: { type: String, default: 'var(--chart-zodiac-stroke)' },
+  stroke:      { type: String, default: 'var(--chart-zodiac-stroke)' },
   strokeWidth: { type: [Number, String], default: 0.5 },
-  textFill: { type: String, default: 'var(--chart-zodiac-text)' },
-  textStroke: { type: String, default: 'var(--chart-zodiac-text-stroke)' },
-  fontSize: { type: [Number, String], default: 23 },
-  fontFamily: { type: String, default: '"DejaVu Sans", "Noto Sans Symbols 2", "Noto Sans Symbols", serif' },
-  fontWeight: { type: [Number, String], default: 600 },
-  testId: { type: String, default: 'segment-ring' },
+  textFill:    { type: String, default: 'var(--chart-zodiac-text)' },
+  textStroke:  { type: String, default: 'var(--chart-zodiac-text-stroke)' },
+  fontSize:    { type: [Number, String], default: 23 },
+  fontFamily:  { type: String, default: '"DejaVu Sans", "Noto Sans Symbols 2", "Noto Sans Symbols", serif' },
+  fontWeight:  { type: [Number, String], default: 600 },
+  testId:      { type: String, default: 'segment-ring' },
 })
 </script>
 

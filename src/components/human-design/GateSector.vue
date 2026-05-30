@@ -2,7 +2,7 @@
 defineProps({
   segment: { type: Object, required: true },
   hovered: { type: Boolean, default: false },
-  dimmed: { type: Boolean, default: false },
+  dimmed:  { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['hover', 'leave'])

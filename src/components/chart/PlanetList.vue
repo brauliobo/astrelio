@@ -7,17 +7,17 @@ import { motionMarker } from '../../lib/astro/motion.js'
 import { signIndex, degInSign, norm360 } from '../../lib/astro/zodiac.js'
 
 const props = defineProps({
-  chart: { type: Object, required: true },
+  chart:             { type: Object, required: true },
   highlightedBodies: { type: Array, default: () => [] },
 })
 const emit = defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 const { t, tm } = useI18n()
-const signs = computed(() => tm('zodiac.signs'))
-const hoverHighlight = ref(null)
-const pinnedHighlight = ref(null)
-const sharedHoverHighlight = ref(null)
+const signs                 = computed(() => tm('zodiac.signs'))
+const hoverHighlight        = ref(null)
+const pinnedHighlight       = ref(null)
+const sharedHoverHighlight  = ref(null)
 const sharedPinnedHighlight = ref(null)
-const chartHighlightEvent = 'astrelio-chart-highlight'
+const chartHighlightEvent   = 'astrelio-chart-highlight'
 
 const fmt = (lon) => {
   const d  = degInSign(lon)
@@ -28,32 +28,32 @@ const fmt = (lon) => {
 
 const rows = computed(() =>
   props.chart.positions.map(p => ({
-    name:  p.name,
-    label: t(`planets.${p.name}`),
-    sign:  signs.value[signIndex(p.longitude)],
-    deg:   fmt(p.longitude),
-    house: houseOf(p.longitude, props.chart.cusps),
+    name:   p.name,
+    label:  t(`planets.${p.name}`),
+    sign:   signs.value[signIndex(p.longitude)],
+    deg:    fmt(p.longitude),
+    house:  houseOf(p.longitude, props.chart.cusps),
     motion: motionMarker(p)
   }))
 )
 
-const ascSign = computed(() => signs.value[signIndex(props.chart.ascendant)])
-const mcSign  = computed(() => signs.value[signIndex(props.chart.mc)])
-const fortune = computed(() => fortuneLongitude(props.chart))
-const fortuneSign = computed(() => fortune.value === null ? '' : signs.value[signIndex(fortune.value)])
+const ascSign              = computed(() => signs.value[signIndex(props.chart.ascendant)])
+const mcSign               = computed(() => signs.value[signIndex(props.chart.mc)])
+const fortune              = computed(() => fortuneLongitude(props.chart))
+const fortuneSign          = computed(() => fortune.value === null ? '' : signs.value[signIndex(fortune.value)])
 const hasExternalHighlight = computed(() => props.highlightedBodies.length > 0)
-const localHighlight = computed(() =>
+const localHighlight       = computed(() =>
   hoverHighlight.value || pinnedHighlight.value || sharedHoverHighlight.value || sharedPinnedHighlight.value
 )
 const activeBodies = computed(() =>
   new Set(hasExternalHighlight.value ? props.highlightedBodies : localHighlight.value?.bodies || [])
 )
 const hasHighlight = computed(() => activeBodies.value.size > 0)
-const _ = norm360
+const _            = norm360
 
-const highlightPayload = (body) => ({ bodies: [body], aspectKey: '' })
+const highlightPayload   = (body) => ({ bodies: [body], aspectKey: '' })
 const normalizeHighlight = (payload) => ({
-  bodies: [...new Set(payload?.bodies || [])],
+  bodies:    [...new Set(payload?.bodies || [])],
   aspectKey: payload?.aspectKey || '',
 })
 const sameHighlight = (a, b) =>
@@ -69,14 +69,14 @@ const onSharedHighlight = (event) => {
   const highlight = event.detail?.highlight ? normalizeHighlight(event.detail.highlight) : null
   if (event.detail?.pinned) {
     sharedPinnedHighlight.value = highlight
-    sharedHoverHighlight.value = null
+    sharedHoverHighlight.value  = null
   } else {
     sharedHoverHighlight.value = highlight
   }
 }
 
 const setHoverHighlight = (body) => {
-  const highlight = highlightPayload(body)
+  const highlight      = highlightPayload(body)
   hoverHighlight.value = highlight
   emit('highlight', highlight)
   broadcastHighlight(highlight)
@@ -89,9 +89,9 @@ const clearHoverHighlight = () => {
 }
 
 const togglePinnedHighlight = (body) => {
-  const highlight = highlightPayload(body)
+  const highlight       = highlightPayload(body)
   pinnedHighlight.value = pinnedHighlight.value && sameHighlight(pinnedHighlight.value, highlight) ? null : highlight
-  hoverHighlight.value = null
+  hoverHighlight.value  = null
   emit('toggle-highlight', highlight)
   broadcastHighlight(pinnedHighlight.value, true)
 }

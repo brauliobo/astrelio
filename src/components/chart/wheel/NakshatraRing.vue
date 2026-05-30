@@ -23,7 +23,7 @@ const labelFor = (key) =>
 const sectors = computed(() =>
   NAKSHATRAS.map((key, index) => {
     const start = norm360(index * (360 / 27) + props.wheelShift)
-    const end = norm360((index + 1) * (360 / 27) + props.wheelShift)
+    const end   = norm360((index + 1) * (360 / 27) + props.wheelShift)
     const label = polarPoint((WHEEL_RADII.zodiacOuter + 210) / 2, index * (360 / 27) + (360 / 54) + props.wheelShift)
     return {
       key,
@@ -31,8 +31,8 @@ const sectors = computed(() =>
       start,
       end,
       label,
-      symbol: labelFor(key),
-      fill: fills[index % fills.length],
+      symbol:   labelFor(key),
+      fill:     fills[index % fills.length],
       fontSize: 6.7,
     }
   })

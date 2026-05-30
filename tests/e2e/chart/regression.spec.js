@@ -59,11 +59,11 @@ test.describe('Chart regressions', () => {
     await expect(page.getByTestId('aspect-lines')).toBeVisible()
 
     const reachesGlyph = await page.evaluate(() => {
-      const svg = document.querySelector('[data-testid="chart-wheel"] svg')
-      const line = svg.querySelector('[data-aspect="Sun-Uranus-sextile"]')
-      const symbol = svg.querySelector('g[data-planet="Sun"] [data-role="symbol"]')
-      const sunBox = symbol.getBBox()
-      const matrix = symbol.transform.baseVal.consolidate().matrix
+      const svg     = document.querySelector('[data-testid="chart-wheel"] svg')
+      const line    = svg.querySelector('[data-aspect="Sun-Uranus-sextile"]')
+      const symbol  = svg.querySelector('g[data-planet="Sun"] [data-role="symbol"]')
+      const sunBox  = symbol.getBBox()
+      const matrix  = symbol.transform.baseVal.consolidate().matrix
       const corners = [
         new DOMPoint(sunBox.x, sunBox.y),
         new DOMPoint(sunBox.x + sunBox.width, sunBox.y),
@@ -71,9 +71,9 @@ test.describe('Chart regressions', () => {
         new DOMPoint(sunBox.x + sunBox.width, sunBox.y + sunBox.height),
       ].map(point => point.matrixTransform(matrix))
       const sun = {
-        x: Math.min(...corners.map(point => point.x)),
-        y: Math.min(...corners.map(point => point.y)),
-        width: Math.max(...corners.map(point => point.x)) - Math.min(...corners.map(point => point.x)),
+        x:      Math.min(...corners.map(point => point.x)),
+        y:      Math.min(...corners.map(point => point.y)),
+        width:  Math.max(...corners.map(point => point.x)) - Math.min(...corners.map(point => point.x)),
         height: Math.max(...corners.map(point => point.y)) - Math.min(...corners.map(point => point.y)),
       }
       const x1 = Number(line.getAttribute('x1'))

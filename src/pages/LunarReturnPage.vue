@@ -12,14 +12,14 @@ import Comparison from '../components/chart/Comparison.vue'
 import Insight from '../components/chart/Insight.vue'
 
 const { t } = useI18n()
-const people = usePeopleStore()
-const session = useSessionStore()
+const people   = usePeopleStore()
+const session  = useSessionStore()
 const settings = useSettingsStore()
 
 const person = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
-const natal = useNatalChart(person, settings)
+const natal  = useNatalChart(person, settings)
 
-const dateMs = ref(Date.now())
+const dateMs    = ref(Date.now())
 const dateInput = computed({
   get: () => new Date(dateMs.value).toISOString().slice(0, 10),
   set: (v) => { dateMs.value = DateTime.fromISO(v).toMillis() },
@@ -28,21 +28,21 @@ const dateInput = computed({
 const lunarReturn = computed(() => {
   if (!person.value || !natal.value) return null
   return lunarReturnChartForNatal(natal.value.jdUt, dateMs.value, person.value.lat, person.value.lon, {
-    zodiac: settings.zodiac,
+    zodiac:      settings.zodiac,
     houseSystem: settings.houseSystem,
-    nodeMode: settings.nodeMode,
+    nodeMode:    settings.nodeMode,
   })
 })
 
-const aspects = computed(() => natal.value && lunarReturn.value ? crossAspects(natal.value, lunarReturn.value) : [])
+const aspects              = computed(() => natal.value && lunarReturn.value ? crossAspects(natal.value, lunarReturn.value) : [])
 const naturalReturnAspects = computed(() => lunarReturn.value ? naturalAspects(lunarReturn.value) : [])
-const returnDate = computed(() => {
+const returnDate           = computed(() => {
   if (!lunarReturn.value) return ''
   const date = new Date((lunarReturn.value.jdUt - 2440587.5) * 86_400_000)
   return new Intl.DateTimeFormat(settings.locale, {
     dateStyle: 'medium',
     timeStyle: 'short',
-    timeZone: 'UTC',
+    timeZone:  'UTC',
   }).format(date)
 })
 </script>

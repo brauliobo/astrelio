@@ -5,32 +5,32 @@ import CelestialGlyph from '../../common/CelestialGlyph.vue'
 import { PLANET_COLORS, PLANET_SYMBOLS, WHEEL_RADII, degreeLabel, planetGlyphScale } from './geometry.js'
 
 const props = defineProps({
-  placements: { type: Array, required: true },
-  color: { type: String, default: 'var(--chart-ink)' },
-  symbols: { type: Object, default: null },
-  colors: { type: Object, default: null },
-  labels: { type: Object, default: null },
-  glyphRenderer: { type: String, default: null },
-  mapIndex: { type: Number, default: 0 },
+  placements:        { type: Array, required: true },
+  color:             { type: String, default: 'var(--chart-ink)' },
+  symbols:           { type: Object, default: null },
+  colors:            { type: Object, default: null },
+  labels:            { type: Object, default: null },
+  glyphRenderer:     { type: String, default: null },
+  mapIndex:          { type: Number, default: 0 },
   highlightedBodies: { type: Array, default: () => [] },
 })
 defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 
 const highlightedBodySet = computed(() => new Set(props.highlightedBodies))
-const hasHighlight = computed(() => highlightedBodySet.value.size > 0)
+const hasHighlight       = computed(() => highlightedBodySet.value.size > 0)
 
 const glyphs = computed(() =>
   props.placements.map((item) => {
-    const glyph = item.glyphPoint || item.point
-    const label = item.labelPoint || { x: glyph.x + 10, y: glyph.y - 9 }
+    const glyph      = item.glyphPoint || item.point
+    const label      = item.labelPoint || { x: glyph.x + 10, y: glyph.y - 9 }
     const retrograde = item.retrogradePoint || { x: glyph.x + 10, y: glyph.y + 7 }
-    const symbols = props.symbols || PLANET_SYMBOLS
-    const colors = props.colors || PLANET_COLORS
-    const color = props.mapIndex === 0 ? colors[item.planet.name] || props.color : props.color
+    const symbols    = props.symbols || PLANET_SYMBOLS
+    const colors     = props.colors || PLANET_COLORS
+    const color      = props.mapIndex === 0 ? colors[item.planet.name] || props.color : props.color
     const labelColor = props.mapIndex === 0 ? 'var(--chart-ink)' : props.color
-    const name = props.labels?.[item.planet.name] || item.planet.displayName || item.planet.name
+    const name       = props.labels?.[item.planet.name] || item.planet.displayName || item.planet.name
     const glyphScale = planetGlyphScale(item.planet.name)
-    const motion = motionMarker(item.planet)
+    const motion     = motionMarker(item.planet)
     return {
       ...item,
       glyph,
@@ -44,13 +44,13 @@ const glyphs = computed(() =>
       degree: degreeLabel(item.planet.longitude),
       motion,
       showDegreeLabel: item.showDegreeLabel !== false,
-      fontSize: props.mapIndex === 0 ? 22 : 17,
+      fontSize:        props.mapIndex === 0 ? 22 : 17,
       glyphScale,
     }
   })
 )
 
-const highlightPayload = (body) => ({ bodies: [body], aspectKey: '' })
+const highlightPayload    = (body) => ({ bodies: [body], aspectKey: '' })
 const glyphHighlightState = (body) => {
   if (!hasHighlight.value) return 'idle'
   return highlightedBodySet.value.has(body) ? 'active' : 'dimmed'

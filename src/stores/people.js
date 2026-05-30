@@ -4,9 +4,9 @@ let counter = 1
 const newId = () => `${Date.now().toString(36)}${(counter++).toString(36)}`
 
 export const usePeopleStore = defineStore('people', {
-  state: () => ({ list: [] }),
+  state:   () => ({ list: [] }),
   getters: {
-    byId: (s) => (id) => s.list.find(p => p.id === id),
+    byId:   (s) => (id) => s.list.find(p => p.id === id),
     sorted: (s) => [...s.list].sort((a, b) => b.createdAt - a.createdAt)
   },
   actions: {

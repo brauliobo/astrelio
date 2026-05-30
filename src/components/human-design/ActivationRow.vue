@@ -3,11 +3,11 @@ import { activationCode } from '../../lib/human-design/activations.js'
 import CelestialGlyph from '../common/CelestialGlyph.vue'
 
 defineProps({
-  row: { type: Object, required: true },
-  side: { type: String, required: true },
+  row:           { type: Object, required: true },
+  side:          { type: String, required: true },
   glyphRenderer: { type: String, default: null },
-  highlighted: { type: Boolean, default: false },
-  dimmed: { type: Boolean, default: false },
+  highlighted:   { type: Boolean, default: false },
+  dimmed:        { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['hover', 'leave'])

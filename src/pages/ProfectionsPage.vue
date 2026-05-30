@@ -9,14 +9,14 @@ import { useNatalChart } from '../composables/useChart.js'
 import { annualProfection } from '../lib/astro/profections.js'
 
 const { t, tm } = useI18n()
-const people = usePeopleStore()
-const session = useSessionStore()
+const people   = usePeopleStore()
+const session  = useSessionStore()
 const settings = useSettingsStore()
 
 const person = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
-const natal = useNatalChart(person, settings)
+const natal  = useNatalChart(person, settings)
 
-const dateMs = ref(Date.now())
+const dateMs    = ref(Date.now())
 const dateInput = computed({
   get: () => new Date(dateMs.value).toISOString().slice(0, 10),
   set: (v) => { dateMs.value = DateTime.fromISO(v).toMillis() },
@@ -27,7 +27,7 @@ const profection = computed(() => {
   return annualProfection(natal.value.ascendant, person.value.isoLocal, dateInput.value)
 })
 
-const signs = computed(() => tm('zodiac.signs'))
+const signs     = computed(() => tm('zodiac.signs'))
 const signLabel = computed(() => profection.value ? signs.value[profection.value.sign] : '')
 const lordLabel = computed(() => profection.value ? t(`planets.${profection.value.lord}`) : '')
 </script>

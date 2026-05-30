@@ -4,7 +4,7 @@ import { REF_PERSON, seedPeople, seedSession, seedSettings } from './support/fix
 test.describe('i18n', () => {
   test('uses the browser locale when no saved locale exists', async ({ browser, baseURL }) => {
     const context = await browser.newContext({ locale: 'en-US' })
-    const page = await context.newPage()
+    const page    = await context.newPage()
 
     await page.goto(baseURL)
     await expect(page.getByTestId('nav-home')).toHaveText('Home')

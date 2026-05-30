@@ -53,7 +53,7 @@ test.describe('Human Design', () => {
   test('reactively updates Human Design wheel colors when theme changes', async ({ page }) => {
     await page.goto('/#/human-design')
     const activeGate = page.locator('[data-testid="mandala-gate-sector"][data-active="true"]').first()
-    const darkFill = await activeGate.evaluate(el => getComputedStyle(el).fill)
+    const darkFill   = await activeGate.evaluate(el => getComputedStyle(el).fill)
 
     await page.getByTestId('theme-toggle').click()
     await expect.poll(() => page.evaluate(() => document.documentElement.dataset.theme)).toBe('light')

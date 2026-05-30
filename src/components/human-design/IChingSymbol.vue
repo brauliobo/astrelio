@@ -3,12 +3,12 @@ import { computed } from 'vue'
 import { ichingLinesForGate } from './ichingGeometry.js'
 
 const props = defineProps({
-  gate: { type: Number, required: true },
-  x: { type: Number, required: true },
-  y: { type: Number, required: true },
-  size: { type: Number, default: 18 },
-  active: { type: Boolean, default: false },
-  color: { type: String, default: 'rgba(203,213,225,0.28)' },
+  gate:        { type: Number, required: true },
+  x:           { type: Number, required: true },
+  y:           { type: Number, required: true },
+  size:        { type: Number, default: 18 },
+  active:      { type: Boolean, default: false },
+  color:       { type: String, default: 'rgba(203,213,225,0.28)' },
   activeColor: { type: String, default: 'rgba(248,250,252,0.74)' },
 })
 
@@ -19,9 +19,9 @@ const lines = computed(() =>
   }))
 )
 
-const lineY = index => (index - 2.5) * (props.size / 6)
-const lineWidth = computed(() => props.size * 0.86)
-const gap = computed(() => props.size * 0.16)
+const lineY       = index => (index - 2.5) * (props.size / 6)
+const lineWidth   = computed(() => props.size * 0.86)
+const gap         = computed(() => props.size * 0.16)
 const strokeWidth = computed(() => Math.max(1.2, props.size * 0.075))
 const strokeColor = computed(() => props.active ? props.activeColor : props.color)
 </script>

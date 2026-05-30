@@ -1,6 +1,6 @@
 import { downloadBlob } from './download.js'
 
-const SVG_NS = 'http://www.w3.org/2000/svg'
+const SVG_NS           = 'http://www.w3.org/2000/svg'
 const STYLE_PROPERTIES = [
   'fill',
   'fill-opacity',
@@ -22,7 +22,7 @@ const copyComputedStyles = (source, target) => {
 
   sourceNodes.forEach((node, index) => {
     const targetNode = targetNodes[index]
-    const style = window.getComputedStyle(node)
+    const style      = window.getComputedStyle(node)
 
     STYLE_PROPERTIES.forEach((property) => {
       const value = style.getPropertyValue(property)
@@ -34,11 +34,11 @@ const copyComputedStyles = (source, target) => {
 export const serializeSvg = (svg) => {
   if (!svg) throw new Error('missing_svg')
 
-  const clone = svg.cloneNode(true)
+  const clone   = svg.cloneNode(true)
   const viewBox = svg.getAttribute('viewBox')
-  const rect = svg.getBoundingClientRect()
-  const width = Math.round(rect.width || Number(svg.getAttribute('width')) || 520)
-  const height = Math.round(rect.height || Number(svg.getAttribute('height')) || width)
+  const rect    = svg.getBoundingClientRect()
+  const width   = Math.round(rect.width || Number(svg.getAttribute('width')) || 520)
+  const height  = Math.round(rect.height || Number(svg.getAttribute('height')) || width)
 
   copyComputedStyles(svg, clone)
   clone.setAttribute('xmlns', SVG_NS)
@@ -51,25 +51,25 @@ export const serializeSvg = (svg) => {
 
 export const downloadSvg = (svg, filename) => {
   const source = serializeSvg(svg)
-  const blob = new window.Blob([source], { type: 'image/svg+xml;charset=utf-8' })
+  const blob   = new window.Blob([source], { type: 'image/svg+xml;charset=utf-8' })
   downloadBlob(blob, filename)
 }
 
 export const svgToPngBlob = async (svg, scale = 2) => {
-  const source = serializeSvg(svg)
+  const source  = serializeSvg(svg)
   const svgBlob = new window.Blob([source], { type: 'image/svg+xml;charset=utf-8' })
-  const url = window.URL.createObjectURL(svgBlob)
+  const url     = window.URL.createObjectURL(svgBlob)
 
   try {
     const image = await new Promise((resolve, reject) => {
-      const img = new window.Image()
-      img.onload = () => resolve(img)
+      const img   = new window.Image()
+      img.onload  = () => resolve(img)
       img.onerror = () => reject(new Error('png_render_failed'))
-      img.src = url
+      img.src     = url
     })
 
-    const canvas = document.createElement('canvas')
-    canvas.width = image.naturalWidth * scale
+    const canvas  = document.createElement('canvas')
+    canvas.width  = image.naturalWidth * scale
     canvas.height = image.naturalHeight * scale
 
     const context = canvas.getContext('2d')

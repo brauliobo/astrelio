@@ -14,17 +14,17 @@ export const planetGlyphLayout = (activations = []) => {
     .filter(item => Number.isFinite(item.angle))
     .sort((a, b) => normalizedAngle(a.angle) - normalizedAngle(b.angle) || a.sourceIndex - b.sourceIndex)
 
-  const placed = []
+  const placed     = []
   const gateCounts = new Map()
   for (const item of sorted) {
     const count = gateCounts.get(item.gate) || 0
-    const lane = Math.min(count, planetGlyphRadii.length - 1)
+    const lane  = Math.min(count, planetGlyphRadii.length - 1)
     gateCounts.set(item.gate, count + 1)
     placed.push({
       ...item,
       lane,
       radius: planetGlyphRadii[lane],
-      point: polar(planetGlyphRadii[lane], item.angle),
+      point:  polar(planetGlyphRadii[lane], item.angle),
     })
   }
 

@@ -1,8 +1,8 @@
 <script setup>
 defineProps({
-  item: { type: Object, required: true },
+  item:        { type: Object, required: true },
   highlighted: { type: Boolean, default: false },
-  dimmed: { type: Boolean, default: false },
+  dimmed:      { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['hover', 'leave'])

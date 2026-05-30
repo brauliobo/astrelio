@@ -4,27 +4,27 @@ import { ASPECT_COLORS, naturalAspectLines } from './geometry.js'
 
 const ASPECT_LINE_STYLES = {
   conjunction: { color: 'var(--aspect-conjunction)', dasharray: '1 4', opacity: 0.26 },
-  opposition: { color: 'var(--aspect-opposition)', dasharray: 'none', opacity: 0.36 },
-  trine: { color: 'var(--aspect-trine)', dasharray: 'none', opacity: 0.34 },
-  square: { color: 'var(--aspect-square)', dasharray: '7 5', opacity: 0.32 },
-  sextile: { color: 'var(--aspect-sextile)', dasharray: '4 5', opacity: 0.3 },
-  quincunx: { color: 'var(--aspect-quincunx)', dasharray: '2 5 7 5', opacity: 0.28 },
+  opposition:  { color: 'var(--aspect-opposition)', dasharray: 'none', opacity: 0.36 },
+  trine:       { color: 'var(--aspect-trine)', dasharray: 'none', opacity: 0.34 },
+  square:      { color: 'var(--aspect-square)', dasharray: '7 5', opacity: 0.32 },
+  sextile:     { color: 'var(--aspect-sextile)', dasharray: '4 5', opacity: 0.3 },
+  quincunx:    { color: 'var(--aspect-quincunx)', dasharray: '2 5 7 5', opacity: 0.28 },
 }
 
 const props = defineProps({
-  chart: { type: Object, required: true },
-  wheelShift: { type: Number, required: true },
-  colors: { type: Object, default: () => ({}) },
-  highlightedBodies: { type: Array, default: () => [] },
+  chart:                { type: Object, required: true },
+  wheelShift:           { type: Number, required: true },
+  colors:               { type: Object, default: () => ({}) },
+  highlightedBodies:    { type: Array, default: () => [] },
   highlightedAspectKey: { type: String, default: '' },
-  aspectOptions: { type: Object, default: () => ({}) },
-  placements: { type: Array, default: () => [] },
+  aspectOptions:        { type: Object, default: () => ({}) },
+  placements:           { type: Array, default: () => [] },
 })
 defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 
-const aspectKey = (aspect) => `${aspect.a}-${aspect.b}-${aspect.type}`
+const aspectKey          = (aspect) => `${aspect.a}-${aspect.b}-${aspect.type}`
 const defaultAspectColor = (type) => ASPECT_LINE_STYLES[type]?.color || ASPECT_COLORS[type]
-const aspectColor = (type) => {
+const aspectColor        = (type) => {
   const configured = props.colors[type]
   return configured && configured !== ASPECT_COLORS[type] ? configured : defaultAspectColor(type)
 }
@@ -39,7 +39,7 @@ const lines = computed(() =>
 )
 
 const highlightedBodySet = computed(() => new Set(props.highlightedBodies))
-const hasHighlight = computed(() =>
+const hasHighlight       = computed(() =>
   highlightedBodySet.value.size > 0 || Boolean(props.highlightedAspectKey)
 )
 
@@ -55,11 +55,11 @@ const lineHighlightState = (line) => {
 const lineVisual = (line, state) => {
   const style = ASPECT_LINE_STYLES[line.aspect.type] || ASPECT_LINE_STYLES.conjunction
   return {
-    dasharray: style.dasharray,
+    dasharray:   style.dasharray,
     haloOpacity: state === 'active' ? 0.18 : 0,
-    haloWidth: state === 'active' ? 6 : 0,
-    opacity: state === 'active' ? 0.98 : state === 'dimmed' ? 0.07 : style.opacity,
-    width: state === 'active' ? 2.8 : 1.15,
+    haloWidth:   state === 'active' ? 6 : 0,
+    opacity:     state === 'active' ? 0.98 : state === 'dimmed' ? 0.07 : style.opacity,
+    width:       state === 'active' ? 2.8 : 1.15,
   }
 }
 
@@ -69,13 +69,13 @@ const visualLines = computed(() =>
     return {
       ...line,
       highlightState: state,
-      visual: lineVisual(line, state),
+      visual:         lineVisual(line, state),
     }
   })
 )
 
 const highlightPayload = (line) => ({
-  bodies: [line.aspect.a, line.aspect.b],
+  bodies:    [line.aspect.a, line.aspect.b],
   aspectKey: aspectKey(line.aspect),
 })
 </script>

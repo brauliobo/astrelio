@@ -6,34 +6,34 @@ import { channelCurve, channelSegments, gateLaneStrokeCurve, gateSegmentBounds, 
 import { activationTone, humanDesignPalette } from './visualTheme.js'
 
 const props = defineProps({
-  chart: { type: Object, required: true },
-  showOpen: { type: Boolean, default: true },
-  showBase: { type: Boolean, default: true },
-  showSegments: { type: Boolean, default: true },
-  showDefinedBase: { type: Boolean, default: false },
-  openOpacity: { type: Number, default: 0.12 },
-  openStrokeWidth: { type: Number, default: 5 },
+  chart:              { type: Object, required: true },
+  showOpen:           { type: Boolean, default: true },
+  showBase:           { type: Boolean, default: true },
+  showSegments:       { type: Boolean, default: true },
+  showDefinedBase:    { type: Boolean, default: false },
+  openOpacity:        { type: Number, default: 0.12 },
+  openStrokeWidth:    { type: Number, default: 5 },
   definedStrokeWidth: { type: Number, default: 10 },
-  hover: { type: Object, default: null },
-  visualTheme: { type: String, default: 'dark' },
+  hover:              { type: Object, default: null },
+  visualTheme:        { type: String, default: 'dark' },
 })
 
 const emit = defineEmits(['hover', 'leave'])
 
-const definedChannels = computed(() => new Set(props.chart.channels || []))
-const designGates = computed(() => new Set(props.chart.designGates || []))
+const definedChannels  = computed(() => new Set(props.chart.channels || []))
+const designGates      = computed(() => new Set(props.chart.designGates || []))
 const personalityGates = computed(() => new Set(props.chart.personalityGates || []))
-const activeGates = computed(() => new Set([
+const activeGates      = computed(() => new Set([
   ...(props.chart.gates || []),
   ...designGates.value,
   ...personalityGates.value,
 ]))
-const hasHover = computed(() => Boolean(props.hover))
+const hasHover    = computed(() => Boolean(props.hover))
 const channelKeys = computed(() => Object.keys(CHANNEL_CENTERS))
-const palette = computed(() => humanDesignPalette(props.visualTheme))
+const palette     = computed(() => humanDesignPalette(props.visualTheme))
 
 const gateTone = (gate) => {
-  const design = designGates.value.has(gate)
+  const design      = designGates.value.has(gate)
   const personality = personalityGates.value.has(gate)
   return activationTone({ design, personality, mode: props.visualTheme })
 }
@@ -42,19 +42,19 @@ const splitAxisForBounds = bounds => bounds?.height > bounds?.width ? 'x' : 'y'
 
 const fullChannelFill = (gates, defined) => {
   if (!defined) return palette.value.inactiveChannel
-  const hasDesign = gates.some(gate => designGates.value.has(gate))
+  const hasDesign      = gates.some(gate => designGates.value.has(gate))
   const hasPersonality = gates.some(gate => personalityGates.value.has(gate))
   return activationTone({ design: hasDesign, personality: hasPersonality, mode: props.visualTheme }).fill
 }
 
 const channelLines = computed(() =>
   channelKeys.value.map((channel) => {
-    const gates = channel.split('-').map(Number)
-    const defined = definedChannels.value.has(channel)
-    const hasDesign = gates.some(gate => designGates.value.has(gate))
+    const gates          = channel.split('-').map(Number)
+    const defined        = definedChannels.value.has(channel)
+    const hasDesign      = gates.some(gate => designGates.value.has(gate))
     const hasPersonality = gates.some(gate => personalityGates.value.has(gate))
-    const tone = activationTone({ design: hasDesign, personality: hasPersonality, mode: props.visualTheme })
-    const fill = defined ? tone.fill : fullChannelFill(gates, defined)
+    const tone           = activationTone({ design: hasDesign, personality: hasPersonality, mode: props.visualTheme })
+    const fill           = defined ? tone.fill : fullChannelFill(gates, defined)
 
     return {
       channel,
@@ -62,8 +62,8 @@ const channelLines = computed(() =>
       defined,
       fill,
       highlightFill: defined ? fill : palette.value.highlight,
-      tone: defined ? tone.kind : 'open',
-      opacity: defined ? 0.96 : 1,
+      tone:          defined ? tone.kind : 'open',
+      opacity:       defined ? 0.96 : 1,
     }
   }).filter(item => item.d)
 )
@@ -82,16 +82,16 @@ const activeGateSegments = computed(() =>
       return {
         channel: displayChannelForGate(gate),
         gate,
-        d: gateSegmentCurve[gate],
-        defined: true,
-        fill: tone.fill,
+        d:             gateSegmentCurve[gate],
+        defined:       true,
+        fill:          tone.fill,
         highlightFill: tone.fill,
-        laneD: gateLaneStrokeCurve[gate],
-        tone: tone.kind,
-        parts: tone.parts,
-        splitBounds: gateSegmentBounds[gate],
-        splitAxis: splitAxisForBounds(gateSegmentBounds[gate]),
-        opacity: 0.96,
+        laneD:         gateLaneStrokeCurve[gate],
+        tone:          tone.kind,
+        parts:         tone.parts,
+        splitBounds:   gateSegmentBounds[gate],
+        splitAxis:     splitAxisForBounds(gateSegmentBounds[gate]),
+        opacity:       0.96,
       }
     })
     .filter(segment => segment.d)

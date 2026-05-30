@@ -7,16 +7,16 @@ import DetailTables from './DetailTables.vue'
 
 const props = defineProps({
   transitChart: { type: Object, default: null },
-  connection: { type: Object, default: null },
-  dateInput: { type: String, required: true },
+  connection:   { type: Object, default: null },
+  dateInput:    { type: String, required: true },
 })
 
 const emit = defineEmits(['update:dateInput', 'now'])
 const { t } = useI18n()
-const activationRows = computed(() => props.connection?.activationWatch || [])
-const completedChannels = computed(() => props.connection?.completedChannels || [])
-const activatedNatalGates = computed(() => props.connection?.activatedNatalGates || [])
-const formatChange = change => new Date(change.dateMs).toLocaleString()
+const activationRows       = computed(() => props.connection?.activationWatch || [])
+const completedChannels    = computed(() => props.connection?.completedChannels || [])
+const activatedNatalGates  = computed(() => props.connection?.activatedNatalGates || [])
+const formatChange         = change => new Date(change.dateMs).toLocaleString()
 const changeActivationCode = activation => activation ? activationCode(activation) : '—'
 </script>
 

@@ -24,7 +24,7 @@ const SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
     <circle r="120" fill="none" stroke="#cbd5e1"     stroke-width="2" opacity="0.55"/>
     <g stroke="#cbd5e1" stroke-width="2" opacity="0.45">
       ${Array.from({ length: 12 }).map((_, i) => {
-        const a = (i * 30 - 90) * Math.PI / 180
+        const a  = (i * 30 - 90) * Math.PI / 180
         const x1 = Math.cos(a) * 120, y1 = Math.sin(a) * 120
         const x2 = Math.cos(a) * 170, y2 = Math.sin(a) * 170
         return `<line x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}"/>`
@@ -36,7 +36,7 @@ const SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
       <circle cx="-78" cy="45" r="5"/>
     </g>
     <path d="M0,-58 L14,-18 L56,-18 L22,8 L34,50 L0,24 L-34,50 L-22,8 L-56,-18 L-14,-18 Z"
-          fill="#fcd34d" opacity="0.95"/>
+          fill = "#fcd34d" opacity="0.95"/>
     <circle r="5" fill="#0b0a1a"/>
   </g>
 </svg>`

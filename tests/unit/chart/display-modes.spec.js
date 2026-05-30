@@ -8,13 +8,13 @@ import { CENTER, WHEEL_RADII } from '../../../src/components/chart/wheel/geometr
 const messages = {
   en: {
     chart: {
-      display_mode: 'Display',
+      display_mode:  'Display',
       transit_orbit: 'Transits',
       display_modes: {
-        clean: 'Clean',
-        aspects: 'Aspects',
+        clean:    'Clean',
+        aspects:  'Aspects',
         detailed: 'Detailed',
-        print: 'Print',
+        print:    'Print',
       },
     },
     zodiac: {
@@ -36,8 +36,8 @@ const position = (name, longitude, speed = 1) => ({
 
 const chart = {
   ascendant: 120,
-  mc: 210,
-  cusps: [120, 150, 180, 210, 240, 270, 300, 330, 0, 30, 60, 90],
+  mc:        210,
+  cusps:     [120, 150, 180, 210, 240, 270, 300, 330, 0, 30, 60, 90],
   positions: [
     position('Sun', 300 + 23 + (49 / 60)),
     position('Venus', 28),
@@ -47,7 +47,7 @@ const chart = {
 }
 
 const mountWheel = (props = {}) => mount(Wheel, {
-  props: { natal: chart, ...props },
+  props:  { natal: chart, ...props },
   global: {
     plugins: [createI18n({ legacy: false, locale: 'en', messages })],
   },
@@ -94,7 +94,7 @@ describe('chart display modes', () => {
   })
 
   it('places zoom controls before the display mode options', () => {
-    const wrapper = mountWheel()
+    const wrapper     = mountWheel()
     const toolbarText = wrapper.get('[data-testid="chart-display-mode"]').text()
 
     expect(toolbarText.indexOf('100%')).toBeLessThan(toolbarText.indexOf('Clean'))
@@ -102,7 +102,7 @@ describe('chart display modes', () => {
 
   it('allows wider default framing for wheels with an outer nakshatra ring', () => {
     const wrapper = mountWheel({
-      defaultZoomBase: 1.2,
+      defaultZoomBase:   1.2,
       showNakshatraRing: true,
     })
 
@@ -145,7 +145,7 @@ describe('chart display modes', () => {
       },
     })
 
-    const toggle = wrapper.get('[data-testid="chart-toggle-transit-orbit"]')
+    const toggle         = wrapper.get('[data-testid="chart-toggle-transit-orbit"]')
     const natalSunBefore = wrapper.get('[data-chart-map="natal"] [data-testid="planet-hit-Sun"]').attributes()
     expect(toggle.attributes('aria-pressed')).toBe('false')
 
@@ -170,12 +170,12 @@ describe('chart display modes', () => {
 
   it('defaults simple charts to clean mode on small screens', async () => {
     const originalMatchMedia = window.matchMedia
-    window.matchMedia = vi.fn(() => ({
-      matches: true,
-      addEventListener: vi.fn(),
+    window.matchMedia        = vi.fn(() => ({
+      matches:             true,
+      addEventListener:    vi.fn(),
       removeEventListener: vi.fn(),
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
+      addListener:         vi.fn(),
+      removeListener:      vi.fn(),
     }))
 
     try {
@@ -190,9 +190,9 @@ describe('chart display modes', () => {
   })
 
   it('uses CSS variables for chart wheel colors so root theme changes cascade', () => {
-    const wrapper = mountWheel()
-    const frame = wrapper.get('[data-testid="wheel-frame"]')
-    const zodiacText = wrapper.get('[data-testid="zodiac-ring"] text')
+    const wrapper     = mountWheel()
+    const frame       = wrapper.get('[data-testid="wheel-frame"]')
+    const zodiacText  = wrapper.get('[data-testid="zodiac-ring"] text')
     const houseSector = wrapper.get('[data-testid="house-cusps"] path')
     const planetLabel = wrapper.get('[data-testid="planet-glyph-Moon"] [data-role="symbol"]')
 
@@ -205,7 +205,7 @@ describe('chart display modes', () => {
   })
 
   it('keeps house labels visually secondary to planet positions', () => {
-    const wrapper = mountWheel()
+    const wrapper      = mountWheel()
     const houseNumbers = wrapper.get('[data-testid="house-numbers"]')
     const planetDegree = wrapper.get('[data-testid="planet-glyph-Moon"] .planet-degree-label')
 
@@ -234,9 +234,9 @@ describe('chart display modes', () => {
 
   it('uses shared SVG glyph sizing with planet-specific optical normalization', () => {
     const wrapper = mountWheel()
-    const sun = wrapper.get('[data-testid="planet-glyph-Sun"] [data-role="symbol"]')
-    const venus = wrapper.get('[data-testid="planet-glyph-Venus"] [data-role="symbol"]')
-    const mars = wrapper.get('[data-testid="planet-glyph-Mars"] [data-role="symbol"]')
+    const sun     = wrapper.get('[data-testid="planet-glyph-Sun"] [data-role="symbol"]')
+    const venus   = wrapper.get('[data-testid="planet-glyph-Venus"] [data-role="symbol"]')
+    const mars    = wrapper.get('[data-testid="planet-glyph-Mars"] [data-role="symbol"]')
 
     expect(sun.find('path').exists()).toBe(true)
     expect(venus.find('path').exists()).toBe(true)
@@ -248,7 +248,7 @@ describe('chart display modes', () => {
 
   it('renders planet positions without exact-point leader marks', () => {
     const wrapper = mountWheel()
-    const sun = wrapper.get('[data-testid="planet-glyph-Sun"]')
+    const sun     = wrapper.get('[data-testid="planet-glyph-Sun"]')
 
     expect(sun.find('line').exists()).toBe(false)
     expect(sun.findAll('circle')).toHaveLength(1)
@@ -256,8 +256,8 @@ describe('chart display modes', () => {
   })
 
   it('extends aspect lines to the rendered planet glyph lane', () => {
-    const wrapper = mountWheel()
-    const aspectLine = wrapper.get('[data-aspect="Sun-Mars-sextile"]')
+    const wrapper          = mountWheel()
+    const aspectLine       = wrapper.get('[data-aspect="Sun-Mars-sextile"]')
     const endpointDistance = (x, y) =>
       Math.hypot(Number(x) - CENTER, Number(y) - CENTER)
 

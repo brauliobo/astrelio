@@ -9,23 +9,23 @@ import { natalRouteForPerson } from '../lib/people/routeQuery.js'
 import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
 
-const route = useRoute()
+const route  = useRoute()
 const router = useRouter()
 const { t } = useI18n()
-const people = usePeopleStore()
-const session = useSessionStore()
+const people    = usePeopleStore()
+const session   = useSessionStore()
 const NatalForm = defineAsyncComponent(() => import('../components/form/NatalForm.vue'))
 
-const editing = ref(false)
+const editing          = ref(false)
 const confirmingDelete = ref(false)
 
 const personId = computed(() => String(route.params.id || ''))
-const person = computed(() => people.byId(personId.value) || null)
+const person   = computed(() => people.byId(personId.value) || null)
 
 const timezoneOffset = computed(() => person.value ? offsetMinutesForPerson(person.value) : 0)
-const timezoneLabel = computed(() => timezoneLabelForPerson(person.value))
-const birthHeader = computed(() => birthHeaderForPerson(person.value))
-const localTime = computed(() => {
+const timezoneLabel  = computed(() => timezoneLabelForPerson(person.value))
+const birthHeader    = computed(() => birthHeaderForPerson(person.value))
+const localTime      = computed(() => {
   if (!person.value) return ''
   const dt = DateTime.fromISO(person.value.isoLocal)
   return dt.isValid ? dt.toFormat('yyyy-LL-dd HH:mm') : person.value.isoLocal
@@ -65,7 +65,7 @@ const duplicate = () => {
   if (!person.value) return
   const copy = people.add({
     ...person.value,
-    id: null,
+    id:   null,
     name: t('person.copy_name', { name: person.value.name })
   })
   session.setActive(copy.id)
@@ -101,7 +101,7 @@ const openHumanDesign = () => {
 }
 
 watch(person, (next) => {
-  editing.value = false
+  editing.value          = false
   confirmingDelete.value = false
   if (next) session.setActive(next.id)
 }, { immediate: true })

@@ -1,18 +1,18 @@
 import { spawn } from 'node:child_process'
 import { chromium } from '@playwright/test'
 
-const port = Number(process.env.SMOKE_DEV_PORT || 5173)
-const baseUrl = `http://127.0.0.1:${port}`
+const port       = Number(process.env.SMOKE_DEV_PORT || 5173)
+const baseUrl    = `http://127.0.0.1:${port}`
 const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm'
-const isWindows = process.platform === 'win32'
+const isWindows  = process.platform === 'win32'
 
 const server = spawn(
   npmCommand,
   ['run', 'dev', '--', '--host', '127.0.0.1', '--port', String(port), '--strictPort', '--clearScreen', 'false'],
   {
-    cwd: process.cwd(),
-    env: { ...process.env, FORCE_COLOR: '0' },
-    stdio: ['ignore', 'pipe', 'pipe'],
+    cwd:      process.cwd(),
+    env:      { ...process.env, FORCE_COLOR: '0' },
+    stdio:    ['ignore', 'pipe', 'pipe'],
     detached: !isWindows,
   },
 )
@@ -29,7 +29,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 const fetchWithTimeout = async (url, timeoutMs = 2_000) => {
   const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), timeoutMs)
+  const timeout    = setTimeout(() => controller.abort(), timeoutMs)
 
   try {
     return await fetch(url, { signal: controller.signal })
@@ -85,34 +85,34 @@ async function stopServer(signal = 'SIGTERM') {
 async function runSmoke() {
   await waitForServer()
 
-  const browser = await chromium.launch()
-  const page = await browser.newPage()
+  const browser  = await chromium.launch()
+  const page     = await browser.newPage()
   const failures = []
 
   await page.addInitScript(() => {
     const person = {
-      id: 'smoke-person',
-      name: 'Smoke Person',
-      isoLocal: '1986-02-12T18:10',
+      id:              'smoke-person',
+      name:            'Smoke Person',
+      isoLocal:        '1986-02-12T18:10',
       tzOffsetMinutes: -120,
-      lat: -23.18,
-      lon: -45.88,
-      placeLabel: 'Sao Jose dos Campos, SP - Brasil',
-      createdAt: 1234567890,
+      lat:             -23.18,
+      lon:             -45.88,
+      placeLabel:      'Sao Jose dos Campos, SP - Brasil',
+      createdAt:       1234567890,
     }
 
     localStorage.setItem('astrelio_people', JSON.stringify({ list: [person] }))
     localStorage.setItem('session', JSON.stringify({ activePersonId: person.id, comparePersonId: null }))
     localStorage.setItem('astrelio_locale', 'pt-BR')
     localStorage.setItem('astrelio_settings', JSON.stringify({
-      locale: 'pt-BR',
-      houseSystem: 'placidus',
-      zodiac: 'tropical',
-      skyEnabled: false,
-      theme: 'dark',
-      aspectSet: 'all',
-      orbScale: 1,
-      applyingOnly: false,
+      locale:               'pt-BR',
+      houseSystem:          'placidus',
+      zodiac:               'tropical',
+      skyEnabled:           false,
+      theme:                'dark',
+      aspectSet:            'all',
+      orbScale:             1,
+      applyingOnly:         false,
       includeModernPlanets: true,
     }))
   })

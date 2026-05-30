@@ -8,29 +8,29 @@ const props = defineProps({
   initial:     { type: Object, default: null },
   submitLabel: { type: String, default: '' },
 })
-const emit  = defineEmits(['submit', 'cancel'])
+const emit = defineEmits(['submit', 'cancel'])
 const { t } = useI18n()
 
-const name    = ref(props.initial?.name     || '')
-const date    = ref(props.initial?.isoLocal?.slice(0, 10) || '')
-const time    = ref(props.initial?.isoLocal?.slice(11, 16) || '12:00')
-const city    = ref(props.initial ? {
-  name: props.initial.placeLabel,
-  lat: props.initial.lat,
-  lon: props.initial.lon,
-  tz: props.initial.tzOffsetMinutes,
+const name = ref(props.initial?.name     || '')
+const date = ref(props.initial?.isoLocal?.slice(0, 10) || '')
+const time = ref(props.initial?.isoLocal?.slice(11, 16) || '12:00')
+const city = ref(props.initial ? {
+  name:     props.initial.placeLabel,
+  lat:      props.initial.lat,
+  lon:      props.initial.lon,
+  tz:       props.initial.tzOffsetMinutes,
   ianaZone: props.initial.ianaZone,
 } : null)
 
-const attempted = ref(false)
-const valid = computed(() => !!(name.value.trim() && date.value && time.value && city.value))
+const attempted     = ref(false)
+const valid         = computed(() => !!(name.value.trim() && date.value && time.value && city.value))
 const missingFields = computed(() => attempted.value && !valid.value)
-const buttonLabel = computed(() => props.submitLabel || t('form.calculate'))
+const buttonLabel   = computed(() => props.submitLabel || t('form.calculate'))
 
 const submit = () => {
   attempted.value = true
   if (!valid.value) return
-  const isoLocal = `${date.value}T${time.value}`
+  const isoLocal        = `${date.value}T${time.value}`
   const tzOffsetMinutes = city.value.ianaZone
     ? ianaOffsetMinutes(isoLocal, city.value.ianaZone)
     : city.value.tz
@@ -38,10 +38,10 @@ const submit = () => {
   emit('submit', {
     name:            name.value.trim(),
     isoLocal,
-    placeLabel:      city.value.name,
-    lat:             city.value.lat,
-    lon:             city.value.lon,
-    ianaZone:        city.value.ianaZone,
+    placeLabel: city.value.name,
+    lat:        city.value.lat,
+    lon:        city.value.lon,
+    ianaZone:   city.value.ianaZone,
     tzOffsetMinutes,
   })
 }

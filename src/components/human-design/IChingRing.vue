@@ -4,14 +4,14 @@ import IChingSymbol from './IChingSymbol.vue'
 import { ichingRingLayout } from './ichingGeometry.js'
 
 const props = defineProps({
-  gates: { type: Array, required: true },
+  gates:       { type: Array, required: true },
   activeGates: { type: Array, default: () => [] },
-  radius: { type: Number, default: 490 },
-  color: { type: String, default: 'rgba(203,213,225,0.28)' },
+  radius:      { type: Number, default: 490 },
+  color:       { type: String, default: 'rgba(203,213,225,0.28)' },
   activeColor: { type: String, default: 'rgba(248,250,252,0.74)' },
 })
 
-const active = computed(() => new Set(props.activeGates.map(Number)))
+const active  = computed(() => new Set(props.activeGates.map(Number)))
 const symbols = computed(() => ichingRingLayout({ gates: props.gates, radius: props.radius }))
 </script>
 

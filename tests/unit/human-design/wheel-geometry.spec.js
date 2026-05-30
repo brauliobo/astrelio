@@ -43,11 +43,11 @@ describe('Human Design wheel geometry', () => {
   })
 
   it('maps Human Design sky background planets with the mandala orientation, not astrology wheel shift', () => {
-    const aquariusSunLongitude = 323.5
-    const skyLongitude = skyLongitudeForHumanDesignLongitude(aquariusSunLongitude)
-    const screenAngle = (180 - skyLongitude + 360) % 360
+    const aquariusSunLongitude    = 323.5
+    const skyLongitude            = skyLongitudeForHumanDesignLongitude(aquariusSunLongitude)
+    const screenAngle             = (180 - skyLongitude + 360) % 360
     const rawLongitudeScreenAngle = (mandalaAngleForLongitude(aquariusSunLongitude) - 90 + 360) % 360
-    const activationScreenAngle = (mandalaAngleForActivation(activationFromLongitude(aquariusSunLongitude)) - 90 + 360) % 360
+    const activationScreenAngle   = (mandalaAngleForActivation(activationFromLongitude(aquariusSunLongitude)) - 90 + 360) % 360
 
     expect(angularDistance(screenAngle, activationScreenAngle)).toBeLessThan(0.001)
     expect(angularDistance(screenAngle, rawLongitudeScreenAngle)).toBeGreaterThan(1)
@@ -58,8 +58,8 @@ describe('Human Design wheel geometry', () => {
 
   it('caps the sky background to the viewport width while preserving center alignment', () => {
     const radius = skyRadiusForBounds({
-      chartRadius: 450,
-      maxRadius: 1200,
+      chartRadius:   450,
+      maxRadius:     1200,
       viewportWidth: 1440,
     })
 
@@ -74,8 +74,8 @@ describe('Human Design wheel geometry', () => {
 
   it('keeps gate dividers and reference rays on sector boundaries', () => {
     const [segment] = gateSegmentLayout({
-      inner: wheelRingRadii.gateInner,
-      outer: wheelRingRadii.gateOuter,
+      inner:       wheelRingRadii.gateInner,
+      outer:       wheelRingRadii.gateOuter,
       labelRadius: 406,
     })
 

@@ -9,28 +9,28 @@ import { gateSegmentLayout, zodiacSegmentLayout } from './ringSegmentGeometry.js
 import { humanDesignPalette, humanDesignWheelPalette } from './visualTheme.js'
 
 const props = defineProps({
-  chart: { type: Object, required: true },
-  hover: { type: Object, default: null },
+  chart:       { type: Object, required: true },
+  hover:       { type: Object, default: null },
   visualTheme: { type: String, default: 'dark' },
 })
 
 const emit = defineEmits(['hover', 'leave'])
 
-const activeGates = computed(() => new Set(props.chart.gates || []))
-const personalityGates = computed(() => new Set(props.chart.personalityGates || []))
-const designGates = computed(() => new Set(props.chart.designGates || []))
-const mandalaGates = MANDALA_GATE_ORDER
-const palette = computed(() => humanDesignPalette(props.visualTheme))
-const wheelColors = computed(() => humanDesignWheelPalette(props.visualTheme))
+const activeGates       = computed(() => new Set(props.chart.gates || []))
+const personalityGates  = computed(() => new Set(props.chart.personalityGates || []))
+const designGates       = computed(() => new Set(props.chart.designGates || []))
+const mandalaGates      = MANDALA_GATE_ORDER
+const palette           = computed(() => humanDesignPalette(props.visualTheme))
+const wheelColors       = computed(() => humanDesignWheelPalette(props.visualTheme))
 const zodiacLabelRadius = computed(() => (wheelRingRadii.zodiacInner + wheelRingRadii.zodiacOuter) / 2)
-const gateLabelRadius = computed(() => (wheelRingRadii.gateInner + wheelRingRadii.gateOuter) / 2)
+const gateLabelRadius   = computed(() => (wheelRingRadii.gateInner + wheelRingRadii.gateOuter) / 2)
 
 const gateSegments = computed(() =>
   gateSegmentLayout({ inner: wheelRingRadii.gateInner, outer: wheelRingRadii.gateOuter, labelRadius: gateLabelRadius.value }).map((segment) => {
-    const gate = segment.gate
-    const active = activeGates.value.has(gate)
+    const gate        = segment.gate
+    const active      = activeGates.value.has(gate)
     const personality = personalityGates.value.has(gate)
-    const design = designGates.value.has(gate)
+    const design      = designGates.value.has(gate)
 
     return {
       ...segment,
@@ -38,24 +38,24 @@ const gateSegments = computed(() =>
       active,
       personality,
       design,
-      fill: active ? (personality && design ? wheelColors.value.gateBoth : design ? wheelColors.value.gateDesign : wheelColors.value.gatePersonality) : 'transparent',
-      hoverFill: design ? wheelColors.value.gateDesignHover : wheelColors.value.gateHover,
-      hoverStroke: palette.value.highlight,
+      fill:         active ? (personality && design ? wheelColors.value.gateBoth : design ? wheelColors.value.gateDesign : wheelColors.value.gatePersonality) : 'transparent',
+      hoverFill:    design ? wheelColors.value.gateDesignHover : wheelColors.value.gateHover,
+      hoverStroke:  palette.value.highlight,
       sectorStroke: wheelColors.value.sectorStroke,
-      text: active ? wheelColors.value.activeText : wheelColors.value.inactiveText,
+      text:         active ? wheelColors.value.activeText : wheelColors.value.inactiveText,
     }
   })
 )
 
 const isGateHovered = gate => props.hover?.type === 'gate' && Number(props.hover.value) === Number(gate)
-const hasGateHover = computed(() => props.hover?.type === 'gate')
+const hasGateHover  = computed(() => props.hover?.type === 'gate')
 
 const zodiacSegments = computed(() =>
   zodiacSegmentLayout({ inner: wheelRingRadii.zodiacInner, outer: wheelRingRadii.zodiacOuter, labelRadius: zodiacLabelRadius.value }).map((segment) => {
     const index = segment.index
     return {
       ...segment,
-      fill: wheelColors.value.zodiacFills[index % wheelColors.value.zodiacFills.length],
+      fill:   wheelColors.value.zodiacFills[index % wheelColors.value.zodiacFills.length],
       stroke: wheelColors.value.zodiacStroke,
     }
   })

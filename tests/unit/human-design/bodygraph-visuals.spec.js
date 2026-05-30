@@ -9,8 +9,8 @@ import en from '../../../src/i18n/en.json'
 import ptBR from '../../../src/i18n/pt-BR.json'
 
 const i18n = () => createI18n({
-  legacy: false,
-  locale: 'en',
+  legacy:   false,
+  locale:   'en',
   messages: { en, 'pt-BR': ptBR },
 })
 
@@ -24,33 +24,33 @@ const chartFor = ({ channels, designGates = [], personalityGates = [], centers =
 const mountChannels = (chart, extraProps = {}) => mount(BodygraphChannels, {
   props: {
     chart,
-    showOpen: true,
-    showBase: true,
+    showOpen:     true,
+    showBase:     true,
     showSegments: true,
-    openOpacity: 0.26,
+    openOpacity:  0.26,
     ...extraProps,
   },
 })
 
-const basePaths = wrapper => wrapper.findAll('[data-testid="bodygraph-open-channel"]')
-const definedPaths = wrapper => wrapper.findAll('[data-testid="bodygraph-defined-channel"]')
+const basePaths       = wrapper => wrapper.findAll('[data-testid="bodygraph-open-channel"]')
+const definedPaths    = wrapper => wrapper.findAll('[data-testid="bodygraph-defined-channel"]')
 const definedGatePath = (wrapper, gate) =>
   definedPaths(wrapper).find(path => Number(path.attributes('data-gate')) === gate)
 const definedGateParts = (wrapper, gate) =>
   definedPaths(wrapper).filter(path => Number(path.attributes('data-gate')) === gate)
 const definedGates = wrapper =>
   definedPaths(wrapper).map(path => Number(path.attributes('data-gate'))).sort((a, b) => a - b)
-const hdDesign = 'var(--hd-design)'
-const hdPersonality = 'var(--hd-contrast)'
+const hdDesign           = 'var(--hd-design)'
+const hdPersonality      = 'var(--hd-contrast)'
 const hdLightPersonality = 'var(--hd-contrast)'
-const hdInactiveChannel = 'var(--hd-channel-inactive)'
+const hdInactiveChannel  = 'var(--hd-channel-inactive)'
 
 describe('Human Design bodygraph visual painting', () => {
   it('keeps the flat cone figure behind channels and centers', () => {
     const wrapper = mount(BodygraphCore, {
       props: {
         chart: chartFor({
-          channels: ['10-34'],
+          channels:    ['10-34'],
           designGates: [10, 34],
         }),
       },
@@ -81,8 +81,8 @@ describe('Human Design bodygraph visual painting', () => {
 
   it('paints mixed channels as red and white gate halves without a duplicate full defined path', () => {
     const wrapper = mountChannels(chartFor({
-      channels: ['5-15'],
-      designGates: [5],
+      channels:         ['5-15'],
+      designGates:      [5],
       personalityGates: [15],
     }))
 
@@ -95,8 +95,8 @@ describe('Human Design bodygraph visual painting', () => {
 
   it('paints hanging active gate partials even when harmonic gates are open', () => {
     const wrapper = mountChannels(chartFor({
-      channels: [],
-      designGates: [5, 14, 30, 55],
+      channels:         [],
+      designGates:      [5, 14, 30, 55],
       personalityGates: [21, 39, 41],
     }))
 
@@ -111,7 +111,7 @@ describe('Human Design bodygraph visual painting', () => {
 
   it('paints both halves red when both gates are design activations', () => {
     const wrapper = mountChannels(chartFor({
-      channels: ['2-14'],
+      channels:    ['2-14'],
       designGates: [2, 14],
     }))
 
@@ -122,8 +122,8 @@ describe('Human Design bodygraph visual painting', () => {
 
   it('paints the personality half white on 21-45 instead of dropping the segment', () => {
     const wrapper = mountChannels(chartFor({
-      channels: ['21-45'],
-      designGates: [45],
+      channels:         ['21-45'],
+      designGates:      [45],
       personalityGates: [21],
     }))
 
@@ -134,8 +134,8 @@ describe('Human Design bodygraph visual painting', () => {
 
   it('uses theme contrast for gates activated by both design and personality', () => {
     const wrapper = mountChannels(chartFor({
-      channels: ['10-34'],
-      designGates: [10, 34],
+      channels:         ['10-34'],
+      designGates:      [10, 34],
       personalityGates: [10],
     }))
 
@@ -148,8 +148,8 @@ describe('Human Design bodygraph visual painting', () => {
 
   it('uses black contrast for both activations in light theme', () => {
     const wrapper = mountChannels(chartFor({
-      channels: ['28-38'],
-      designGates: [28, 38],
+      channels:         ['28-38'],
+      designGates:      [28, 38],
       personalityGates: [28],
     }), { visualTheme: 'light' })
 
@@ -161,8 +161,8 @@ describe('Human Design bodygraph visual painting', () => {
 
   it('paints gate 28 both activations as two full parallel lanes', () => {
     const wrapper = mountChannels(chartFor({
-      channels: ['28-38'],
-      designGates: [28, 38],
+      channels:         ['28-38'],
+      designGates:      [28, 38],
       personalityGates: [28],
     }))
     const paths = definedGateParts(wrapper, 28)
@@ -182,8 +182,8 @@ describe('Human Design bodygraph visual painting', () => {
 
   it('paints open channels with one opaque inactive color so overlapping paths do not darken', () => {
     const wrapper = mountChannels(chartFor({
-      channels: [],
-      designGates: [],
+      channels:         [],
+      designGates:      [],
       personalityGates: [],
     }))
 
@@ -195,14 +195,14 @@ describe('Human Design bodygraph visual painting', () => {
     const wrapper = mount(BodygraphCore, {
       props: {
         chart: chartFor({
-          channels: ['19-49'],
-          centers: ['Solar Plexus'],
+          channels:    ['19-49'],
+          centers:     ['Solar Plexus'],
           designGates: [49, 19],
         }),
       },
       global: { plugins: [i18n()] },
     })
-    const solarPlexus = wrapper.find('[data-center="Solar Plexus"] path')
+    const solarPlexus      = wrapper.find('[data-center="Solar Plexus"] path')
     const solarPlexusLabel = wrapper.find('[data-center-group="Solar Plexus"] [data-gate="36"] text')
 
     expect(solarPlexus.attributes('fill')).toBe('#5f4339')
@@ -211,8 +211,8 @@ describe('Human Design bodygraph visual painting', () => {
 
   it('paints lower right 55-39 as independent gate-side partials', () => {
     const wrapper = mountChannels(chartFor({
-      channels: ['39-55'],
-      designGates: [55],
+      channels:         ['39-55'],
+      designGates:      [55],
       personalityGates: [39],
     }))
 
@@ -223,8 +223,8 @@ describe('Human Design bodygraph visual painting', () => {
 
   it('paints lower right 30-41 as independent gate-side partials', () => {
     const wrapper = mountChannels(chartFor({
-      channels: ['30-41'],
-      designGates: [30],
+      channels:         ['30-41'],
+      designGates:      [30],
       personalityGates: [41],
     }))
 

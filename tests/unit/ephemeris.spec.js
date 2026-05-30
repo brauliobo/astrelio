@@ -36,23 +36,23 @@ describe('ephemeris', () => {
   })
 
   it('pins tropical longitudes for the reference chart', () => {
-    const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
-    const c = computeChart(jd, REF.lat, REF.lon, { zodiac: 'tropical', houseSystem: 'placidus' })
+    const jd       = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
+    const c        = computeChart(jd, REF.lat, REF.lon, { zodiac: 'tropical', houseSystem: 'placidus' })
     const expected = {
-      Sun: 323.823130,
-      Moon: 9.878768,
-      Mercury: 332.945117,
-      Venus: 329.633951,
-      Mars: 246.198763,
-      Jupiter: 328.119011,
-      Saturn: 248.713407,
-      Uranus: 261.584523,
-      Neptune: 275.034745,
-      Pluto: 217.357843,
+      Sun:       323.823130,
+      Moon:      9.878768,
+      Mercury:   332.945117,
+      Venus:     329.633951,
+      Mars:      246.198763,
+      Jupiter:   328.119011,
+      Saturn:    248.713407,
+      Uranus:    261.584523,
+      Neptune:   275.034745,
+      Pluto:     217.357843,
       NorthNode: 33.552883,
       SouthNode: 213.552883,
-      Lilith: 58.373303,
-      Chiron: 69.243221,
+      Lilith:    58.373303,
+      Chiron:    69.243221,
     }
 
     for (const [name, longitude] of Object.entries(expected)) {
@@ -61,12 +61,12 @@ describe('ephemeris', () => {
   })
 
   it('computes tropical point longitudes in zodiac range', () => {
-    const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
-    const c = computeChart(jd, REF.lat, REF.lon, { zodiac: 'tropical', houseSystem: 'placidus' })
+    const jd       = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
+    const c        = computeChart(jd, REF.lat, REF.lon, { zodiac: 'tropical', houseSystem: 'placidus' })
     const expected = {
-      fortune: 163.908712,
-      spirit: 71.797435,
-      vertex: 332.815122,
+      fortune:   163.908712,
+      spirit:    71.797435,
+      vertex:    332.815122,
       eastPoint: 126.802239,
     }
 
@@ -78,16 +78,16 @@ describe('ephemeris', () => {
   })
 
   it('selects mean or true lunar node mode for tropical charts', () => {
-    const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
+    const jd   = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
     const mean = computeChart(jd, REF.lat, REF.lon, {
-      zodiac: 'tropical',
+      zodiac:      'tropical',
       houseSystem: 'placidus',
-      nodeMode: 'mean',
+      nodeMode:    'mean',
     })
     const trueNode = computeChart(jd, REF.lat, REF.lon, {
-      zodiac: 'tropical',
+      zodiac:      'tropical',
       houseSystem: 'placidus',
-      nodeMode: 'true',
+      nodeMode:    'true',
     })
 
     expect(mean.nodeMode).toBe('mean')
@@ -98,14 +98,14 @@ describe('ephemeris', () => {
   })
 
   it('pins retrograde state and sidereal ayanamsa shift', () => {
-    const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
+    const jd       = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
     const tropical = computeChart(jd, REF.lat, REF.lon, { zodiac: 'tropical', houseSystem: 'placidus' })
     const sidereal = computeChart(jd, REF.lat, REF.lon, { zodiac: 'sidereal', houseSystem: 'placidus' })
-    const tSun = tropical.positions.find(p => p.name === 'Sun')
-    const sSun = sidereal.positions.find(p => p.name === 'Sun')
+    const tSun     = tropical.positions.find(p => p.name === 'Sun')
+    const sSun     = sidereal.positions.find(p => p.name === 'Sun')
 
-    const pluto = tropical.positions.find(p => p.name === 'Pluto')
-    const chiron = tropical.positions.find(p => p.name === 'Chiron')
+    const pluto     = tropical.positions.find(p => p.name === 'Pluto')
+    const chiron    = tropical.positions.find(p => p.name === 'Chiron')
     const northNode = tropical.positions.find(p => p.name === 'NorthNode')
 
     expect(pluto.retrograde).toBe(true)
@@ -124,24 +124,24 @@ describe('ephemeris', () => {
   })
 
   it('moonPhaseLabel returns one of 8 labels', () => {
-    const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
+    const jd     = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
     const labels = ['new', 'waxing_c', 'first_q', 'waxing_g', 'full', 'waning_g', 'last_q', 'waning_c']
     expect(labels).toContain(moonPhaseLabel(jd))
   })
 
   it('sidereal mode shifts longitudes', () => {
-    const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
+    const jd       = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
     const tropical = computeChart(jd, REF.lat, REF.lon, { zodiac: 'tropical', houseSystem: 'placidus' })
     const sidereal = computeChart(jd, REF.lat, REF.lon, { zodiac: 'sidereal', houseSystem: 'placidus' })
-    const tSun = tropical.positions.find(p => p.name === 'Sun').longitude
-    const sSun = sidereal.positions.find(p => p.name === 'Sun').longitude
+    const tSun     = tropical.positions.find(p => p.name === 'Sun').longitude
+    const sSun     = sidereal.positions.find(p => p.name === 'Sun').longitude
     expect(Math.abs(tSun - sSun)).toBeGreaterThan(20)  // ayanamsa ~24°
   })
 
   it('infers historical Brazilian DST for legacy saved city labels', () => {
     const offset = offsetMinutesForPerson({
-      isoLocal: REF.isoLocal,
-      placeLabel: 'São José dos Campos, SP — Brasil',
+      isoLocal:        REF.isoLocal,
+      placeLabel:      'São José dos Campos, SP — Brasil',
       tzOffsetMinutes: -180
     })
 

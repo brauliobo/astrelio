@@ -17,7 +17,7 @@ const { t } = useI18n()
 const groups = computed(() => {
   const map = new Map()
   for (const channel of props.chart.details?.channels || []) {
-    const key = channel.circuitGroup || channel.circuit || t('human_design.open_state')
+    const key  = channel.circuitGroup || channel.circuit || t('human_design.open_state')
     const item = map.get(key) || { key, channels: [] }
     item.channels.push(channel)
     map.set(key, item)

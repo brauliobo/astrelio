@@ -22,9 +22,9 @@ test.describe('Tropical visual smoke', () => {
 
     await expect(page.getByTestId('chart-wheel-svg')).toBeVisible()
     const svgHealth = await page.getByTestId('chart-wheel-svg').evaluate((svg) => ({
-      width: svg.getBoundingClientRect().width,
+      width:  svg.getBoundingClientRect().width,
       height: svg.getBoundingClientRect().height,
-      marks: svg.querySelectorAll('path, text, line, circle, polygon').length,
+      marks:  svg.querySelectorAll('path, text, line, circle, polygon').length,
     }))
 
     expect(svgHealth.width).toBeGreaterThan(360)
@@ -64,9 +64,9 @@ test.describe('Tropical visual smoke', () => {
     await expect(page.getByTestId('report-position-lists')).toBeVisible()
 
     const layout = await page.evaluate(() => ({
-      viewport: window.innerWidth,
+      viewport:    window.innerWidth,
       scrollWidth: document.documentElement.scrollWidth,
-      wheelWidth: document.querySelector('[data-testid="chart-wheel"]')?.getBoundingClientRect().width || 0,
+      wheelWidth:  document.querySelector('[data-testid="chart-wheel"]')?.getBoundingClientRect().width || 0,
     }))
 
     expect(layout.scrollWidth).toBeLessThanOrEqual(layout.viewport + 2)

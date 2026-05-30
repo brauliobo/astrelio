@@ -28,7 +28,7 @@ const validBirthdayInYear = (birth, year) => {
 }
 
 export const completedYearsOnDate = (birthIsoLocal, targetIsoDate) => {
-  const birth = DateTime.fromISO(birthIsoLocal, { zone: 'utc' })
+  const birth  = DateTime.fromISO(birthIsoLocal, { zone: 'utc' })
   const target = DateTime.fromISO(targetIsoDate.slice(0, 10), { zone: 'utc' })
   if (!birth.isValid) throw new Error(`invalid birth ISO: ${birthIsoLocal}`)
   if (!target.isValid) throw new Error(`invalid target date: ${targetIsoDate}`)
@@ -39,10 +39,10 @@ export const completedYearsOnDate = (birthIsoLocal, targetIsoDate) => {
 }
 
 export const annualProfection = (ascendantLongitude, birthIsoLocal, targetIsoDate) => {
-  const age = completedYearsOnDate(birthIsoLocal, targetIsoDate)
+  const age            = completedYearsOnDate(birthIsoLocal, targetIsoDate)
   const profectedHouse = profectionHouseForAge(age)
-  const ascSignIndex = signIndex(ascendantLongitude)
-  const sign = (ascSignIndex + age) % 12
+  const ascSignIndex   = signIndex(ascendantLongitude)
+  const sign           = (ascSignIndex + age) % 12
 
   return {
     age,

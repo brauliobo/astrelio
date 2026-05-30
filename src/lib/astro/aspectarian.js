@@ -32,7 +32,7 @@ const bodyByName = (chart, name) =>
   chart?.positions?.find(position => position.name === name) || null
 
 export const fortuneLongitude = (chart) => {
-  const sun = bodyByName(chart, 'Sun')
+  const sun  = bodyByName(chart, 'Sun')
   const moon = bodyByName(chart, 'Moon')
   if (typeof chart?.fortune === 'number') return norm360(chart.fortune)
   if (!chart || !sun || !moon || typeof chart.ascendant !== 'number') return null
@@ -40,7 +40,7 @@ export const fortuneLongitude = (chart) => {
 }
 
 export const spiritLongitude = (chart) => {
-  const sun = bodyByName(chart, 'Sun')
+  const sun  = bodyByName(chart, 'Sun')
   const moon = bodyByName(chart, 'Moon')
   if (typeof chart?.spirit === 'number') return norm360(chart.spirit)
   if (!chart || !sun || !moon || typeof chart.ascendant !== 'number') return null
@@ -51,18 +51,18 @@ const syntheticPoint = (name, longitude) => longitude === null || longitude === 
   ? null
   : {
     name,
-    longitude: norm360(longitude),
-    latitude: 0,
-    speed: 0,
-    motion: 'direct',
+    longitude:  norm360(longitude),
+    latitude:   0,
+    speed:      0,
+    motion:     'direct',
     stationary: false,
     retrograde: false,
-    synthetic: true,
+    synthetic:  true,
   }
 
 export const chartAspectPoints = (chart, options = {}) => {
   if (!chart) return []
-  const includeAngles = options.includeAngles ?? true
+  const includeAngles  = options.includeAngles ?? true
   const includeFortune = options.includeFortune ?? true
 
   const byName = new Map((chart.positions || [])
@@ -88,14 +88,14 @@ export const chartAspectPoints = (chart, options = {}) => {
 }
 
 export const aspectMatrix = (baseChart, comparisonChart = null, options = {}) => {
-  const columns = chartAspectPoints(baseChart, options)
+  const columns   = chartAspectPoints(baseChart, options)
   const sameChart = !comparisonChart || comparisonChart === baseChart
-  const rows = sameChart
+  const rows      = sameChart
     ? columns
     : chartAspectPoints(comparisonChart, { ...options, includeAngles: false, includeFortune: false })
   const matrixOptions = {
     ...options,
-    aspectSet: options.aspectSet ?? 'major',
+    aspectSet:    options.aspectSet ?? 'major',
     applyingOnly: options.applyingOnly ?? false,
   }
 
@@ -110,7 +110,7 @@ export const aspectMatrix = (baseChart, comparisonChart = null, options = {}) =>
         return {
           ...aspect,
           column: columnPoint.name,
-          row: rowPoint.name,
+          row:    rowPoint.name,
           sameChart,
         }
       }),

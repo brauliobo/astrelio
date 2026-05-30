@@ -33,9 +33,9 @@ describe('moon phase lighting', () => {
     const wrapper = mount(MoonPhaseImage, {
       props: {
         phase: 0.25,
-        size: 44,
+        size:  44,
         light: 0.8,
-        alt: 'First quarter moon',
+        alt:   'First quarter moon',
       },
     })
 

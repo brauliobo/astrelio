@@ -6,7 +6,7 @@ import { activationCode } from '../../lib/human-design/activations.js'
 import CelestialGlyph from '../common/CelestialGlyph.vue'
 
 const props = defineProps({
-  chart: { type: Object, required: true },
+  chart:         { type: Object, required: true },
   glyphRenderer: { type: String, default: null },
 })
 const { t } = useI18n()
@@ -15,7 +15,7 @@ const rows = computed(() =>
   HD_PLANETS.map(planet => ({
     planet,
     personality: props.chart.personality[planet],
-    design: props.chart.design[planet],
+    design:      props.chart.design[planet],
   })).filter(row => row.personality || row.design)
 )
 </script>

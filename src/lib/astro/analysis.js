@@ -17,20 +17,20 @@ export const SIGN_TRAITS = [
 ]
 
 export const PLANET_WEIGHTS = {
-  Sun: 5,
-  Moon: 5,
-  Mercury: 3,
-  Venus: 3,
-  Mars: 3,
-  Jupiter: 2,
-  Saturn: 2,
-  Uranus: 1,
-  Neptune: 1,
-  Pluto: 1,
+  Sun:       5,
+  Moon:      5,
+  Mercury:   3,
+  Venus:     3,
+  Mars:      3,
+  Jupiter:   2,
+  Saturn:    2,
+  Uranus:    1,
+  Neptune:   1,
+  Pluto:     1,
   NorthNode: 1,
   SouthNode: 1,
-  Lilith: 1,
-  Chiron: 1,
+  Lilith:    1,
+  Chiron:    1,
 }
 
 export const TROPICAL_SIGN_RULERS = [
@@ -51,30 +51,30 @@ export const TROPICAL_SIGN_RULERS = [
 const TRADITIONAL_PLANETS = new Set(['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn'])
 
 const EXALTATION_SIGNS = {
-  Sun: 0,
-  Moon: 1,
+  Sun:     0,
+  Moon:    1,
   Mercury: 5,
-  Venus: 11,
-  Mars: 9,
+  Venus:   11,
+  Mars:    9,
   Jupiter: 3,
-  Saturn: 6,
+  Saturn:  6,
 }
 
 const TRANSIT_CYCLE_WEIGHTS = {
-  Sun: 0.35,
-  Moon: 0.18,
-  Mercury: 0.38,
-  Venus: 0.4,
-  Mars: 0.55,
-  Jupiter: 0.75,
-  Saturn: 0.85,
-  Uranus: 0.9,
-  Neptune: 0.95,
-  Pluto: 1,
+  Sun:       0.35,
+  Moon:      0.18,
+  Mercury:   0.38,
+  Venus:     0.4,
+  Mars:      0.55,
+  Jupiter:   0.75,
+  Saturn:    0.85,
+  Uranus:    0.9,
+  Neptune:   0.95,
+  Pluto:     1,
   NorthNode: 0.48,
   SouthNode: 0.48,
-  Chiron: 0.58,
-  Lilith: 0.32,
+  Chiron:    0.58,
+  Lilith:    0.32,
 }
 
 const countKeys = (keys) => Object.fromEntries(keys.map(key => [key, 0]))
@@ -95,13 +95,13 @@ export const placementFor = (chart, name) => {
   return {
     ...planet,
     signIndex: signIndex(planet.longitude),
-    house: houseOf(planet.longitude, chart.cusps),
+    house:     houseOf(planet.longitude, chart.cusps),
   }
 }
 
 export const anglePlacements = (chart) => ({
   ascendant: { longitude: chart.ascendant, signIndex: signIndex(chart.ascendant) },
-  mc: { longitude: chart.mc, signIndex: signIndex(chart.mc) },
+  mc:        { longitude: chart.mc, signIndex: signIndex(chart.mc) },
 })
 
 export const isTropicalChart = (chart) =>
@@ -130,14 +130,14 @@ const angularityForPlanet = (chart, longitude) => {
 const dignityFor = (planet) => {
   if (!TRADITIONAL_PLANETS.has(planet.name)) return null
 
-  const sign = signIndex(planet.longitude)
+  const sign          = signIndex(planet.longitude)
   const domicileSigns = TROPICAL_SIGN_RULERS
     .map((ruler, index) => ruler === planet.name ? index : null)
     .filter(index => index !== null)
   const detrimentSigns = domicileSigns.map(index => (index + 6) % 12)
   const exaltationSign = EXALTATION_SIGNS[planet.name]
-  const fallSign = exaltationSign === undefined ? null : (exaltationSign + 6) % 12
-  const dignities = []
+  const fallSign       = exaltationSign === undefined ? null : (exaltationSign + 6) % 12
+  const dignities      = []
 
   if (domicileSigns.includes(sign)) dignities.push('domicile')
   if (sign === exaltationSign) dignities.push('exaltation')
@@ -145,9 +145,9 @@ const dignityFor = (planet) => {
   if (sign === fallSign) dignities.push('fall')
 
   return {
-    planet: planet.name,
+    planet:    planet.name,
     signIndex: sign,
-    house: planet.house,
+    house:     planet.house,
     dignities,
     tone: dignities.some(item => item === 'domicile' || item === 'exaltation')
       ? 'supported'
@@ -164,10 +164,10 @@ const sectFor = (chart) => {
   const type = [7, 8, 9, 10, 11, 12].includes(sun.house) ? 'day' : 'night'
   return {
     type,
-    sunHouse: sun.house,
-    light: type === 'day' ? 'Sun' : 'Moon',
-    benefic: type === 'day' ? 'Jupiter' : 'Venus',
-    maleficInSect: type === 'day' ? 'Saturn' : 'Mars',
+    sunHouse:        sun.house,
+    light:           type === 'day' ? 'Sun' : 'Moon',
+    benefic:         type === 'day' ? 'Jupiter' : 'Venus',
+    maleficInSect:   type === 'day' ? 'Saturn' : 'Mars',
     maleficContrary: type === 'day' ? 'Mars' : 'Saturn',
   }
 }
@@ -175,21 +175,21 @@ const sectFor = (chart) => {
 export const tropicalDiagnostics = (chart) => {
   if (!isTropicalChart(chart)) return null
 
-  const ascSign = signIndex(chart.ascendant)
+  const ascSign        = signIndex(chart.ascendant)
   const chartRulerName = tropicalRulerForSign(ascSign)
-  const chartRuler = placementFor(chart, chartRulerName)
+  const chartRuler     = placementFor(chart, chartRulerName)
 
   const houseRulers = (chart.cusps || []).map((cusp, index) => {
-    const cuspSign = signIndex(cusp)
-    const ruler = tropicalRulerForSign(cuspSign)
+    const cuspSign  = signIndex(cusp)
+    const ruler     = tropicalRulerForSign(cuspSign)
     const placement = placementFor(chart, ruler)
     return {
-      house: index + 1,
+      house:     index + 1,
       signIndex: cuspSign,
       ruler,
       rulerSignIndex: placement?.signIndex ?? null,
-      rulerHouse: placement?.house ?? null,
-      angularity: placement ? angularityForPlanet(chart, placement.longitude) : null,
+      rulerHouse:     placement?.house ?? null,
+      angularity:     placement ? angularityForPlanet(chart, placement.longitude) : null,
     }
   })
 
@@ -201,19 +201,19 @@ export const tropicalDiagnostics = (chart) => {
     .filter(row => row && row.dignities.length)
     .sort((a, b) => {
       const priority = { domicile: 0, exaltation: 1, detriment: 2, fall: 3 }
-      const aRank = Math.min(...a.dignities.map(dignity => priority[dignity]))
-      const bRank = Math.min(...b.dignities.map(dignity => priority[dignity]))
+      const aRank    = Math.min(...a.dignities.map(dignity => priority[dignity]))
+      const bRank    = Math.min(...b.dignities.map(dignity => priority[dignity]))
       return aRank - bRank || (PLANET_WEIGHTS[b.planet] || 0) - (PLANET_WEIGHTS[a.planet] || 0)
     })
 
   return {
     chartRuler: chartRuler && {
-      planet: chartRuler.name,
+      planet:       chartRuler.name,
       ascSignIndex: ascSign,
-      signIndex: chartRuler.signIndex,
-      house: chartRuler.house,
-      retrograde: chartRuler.retrograde,
-      angularity: angularityForPlanet(chart, chartRuler.longitude),
+      signIndex:    chartRuler.signIndex,
+      house:        chartRuler.house,
+      retrograde:   chartRuler.retrograde,
+      angularity:   angularityForPlanet(chart, chartRuler.longitude),
     },
     houseRulers,
     sect: sectFor(chart),
@@ -225,22 +225,22 @@ const hemisphereEmphasis = (hemispheres) => {
   const byKey = Object.fromEntries(hemispheres.map(row => [row.key, row]))
   return {
     horizontal: (byKey.east?.value || 0) >= (byKey.west?.value || 0) ? byKey.east : byKey.west,
-    vertical: (byKey.south?.value || 0) >= (byKey.north?.value || 0) ? byKey.south : byKey.north,
+    vertical:   (byKey.south?.value || 0) >= (byKey.north?.value || 0) ? byKey.south : byKey.north,
   }
 }
 
 export const chartSignature = (chart) => {
-  const elements = countKeys(['fire', 'earth', 'air', 'water'])
-  const modalities = countKeys(['cardinal', 'fixed', 'mutable'])
-  const polarities = countKeys(['yang', 'yin'])
+  const elements    = countKeys(['fire', 'earth', 'air', 'water'])
+  const modalities  = countKeys(['cardinal', 'fixed', 'mutable'])
+  const polarities  = countKeys(['yang', 'yin'])
   const hemispheres = countKeys(['east', 'west', 'north', 'south'])
-  const houseModes = countKeys(['angular', 'succedent', 'cadent'])
-  const houses = Array.from({ length: 12 }, (_, index) => ({ house: index + 1, value: 0 }))
+  const houseModes  = countKeys(['angular', 'succedent', 'cadent'])
+  const houses      = Array.from({ length: 12 }, (_, index) => ({ house: index + 1, value: 0 }))
 
   for (const planet of chart.positions || []) {
     const weight = PLANET_WEIGHTS[planet.name] || 1
     const traits = SIGN_TRAITS[signIndex(planet.longitude)]
-    const house = houseOf(planet.longitude, chart.cusps)
+    const house  = houseOf(planet.longitude, chart.cusps)
 
     elements[traits.element] += weight
     modalities[traits.modality] += weight
@@ -263,19 +263,19 @@ export const chartSignature = (chart) => {
     .filter(item => item.angle.orb <= 8)
     .sort((a, b) => a.angle.orb - b.angle.orb)
     .map(item => ({
-      name: item.planet.name,
+      name:  item.planet.name,
       angle: item.angle.key,
-      orb: item.angle.orb,
+      orb:   item.angle.orb,
     }))
 
   return {
-    elements: shareRows(elements),
-    modalities: shareRows(modalities),
-    polarities: shareRows(polarities),
-    houseModes: shareRows(houseModes),
-    hemispheres: shareRows(hemispheres),
+    elements:           shareRows(elements),
+    modalities:         shareRows(modalities),
+    polarities:         shareRows(polarities),
+    houseModes:         shareRows(houseModes),
+    hemispheres:        shareRows(hemispheres),
     hemisphereEmphasis: hemisphereEmphasis(shareRows(hemispheres)),
-    houses: houses.sort((a, b) => b.value - a.value || a.house - b.house),
+    houses:             houses.sort((a, b) => b.value - a.value || a.house - b.house),
     angularPlanets,
     retrogrades: (chart.positions || [])
       .filter(planet => planet.retrograde)
@@ -299,11 +299,11 @@ const natalImportanceScore = (chart, planetName) => {
   const planet = planetByName(chart, planetName)
   if (!planet) return (PLANET_WEIGHTS[planetName] || 1) / 5
 
-  const base = (PLANET_WEIGHTS[planetName] || 1) / 5
+  const base            = (PLANET_WEIGHTS[planetName] || 1) / 5
   const chartRulerBoost = tropicalDiagnostics(chart)?.chartRuler?.planet === planetName ? 0.28 : 0
-  const angle = angularityForPlanet(chart, planet.longitude)
-  const angularBoost = angle ? Math.max(0.08, (8 - angle.orb) / 8 * 0.25) : 0
-  const luminaryBoost = planetName === 'Sun' || planetName === 'Moon' ? 0.12 : 0
+  const angle           = angularityForPlanet(chart, planet.longitude)
+  const angularBoost    = angle ? Math.max(0.08, (8 - angle.orb) / 8 * 0.25) : 0
+  const luminaryBoost   = planetName === 'Sun' || planetName === 'Moon' ? 0.12 : 0
 
   return Math.min(1, base + chartRulerBoost + angularBoost + luminaryBoost)
 }
@@ -311,26 +311,26 @@ const natalImportanceScore = (chart, planetName) => {
 const transitSpeedScore = (planet) => {
   if (!planet) return 0.35
 
-  const cycleWeight = TRANSIT_CYCLE_WEIGHTS[planet.name] ?? 0.35
-  const speed = Math.abs(planet.speed || 0)
+  const cycleWeight  = TRANSIT_CYCLE_WEIGHTS[planet.name] ?? 0.35
+  const speed        = Math.abs(planet.speed || 0)
   const stationBoost = speed < 0.04 ? 0.16 : speed < 0.12 ? 0.08 : 0
   return Math.min(1, cycleWeight + stationBoost)
 }
 
 export const transitAspectRank = (aspect, natalChart, transitChart) => {
-  const natalPlanet = planetByName(natalChart, aspect.a)
+  const natalPlanet   = planetByName(natalChart, aspect.a)
   const transitPlanet = planetByName(transitChart, aspect.b)
-  const exactness = Math.max(0, 1 - (aspect.delta || 0) / (aspect.orb || 8))
-  const transitHouse = transitPlanet && natalChart?.cusps
+  const exactness     = Math.max(0, 1 - (aspect.delta || 0) / (aspect.orb || 8))
+  const transitHouse  = transitPlanet && natalChart?.cusps
     ? houseOf(transitPlanet.longitude, natalChart.cusps)
     : null
   const natalHouse = natalPlanet && natalChart?.cusps
     ? houseOf(natalPlanet.longitude, natalChart.cusps)
     : null
-  const houseScore = transitHouse ? houseActivationScore(transitHouse) : 0.5
-  const natalScore = natalImportanceScore(natalChart, aspect.a)
-  const speedScore = transitSpeedScore(transitPlanet)
-  const applyingScore = aspect.applying ? 1 : 0
+  const houseScore     = transitHouse ? houseActivationScore(transitHouse) : 0.5
+  const natalScore     = natalImportanceScore(natalChart, aspect.a)
+  const speedScore     = transitSpeedScore(transitPlanet)
+  const applyingScore  = aspect.applying ? 1 : 0
   const sameHouseBoost = transitHouse && natalHouse && transitHouse === natalHouse ? 0.06 : 0
   const score =
     exactness * 0.38 +
@@ -343,8 +343,8 @@ export const transitAspectRank = (aspect, natalChart, transitChart) => {
   return {
     score,
     exactness,
-    applying: !!aspect.applying,
-    speed: speedScore,
+    applying:        !!aspect.applying,
+    speed:           speedScore,
     houseActivation: houseScore,
     natalImportance: natalScore,
     transitHouse,

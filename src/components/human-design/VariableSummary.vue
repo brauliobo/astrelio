@@ -6,11 +6,11 @@ defineProps({
 })
 
 const { t } = useI18n()
-const variableLabel = variable => t(`human_design.variable_labels.${variable.id}.label`)
-const variableSubtitle = variable => t(`human_design.variable_labels.${variable.id}.subtitle`)
+const variableLabel      = variable => t(`human_design.variable_labels.${variable.id}.label`)
+const variableSubtitle   = variable => t(`human_design.variable_labels.${variable.id}.subtitle`)
 const variableColorLabel = variable => {
   if (!variable?.id || !variable?.color) return variable?.colorLabel || variable?.code || ''
-  const key = `human_design.variable_colors.${variable.id}.${variable.color}`
+  const key        = `human_design.variable_colors.${variable.id}.${variable.color}`
   const translated = t(key)
   return translated === key ? variable.colorLabel || variable.code : translated
 }

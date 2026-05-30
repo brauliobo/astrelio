@@ -10,24 +10,24 @@ import { hasPersonRouteQuery, natalRouteForPerson, personFromRouteQuery } from '
 import AppLogo from './components/AppLogo.vue'
 
 const { t, locale } = useI18n()
-const route = useRoute()
+const route    = useRoute()
 const settings = useSettingsStore()
 settings.normalize()
-const people = usePeopleStore()
-const session = useSessionStore()
+const people             = usePeopleStore()
+const session            = useSessionStore()
 const storedActivePerson = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
-const routePerson = computed(() =>
+const routePerson        = computed(() =>
   route.name === 'natal' && hasPersonRouteQuery(route.query) ? personFromRouteQuery(route.query) : null
 )
 const activePerson = computed(() =>
   route.name === 'natal' && hasPersonRouteQuery(route.query) ? routePerson.value : storedActivePerson.value
 )
-const Background = defineAsyncComponent(() => import('./components/sky/Background.vue'))
-const personPath = computed(() => storedActivePerson.value ? `/person/${storedActivePerson.value.id}` : '/')
-const natalPath = computed(() => natalRouteForPerson(storedActivePerson.value))
-const skyMode = computed(() => route.path === '/human-design' ? 'humanDesign' : 'astrology')
-const activeTheme = computed(() => settings.theme === 'light' ? 'light' : 'dark')
-const isVedicRoute = computed(() => route.path === '/vedic')
+const Background       = defineAsyncComponent(() => import('./components/sky/Background.vue'))
+const personPath       = computed(() => storedActivePerson.value ? `/person/${storedActivePerson.value.id}` : '/')
+const natalPath        = computed(() => natalRouteForPerson(storedActivePerson.value))
+const skyMode          = computed(() => route.path === '/human-design' ? 'humanDesign' : 'astrology')
+const activeTheme      = computed(() => settings.theme === 'light' ? 'light' : 'dark')
+const isVedicRoute     = computed(() => route.path === '/vedic')
 const toggleThemeLabel = computed(() =>
   activeTheme.value === 'light' ? 'Switch to dark mode' : 'Switch to light mode'
 )
@@ -40,7 +40,7 @@ locale.value = settings.locale
 
 watchEffect(() => {
   if (typeof document === 'undefined') return
-  document.documentElement.dataset.theme = activeTheme.value
+  document.documentElement.dataset.theme     = activeTheme.value
   document.documentElement.style.colorScheme = activeTheme.value
 })
 
@@ -55,9 +55,9 @@ const links = computed(() => [
 
 const contextItems = computed(() => {
   const presetKey = settings.activePreset || 'custom'
-  const items = [
+  const items     = [
     {
-      key: 'system',
+      key:   'system',
       label: t('context.system'),
       value: isVedicRoute.value
         ? `${t('modalities.vedic')} · ${t(`vedic.ayanamshas.${settings.vedic.ayanamsha}`)}`

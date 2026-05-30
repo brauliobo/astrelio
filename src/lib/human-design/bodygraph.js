@@ -12,7 +12,7 @@ const collectGates = (...activationSets) =>
   sortedUnique(activationSets.flatMap(activations => activationValues(activations).map(item => item.gate)))
 
 const channelsForGates = (gates) => {
-  const gateSet = new Set(gates)
+  const gateSet  = new Set(gates)
   const channels = []
 
   for (const gate of gateSet) {
@@ -40,7 +40,7 @@ const motorToThroat = (channels, centers) => {
   if (centers.includes('Sacral') && hasChannel(channels, /20-34/)) return true
   if (centers.includes('Ego') && hasChannel(channels, /21-45/)) return true
 
-  const gToThroat = hasChannel(channels, /1-8|7-31|10-20|13-33/)
+  const gToThroat      = hasChannel(channels, /1-8|7-31|10-20|13-33/)
   const spleenToThroat = hasChannel(channels, /16-48|20-57/)
 
   if (centers.includes('Sacral') && hasChannel(channels, /2-14|5-15|29-46/) && gToThroat) return true
@@ -105,11 +105,11 @@ const circuitriesFor = (channels) =>
   sortedUnique(channels.map(channel => CHANNEL_CIRCUITS[channel]).filter(Boolean))
 
 export const deriveHumanDesignGraph = ({ personId, personName, birthJd, designJd, lat, lon, personality, design }) => {
-  const gates = collectGates(personality, design)
+  const gates            = collectGates(personality, design)
   const personalityGates = collectGates(personality)
-  const designGates = collectGates(design)
-  const channels = channelsForGates(gates)
-  const centers = centersForChannels(channels)
+  const designGates      = collectGates(design)
+  const channels         = channelsForGates(gates)
+  const centers          = centersForChannels(channels)
 
   const enriched = enrichHumanDesignChart({
     personId,
@@ -120,9 +120,9 @@ export const deriveHumanDesignGraph = ({ personId, personName, birthJd, designJd
     lon,
     personality,
     design,
-    profile: `${personality.Sun?.line || '-'} / ${design.Sun?.line || '-'}`,
-    type: typeFor(channels, centers),
-    authority: authorityFor(centers),
+    profile:    `${personality.Sun?.line || '-'} / ${design.Sun?.line || '-'}`,
+    type:       typeFor(channels, centers),
+    authority:  authorityFor(centers),
     definition: definitionFor(channels, centers),
     centers,
     undefinedCenters: CENTERS.filter(center => !centers.includes(center)),
@@ -146,14 +146,14 @@ export const buildHumanDesignChart = (person) => {
   const { personalityChart, designChart, designJd } = personalityDesignCharts(jdUt, person.lat, person.lon)
 
   return deriveHumanDesignGraph({
-    personId: person.id,
+    personId:   person.id,
     personName: person.name,
-    birthJd: jdUt,
+    birthJd:    jdUt,
     designJd,
-    lat: person.lat,
-    lon: person.lon,
+    lat:         person.lat,
+    lon:         person.lon,
     personality: activationsForChart(personalityChart),
-    design: activationsForChart(designChart),
+    design:      activationsForChart(designChart),
   })
 }
 

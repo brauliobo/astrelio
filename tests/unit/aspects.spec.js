@@ -24,8 +24,8 @@ describe('aspects', () => {
   })
 
   it('cross aspects between two charts', () => {
-    const a = { positions: [mk('Sun', 100)] }
-    const b = { positions: [mk('Mars', 280)] }
+    const a   = { positions: [mk('Sun', 100)] }
+    const b   = { positions: [mk('Mars', 280)] }
     const out = crossAspects(a, b)
     expect(out[0].type).toBe('opposition')
   })

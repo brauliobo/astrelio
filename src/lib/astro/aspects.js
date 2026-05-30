@@ -21,20 +21,20 @@ const TIGHTER = new Set([
   'Vertex',
   'EastPoint',
 ])
-const MODERN = new Set(['Uranus', 'Neptune', 'Pluto', 'Chiron', 'Lilith'])
+const MODERN      = new Set(['Uranus', 'Neptune', 'Pluto', 'Chiron', 'Lilith'])
 const MAJOR_TYPES = new Set(['conjunction', 'opposition', 'trine', 'square', 'sextile'])
 
 export const DEFAULT_ASPECT_OPTIONS = {
-  aspectSet: 'all',
-  orbScale: 1,
-  applyingOnly: false,
+  aspectSet:            'all',
+  orbScale:             1,
+  applyingOnly:         false,
   includeModernPlanets: true,
 }
 
 export const aspectOptionsFromSettings = (settings = {}) => ({
-  aspectSet: settings.aspectSet || DEFAULT_ASPECT_OPTIONS.aspectSet,
-  orbScale: Number(settings.orbScale || DEFAULT_ASPECT_OPTIONS.orbScale),
-  applyingOnly: !!settings.applyingOnly,
+  aspectSet:            settings.aspectSet || DEFAULT_ASPECT_OPTIONS.aspectSet,
+  orbScale:             Number(settings.orbScale || DEFAULT_ASPECT_OPTIONS.orbScale),
+  applyingOnly:         !!settings.applyingOnly,
   includeModernPlanets: settings.includeModernPlanets ?? DEFAULT_ASPECT_OPTIONS.includeModernPlanets,
 })
 
@@ -57,7 +57,7 @@ const detect = (a, b, options = DEFAULT_ASPECT_OPTIONS) => {
   const sep = Math.abs(norm180(a.longitude - b.longitude))
   for (const d of enabledDefs(opts)) {
     const delta = Math.abs(sep - d.angle)
-    const orb = orbFor(d, a.name, b.name) * opts.orbScale
+    const orb   = orbFor(d, a.name, b.name) * opts.orbScale
     if (delta <= orb) {
       const rel       = a.speed - b.speed
       const direction = norm180(a.longitude - b.longitude) > 0 ? 1 : -1
@@ -65,9 +65,9 @@ const detect = (a, b, options = DEFAULT_ASPECT_OPTIONS) => {
       const applying  = rel * direction < 0
       if (opts.applyingOnly && !applying) return null
       return {
-        a: a.name,
-        b: b.name,
-        type: d.type,
+        a:     a.name,
+        b:     b.name,
+        type:  d.type,
         exact: d.angle,
         delta,
         orb,

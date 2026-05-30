@@ -8,32 +8,32 @@ import CelestialGlyph from '../common/CelestialGlyph.vue'
 import { PLANET_SYMBOLS, ZODIAC_SIGNS } from './wheel/geometry.js'
 
 const props = defineProps({
-  base: { type: Object, required: true },
-  comparison: { type: Object, default: null },
-  aspectOptions: { type: Object, default: () => ({}) },
-  baseLabel: { type: String, default: '' },
-  comparisonLabel: { type: String, default: '' },
+  base:                { type: Object, required: true },
+  comparison:          { type: Object, default: null },
+  aspectOptions:       { type: Object, default: () => ({}) },
+  baseLabel:           { type: String, default: '' },
+  comparisonLabel:     { type: String, default: '' },
   planetGlyphRenderer: { type: String, default: null },
 })
 const emit = defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 
 const { t, tm } = useI18n()
-const signs = computed(() => tm('zodiac.signs'))
-const hoverHighlight = ref(null)
-const pinnedHighlight = ref(null)
-const sharedHoverHighlight = ref(null)
+const signs                 = computed(() => tm('zodiac.signs'))
+const hoverHighlight        = ref(null)
+const pinnedHighlight       = ref(null)
+const sharedHoverHighlight  = ref(null)
 const sharedPinnedHighlight = ref(null)
-const chartHighlightEvent = 'astrelio-chart-highlight'
-const activeAspectFilter = ref('major')
-const EXACT_FILTER_ORB = 1
+const chartHighlightEvent   = 'astrelio-chart-highlight'
+const activeAspectFilter    = ref('major')
+const EXACT_FILTER_ORB      = 1
 
 const ASPECT_SYMBOLS = {
   conjunction: '☌',
-  opposition: '☍',
-  trine: '△',
-  square: '□',
-  sextile: '✶',
-  quincunx: '⚻',
+  opposition:  '☍',
+  trine:       '△',
+  square:      '□',
+  sextile:     '✶',
+  quincunx:    '⚻',
 }
 
 const aspectFilters = computed(() => [
@@ -44,19 +44,19 @@ const aspectFilters = computed(() => [
 ])
 const matrixOptions = computed(() => {
   const filterOptions = {
-    major: { aspectSet: 'major', applyingOnly: false },
-    all: { aspectSet: 'all', applyingOnly: false },
+    major:    { aspectSet: 'major', applyingOnly: false },
+    all:      { aspectSet: 'all', applyingOnly: false },
     applying: { aspectSet: 'all', applyingOnly: true },
-    exact: { aspectSet: 'all', applyingOnly: false },
+    exact:    { aspectSet: 'all', applyingOnly: false },
   }[activeAspectFilter.value]
   return { ...props.aspectOptions, ...filterOptions }
 })
 const unfilteredMatrix = computed(() => aspectMatrix(props.base, props.comparison, matrixOptions.value))
-const matrix = computed(() => {
+const matrix           = computed(() => {
   if (activeAspectFilter.value !== 'exact') return unfilteredMatrix.value
   return {
     columns: unfilteredMatrix.value.columns,
-    rows: unfilteredMatrix.value.rows.map(row => ({
+    rows:    unfilteredMatrix.value.rows.map(row => ({
       ...row,
       cells: row.cells.map(cell => cell && cell.delta <= EXACT_FILTER_ORB ? cell : null),
     })),
@@ -66,13 +66,13 @@ const visibleAspectCount = computed(() =>
   matrix.value.rows.reduce((count, row) => count + row.cells.filter(Boolean).length, 0)
 )
 const isComparison = computed(() => Boolean(props.comparison && props.comparison !== props.base))
-const gridStyle = computed(() => ({
+const gridStyle    = computed(() => ({
   '--aspect-column-count': matrix.value.columns.length,
-  gridTemplateColumns: isComparison.value
+  gridTemplateColumns:     isComparison.value
     ? `repeat(${matrix.value.columns.length + 2}, minmax(1.42rem, 1.86rem))`
     : `repeat(${matrix.value.columns.length + 1}, minmax(1.42rem, 1.86rem))`,
 }))
-const title = computed(() => isComparison.value ? t('chart.aspect_grid_comparison') : t('chart.aspect_grid_natal'))
+const title    = computed(() => isComparison.value ? t('chart.aspect_grid_comparison') : t('chart.aspect_grid_natal'))
 const subtitle = computed(() => {
   if (!isComparison.value) return props.baseLabel
   return [props.comparisonLabel, props.baseLabel].filter(Boolean).join(' × ')
@@ -90,42 +90,42 @@ const localHighlight = computed(() =>
 )
 const activeAspectKey = computed(() => localHighlight.value?.aspectKey || '')
 
-const pointLabel = (name) => t(`planets.${name}`)
-const pointSymbol = (name) => PLANET_SYMBOLS[name] || name.slice(0, 2)
-const pointMotion = (point) => motionMarker(point)
-const aspectSymbol = (aspect) => ASPECT_SYMBOLS[aspect?.type] || ''
-const aspectKey = (aspect) => aspect ? `${aspect.a}-${aspect.b}-${aspect.type}` : ''
-const pointKey = (point, prefix) => `${prefix}-${point.name}`
+const pointLabel      = (name) => t(`planets.${name}`)
+const pointSymbol     = (name) => PLANET_SYMBOLS[name] || name.slice(0, 2)
+const pointMotion     = (point) => motionMarker(point)
+const aspectSymbol    = (aspect) => ASPECT_SYMBOLS[aspect?.type] || ''
+const aspectKey       = (aspect) => aspect ? `${aspect.a}-${aspect.b}-${aspect.type}` : ''
+const pointKey        = (point, prefix) => `${prefix}-${point.name}`
 const setAspectFilter = (filter) => {
   activeAspectFilter.value = filter
-  hoverHighlight.value = null
-  pinnedHighlight.value = null
+  hoverHighlight.value     = null
+  pinnedHighlight.value    = null
   emit('clear-highlight')
   broadcastHighlight(null, true)
 }
 
 const formatLongitude = (longitude) => {
-  const degrees = degInSign(longitude)
+  const degrees      = degInSign(longitude)
   const wholeDegrees = Math.floor(degrees)
-  const minutes = Math.floor((degrees - wholeDegrees) * 60)
+  const minutes      = Math.floor((degrees - wholeDegrees) * 60)
   return `${wholeDegrees}°${minutes.toString().padStart(2, '0')}′ ${signs.value[signIndex(longitude)]}`
 }
 
 const formatPosition = (longitude) => {
-  const degrees = degInSign(longitude)
+  const degrees      = degInSign(longitude)
   const wholeDegrees = Math.floor(degrees).toString().padStart(2, '0')
-  const minutes = Math.floor((degrees - Math.floor(degrees)) * 60).toString().padStart(2, '0')
+  const minutes      = Math.floor((degrees - Math.floor(degrees)) * 60).toString().padStart(2, '0')
   return {
     degrees: wholeDegrees,
-    sign: ZODIAC_SIGNS[signIndex(longitude)],
+    sign:    ZODIAC_SIGNS[signIndex(longitude)],
     minutes,
   }
 }
 
 const formatOrb = (value) => {
   const totalMinutes = Math.round(Math.abs(value) * 60)
-  const degrees = Math.floor(totalMinutes / 60)
-  const minutes = totalMinutes % 60
+  const degrees      = Math.floor(totalMinutes / 60)
+  const minutes      = totalMinutes % 60
   return `${degrees}°${minutes.toString().padStart(2, '0')}′`
 }
 
@@ -140,15 +140,15 @@ const cellTitle = (cell) => cell
 
 const aspectClass = (type) => ({
   conjunction: 'text-amber-200',
-  opposition: 'text-emerald-300',
-  trine: 'text-sky-300',
-  square: 'text-rose-300',
-  sextile: 'text-cyan-300',
-  quincunx: 'text-violet-300',
+  opposition:  'text-emerald-300',
+  trine:       'text-sky-300',
+  square:      'text-rose-300',
+  sextile:     'text-cyan-300',
+  quincunx:    'text-violet-300',
 }[type] || 'text-slate-300')
 
 const normalizeHighlight = (payload) => ({
-  bodies: [...new Set(payload?.bodies || [])],
+  bodies:    [...new Set(payload?.bodies || [])],
   aspectKey: payload?.aspectKey || '',
 })
 
@@ -158,7 +158,7 @@ const sameHighlight = (a, b) =>
   a.bodies.every(body => b.bodies.includes(body))
 
 const highlightPayload = (cell) => ({
-  bodies: [cell.a, cell.b],
+  bodies:    [cell.a, cell.b],
   aspectKey: aspectKey(cell),
 })
 
@@ -171,7 +171,7 @@ const onSharedHighlight = (event) => {
   const highlight = event.detail?.highlight ? normalizeHighlight(event.detail.highlight) : null
   if (event.detail?.pinned) {
     sharedPinnedHighlight.value = highlight
-    sharedHoverHighlight.value = null
+    sharedHoverHighlight.value  = null
   } else {
     sharedHoverHighlight.value = highlight
   }
@@ -179,7 +179,7 @@ const onSharedHighlight = (event) => {
 
 const setHoverHighlight = (cell) => {
   if (!cell) return
-  const highlight = highlightPayload(cell)
+  const highlight      = highlightPayload(cell)
   hoverHighlight.value = highlight
   emit('highlight', highlight)
   broadcastHighlight(highlight)
@@ -193,9 +193,9 @@ const clearHoverHighlight = () => {
 
 const togglePinnedHighlight = (cell) => {
   if (!cell) return
-  const highlight = highlightPayload(cell)
+  const highlight       = highlightPayload(cell)
   pinnedHighlight.value = pinnedHighlight.value && sameHighlight(pinnedHighlight.value, highlight) ? null : highlight
-  hoverHighlight.value = null
+  hoverHighlight.value  = null
   emit('toggle-highlight', highlight)
   broadcastHighlight(pinnedHighlight.value, true)
 }
@@ -207,7 +207,7 @@ const cellHighlightState = (cell) => {
 
 const cellClass = (cell) => {
   if (!cell) return 'border-white/5 bg-white/[0.02]'
-  const state = cellHighlightState(cell)
+  const state          = cellHighlightState(cell)
   const highlightClass = state === 'active'
     ? 'ring-1 ring-inset ring-amber-300/45 bg-amber-300/10'
     : state === 'dimmed'

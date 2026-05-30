@@ -3,11 +3,11 @@ import { buildVedicChart } from '../../src/lib/vedic/chart.js'
 import { nakshatraOf, navamsaSignIndex, vimshottariDashas } from '../../src/lib/vedic/derivations.js'
 
 const REF = {
-  id: 'ref',
-  isoLocal: '1986-02-12T18:10',
+  id:              'ref',
+  isoLocal:        '1986-02-12T18:10',
   tzOffsetMinutes: -120,
-  lat: -23.18,
-  lon: -45.88,
+  lat:             -23.18,
+  lon:             -45.88,
 }
 
 describe('vedic astrology', () => {
@@ -25,9 +25,9 @@ describe('vedic astrology', () => {
 
   it('builds a Swiss Ephemeris sidereal Vedic chart', async () => {
     const chart = await buildVedicChart(REF, {
-      ayanamsha: 'lahiri',
-      houseMode: 'whole_sign',
-      nodeMode: 'mean',
+      ayanamsha:            'lahiri',
+      houseMode:            'whole_sign',
+      nodeMode:             'mean',
       includeModernPlanets: false,
     })
 

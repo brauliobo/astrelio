@@ -12,14 +12,14 @@ import { crossAspects } from '../lib/astro/aspects.js'
 import Comparison from '../components/chart/Comparison.vue'
 
 const { t } = useI18n()
-const people = usePeopleStore()
-const session = useSessionStore()
+const people   = usePeopleStore()
+const session  = useSessionStore()
 const settings = useSettingsStore()
 
 const person = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
-const natal = useNatalChart(person, settings)
+const natal  = useNatalChart(person, settings)
 
-const dateMs = ref(Date.now())
+const dateMs    = ref(Date.now())
 const dateInput = computed({
   get: () => new Date(dateMs.value).toISOString().slice(0, 10),
   set: (v) => { dateMs.value = DateTime.fromISO(v).toMillis() },
@@ -28,16 +28,16 @@ const dateInput = computed({
 const directed = computed(() => {
   if (!person.value || !natal.value) return null
   const tzOffsetMinutes = offsetMinutesForPerson(person.value)
-  const birthMs = localToUtcMs(person.value.isoLocal, tzOffsetMinutes)
-  const natalJdUt = localToJdUt(person.value.isoLocal, tzOffsetMinutes)
+  const birthMs         = localToUtcMs(person.value.isoLocal, tzOffsetMinutes)
+  const natalJdUt       = localToJdUt(person.value.isoLocal, tzOffsetMinutes)
   return solarArcDirections(natal.value, natalJdUt, dateMs.value, birthMs, person.value.lat, person.value.lon, {
-    zodiac: settings.zodiac,
+    zodiac:      settings.zodiac,
     houseSystem: settings.houseSystem,
-    nodeMode: settings.nodeMode,
+    nodeMode:    settings.nodeMode,
   })
 })
 
-const aspects = computed(() => natal.value && directed.value ? crossAspects(natal.value, directed.value) : [])
+const aspects  = computed(() => natal.value && directed.value ? crossAspects(natal.value, directed.value) : [])
 const arcLabel = computed(() => directed.value ? directed.value.solarArc.toFixed(2) : '')
 </script>
 

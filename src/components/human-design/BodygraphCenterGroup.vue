@@ -4,9 +4,9 @@ import BodygraphGateMarker from './BodygraphGateMarker.vue'
 import { hoverMatchesCenter, hoverMatchesGate } from './bodygraphInteraction.js'
 
 defineProps({
-  center: { type: Object, required: true },
-  hover: { type: Object, default: null },
-  hasHover: { type: Boolean, default: false },
+  center:    { type: Object, required: true },
+  hover:     { type: Object, default: null },
+  hasHover:  { type: Boolean, default: false },
   showShape: { type: Boolean, default: true },
   showGates: { type: Boolean, default: true },
 })

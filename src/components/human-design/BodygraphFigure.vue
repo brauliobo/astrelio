@@ -1,16 +1,16 @@
 <script setup>
-const centerX = 260
-const topY = -58
-const shoulderY = 426
-const lowerSideY = 662
-const rootBottomY = 735
-const bottomPadding = 94
-const arcY = rootBottomY + bottomPadding
-const shoulderHalfWidth = 246
+const centerX            = 260
+const topY               = -58
+const shoulderY          = 426
+const lowerSideY         = 662
+const rootBottomY        = 735
+const bottomPadding      = 94
+const arcY               = rootBottomY + bottomPadding
+const shoulderHalfWidth  = 246
 const lowerSideHalfWidth = 270
 
 const point = (x, y) => `${x} ${y}`
-const left = distance => centerX - distance
+const left  = distance => centerX - distance
 const right = distance => centerX + distance
 
 const figurePath = [
@@ -24,7 +24,7 @@ const figurePath = [
 ].join(' ')
 
 defineProps({
-  fill: { type: String, default: '#3b3b3e' },
+  fill:    { type: String, default: '#3b3b3e' },
   opacity: { type: Number, default: 0.66 },
 })
 </script>

@@ -31,21 +31,21 @@ const innerSvg = raw => raw
   .replace(/#000000|#000|black/gi, 'currentColor')
 
 export const PLANET_GLYPH_SVGS = {
-  Sun: innerSvg(sunSvg),
-  Earth: innerSvg(earthSvg),
-  Moon: innerSvg(moonSvg),
-  Mercury: innerSvg(mercurySvg),
-  Venus: innerSvg(venusSvg),
-  Mars: innerSvg(marsSvg),
-  Jupiter: innerSvg(jupiterSvg),
-  Saturn: innerSvg(saturnSvg),
-  Uranus: innerSvg(uranusSvg),
-  Neptune: innerSvg(neptuneSvg),
-  Pluto: innerSvg(plutoSvg),
+  Sun:       innerSvg(sunSvg),
+  Earth:     innerSvg(earthSvg),
+  Moon:      innerSvg(moonSvg),
+  Mercury:   innerSvg(mercurySvg),
+  Venus:     innerSvg(venusSvg),
+  Mars:      innerSvg(marsSvg),
+  Jupiter:   innerSvg(jupiterSvg),
+  Saturn:    innerSvg(saturnSvg),
+  Uranus:    innerSvg(uranusSvg),
+  Neptune:   innerSvg(neptuneSvg),
+  Pluto:     innerSvg(plutoSvg),
   NorthNode: innerSvg(northNodeSvg),
   SouthNode: innerSvg(southNodeSvg),
-  Lilith: innerSvg(lilithSvg),
-  Chiron: innerSvg(chironSvg),
+  Lilith:    innerSvg(lilithSvg),
+  Chiron:    innerSvg(chironSvg),
 }
 
 export const planetGlyphSvg = reference => PLANET_GLYPH_SVGS[reference] || null

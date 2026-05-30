@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { WHEEL_RADII, norm360, polarPoint, radialTrianglePath } from './geometry.js'
 
 const props = defineProps({
-  chart: { type: Object, required: true },
+  chart:      { type: Object, required: true },
   wheelShift: { type: Number, required: true },
   baseRadius: { type: Number, default: WHEEL_RADII.zodiacOuter },
 })
@@ -15,15 +15,15 @@ const ANGLE_MARKERS = [
   { key: 'ic', source: 'mc', offset: 180, accent: 'var(--chart-ink-muted)', primary: false },
 ]
 const MARKER_OFFSET = {
-  tickInner: -7,
-  tickOuter: 1,
-  arrowTip: 15,
-  arrowBase: 1,
+  tickInner:      -7,
+  tickOuter:      1,
+  arrowTip:       15,
+  arrowBase:      1,
   arrowHalfWidth: 5.5,
-  label: 28,
+  label:          28,
 }
 
-const markerPoint = (radius, longitude) => polarPoint(props.baseRadius + radius, longitude)
+const markerPoint      = (radius, longitude) => polarPoint(props.baseRadius + radius, longitude)
 const outwardArrowPath = (longitude) =>
   radialTrianglePath(
     longitude,
@@ -40,9 +40,9 @@ const markerFromConfig = (marker, angleLongitudes) => {
   return {
     ...marker,
     longitude,
-    inner: markerPoint(MARKER_OFFSET.tickInner, longitude),
-    outer: markerPoint(MARKER_OFFSET.tickOuter, longitude),
-    arrowPath: marker.primary ? outwardArrowPath(longitude) : '',
+    inner:      markerPoint(MARKER_OFFSET.tickInner, longitude),
+    outer:      markerPoint(MARKER_OFFSET.tickOuter, longitude),
+    arrowPath:  marker.primary ? outwardArrowPath(longitude) : '',
     labelPoint: markerPoint(MARKER_OFFSET.label, longitude),
   }
 }
@@ -50,7 +50,7 @@ const markerFromConfig = (marker, angleLongitudes) => {
 const markers = computed(() => {
   const angleLongitudes = {
     asc: props.chart.ascendant ?? props.chart.cusps?.[0],
-    mc: props.chart.mc ?? props.chart.cusps?.[9],
+    mc:  props.chart.mc ?? props.chart.cusps?.[9],
   }
 
   return ANGLE_MARKERS

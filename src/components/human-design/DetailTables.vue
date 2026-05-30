@@ -6,13 +6,13 @@ import GateDetailTable from './GateDetailTable.vue'
 
 const props = defineProps({
   chart: { type: Object, required: true },
-  mode: { type: String, required: true },
+  mode:  { type: String, required: true },
 })
 
 const tableComponents = {
-  centers: CenterDetailTable,
+  centers:  CenterDetailTable,
   channels: ChannelDetailTable,
-  gates: GateDetailTable,
+  gates:    GateDetailTable,
 }
 
 const tableComponent = computed(() => tableComponents[props.mode] || GateDetailTable)

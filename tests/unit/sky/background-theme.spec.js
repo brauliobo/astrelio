@@ -6,7 +6,7 @@ import { createSkyScene } from '../../../src/lib/sky/scene.js'
 
 const scene = vi.hoisted(() => ({
   handle: {
-    dispose: vi.fn(),
+    dispose:    vi.fn(),
     setContext: vi.fn(),
   },
 }))
@@ -18,16 +18,16 @@ vi.mock('../../../src/lib/sky/scene.js', () => ({
 const messages = {
   en: {
     planets: {
-      Sun: 'Sun',
-      Moon: 'Moon',
+      Sun:     'Sun',
+      Moon:    'Moon',
       Mercury: 'Mercury',
-      Venus: 'Venus',
-      Mars: 'Mars',
+      Venus:   'Venus',
+      Mars:    'Mars',
       Jupiter: 'Jupiter',
-      Saturn: 'Saturn',
-      Uranus: 'Uranus',
+      Saturn:  'Saturn',
+      Uranus:  'Uranus',
       Neptune: 'Neptune',
-      Pluto: 'Pluto',
+      Pluto:   'Pluto',
     },
   },
 }
@@ -55,7 +55,7 @@ describe('Background theme', () => {
 
   it('passes theme changes into the sky scene reactively', async () => {
     const wrapper = mount(Background, {
-      props: { theme: 'dark' },
+      props:  { theme: 'dark' },
       global: {
         plugins: [createI18n({ legacy: false, locale: 'en', messages })],
       },

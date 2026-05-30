@@ -6,14 +6,14 @@ import ActivationColumns from './ActivationColumns.vue'
 import { humanDesignPalette } from './visualTheme.js'
 
 const props = defineProps({
-  chart: { type: Object, required: true },
+  chart:       { type: Object, required: true },
   visualTheme: { type: String, default: 'dark' },
 })
 
 const hover = ref(null)
 const { t } = useI18n()
-const palette = computed(() => humanDesignPalette(props.visualTheme))
-const setHover = value => { hover.value = value }
+const palette    = computed(() => humanDesignPalette(props.visualTheme))
+const setHover   = value => { hover.value = value }
 const clearHover = () => { hover.value = null }
 </script>
 

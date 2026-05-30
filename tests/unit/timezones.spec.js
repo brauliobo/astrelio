@@ -17,8 +17,8 @@ describe('timezones', () => {
   it('resolves locations outside the Sao Paulo fallback', () => {
     expect(inferIanaZone('Manaus, AM - Brasil')).toBe('America/Manaus')
     expect(offsetMinutesForPerson({
-      isoLocal: '2024-07-01T12:00',
-      placeLabel: 'Manaus, AM - Brasil',
+      isoLocal:        '2024-07-01T12:00',
+      placeLabel:      'Manaus, AM - Brasil',
       tzOffsetMinutes: -180,
     })).toBe(-240)
   })
@@ -52,8 +52,8 @@ describe('timezones', () => {
     expect(formatUtcOffset(-120)).toBe('UTC-02:00')
     expect(formatUtcOffset(330)).toBe('UTC+05:30')
     expect(timezoneLabelForPerson({
-      isoLocal: '1986-02-12T18:10',
-      placeLabel: 'São José dos Campos, SP - Brasil',
+      isoLocal:        '1986-02-12T18:10',
+      placeLabel:      'São José dos Campos, SP - Brasil',
       tzOffsetMinutes: -180,
     })).toBe('America/Sao_Paulo · UTC-02:00')
   })

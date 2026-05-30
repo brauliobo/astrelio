@@ -14,7 +14,7 @@ const position = (name, longitude, speed = 1) => ({
 
 const chart = {
   ascendant: 13,
-  mc: 87,
+  mc:        87,
   positions: [
     position('Sun', 0, 1),
     position('Moon', 150, 0.5),
@@ -24,14 +24,14 @@ const chart = {
 
 const mountMatrix = () => mount(AspectMatrix, {
   props: {
-    base: chart,
+    base:      chart,
     baseLabel: 'Reference',
   },
   global: {
     plugins: [createI18n({ legacy: false, locale: 'en', messages: { en } })],
-    stubs: {
+    stubs:   {
       CelestialGlyph: {
-        props: ['symbol'],
+        props:    ['symbol'],
         template: '<span data-testid="glyph">{{ symbol }}</span>',
       },
     },

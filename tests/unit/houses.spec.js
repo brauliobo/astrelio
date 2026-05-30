@@ -39,7 +39,7 @@ describe('houses', () => {
   })
 
   it('sidereal whole-sign chart cusps land at sidereal sign boundaries', () => {
-    const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
+    const jd    = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
     const chart = computeChart(jd, REF.lat, REF.lon, { zodiac: 'sidereal', houseSystem: 'whole_sign' })
     for (const c of chart.cusps) expect(c % 30).toBeCloseTo(0, 6)
     expect(chart.cusps[0]).toBe(Math.floor(chart.ascendant / 30) * 30)
@@ -70,8 +70,8 @@ describe('houses', () => {
   })
 
   it('placidus cusps match Vega Plus reference quadrants', () => {
-    const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
-    const h  = calcHouses('placidus', jd, REF.lat, REF.lon)
+    const jd       = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
+    const h        = calcHouses('placidus', jd, REF.lat, REF.lon)
     const expected = [117.8, 154.4, 190.6, 221.6, 247.7, 271.9, 297.8, 334.4, 10.6, 41.6, 67.7, 91.9]
 
     h.cusps.forEach((cusp, i) => {
@@ -80,8 +80,8 @@ describe('houses', () => {
   })
 
   it('koch cusps match Swiss Ephemeris reference values', () => {
-    const jd = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
-    const h = calcHouses('koch', jd, REF.lat, REF.lon)
+    const jd       = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
+    const h        = calcHouses('koch', jd, REF.lat, REF.lon)
     const expected = [
       117.849528605,
       149.841857192,

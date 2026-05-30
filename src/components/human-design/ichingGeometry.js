@@ -2,26 +2,26 @@ import { MANDALA_GATE_ORDER } from '../../lib/human-design/constants.js'
 import { angleForMandalaIndex, gateStep, polar } from './wheelCore.js'
 
 const trigramLinesTopToBottom = {
-  heaven: [false, false, false],
-  earth: [true, true, true],
-  thunder: [true, true, false],
-  water: [true, false, true],
+  heaven:   [false, false, false],
+  earth:    [true, true, true],
+  thunder:  [true, true, false],
+  water:    [true, false, true],
   mountain: [false, true, true],
-  wind: [false, false, true],
-  fire: [false, true, false],
-  lake: [true, false, false],
+  wind:     [false, false, true],
+  fire:     [false, true, false],
+  lake:     [true, false, false],
 }
 
 const kingWenHexagramTrigrams = {
-  1: ['heaven', 'heaven'],
-  2: ['earth', 'earth'],
-  3: ['water', 'thunder'],
-  4: ['mountain', 'water'],
-  5: ['water', 'heaven'],
-  6: ['heaven', 'water'],
-  7: ['earth', 'water'],
-  8: ['water', 'earth'],
-  9: ['wind', 'heaven'],
+  1:  ['heaven', 'heaven'],
+  2:  ['earth', 'earth'],
+  3:  ['water', 'thunder'],
+  4:  ['mountain', 'water'],
+  5:  ['water', 'heaven'],
+  6:  ['heaven', 'water'],
+  7:  ['earth', 'water'],
+  8:  ['water', 'earth'],
+  9:  ['wind', 'heaven'],
   10: ['heaven', 'lake'],
   11: ['earth', 'heaven'],
   12: ['heaven', 'earth'],
@@ -91,6 +91,6 @@ export const ichingRingLayout = ({ gates = MANDALA_GATE_ORDER, radius = 484 } = 
   gates.map((gate, index) => ({
     gate,
     symbol: ichingSymbolForGate(gate),
-    angle: index * gateStep + gateStep / 2,
-    point: polar(radius, angleForMandalaIndex(index + 0.5)),
+    angle:  index * gateStep + gateStep / 2,
+    point:  polar(radius, angleForMandalaIndex(index + 0.5)),
   }))

@@ -7,14 +7,14 @@ import { applyBackup, createBackup, parseBackupJson } from '../../lib/export/bac
 import { downloadJson, timestampFilePart } from '../../lib/export/download.js'
 
 const { t, locale } = useI18n()
-const people = usePeopleStore()
-const settings = useSettingsStore()
-const fileInput = ref(null)
-const status = ref('')
+const people     = usePeopleStore()
+const settings   = useSettingsStore()
+const fileInput  = ref(null)
+const status     = ref('')
 const statusTone = ref('text-slate-400')
 
 const setStatus = (messageKey, tone = 'text-slate-400') => {
-  status.value = t(messageKey)
+  status.value     = t(messageKey)
   statusTone.value = tone
 }
 
@@ -30,8 +30,8 @@ const chooseImportFile = () => {
 
 const readFileText = (file) =>
   new Promise((resolve, reject) => {
-    const reader = new window.FileReader()
-    reader.onload = () => resolve(String(reader.result || ''))
+    const reader   = new window.FileReader()
+    reader.onload  = () => resolve(String(reader.result || ''))
     reader.onerror = () => reject(new Error('invalid_json'))
     reader.readAsText(file)
   })

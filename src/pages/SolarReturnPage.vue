@@ -18,7 +18,7 @@ const settings = useSettingsStore()
 const person = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
 const natal  = useNatalChart(person, settings)
 
-const year   = ref(new Date().getFullYear())
+const year = ref(new Date().getFullYear())
 
 const sr = computed(() => {
   if (!person.value || !natal.value) return null
@@ -26,15 +26,15 @@ const sr = computed(() => {
   return solarReturnChartForNatal(natal.value.jdUt, near, person.value.lat, person.value.lon, settings.chartOptions)
 })
 
-const srAspects = computed(() => natal.value && sr.value ? crossAspects(natal.value, sr.value, settings.aspectOptions) : [])
+const srAspects        = computed(() => natal.value && sr.value ? crossAspects(natal.value, sr.value, settings.aspectOptions) : [])
 const srNaturalAspects = computed(() => sr.value ? naturalAspects(sr.value, settings.aspectOptions) : [])
-const returnDate = computed(() => {
+const returnDate       = computed(() => {
   if (!sr.value) return ''
   const date = new Date((sr.value.jdUt - 2440587.5) * 86_400_000)
   return new Intl.DateTimeFormat(settings.locale, {
     dateStyle: 'medium',
     timeStyle: 'short',
-    timeZone: 'UTC',
+    timeZone:  'UTC',
   }).format(date)
 })
 </script>

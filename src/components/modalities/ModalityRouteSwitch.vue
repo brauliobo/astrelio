@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   active: { type: String, required: true },
-  items: { type: Array, default: null },
+  items:  { type: Array, default: null },
 })
 
 const { t } = useI18n()

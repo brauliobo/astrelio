@@ -1,35 +1,35 @@
 <script setup>
 defineProps({
-  line: { type: Object, required: true },
-  pathId: { type: String, required: true },
+  line:        { type: Object, required: true },
+  pathId:      { type: String, required: true },
   strokeWidth: { type: Number, required: true },
-  dimmed: { type: Boolean, default: false },
+  dimmed:      { type: Boolean, default: false },
   highlighted: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['hover', 'leave'])
 
-const rounded = value => Number.parseFloat(value.toFixed(3)).toString()
-const laneStrokeWidth = (strokeWidth) => rounded(Math.max(2.2, strokeWidth * 0.5))
+const rounded             = value => Number.parseFloat(value.toFixed(3)).toString()
+const laneStrokeWidth     = (strokeWidth) => rounded(Math.max(2.2, strokeWidth * 0.5))
 const laneStrokeTransform = (line, index, strokeWidth) => {
   const direction = index === 0 ? -1 : 1
-  const offset = rounded(strokeWidth * 0.24 * direction)
+  const offset    = rounded(strokeWidth * 0.24 * direction)
   return line.splitAxis === 'y' ? `translate(0 ${offset})` : `translate(${offset} 0)`
 }
 
 const laneTransform = (line, index) => {
-  const bounds = line.splitBounds || { x: 0, y: 0, width: 0, height: 0, midX: 0, midY: 0 }
+  const bounds    = line.splitBounds || { x: 0, y: 0, width: 0, height: 0, midX: 0, midY: 0 }
   const laneScale = 0.42
   const direction = index === 0 ? -1 : 1
 
   if (line.splitAxis === 'y') {
     const offset = bounds.height * 0.24 * direction
-    const y = bounds.midY + offset - (laneScale * bounds.midY)
+    const y      = bounds.midY + offset - (laneScale * bounds.midY)
     return `matrix(1 0 0 ${laneScale} 0 ${rounded(y)})`
   }
 
   const offset = bounds.width * 0.24 * direction
-  const x = bounds.midX + offset - (laneScale * bounds.midX)
+  const x      = bounds.midX + offset - (laneScale * bounds.midX)
   return `matrix(${laneScale} 0 0 1 ${rounded(x)} 0)`
 }
 </script>

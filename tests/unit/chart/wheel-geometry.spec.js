@@ -10,7 +10,7 @@ import {
   ringSectorPath,
 } from '../../../src/components/chart/wheel/geometry.js'
 
-const mk = (name, longitude, speed = 1) => ({ name, longitude, latitude: 0, speed, retrograde: false })
+const mk         = (name, longitude, speed = 1) => ({ name, longitude, latitude: 0, speed, retrograde: false })
 const closePoint = (actual, expected) => {
   expect(actual.x).toBeCloseTo(expected.x, 6)
   expect(actual.y).toBeCloseTo(expected.y, 6)
@@ -19,14 +19,14 @@ const closePoint = (actual, expected) => {
 const placementSnapshot = (placements) =>
   Object.fromEntries(placements.map(item => [item.planet.name, {
     glyphLongitude: Number(item.glyphLongitude.toFixed(6)),
-    labelAnchor: item.labelAnchor,
-    labelPoint: {
+    labelAnchor:    item.labelAnchor,
+    labelPoint:     {
       x: Number(item.labelPoint.x.toFixed(6)),
       y: Number(item.labelPoint.y.toFixed(6)),
     },
-    radius: item.radius,
+    radius:          item.radius,
     showDegreeLabel: item.showDegreeLabel,
-    laneIndex: item.laneIndex,
+    laneIndex:       item.laneIndex,
   }]))
 
 describe('chart wheel geometry', () => {
@@ -55,8 +55,8 @@ describe('chart wheel geometry', () => {
       positions: [mk('Sun', 0), mk('Mars', 60)],
     }
     const placements = planetPlacements(chart, 0, { inner: 134, outer: 150 })
-    const line = naturalAspectLines(chart, 0, undefined, placements)[0]
-    const sun = placements.find(item => item.planet.name === 'Sun')
+    const line       = naturalAspectLines(chart, 0, undefined, placements)[0]
+    const sun        = placements.find(item => item.planet.name === 'Sun')
 
     expect(line.start.x).toBeCloseTo(sun.point.x, 6)
     expect(line.start.y).toBeCloseTo(sun.point.y, 6)
@@ -73,7 +73,7 @@ describe('chart wheel geometry', () => {
       ],
     }
     const placements = planetPlacements(chart, 15, planetBandFor({}, 0, 1))
-    const sun = placements.find(item => item.planet.name === 'Sun')
+    const sun        = placements.find(item => item.planet.name === 'Sun')
 
     expect(sun.longitude).toBeCloseTo(25)
     closePoint(sun.tick, polarPoint(152, 25))
@@ -125,8 +125,8 @@ describe('chart wheel geometry', () => {
 
   it('keeps the default single-chart planet band away from ring borders', () => {
     expect(planetBandFor({}, 0, 1)).toEqual({
-      inner: 78,
-      outer: 150,
+      inner:      78,
+      outer:      150,
       tickRadius: 152,
     })
   })
@@ -155,7 +155,7 @@ describe('chart wheel geometry', () => {
       mk('Sun', 42),
       mk('Mercury', 42),
     ]
-    const first = planetPlacements({ positions }, 0, { inner: 134, outer: 150 })
+    const first  = planetPlacements({ positions }, 0, { inner: 134, outer: 150 })
     const second = planetPlacements({ positions: [...positions].reverse() }, 0, { inner: 134, outer: 150 })
 
     expect(placementSnapshot(first)).toEqual(placementSnapshot(second))

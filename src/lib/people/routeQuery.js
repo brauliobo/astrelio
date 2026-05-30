@@ -1,6 +1,6 @@
 import { ianaOffsetMinutes } from '../astro/timezones.js'
 
-const QUERY_KEYS = ['name', 'place', 'date', 'time', 'lat', 'lon', 'zone', 'tz']
+const QUERY_KEYS   = ['name', 'place', 'date', 'time', 'lat', 'lon', 'zone', 'tz']
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/
 const TIME_PATTERN = /^\d{2}:\d{2}$/
 
@@ -44,15 +44,15 @@ export const personToRouteQuery = (person) => {
     place: person.placeLabel,
     date,
     time,
-    lat:   formatNumber(person.lat),
-    lon:   formatNumber(person.lon),
-    zone:  person.ianaZone,
-    tz:    Number.isFinite(Number(person.tzOffsetMinutes)) ? String(Number(person.tzOffsetMinutes)) : undefined,
+    lat:  formatNumber(person.lat),
+    lon:  formatNumber(person.lon),
+    zone: person.ianaZone,
+    tz:   Number.isFinite(Number(person.tzOffsetMinutes)) ? String(Number(person.tzOffsetMinutes)) : undefined,
   })
 }
 
 export const natalRouteForPerson = (person) => ({
-  name: 'natal',
+  name:  'natal',
   query: personToRouteQuery(person),
 })
 
@@ -69,21 +69,21 @@ export const samePersonRouteData = (a, b) => {
 }
 
 export const personFromRouteQuery = (query = {}) => {
-  const name = textValue(query, 'name')
+  const name       = textValue(query, 'name')
   const placeLabel = textValue(query, 'place')
-  const date = textValue(query, 'date')
-  const time = textValue(query, 'time')
-  const lat = numberValue(query, 'lat')
-  const lon = numberValue(query, 'lon')
-  const ianaZone = textValue(query, 'zone')
-  const tzOffset = numberValue(query, 'tz')
+  const date       = textValue(query, 'date')
+  const time       = textValue(query, 'time')
+  const lat        = numberValue(query, 'lat')
+  const lon        = numberValue(query, 'lon')
+  const ianaZone   = textValue(query, 'zone')
+  const tzOffset   = numberValue(query, 'tz')
 
   if (!name || !placeLabel || !DATE_PATTERN.test(date) || !TIME_PATTERN.test(time)) return null
   if (!isValidCoordinate(lat, -90, 90) || !isValidCoordinate(lon, -180, 180)) return null
 
-  const isoLocal = `${date}T${time}`
+  const isoLocal      = `${date}T${time}`
   let tzOffsetMinutes = tzOffset ?? 0
-  let resolvedZone = ianaZone || null
+  let resolvedZone    = ianaZone || null
 
   if (ianaZone) {
     try {

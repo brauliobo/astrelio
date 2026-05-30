@@ -4,10 +4,10 @@ import { useI18n } from 'vue-i18n'
 import { natalInterpretationSections } from '../../lib/astro/interpretations.js'
 
 const props = defineProps({
-  chart: { type: Object, required: true },
-  aspects: { type: Array, default: () => [] },
+  chart:          { type: Object, required: true },
+  aspects:        { type: Array, default: () => [] },
   placementLimit: { type: Number, default: 5 },
-  aspectLimit: { type: Number, default: 3 },
+  aspectLimit:    { type: Number, default: 3 },
 })
 
 const { t, tm } = useI18n()
@@ -17,10 +17,10 @@ const formatPlacement = (item) => {
   const planet = t(`planets.${item.planet}`)
 
   return {
-    key: item.key,
+    key:   item.key,
     title: t(item.titleKey, {
       planet,
-      sign: signs.value[item.signIndex],
+      sign:  signs.value[item.signIndex],
       house: item.house,
     }),
     lines: [
@@ -31,7 +31,7 @@ const formatPlacement = (item) => {
       }),
       t(item.houseTextKey, {
         house: item.house,
-        area: t(item.houseAreaKey),
+        area:  t(item.houseAreaKey),
       }),
     ],
   }
@@ -41,16 +41,16 @@ const formatAspect = (item) => {
   const aspect = item.aspect
 
   return {
-    key: item.key,
+    key:   item.key,
     title: t(item.titleKey, {
-      a: t(`planets.${aspect.a}`),
+      a:      t(`planets.${aspect.a}`),
       aspect: t(`aspects.${aspect.type}`),
-      b: t(`planets.${aspect.b}`),
+      b:      t(`planets.${aspect.b}`),
     }),
     lines: [
       t(item.textKey, {
         aspect: t(`aspects.${aspect.type}`),
-        tone: t(item.toneKey),
+        tone:   t(item.toneKey),
       }),
     ],
   }
@@ -59,9 +59,9 @@ const formatAspect = (item) => {
 const displaySections = computed(() =>
   natalInterpretationSections(props.chart, props.aspects, {
     placementLimit: props.placementLimit,
-    aspectLimit: props.aspectLimit,
+    aspectLimit:    props.aspectLimit,
   }).map(section => ({
-    key: section.key,
+    key:   section.key,
     title: t(section.titleKey),
     items: section.items.map(item => item.kind === 'placement' ? formatPlacement(item) : formatAspect(item)),
   }))

@@ -1,5 +1,5 @@
 export const BACKUP_VERSION = 1
-export const BACKUP_APP = 'astrelio'
+export const BACKUP_APP     = 'astrelio'
 
 const SETTINGS_KEYS = [
   'locale',
@@ -23,14 +23,14 @@ const normalizePerson = (person) => {
   if (!person.id || !person.name || !person.isoLocal || !person.placeLabel) return null
 
   const normalized = {
-    id: String(person.id),
-    name: String(person.name),
-    isoLocal: String(person.isoLocal),
+    id:              String(person.id),
+    name:            String(person.name),
+    isoLocal:        String(person.isoLocal),
     tzOffsetMinutes: Number(person.tzOffsetMinutes),
-    lat: Number(person.lat),
-    lon: Number(person.lon),
-    placeLabel: String(person.placeLabel),
-    createdAt: Number(person.createdAt || Date.now()),
+    lat:             Number(person.lat),
+    lon:             Number(person.lon),
+    placeLabel:      String(person.placeLabel),
+    createdAt:       Number(person.createdAt || Date.now()),
   }
 
   if (![normalized.tzOffsetMinutes, normalized.lat, normalized.lon, normalized.createdAt].every(Number.isFinite)) {
@@ -51,11 +51,11 @@ const normalizeSettings = (settings = {}) => {
 }
 
 export const createBackup = ({ people, settings }) => ({
-  app: BACKUP_APP,
-  version: BACKUP_VERSION,
+  app:        BACKUP_APP,
+  version:    BACKUP_VERSION,
   exportedAt: new Date().toISOString(),
-  people: clonePlain(people.list || []),
-  settings: normalizeSettings(settings),
+  people:     clonePlain(people.list || []),
+  settings:   normalizeSettings(settings),
 })
 
 export const parseBackupJson = (text) => {
@@ -76,13 +76,13 @@ export const normalizeBackup = (payload) => {
   if (payload.version && payload.version > BACKUP_VERSION) throw new Error('unsupported_backup')
 
   const rawPeople = Array.isArray(payload.people) ? payload.people : payload.people?.list
-  const people = Array.isArray(rawPeople) ? rawPeople.map(normalizePerson).filter(Boolean) : null
+  const people    = Array.isArray(rawPeople) ? rawPeople.map(normalizePerson).filter(Boolean) : null
 
   if (!people) throw new Error('invalid_backup')
 
   return {
-    app: BACKUP_APP,
-    version: BACKUP_VERSION,
+    app:        BACKUP_APP,
+    version:    BACKUP_VERSION,
     importedAt: new Date().toISOString(),
     people,
     settings: normalizeSettings(payload.settings || {}),

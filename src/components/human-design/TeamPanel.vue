@@ -3,8 +3,8 @@ import { useI18n } from 'vue-i18n'
 import { humanDesignChannelLabel, humanDesignGateLabel, humanDesignListLabel } from '../../lib/human-design/labels.js'
 
 defineProps({
-  analysis: { type: Object, default: null },
-  people: { type: Array, default: () => [] },
+  analysis:    { type: Object, default: null },
+  people:      { type: Array, default: () => [] },
   selectedIds: { type: Array, default: () => [] },
 })
 

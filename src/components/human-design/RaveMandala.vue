@@ -6,17 +6,17 @@ import { humanDesignValueLabel } from '../../lib/human-design/labels.js'
 import { humanDesignPalette } from './visualTheme.js'
 
 const props = defineProps({
-  chart: { type: Object, required: true },
+  chart:       { type: Object, required: true },
   visualTheme: { type: String, default: 'dark' },
 })
 const { t } = useI18n()
 const palette = computed(() => humanDesignPalette(props.visualTheme))
-const light = computed(() => props.visualTheme === 'light')
+const light   = computed(() => props.visualTheme === 'light')
 
 const activeGates = computed(() => new Set(props.chart.gates || []))
-const center = 260
-const outer = 238
-const inner = 170
+const center      = 260
+const outer       = 238
+const inner       = 170
 const labelRadius = 218
 
 const polar = (radius, angle) => {
@@ -30,14 +30,14 @@ const polar = (radius, angle) => {
 const gates = computed(() =>
   MANDALA_GATE_ORDER.map((gate, index) => {
     const start = index * 360 / 64
-    const mid = start + (360 / 128)
-    const a = polar(inner, start)
-    const b = polar(outer, start)
+    const mid   = start + (360 / 128)
+    const a     = polar(inner, start)
+    const b     = polar(outer, start)
     const label = polar(labelRadius, mid)
     return {
       gate,
       active: activeGates.value.has(gate),
-      line: { a, b },
+      line:   { a, b },
       label,
       rotate: mid,
     }
@@ -51,9 +51,9 @@ const activeMarkers = computed(() =>
       return {
         key: `${activation.layer}-${activation.planet}-${activation.code}`,
         ...point,
-        layer: activation.layer,
+        layer:  activation.layer,
         planet: activation.planet,
-        code: activation.code,
+        code:   activation.code,
       }
     })
 )

@@ -8,18 +8,18 @@ const props = defineProps({
 
 const ticks = computed(() =>
   Array.from({ length: 360 }, (_, degree) => {
-    const isSign = degree % 30 === 0
-    const isDecan = degree % 10 === 0
-    const isFive = degree % 5 === 0
+    const isSign    = degree % 30 === 0
+    const isDecan   = degree % 10 === 0
+    const isFive    = degree % 5 === 0
     const longitude = norm360(degree + props.wheelShift)
-    const outer = polarPoint(WHEEL_RADII.zodiacInner - 1, longitude)
-    const inner = polarPoint(WHEEL_RADII.zodiacInner - (isSign ? 11 : isDecan ? 7 : isFive ? 5 : 2.6), longitude)
+    const outer     = polarPoint(WHEEL_RADII.zodiacInner - 1, longitude)
+    const inner     = polarPoint(WHEEL_RADII.zodiacInner - (isSign ? 11 : isDecan ? 7 : isFive ? 5 : 2.6), longitude)
     return {
       degree,
       outer,
       inner,
-      stroke: isSign ? 'var(--chart-cusp-angle)' : 'var(--chart-ink-muted)',
-      width: isSign ? 1.35 : isDecan ? 0.8 : isFive ? 0.55 : 0.35,
+      stroke:  isSign ? 'var(--chart-cusp-angle)' : 'var(--chart-ink-muted)',
+      width:   isSign ? 1.35 : isDecan ? 0.8 : isFive ? 0.55 : 0.35,
       opacity: isSign ? 0.9 : isDecan ? 0.5 : isFive ? 0.34 : 0.18,
     }
   })

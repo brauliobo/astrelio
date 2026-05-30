@@ -9,7 +9,7 @@ import {
 const mk = (name, longitude) => ({ name, longitude, latitude: 0, speed: 1, retrograde: false })
 
 const chart = {
-  cusps: [15, 45, 75, 105, 135, 165, 195, 225, 255, 285, 315, 345],
+  cusps:     [15, 45, 75, 105, 135, 165, 195, 225, 255, 285, 315, 345],
   positions: [
     mk('Mars', 190),
     mk('Sun', 10),
@@ -58,17 +58,17 @@ describe('interpretations', () => {
 
   it('uses chart context to rank transit contacts beyond raw orb strength', () => {
     const natal = {
-      zodiac: 'tropical',
+      zodiac:    'tropical',
       ascendant: 0,
-      mc: 90,
-      cusps: Array.from({ length: 12 }, (_, index) => index * 30),
+      mc:        90,
+      cusps:     Array.from({ length: 12 }, (_, index) => index * 30),
       positions: [mk('Sun', 5), mk('Moon', 100)],
     }
     const transit = {
-      zodiac: 'tropical',
+      zodiac:    'tropical',
       ascendant: 0,
-      mc: 90,
-      cusps: natal.cusps,
+      mc:        90,
+      cusps:     natal.cusps,
       positions: [
         { ...mk('Moon', 5), speed: 13 },
         { ...mk('Saturn', 6), speed: 0.03 },
@@ -80,8 +80,8 @@ describe('interpretations', () => {
     ]
 
     const [row] = comparisonAspectInterpretations(transitAspects, 'transit', {
-      limit: 1,
-      baseChart: natal,
+      limit:           1,
+      baseChart:       natal,
       comparisonChart: transit,
     })
 
@@ -102,16 +102,16 @@ describe('interpretations', () => {
 
     expect(rows).toHaveLength(2)
     expect(rows[0]).toMatchObject({
-      kind: 'progression',
-      primaryPlanet: 'Mars',
+      kind:            'progression',
+      primaryPlanet:   'Mars',
       secondaryPlanet: 'Sun',
-      aspect: expect.objectContaining({ a: 'Sun', b: 'Mars', type: 'trine' }),
+      aspect:          expect.objectContaining({ a: 'Sun', b: 'Mars', type: 'trine' }),
     })
     expect(rows[1]).toMatchObject({
-      kind: 'group',
+      kind:     'group',
       groupKey: 'progression_slow_self',
       titleKey: 'comparison_insights.groups.progression_slow_self.title',
-      aspects: [
+      aspects:  [
         expect.objectContaining({ a: 'Uranus', b: 'Uranus' }),
         expect.objectContaining({ a: 'Neptune', b: 'Neptune' }),
         expect.objectContaining({ a: 'Pluto', b: 'Pluto' }),

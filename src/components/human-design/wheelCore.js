@@ -1,16 +1,16 @@
 import { MANDALA_GATE_ORDER } from '../../lib/human-design/constants.js'
 
-export const wheelCenter = 520
-export const gateStep = 360 / 64
-export const zodiacSigns = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
+export const wheelCenter              = 520
+export const gateStep                 = 360 / 64
+export const zodiacSigns              = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
 export const referenceTopMandalaIndex = 47
-export const wheelRingRadii = {
-  zodiacInner: 366,
-  zodiacOuter: 406,
-  gateInner: 406,
-  gateOuter: 446,
+export const wheelRingRadii           = {
+  zodiacInner:  366,
+  zodiacOuter:  406,
+  gateInner:    406,
+  gateOuter:    446,
   ichingRadius: 466,
-  outerBorder: 482,
+  outerBorder:  482,
 }
 
 const mandalaIndexForGateIndex = index => (40 - index + 64) % 64
@@ -43,7 +43,7 @@ export const mandalaAngleForGate = (gate) => {
 }
 
 export const mandalaAngleForLongitude = (longitude) => {
-  const degrees = ((longitude + 58) % 360 + 360) % 360
+  const degrees   = ((longitude + 58) % 360 + 360) % 360
   const gateIndex = degrees / 360 * 64
   return angleForMandalaIndex(mandalaIndexForGateIndex(gateIndex))
 }

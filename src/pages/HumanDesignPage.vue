@@ -23,22 +23,22 @@ import Wheel from '../components/human-design/Wheel.vue'
 import ModalityRouteSwitch from '../components/modalities/ModalityRouteSwitch.vue'
 
 const { t } = useI18n()
-const people = usePeopleStore()
-const session = useSessionStore()
+const people   = usePeopleStore()
+const session  = useSessionStore()
 const settings = useSettingsStore()
 
-const activeTab = ref('overview')
-const transitDateMs = ref(Date.now())
+const activeTab       = ref('overview')
+const transitDateMs   = ref(Date.now())
 const selectedTeamIds = ref([])
 
-const person = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
-const chart = computed(() => modalityChart('humanDesign', person.value))
+const person       = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
+const chart        = computed(() => modalityChart('humanDesign', person.value))
 const strategyKeys = {
-  'Wait to respond': 'wait_to_respond',
-  'Wait to respond, then inform': 'wait_to_respond_inform',
-  'Inform before acting': 'inform_before_acting',
+  'Wait to respond':                     'wait_to_respond',
+  'Wait to respond, then inform':        'wait_to_respond_inform',
+  'Inform before acting':                'inform_before_acting',
   'Wait for recognition and invitation': 'wait_for_invitation',
-  'Wait through the lunar cycle': 'wait_lunar_cycle',
+  'Wait through the lunar cycle':        'wait_lunar_cycle',
 }
 const translatedStrategy = strategy => {
   const key = strategyKeys[strategy]

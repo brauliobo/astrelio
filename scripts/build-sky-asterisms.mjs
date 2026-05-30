@@ -3,11 +3,11 @@ import path from 'node:path'
 import vm from 'node:vm'
 import { Buffer } from 'node:buffer'
 
-const SKY_CULTURE_URL = 'https://raw.githubusercontent.com/Stellarium/stellarium-skycultures/master/western/index.json'
-const HIPPARCOS_URL = 'https://raw.githubusercontent.com/gmiller123456/hip2000/master/hipparcos_6.5_concise.js'
+const SKY_CULTURE_URL       = 'https://raw.githubusercontent.com/Stellarium/stellarium-skycultures/master/western/index.json'
+const HIPPARCOS_URL         = 'https://raw.githubusercontent.com/gmiller123456/hip2000/master/hipparcos_6.5_concise.js'
 const ILLUSTRATION_BASE_URL = 'https://raw.githubusercontent.com/Stellarium/stellarium-skycultures/master/western/'
 
-const OUT_DATA = path.resolve('public/data/sky-asterisms.generated.json')
+const OUT_DATA   = path.resolve('public/data/sky-asterisms.generated.json')
 const OUT_IMAGES = path.resolve('public/sky/illustrations')
 
 const SELECTED_ASTERISMS = [
@@ -27,7 +27,7 @@ const SELECTED_ASTERISMS = [
 
 const toRadians = degrees => degrees * Math.PI / 180
 const toDegrees = radians => radians * 180 / Math.PI
-const norm360 = degrees => ((degrees % 360) + 360) % 360
+const norm360   = degrees => ((degrees % 360) + 360) % 360
 
 const fetchText = async (url) => {
   const response = await fetch(url)
@@ -51,11 +51,11 @@ const parseHipparcos = (source) => {
 
 const eclipticFromEquatorial = ({ ra, dec }) => {
   const obliquity = toRadians(23.4392911)
-  const alpha = toRadians(ra)
-  const delta = toRadians(dec)
-  const x = Math.cos(delta) * Math.cos(alpha)
-  const y = Math.cos(delta) * Math.sin(alpha) * Math.cos(obliquity) + Math.sin(delta) * Math.sin(obliquity)
-  const z = -Math.cos(delta) * Math.sin(alpha) * Math.sin(obliquity) + Math.sin(delta) * Math.cos(obliquity)
+  const alpha     = toRadians(ra)
+  const delta     = toRadians(dec)
+  const x         = Math.cos(delta) * Math.cos(alpha)
+  const y         = Math.cos(delta) * Math.sin(alpha) * Math.cos(obliquity) + Math.sin(delta) * Math.sin(obliquity)
+  const z         = -Math.cos(delta) * Math.sin(alpha) * Math.sin(obliquity) + Math.sin(delta) * Math.cos(obliquity)
 
   return {
     lon: Number(norm360(toDegrees(Math.atan2(y, x))).toFixed(3)),
@@ -73,7 +73,7 @@ const skyStar = (hipparcos, hip) => {
   return {
     hip,
     mag: Number(star.mag.toFixed(2)),
-    bv: Number.isFinite(star.bv) ? Number(star.bv.toFixed(3)) : null,
+    bv:  Number.isFinite(star.bv) ? Number(star.bv.toFixed(3)) : null,
     ...eclipticFromEquatorial(star),
   }
 }
@@ -90,8 +90,8 @@ const imageMeta = (hipparcos, constellation) => {
 
   if (anchors.length < 3) return null
   return {
-    src: `/sky/illustrations/${imageName(source.file)}`,
-    size: source.size,
+    src:     `/sky/illustrations/${imageName(source.file)}`,
+    size:    source.size,
     anchors: anchors.slice(0, 3),
   }
 }
@@ -102,21 +102,21 @@ const main = async () => {
     fetchText(HIPPARCOS_URL),
   ])
 
-  const hipparcos = parseHipparcos(hipparcosSource)
+  const hipparcos          = parseHipparcos(hipparcosSource)
   const constellationByIau = new Map(skyCulture.constellations.map(item => [item.iau, item]))
-  const asterismById = new Map(skyCulture.asterisms.map(item => [item.id, item]))
+  const asterismById       = new Map(skyCulture.asterisms.map(item => [item.id, item]))
 
   await fs.mkdir(path.dirname(OUT_DATA), { recursive: true })
   await fs.mkdir(OUT_IMAGES, { recursive: true })
 
   const downloadedImages = new Map()
-  const asterisms = []
+  const asterisms        = []
 
   for (const selection of SELECTED_ASTERISMS) {
     const source = asterismById.get(selection.id)
     if (!source) throw new Error(`Missing asterism ${selection.id}`)
 
-    const lines = source.lines.map(numericLine).filter(line => line.length > 1)
+    const lines   = source.lines.map(numericLine).filter(line => line.length > 1)
     const starIds = [...new Set(lines.flat())]
     const missing = starIds.filter(hip => !hipparcos.has(hip))
     if (missing.length) throw new Error(`${selection.id} has stars outside the compact Hipparcos catalog: ${missing.join(', ')}`)
@@ -124,8 +124,8 @@ const main = async () => {
     const stars = starIds.map(hip => skyStar(hipparcos, hip))
 
     const imageConstellation = constellationByIau.get(selection.imageIau)
-    const imageFile = imageConstellation?.image?.file || null
-    const image = imageMeta(hipparcos, imageConstellation)
+    const imageFile          = imageConstellation?.image?.file || null
+    const image              = imageMeta(hipparcos, imageConstellation)
 
     if (imageFile && !downloadedImages.has(imageFile)) {
       const target = path.join(OUT_IMAGES, imageName(imageFile))
@@ -134,7 +134,7 @@ const main = async () => {
     }
 
     asterisms.push({
-      id: selection.id.replace('AST western ', ''),
+      id:    selection.id.replace('AST western ', ''),
       label: source.common_name?.english || selection.id,
       image,
       lines,
@@ -145,7 +145,7 @@ const main = async () => {
   const data = {
     sources: {
       linesAndIllustrations: 'Stellarium western sky culture, text/data CC BY-SA; illustrations Free Art License',
-      stars: 'Hipparcos J2000 concise catalog from gmiller123456/hip2000',
+      stars:                 'Hipparcos J2000 concise catalog from gmiller123456/hip2000',
     },
     asterisms,
   }

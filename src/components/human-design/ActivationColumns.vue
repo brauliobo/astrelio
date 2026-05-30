@@ -7,11 +7,11 @@ import { hoverMatchesGate } from './bodygraphInteraction.js'
 import ActivationRow from './ActivationRow.vue'
 
 const props = defineProps({
-  chart: { type: Object, required: true },
-  side: { type: String, required: true },
-  hover: { type: Object, default: null },
-  centered: { type: Boolean, default: false },
-  visualTheme: { type: String, default: 'dark' },
+  chart:         { type: Object, required: true },
+  side:          { type: String, required: true },
+  hover:         { type: Object, default: null },
+  centered:      { type: Boolean, default: false },
+  visualTheme:   { type: String, default: 'dark' },
   glyphRenderer: { type: String, default: null },
 })
 
@@ -26,7 +26,7 @@ const rows = computed(() =>
 )
 
 const isHighlighted = row => hoverMatchesGate(props.hover, row.activation.gate, centerByGate[row.activation.gate])
-const hasHover = computed(() => Boolean(props.hover))
+const hasHover      = computed(() => Boolean(props.hover))
 </script>
 
 <template lang="pug">

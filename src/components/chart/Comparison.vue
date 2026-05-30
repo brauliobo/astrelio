@@ -6,43 +6,43 @@ import Wheel from './Wheel.vue'
 import PlanetList from './PlanetList.vue'
 
 defineProps({
-  base: { type: Object, required: true },
-  comparison: { type: Object, required: true },
-  aspects: { type: Array, default: () => [] },
-  baseLabel: { type: String, required: true },
-  comparisonLabel: { type: String, required: true },
-  chartSize: { type: Number, default: 520 },
-  aspectOptions: { type: Object, default: () => ({}) },
+  base:                { type: Object, required: true },
+  comparison:          { type: Object, required: true },
+  aspects:             { type: Array, default: () => [] },
+  baseLabel:           { type: String, required: true },
+  comparisonLabel:     { type: String, required: true },
+  chartSize:           { type: Number, default: 520 },
+  aspectOptions:       { type: Object, default: () => ({}) },
   planetGlyphRenderer: { type: String, default: null },
 })
 
 const chartMaps = (base, comparison) => [
   {
-    id: 'base',
-    chart: base,
-    color: 'var(--chart-ink)',
-    showAspects: false,
+    id:              'base',
+    chart:           base,
+    color:           'var(--chart-ink)',
+    showAspects:     false,
     showHouseLabels: false,
-    planetBand: { inner: 140, outer: 152, tickRadius: 153 },
+    planetBand:      { inner: 140, outer: 152, tickRadius: 153 },
   },
   {
-    id: 'comparison',
-    chart: comparison,
-    color: 'var(--chart-comparison-accent)',
-    showHouses: false,
+    id:              'comparison',
+    chart:           comparison,
+    color:           'var(--chart-comparison-accent)',
+    showHouses:      false,
     showHouseLabels: false,
-    showAspects: false,
-    showAngles: false,
-    planetBand: { inner: 112, outer: 126, tickRadius: 128 },
+    showAspects:     false,
+    showAngles:      false,
+    planetBand:      { inner: 112, outer: 126, tickRadius: 128 },
   },
 ]
 
-const hoverHighlight = ref(null)
+const hoverHighlight  = ref(null)
 const pinnedHighlight = ref(null)
 const activeHighlight = computed(() => hoverHighlight.value || pinnedHighlight.value || { bodies: [], aspectKey: '' })
 
 const normalizeHighlight = (payload) => ({
-  bodies: [...new Set(payload?.bodies || [])],
+  bodies:    [...new Set(payload?.bodies || [])],
   aspectKey: payload?.aspectKey || '',
 })
 
@@ -60,9 +60,9 @@ const clearHighlight = () => {
 }
 
 const toggleHighlight = (payload) => {
-  const highlight = normalizeHighlight(payload)
+  const highlight       = normalizeHighlight(payload)
   pinnedHighlight.value = pinnedHighlight.value && sameHighlight(pinnedHighlight.value, highlight) ? null : highlight
-  hoverHighlight.value = null
+  hoverHighlight.value  = null
 }
 </script>
 

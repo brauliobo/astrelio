@@ -22,12 +22,12 @@ const sidereal = (lon, jd, mode) => mode === 'sidereal' ? toSidereal(lon, jd) : 
 
 const swissPoint = (name, body, jd, mode) => {
   const result = swissPosition(body, jd, SWISS_FLAGS)
-  const speed = result[3]
+  const speed  = result[3]
   const motion = motionStateForSpeed(speed)
   return {
     name,
     longitude: sidereal(result[0], jd, mode),
-    latitude: result[1],
+    latitude:  result[1],
     speed,
     motion,
     stationary: motion === 'stationary',
@@ -50,7 +50,7 @@ const lotLongitude = (ascendant, first, second) =>
 const chartPointLongitudes = (jd, lat, lon, mode) => {
   const houses = swissHouses(jd, lat, lon, 'P')
   return {
-    vertex: sidereal(houses.ascmc[swiss.SE_VERTEX], jd, mode),
+    vertex:    sidereal(houses.ascmc[swiss.SE_VERTEX], jd, mode),
     eastPoint: sidereal(houses.ascmc[swiss.SE_EQUASC], jd, mode),
   }
 }
@@ -61,7 +61,7 @@ export const computeChart = (
   lon,
   opts = { zodiac: 'tropical', houseSystem: 'placidus' }
 ) => {
-  const options = { zodiac: 'tropical', houseSystem: 'placidus', nodeMode: 'mean', ...opts }
+  const options   = { zodiac: 'tropical', houseSystem: 'placidus', nodeMode: 'mean', ...opts }
   const positions = BODIES.map(({ name, body }) => swissPoint(name, body, jdUt, options.zodiac))
   const northNode = swissPoint(
     'NorthNode',
@@ -72,7 +72,7 @@ export const computeChart = (
   positions.push(northNode)
   positions.push({
     ...northNode,
-    name: 'SouthNode',
+    name:      'SouthNode',
     longitude: norm360(northNode.longitude + 180),
   })
   // VegaPlus uses Swiss Ephemeris mean lunar apogee for Lilith; the old local
@@ -80,10 +80,10 @@ export const computeChart = (
   positions.push(swissPoint('Lilith', SWISS_BODY.Lilith, jdUt, options.zodiac))
   positions.push(swissPoint('Chiron', SWISS_BODY.Chiron, jdUt, options.zodiac))
 
-  const houses = calcHouses(options.houseSystem, jdUt, lat, lon)
-  const ascendant = sidereal(houses.ascendant, jdUt, options.zodiac)
-  const sun = positions.find(position => position.name === 'Sun')
-  const moon = positions.find(position => position.name === 'Moon')
+  const houses      = calcHouses(options.houseSystem, jdUt, lat, lon)
+  const ascendant   = sidereal(houses.ascendant, jdUt, options.zodiac)
+  const sun         = positions.find(position => position.name === 'Sun')
+  const moon        = positions.find(position => position.name === 'Moon')
   const chartPoints = chartPointLongitudes(jdUt, lat, lon, options.zodiac)
 
   return {
@@ -94,18 +94,18 @@ export const computeChart = (
     houseSystem: options.houseSystem,
     nodeMode:    options.nodeMode === 'true' ? 'true' : 'mean',
     ascendant,
-    mc:          sidereal(houses.mc,        jdUt, options.zodiac),
-    cusps:       siderealCusps(houses, jdUt, options.zodiac, options.houseSystem),
-    fortune:     sun && moon ? lotLongitude(ascendant, moon, sun) : null,
-    spirit:      sun && moon ? lotLongitude(ascendant, sun, moon) : null,
-    vertex:      chartPoints.vertex,
-    eastPoint:   chartPoints.eastPoint,
+    mc:        sidereal(houses.mc,        jdUt, options.zodiac),
+    cusps:     siderealCusps(houses, jdUt, options.zodiac, options.houseSystem),
+    fortune:   sun && moon ? lotLongitude(ascendant, moon, sun) : null,
+    spirit:    sun && moon ? lotLongitude(ascendant, sun, moon) : null,
+    vertex:    chartPoints.vertex,
+    eastPoint: chartPoints.eastPoint,
     positions
   }
 }
 
 export const moonPhaseFraction = (jdUt) => {
-  const sun = swissPoint('Sun', SWISS_BODY.Sun, jdUt, 'tropical').longitude
+  const sun  = swissPoint('Sun', SWISS_BODY.Sun, jdUt, 'tropical').longitude
   const moon = swissPoint('Moon', SWISS_BODY.Moon, jdUt, 'tropical').longitude
   return norm360(moon - sun) / 360
 }

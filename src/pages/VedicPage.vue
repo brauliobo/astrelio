@@ -11,27 +11,27 @@ import Wheel from '../components/chart/Wheel.vue'
 import ModalityRouteSwitch from '../components/modalities/ModalityRouteSwitch.vue'
 
 const { t, tm } = useI18n()
-const people = usePeopleStore()
-const session = useSessionStore()
+const people   = usePeopleStore()
+const session  = useSessionStore()
 const settings = useSettingsStore()
 
-const person = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
-const chart = ref(null)
+const person  = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
+const chart   = ref(null)
 const loading = ref(false)
-const error = ref('')
+const error   = ref('')
 let requestId = 0
 
-const signs = computed(() => tm('zodiac.signs'))
+const signs            = computed(() => tm('zodiac.signs'))
 const ayanamshaOptions = AYANAMSHA_KEYS
-const houseModes = VEDIC_HOUSE_MODES
-const nodeModes = ['mean', 'true']
+const houseModes       = VEDIC_HOUSE_MODES
+const nodeModes        = ['mean', 'true']
 
 watch(
   () => [person.value, settings.vedic.ayanamsha, settings.vedic.houseMode, settings.vedic.nodeMode, settings.vedic.includeModernPlanets],
   async ([activePerson]) => {
     const currentRequest = ++requestId
-    chart.value = null
-    error.value = ''
+    chart.value          = null
+    error.value          = ''
     if (!activePerson) return
 
     loading.value = true
@@ -49,25 +49,25 @@ watch(
 
 const fmtDegree = (longitude) => {
   const degree = degInSign(longitude)
-  const dd = Math.floor(degree)
-  const mm = Math.floor((degree - dd) * 60)
+  const dd     = Math.floor(degree)
+  const mm     = Math.floor((degree - dd) * 60)
   return `${dd}°${mm.toString().padStart(2, '0')}'`
 }
 
 const jdDate = (jd) =>
   new Date((jd - 2440587.5) * 86_400_000).toLocaleDateString(settings.locale)
 
-const signLabel = (longitude) => signs.value[signIndex(longitude)] || ''
+const signLabel      = (longitude) => signs.value[signIndex(longitude)] || ''
 const nakshatraLabel = (nakshatra) =>
   nakshatra ? t(`vedic.nakshatras.${nakshatra.key}`) : ''
 const dashaLord = (lord) => t(`vedic.dasha_lords.${lord}`)
 
-const moon = computed(() => chart.value?.positions.find(position => position.name === 'Moon') || null)
-const sun = computed(() => chart.value?.positions.find(position => position.name === 'Sun') || null)
+const moon  = computed(() => chart.value?.positions.find(position => position.name === 'Moon') || null)
+const sun   = computed(() => chart.value?.positions.find(position => position.name === 'Sun') || null)
 const lagna = computed(() => chart.value ? {
   longitude: chart.value.ascendant,
-  sign: signLabel(chart.value.ascendant),
-  degree: fmtDegree(chart.value.ascendant),
+  sign:      signLabel(chart.value.ascendant),
+  degree:    fmtDegree(chart.value.ascendant),
   nakshatra: nakshatraLabel(chart.value.positions[0]?.nakshatra),
 } : null)
 
@@ -76,7 +76,7 @@ const summaryRows = computed(() => chart.value ? [
   { key: 'moon', label: t('vedic.moon_rasi'), value: signLabel(moon.value.longitude), meta: nakshatraLabel(moon.value.nakshatra) },
   { key: 'sun', label: t('vedic.sun_rasi'), value: signLabel(sun.value.longitude), meta: fmtDegree(sun.value.longitude) },
   {
-    key: 'dasha',
+    key:   'dasha',
     label: t('vedic.active_dasha'),
     value: chart.value.dashas?.active
       ? `${dashaLord(chart.value.dashas.active.mahadasha)} / ${dashaLord(chart.value.dashas.active.antardasha)}`
@@ -86,37 +86,37 @@ const summaryRows = computed(() => chart.value ? [
 ] : [])
 
 const vedicMaps = computed(() => chart.value ? [{
-  id: 'vedic-rasi',
-  chart: chart.value,
-  color: 'var(--chart-ink)',
-  showAspects: false,
-  planetSymbols: VEDIC_BODY_SYMBOLS,
-  planetColors: VEDIC_BODY_COLORS,
-  planetLabels: VEDIC_BODY_LABELS,
+  id:                  'vedic-rasi',
+  chart:               chart.value,
+  color:               'var(--chart-ink)',
+  showAspects:         false,
+  planetSymbols:       VEDIC_BODY_SYMBOLS,
+  planetColors:        VEDIC_BODY_COLORS,
+  planetLabels:        VEDIC_BODY_LABELS,
   planetGlyphRenderer: 'text',
 }] : [])
 
 const placementRows = computed(() => chart.value?.positions.map(position => ({
-  name: position.name,
-  label: VEDIC_BODY_LABELS[position.name] || position.name,
-  sign: signLabel(position.longitude),
-  degree: fmtDegree(position.longitude),
-  nakshatra: nakshatraLabel(position.nakshatra),
-  pada: position.nakshatra.pada,
+  name:       position.name,
+  label:      VEDIC_BODY_LABELS[position.name] || position.name,
+  sign:       signLabel(position.longitude),
+  degree:     fmtDegree(position.longitude),
+  nakshatra:  nakshatraLabel(position.nakshatra),
+  pada:       position.nakshatra.pada,
   retrograde: position.retrograde,
 })) || [])
 
 const navamsaRows = computed(() => chart.value?.navamsa.map(position => ({
-  name: position.name,
-  label: VEDIC_BODY_LABELS[position.name] || position.name,
-  rasi: signs.value[position.rasiSignIndex],
+  name:    position.name,
+  label:   VEDIC_BODY_LABELS[position.name] || position.name,
+  rasi:    signs.value[position.rasiSignIndex],
   navamsa: signs.value[position.navamsaSignIndex],
 })) || [])
 
 const dashaRows = computed(() => chart.value?.dashas?.mahadashas.slice(0, 9).map(period => ({
-  lord: dashaLord(period.lord),
-  start: jdDate(period.startJd),
-  end: jdDate(period.endJd),
+  lord:   dashaLord(period.lord),
+  start:  jdDate(period.startJd),
+  end:    jdDate(period.endJd),
   active: chart.value.dashas.active?.mahadasha === period.lord,
 })) || [])
 </script>

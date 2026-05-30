@@ -13,12 +13,12 @@ const { t } = useI18n()
 const rows = computed(() =>
   (props.chart.details?.activations || []).map(activation => {
     const longitude = Number.isFinite(activation.longitude) ? activation.longitude : null
-    const progress = Number.isFinite(activation.progress) ? activation.progress : null
+    const progress  = Number.isFinite(activation.progress) ? activation.progress : null
     return {
       ...activation,
-      code: activation.code || activationCode(activation),
+      code:           activation.code || activationCode(activation),
       longitudeLabel: longitude === null ? '—' : `${longitude.toFixed(3)}°`,
-      progressLabel: progress === null ? '—' : `${(progress * 100).toFixed(2)}%`,
+      progressLabel:  progress === null ? '—' : `${(progress * 100).toFixed(2)}%`,
     }
   })
 )

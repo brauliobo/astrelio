@@ -2,8 +2,8 @@ import fs from 'node:fs'
 import path from 'node:path'
 import cities1000 from 'cities1000'
 
-const OUT = path.resolve('public/data/cities.generated.json')
-const ADMIN_URL = 'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
+const OUT         = path.resolve('public/data/cities.generated.json')
+const ADMIN_URL   = 'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
 const COUNTRY_URL = 'https://download.geonames.org/export/dump/countryInfo.txt'
 
 const BR_ADMIN = {
@@ -72,16 +72,16 @@ const seen = new Set()
 
 const cities = rows
   .map((line) => {
-    const fields = line.split('\t')
-    const name = fields[1]
-    const ascii = fields[2]
-    const lat = Number(fields[4])
-    const lon = Number(fields[5])
+    const fields      = line.split('\t')
+    const name        = fields[1]
+    const ascii       = fields[2]
+    const lat         = Number(fields[4])
+    const lon         = Number(fields[5])
     const countryCode = fields[8]
-    const adminCode = fields[10]
-    const population = Number(fields[14]) || 0
-    const timeZone = fields[17]
-    const admin = countryCode === 'BR'
+    const adminCode   = fields[10]
+    const population  = Number(fields[14]) || 0
+    const timeZone    = fields[17]
+    const admin       = countryCode === 'BR'
       ? BR_ADMIN[adminCode]
       : adminNames.get(`${countryCode}.${adminCode}`) || ''
     const country = countryCode === 'BR'
@@ -90,8 +90,8 @@ const cities = rows
         ? 'USA'
         : countryNames.get(countryCode) || countryCode
     const region = admin && admin !== name ? `, ${admin}` : ''
-    const label = `${name}${region} - ${country}`
-    const key = `${label}|${lat}|${lon}`
+    const label  = `${name}${region} - ${country}`
+    const key    = `${label}|${lat}|${lon}`
 
     if (seen.has(key)) return null
     seen.add(key)

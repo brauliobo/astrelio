@@ -23,8 +23,8 @@ describe('sky scene asterism helpers', () => {
   it('caps planet-star guide links to the closest six', () => {
     const planets = Array.from({ length: 8 }, (_, index) => ({
       name: `P${index}`,
-      x: index * 10,
-      y: 0,
+      x:    index * 10,
+      y:    0,
     }))
     const stars = planets.map(planet => ({ x: planet.x + 1, y: 0 }))
 

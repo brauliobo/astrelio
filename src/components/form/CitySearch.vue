@@ -3,27 +3,27 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { searchCities } from '../../lib/geo/cities.js'
 
-const props   = defineProps({ modelValue: { type: Object, default: null } })
-const emit    = defineEmits(['update:modelValue'])
+const props = defineProps({ modelValue: { type: Object, default: null } })
+const emit  = defineEmits(['update:modelValue'])
 const { t }   = useI18n()
-const query   = ref(props.modelValue?.name || '')
-const open    = ref(false)
-const loading = ref(false)
-const results = ref([])
+const query       = ref(props.modelValue?.name || '')
+const open        = ref(false)
+const loading     = ref(false)
+const results     = ref([])
 const activeIndex = ref(-1)
-const blurred = ref(false)
-const minQuery = 2
-const debounceMs = 250
-const listId = `city-list-${Math.random().toString(36).slice(2)}`
-let requestId = 0
+const blurred     = ref(false)
+const minQuery    = 2
+const debounceMs  = 250
+const listId      = `city-list-${Math.random().toString(36).slice(2)}`
+let requestId     = 0
 let debounceTimer = null
-let blurTimer = null
+let blurTimer     = null
 
-const trimmedQuery = computed(() => query.value.trim())
-const selectedCity = computed(() => props.modelValue)
-const tooShort = computed(() => trimmedQuery.value.length > 0 && trimmedQuery.value.length < minQuery)
-const invalid = computed(() => blurred.value && !!trimmedQuery.value && !props.modelValue)
-const listOpen = computed(() => open.value && (loading.value || tooShort.value || results.value.length || trimmedQuery.value.length >= minQuery))
+const trimmedQuery   = computed(() => query.value.trim())
+const selectedCity   = computed(() => props.modelValue)
+const tooShort       = computed(() => trimmedQuery.value.length > 0 && trimmedQuery.value.length < minQuery)
+const invalid        = computed(() => blurred.value && !!trimmedQuery.value && !props.modelValue)
+const listOpen       = computed(() => open.value && (loading.value || tooShort.value || results.value.length || trimmedQuery.value.length >= minQuery))
 const activeOptionId = computed(() => activeIndex.value >= 0 ? `${listId}-option-${activeIndex.value}` : null)
 
 const clearDebounce = () => {
@@ -38,18 +38,18 @@ const clearBlur = () => {
 
 const refresh = async (value = trimmedQuery.value) => {
   if (value.length < minQuery) {
-    results.value = []
+    results.value     = []
     activeIndex.value = -1
-    loading.value = false
+    loading.value     = false
     return
   }
 
-  const id = ++requestId
+  const id      = ++requestId
   loading.value = true
   try {
     const next = await searchCities(value)
     if (id === requestId) {
-      results.value = next
+      results.value     = next
       activeIndex.value = next.length ? 0 : -1
     }
   } finally {
@@ -60,9 +60,9 @@ const refresh = async (value = trimmedQuery.value) => {
 const scheduleRefresh = (immediate = false) => {
   clearDebounce()
   if (trimmedQuery.value.length < minQuery) {
-    results.value = []
+    results.value     = []
     activeIndex.value = -1
-    loading.value = false
+    loading.value     = false
     return
   }
   if (immediate) {
@@ -73,16 +73,16 @@ const scheduleRefresh = (immediate = false) => {
 }
 
 const select = (c) => {
-  query.value = c.name
-  open.value  = false
-  blurred.value = false
+  query.value       = c.name
+  open.value        = false
+  blurred.value     = false
   activeIndex.value = -1
   emit('update:modelValue', c)
 }
 
 const onInput = (e) => {
-  query.value = e.target.value
-  open.value  = true
+  query.value   = e.target.value
+  open.value    = true
   blurred.value = false
   if (props.modelValue) emit('update:modelValue', null)
   scheduleRefresh()
@@ -91,21 +91,21 @@ const onInput = (e) => {
 const onFocus = () => {
   clearBlur()
   blurred.value = false
-  open.value = true
+  open.value    = true
   if (!props.modelValue) scheduleRefresh(true)
 }
 
 const onBlur = () => {
   clearBlur()
   blurTimer = setTimeout(() => {
-    open.value = false
+    open.value    = false
     blurred.value = true
   }, 120)
 }
 
 const moveActive = (step) => {
   if (!results.value.length) return
-  open.value = true
+  open.value        = true
   activeIndex.value = (activeIndex.value + step + results.value.length) % results.value.length
 }
 

@@ -9,32 +9,32 @@ export const normalizeMoonPhase = (phaseFraction = 0) => {
 }
 
 export const moonPhaseLighting = (phaseFraction = 0, light = 1) => {
-  const phase = normalizeMoonPhase(phaseFraction)
-  const intensity = clamp(Number.isFinite(light) ? light : 1, 0, 1.8)
+  const phase        = normalizeMoonPhase(phaseFraction)
+  const intensity    = clamp(Number.isFinite(light) ? light : 1, 0, 1.8)
   const illumination = (1 - Math.cos(phase * FULL_TURN)) / 2
 
   return {
     phase,
     illumination,
-    waxing: phase > 0 && phase < 0.5,
-    glowAlpha: clamp((0.08 + illumination * 0.28) * intensity, 0, 0.62),
-    litAlpha: clamp((0.72 + illumination * 0.28) * intensity, 0, 1),
+    waxing:      phase > 0 && phase < 0.5,
+    glowAlpha:   clamp((0.08 + illumination * 0.28) * intensity, 0, 0.62),
+    litAlpha:    clamp((0.72 + illumination * 0.28) * intensity, 0, 1),
     shadowAlpha: clamp((0.82 - illumination * 0.34) * intensity, 0, 0.92),
-    rimAlpha: clamp((0.28 + illumination * 0.22) * intensity, 0, 0.72),
+    rimAlpha:    clamp((0.28 + illumination * 0.22) * intensity, 0, 0.72),
   }
 }
 
 export const moonPhaseLitPoints = (phaseFraction = 0, size = 100, steps = 72) => {
-  const phase = normalizeMoonPhase(phaseFraction)
-  const safeSize = Math.max(1, size)
-  const radius = safeSize / 2
-  const center = radius
+  const phase        = normalizeMoonPhase(phaseFraction)
+  const safeSize     = Math.max(1, size)
+  const radius       = safeSize / 2
+  const center       = radius
   const segmentCount = Math.max(12, steps)
-  const cosPhase = Math.cos(phase * FULL_TURN)
-  const points = []
+  const cosPhase     = Math.cos(phase * FULL_TURN)
+  const points       = []
 
   const edgePoint = (index, side) => {
-    const y = -radius + (index / segmentCount) * safeSize
+    const y    = -radius + (index / segmentCount) * safeSize
     const xArc = Math.sqrt(Math.max(0, radius * radius - y * y))
     return {
       x: center + side * xArc,
@@ -43,7 +43,7 @@ export const moonPhaseLitPoints = (phaseFraction = 0, size = 100, steps = 72) =>
   }
 
   const terminatorPoint = (index, multiplier) => {
-    const y = -radius + (index / segmentCount) * safeSize
+    const y    = -radius + (index / segmentCount) * safeSize
     const xArc = Math.sqrt(Math.max(0, radius * radius - y * y))
     return {
       x: center + multiplier * xArc,

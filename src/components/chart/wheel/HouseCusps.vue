@@ -4,7 +4,7 @@ import Arc from './Arc.vue'
 import { CENTER, WHEEL_RADII, midpointLongitude, norm360, polarPoint } from './geometry.js'
 
 const props = defineProps({
-  cusps: { type: Array, required: true },
+  cusps:      { type: Array, required: true },
   wheelShift: { type: Number, required: true },
 })
 
@@ -18,15 +18,15 @@ const ANGLE_AXIS_STROKES = {
 const cusps = computed(() =>
   props.cusps.map((cusp, index) => {
     const angleStroke = ANGLE_AXIS_STROKES[index]
-    const isAngle = Boolean(angleStroke)
-    const longitude = norm360(cusp + props.wheelShift)
+    const isAngle     = Boolean(angleStroke)
+    const longitude   = norm360(cusp + props.wheelShift)
     return {
       index,
-      inner: polarPoint(WHEEL_RADII.houseInner, longitude),
-      outer: polarPoint(WHEEL_RADII.zodiacInner, longitude),
-      stroke: angleStroke || 'var(--chart-cusp-line)',
+      inner:   polarPoint(WHEEL_RADII.houseInner, longitude),
+      outer:   polarPoint(WHEEL_RADII.zodiacInner, longitude),
+      stroke:  angleStroke || 'var(--chart-cusp-line)',
       opacity: isAngle ? 0.74 : 0.46,
-      width: isAngle ? 1.75 : 0.75,
+      width:   isAngle ? 1.75 : 0.75,
     }
   })
 )
@@ -34,10 +34,10 @@ const cusps = computed(() =>
 const sectors = computed(() =>
   props.cusps.map((cusp, index) => ({
     index,
-    start: norm360(cusp + props.wheelShift),
-    end: norm360(props.cusps[(index + 1) % 12] + props.wheelShift),
+    start:    norm360(cusp + props.wheelShift),
+    end:      norm360(props.cusps[(index + 1) % 12] + props.wheelShift),
     midpoint: midpointLongitude(cusp, props.cusps[(index + 1) % 12]),
-    fill: index % 2 === 0 ? 'var(--chart-house-fill-a)' : 'var(--chart-house-fill-b)',
+    fill:     index % 2 === 0 ? 'var(--chart-house-fill-a)' : 'var(--chart-house-fill-b)',
   }))
 )
 </script>

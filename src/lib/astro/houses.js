@@ -1,12 +1,12 @@
 import { norm360 } from './zodiac.js'
 
-const D2R = Math.PI / 180
-const R2D = 180 / Math.PI
+const D2R        = Math.PI / 180
+const R2D        = 180 / Math.PI
 const VERY_SMALL = 1e-10
 
-const sind = (deg) => Math.sin(deg * D2R)
-const cosd = (deg) => Math.cos(deg * D2R)
-const tand = (deg) => Math.tan(deg * D2R)
+const sind  = (deg) => Math.sin(deg * D2R)
+const cosd  = (deg) => Math.cos(deg * D2R)
+const tand  = (deg) => Math.tan(deg * D2R)
 const asind = (x) => Math.asin(x) * R2D
 const atand = (x) => Math.atan(x) * R2D
 
@@ -31,11 +31,11 @@ const ascMcRaw = (jd, lat, lon) => {
   const armc = lst(jd, lon) * D2R
   const obl  = obliquity(jd) * D2R
   const φ    = lat * D2R
-  const mc   = norm360(Math.atan2(Math.sin(armc), Math.cos(armc) * Math.cos(obl)) * R2D)
+  const mc = norm360(Math.atan2(Math.sin(armc), Math.cos(armc) * Math.cos(obl)) * R2D)
   // Meeus 13.5; atan2 form needs sign flip on both args to land on the ASC (not DESC)
-  const y    = Math.cos(armc)
-  const x    = -(Math.sin(armc) * Math.cos(obl) + Math.tan(φ) * Math.sin(obl))
-  const asc  = norm360(Math.atan2(y, x) * R2D)
+  const y   = Math.cos(armc)
+  const x   = -(Math.sin(armc) * Math.cos(obl) + Math.tan(φ) * Math.sin(obl))
+  const asc = norm360(Math.atan2(y, x) * R2D)
   return { ascendant: asc, mc, armc, obl, φ }
 }
 
@@ -43,7 +43,7 @@ const longitudeFromRightAscension = (ra, obl) =>
   norm360(Math.atan2(Math.sin(ra) / Math.cos(obl), Math.cos(ra)) * R2D)
 
 const eclipticCrossing = (x, poleHeight, sinObl, cosObl) => {
-  const xDeg = norm360(x)
+  const xDeg     = norm360(x)
   const quadrant = Math.floor(xDeg / 90) + 1
   if (Math.abs(90 - poleHeight) < VERY_SMALL) return 180
   if (Math.abs(90 + poleHeight) < VERY_SMALL) return 0
@@ -83,7 +83,7 @@ const placidusCusp = (armc, obl, phi, baseDeg, fraction) => {
   let lambda = longitudeFromRightAscension(armc + baseDeg * D2R, obl) * D2R
   for (let i = 0; i < 12; i++) {
     const ra = armc + baseDeg * D2R + fraction * ascensionalDifference(lambda, obl, phi)
-    lambda = longitudeFromRightAscension(ra, obl) * D2R
+    lambda   = longitudeFromRightAscension(ra, obl) * D2R
   }
   return norm360(lambda * R2D)
 }
@@ -130,18 +130,18 @@ const placidusCusps = (jd, lat, lon) => {
   const { ascendant, mc, armc, obl, φ } = ascMcRaw(jd, lat, lon)
   if (Math.abs(lat) > 66) return porphyryCusps(ascendant, mc)
   const cusps = new Array(12)
-  cusps[0] = ascendant
-  cusps[9] = mc
-  cusps[3] = norm360(mc + 180)
-  cusps[6] = norm360(ascendant + 180)
-  cusps[10] = placidusCusp(armc, obl, φ, 30, 1 / 3)
-  cusps[11] = placidusCusp(armc, obl, φ, 60, 2 / 3)
-  cusps[1]  = placidusCusp(armc, obl, φ, 120, 2 / 3)
-  cusps[2]  = placidusCusp(armc, obl, φ, 150, 1 / 3)
-  cusps[4] = norm360(cusps[10] + 180)
-  cusps[5] = norm360(cusps[11] + 180)
-  cusps[7] = norm360(cusps[1]  + 180)
-  cusps[8] = norm360(cusps[2]  + 180)
+  cusps[0]    = ascendant
+  cusps[9]    = mc
+  cusps[3]    = norm360(mc + 180)
+  cusps[6]    = norm360(ascendant + 180)
+  cusps[10]   = placidusCusp(armc, obl, φ, 30, 1 / 3)
+  cusps[11]   = placidusCusp(armc, obl, φ, 60, 2 / 3)
+  cusps[1]    = placidusCusp(armc, obl, φ, 120, 2 / 3)
+  cusps[2]    = placidusCusp(armc, obl, φ, 150, 1 / 3)
+  cusps[4]    = norm360(cusps[10] + 180)
+  cusps[5]    = norm360(cusps[11] + 180)
+  cusps[7]    = norm360(cusps[1]  + 180)
+  cusps[8]    = norm360(cusps[2]  + 180)
   return cusps
 }
 
@@ -152,26 +152,26 @@ const kochCusps = (jd, lat, lon) => {
   if (Math.abs(lat) >= 90 - oblDeg) return porphyryCusps(ascendant, mc)
 
   const armcDeg = lst(jd, lon)
-  const sinObl = sind(oblDeg)
-  const cosObl = cosd(oblDeg)
-  const sinA = Math.max(-1, Math.min(1, sind(mc) * sinObl / cosd(lat)))
-  const cosA = Math.sqrt(1 - sinA * sinA)
-  const c = atand(tand(lat) / cosA)
-  const ad3 = asind(sind(c) * sinA) / 3
+  const sinObl  = sind(oblDeg)
+  const cosObl  = cosd(oblDeg)
+  const sinA    = Math.max(-1, Math.min(1, sind(mc) * sinObl / cosd(lat)))
+  const cosA    = Math.sqrt(1 - sinA * sinA)
+  const c       = atand(tand(lat) / cosA)
+  const ad3     = asind(sind(c) * sinA) / 3
 
   const cusps = new Array(12)
-  cusps[0] = ascendant
-  cusps[9] = mc
-  cusps[10] = eclipticCrossing(armcDeg + 30 - 2 * ad3, lat, sinObl, cosObl)
-  cusps[11] = eclipticCrossing(armcDeg + 60 - ad3, lat, sinObl, cosObl)
-  cusps[1] = eclipticCrossing(armcDeg + 120 + ad3, lat, sinObl, cosObl)
-  cusps[2] = eclipticCrossing(armcDeg + 150 + 2 * ad3, lat, sinObl, cosObl)
-  cusps[3] = norm360(mc + 180)
-  cusps[4] = norm360(cusps[10] + 180)
-  cusps[5] = norm360(cusps[11] + 180)
-  cusps[6] = norm360(ascendant + 180)
-  cusps[7] = norm360(cusps[1] + 180)
-  cusps[8] = norm360(cusps[2] + 180)
+  cusps[0]    = ascendant
+  cusps[9]    = mc
+  cusps[10]   = eclipticCrossing(armcDeg + 30 - 2 * ad3, lat, sinObl, cosObl)
+  cusps[11]   = eclipticCrossing(armcDeg + 60 - ad3, lat, sinObl, cosObl)
+  cusps[1]    = eclipticCrossing(armcDeg + 120 + ad3, lat, sinObl, cosObl)
+  cusps[2]    = eclipticCrossing(armcDeg + 150 + 2 * ad3, lat, sinObl, cosObl)
+  cusps[3]    = norm360(mc + 180)
+  cusps[4]    = norm360(cusps[10] + 180)
+  cusps[5]    = norm360(cusps[11] + 180)
+  cusps[6]    = norm360(ascendant + 180)
+  cusps[7]    = norm360(cusps[1] + 180)
+  cusps[8]    = norm360(cusps[2] + 180)
   return cusps
 }
 
@@ -179,7 +179,7 @@ const regiomontanusCusps = (jd, lat, lon) => {
   const { armc, obl, φ } = ascMcRaw(jd, lat, lon)
   const cusps = []
   for (let h = 0; h < 12; h++) {
-    const H    = armc + ((h - 9) * Math.PI / 6)
+    const H = armc + ((h - 9) * Math.PI / 6)
     const sinλ = Math.sin(H) * Math.cos(obl) + Math.tan(φ) * Math.sin(obl)
     const cosλ = Math.cos(H)
     cusps.push(norm360(Math.atan2(sinλ, cosλ) * R2D))

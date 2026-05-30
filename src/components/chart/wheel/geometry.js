@@ -4,99 +4,99 @@ import { norm360 } from '../../../lib/astro/zodiac.js'
 export { norm360 }
 
 export const VIEWBOX_SIZE = 520
-export const CENTER = VIEWBOX_SIZE / 2
+export const CENTER       = VIEWBOX_SIZE / 2
 
 // Shared geometry constants keep all SVG layers aligned on one coordinate system.
 export const WHEEL_RADII = {
   transitOuter: 232,
   transitInner: 188,
-  zodiacOuter: 188,
-  zodiacInner: 160,
-  houseOuter: 156,
-  houseInner: 70,
-  aspect: 66,
-  center: 70,
+  zodiacOuter:  188,
+  zodiacInner:  160,
+  houseOuter:   156,
+  houseInner:   70,
+  aspect:       66,
+  center:       70,
 }
 
 export const ASPECT_COLORS = {
   opposition: 'var(--aspect-opposition)',
-  trine: 'var(--aspect-trine)',
-  square: 'var(--aspect-square)',
-  sextile: 'var(--aspect-sextile)',
-  quincunx: 'var(--aspect-quincunx)',
+  trine:      'var(--aspect-trine)',
+  square:     'var(--aspect-square)',
+  sextile:    'var(--aspect-sextile)',
+  quincunx:   'var(--aspect-quincunx)',
 }
 
 export const PLANET_SYMBOLS = {
-  Sun: '☉',
-  Earth: '⊕',
-  Moon: '☽',
-  Mercury: '☿',
-  Venus: '♀',
-  Mars: '♂',
-  Jupiter: '♃',
-  Saturn: '♄',
-  Uranus: '♅',
-  Neptune: '♆',
-  Pluto: '⯓',
+  Sun:       '☉',
+  Earth:     '⊕',
+  Moon:      '☽',
+  Mercury:   '☿',
+  Venus:     '♀',
+  Mars:      '♂',
+  Jupiter:   '♃',
+  Saturn:    '♄',
+  Uranus:    '♅',
+  Neptune:   '♆',
+  Pluto:     '⯓',
   NorthNode: '☊',
   SouthNode: '☋',
-  Lilith: '⚸',
-  Chiron: '⚷',
+  Lilith:    '⚸',
+  Chiron:    '⚷',
   Ascendant: 'ASC',
   Midheaven: 'MC',
-  Fortune: '⊕',
+  Fortune:   '⊕',
 }
 
 export const PLANET_COLORS = {
-  Sun: 'var(--chart-sun-color)',
-  Moon: 'var(--chart-ink)',
-  Mercury: 'var(--chart-ink)',
-  Venus: 'var(--chart-ink)',
-  Mars: 'var(--chart-ink)',
-  Jupiter: 'var(--chart-ink)',
-  Saturn: 'var(--chart-ink)',
-  Uranus: 'var(--chart-ink)',
-  Neptune: 'var(--chart-ink)',
-  Pluto: 'var(--chart-ink)',
+  Sun:       'var(--chart-sun-color)',
+  Moon:      'var(--chart-ink)',
+  Mercury:   'var(--chart-ink)',
+  Venus:     'var(--chart-ink)',
+  Mars:      'var(--chart-ink)',
+  Jupiter:   'var(--chart-ink)',
+  Saturn:    'var(--chart-ink)',
+  Uranus:    'var(--chart-ink)',
+  Neptune:   'var(--chart-ink)',
+  Pluto:     'var(--chart-ink)',
   NorthNode: 'var(--chart-ink)',
   SouthNode: 'var(--chart-ink)',
-  Lilith: 'var(--chart-ink)',
-  Chiron: 'var(--chart-ink)',
+  Lilith:    'var(--chart-ink)',
+  Chiron:    'var(--chart-ink)',
   Ascendant: 'var(--chart-angle-asc, var(--chart-angle-accent))',
   Midheaven: 'var(--chart-angle-mc, var(--chart-angle-accent))',
-  Fortune: 'var(--chart-ink)',
+  Fortune:   'var(--chart-ink)',
 }
 
 // Keep tropical SVG glyphs compact; Human Design applies stronger optical
 // normalization in its own wheel layer where the glyphs sit outside the body.
 export const PLANET_GLYPH_SCALE = {
-  Sun: { x: 1, y: 1 },
-  Earth: { x: 1, y: 1 },
-  Moon: { x: 1.22, y: 1 },
-  Mercury: { x: 1.44, y: 1 },
-  Venus: { x: 1.12, y: 1 },
-  Mars: { x: 0.95, y: 0.95 },
-  Jupiter: { x: 1.08, y: 1 },
-  Saturn: { x: 1.14, y: 1 },
-  Uranus: { x: 1.18, y: 1 },
-  Neptune: { x: 1.06, y: 1 },
-  Pluto: { x: 1.06, y: 1 },
+  Sun:       { x: 1, y: 1 },
+  Earth:     { x: 1, y: 1 },
+  Moon:      { x: 1.22, y: 1 },
+  Mercury:   { x: 1.44, y: 1 },
+  Venus:     { x: 1.12, y: 1 },
+  Mars:      { x: 0.95, y: 0.95 },
+  Jupiter:   { x: 1.08, y: 1 },
+  Saturn:    { x: 1.14, y: 1 },
+  Uranus:    { x: 1.18, y: 1 },
+  Neptune:   { x: 1.06, y: 1 },
+  Pluto:     { x: 1.06, y: 1 },
   NorthNode: { x: 1, y: 1 },
   SouthNode: { x: 1, y: 1 },
-  Lilith: { x: 1.16, y: 1 },
-  Chiron: { x: 1.24, y: 1 },
+  Lilith:    { x: 1.16, y: 1 },
+  Chiron:    { x: 1.24, y: 1 },
   Ascendant: { x: 0.72, y: 0.72 },
   Midheaven: { x: 0.8, y: 0.8 },
-  Fortune: { x: 1, y: 1 },
+  Fortune:   { x: 1, y: 1 },
 }
 
 export const planetGlyphScale = planet => PLANET_GLYPH_SCALE[planet] || { x: 1, y: 1 }
 
-const PLANET_ORDER = new Map(Object.keys(PLANET_SYMBOLS).map((name, index) => [name, index]))
-const PLANET_CLUSTER_GAP = 10.5
+const PLANET_ORDER                = new Map(Object.keys(PLANET_SYMBOLS).map((name, index) => [name, index]))
+const PLANET_CLUSTER_GAP          = 10.5
 const PLANET_GLYPH_RADIUS_PADDING = 13
-const PLANET_NARROW_BAND_PADDING = 5
-const PLANET_LANE_RATIOS = {
+const PLANET_NARROW_BAND_PADDING  = 5
+const PLANET_LANE_RATIOS          = {
   4: [0.08, 0.36, 0.64, 0.92],
   5: [0.04, 0.26, 0.48, 0.7, 0.92],
 }
@@ -125,11 +125,11 @@ export const polarPoint = (radius, longitude, cx = CENTER, cy = CENTER) => {
 }
 
 export const radialTrianglePath = (longitude, tipRadius, baseRadius, halfWidth, cx = CENTER, cy = CENTER) => {
-  const angle = (180 - longitude) * Math.PI / 180
+  const angle   = (180 - longitude) * Math.PI / 180
   const tangent = { x: -Math.sin(angle), y: Math.cos(angle) }
-  const tip = polarPoint(tipRadius, longitude, cx, cy)
-  const base = polarPoint(baseRadius, longitude, cx, cy)
-  const left = {
+  const tip     = polarPoint(tipRadius, longitude, cx, cy)
+  const base    = polarPoint(baseRadius, longitude, cx, cy)
+  const left    = {
     x: base.x + tangent.x * halfWidth,
     y: base.y + tangent.y * halfWidth,
   }
@@ -142,14 +142,14 @@ export const radialTrianglePath = (longitude, tipRadius, baseRadius, halfWidth, 
 }
 
 export const ringSectorPath = (innerRadius, outerRadius, startLongitude, endLongitude) => {
-  const start = norm360(startLongitude)
-  const span = norm360(endLongitude - startLongitude) || 360
-  const end = start + span
+  const start      = norm360(startLongitude)
+  const span       = norm360(endLongitude - startLongitude) || 360
+  const end        = start + span
   const outerStart = polarPoint(outerRadius, start)
-  const outerEnd = polarPoint(outerRadius, end)
-  const innerEnd = polarPoint(innerRadius, end)
+  const outerEnd   = polarPoint(outerRadius, end)
+  const innerEnd   = polarPoint(innerRadius, end)
   const innerStart = polarPoint(innerRadius, start)
-  const largeArc = span > 180 ? 1 : 0
+  const largeArc   = span > 180 ? 1 : 0
 
   return [
     `M ${outerStart.x} ${outerStart.y}`,
@@ -169,19 +169,19 @@ export const degreeLabel = (longitude) =>
 export const chartToMap = (chart, index = 0, options = {}) => ({
   id: options.id || chart?.id || `chart-${index}`,
   chart,
-  label: options.label || '',
-  color: options.color || (index === 0 ? 'var(--chart-ink)' : 'var(--chart-overlay-ink)'),
-  aspectColors: { ...ASPECT_COLORS, ...(options.aspectColors || {}) },
-  showHouses: options.showHouses ?? index === 0,
-  showHouseLabels: options.showHouseLabels ?? index === 0,
-  showAspects: options.showAspects ?? index === 0,
-  showAngles: options.showAngles ?? index === 0,
-  planetBand: options.planetBand || null,
-  planetSymbols: options.planetSymbols || null,
-  planetColors: options.planetColors || null,
-  planetLabels: options.planetLabels || null,
+  label:               options.label || '',
+  color:               options.color || (index === 0 ? 'var(--chart-ink)' : 'var(--chart-overlay-ink)'),
+  aspectColors:        { ...ASPECT_COLORS, ...(options.aspectColors || {}) },
+  showHouses:          options.showHouses ?? index === 0,
+  showHouseLabels:     options.showHouseLabels ?? index === 0,
+  showAspects:         options.showAspects ?? index === 0,
+  showAngles:          options.showAngles ?? index === 0,
+  planetBand:          options.planetBand || null,
+  planetSymbols:       options.planetSymbols || null,
+  planetColors:        options.planetColors || null,
+  planetLabels:        options.planetLabels || null,
   planetGlyphRenderer: options.planetGlyphRenderer || null,
-  exteriorOrbit: options.exteriorOrbit || false,
+  exteriorOrbit:       options.exteriorOrbit || false,
 })
 
 export const mapsFromProps = ({ natal, overlay, charts }) => {
@@ -196,24 +196,24 @@ export const mapsFromProps = ({ natal, overlay, charts }) => {
 
   const maps = []
   if (natal) maps.push(chartToMap(natal, 0, {
-    id: 'natal',
+    id:         'natal',
     planetBand: overlay
       ? { inner: 78, outer: 150, tickRadius: WHEEL_RADII.houseOuter - 4 }
       : null,
   }))
   if (overlay) {
     maps.push(chartToMap(overlay, 1, {
-      id: 'overlay',
-      color: 'var(--chart-overlay-accent)',
-      showHouses: false,
+      id:              'overlay',
+      color:           'var(--chart-overlay-accent)',
+      showHouses:      false,
       showHouseLabels: false,
-      showAspects: false,
-      showAngles: false,
-      exteriorOrbit: true,
-      planetBand: {
-        inner: WHEEL_RADII.transitInner,
-        outer: WHEEL_RADII.transitOuter,
-        tickRadius: WHEEL_RADII.zodiacOuter + 8,
+      showAspects:     false,
+      showAngles:      false,
+      exteriorOrbit:   true,
+      planetBand:      {
+        inner:        WHEEL_RADII.transitInner,
+        outer:        WHEEL_RADII.transitOuter,
+        tickRadius:   WHEEL_RADII.zodiacOuter + 8,
         glyphPadding: 8,
       },
     }))
@@ -226,9 +226,9 @@ export const planetBandFor = (map, index, count) => {
   if (count <= 1) return { inner: 78, outer: 150, tickRadius: WHEEL_RADII.houseOuter - 4 }
 
   const trackWidth = 13
-  const gap = 4
-  const outer = WHEEL_RADII.houseOuter - 4 - (index * (trackWidth + gap))
-  const inner = Math.max(WHEEL_RADII.houseInner + 2, outer - trackWidth)
+  const gap        = 4
+  const outer      = WHEEL_RADII.houseOuter - 4 - (index * (trackWidth + gap))
+  const inner      = Math.max(WHEEL_RADII.houseInner + 2, outer - trackWidth)
   return { inner, outer }
 }
 
@@ -251,7 +251,7 @@ export const clusteredPlanets = (positions, symbols = PLANET_SYMBOLS) => {
 
   if (clusters.length > 1) {
     const first = clusters[0]
-    const last = clusters[clusters.length - 1]
+    const last  = clusters[clusters.length - 1]
     if (first[0].longitude + 360 - last[last.length - 1].longitude < PLANET_CLUSTER_GAP) {
       clusters[0] = [...last, ...first]
       clusters.pop()
@@ -272,8 +272,8 @@ const planetBandPadding = (band) => {
 
 const safePlanetBand = (band) => {
   const padding = planetBandPadding(band)
-  const inner = band.inner + padding
-  const outer = band.outer - padding
+  const inner   = band.inner + padding
+  const outer   = band.outer - padding
 
   if (inner <= outer) return { inner, outer }
 
@@ -282,13 +282,13 @@ const safePlanetBand = (band) => {
 }
 
 const centeredRadii = (safeBand, count, gap, centerRatio = 0.56) => {
-  const spread = safeBand.outer - safeBand.inner
+  const spread    = safeBand.outer - safeBand.inner
   const usableGap = Math.min(gap, count > 1 ? spread / (count - 1) : 0)
-  const total = usableGap * (count - 1)
+  const total     = usableGap * (count - 1)
   const minCenter = safeBand.inner + (total / 2)
   const maxCenter = safeBand.outer - (total / 2)
-  const center = clamp(safeBand.inner + (spread * centerRatio), minCenter, maxCenter)
-  const start = center - (total / 2)
+  const center    = clamp(safeBand.inner + (spread * centerRatio), minCenter, maxCenter)
+  const start     = center - (total / 2)
   return Array.from({ length: count }, (_, index) => start + (usableGap * index))
 }
 
@@ -297,13 +297,13 @@ const radiusRatioFor = (index, count) => {
   if (ratios) return ratios[index]
 
   const start = 0.12
-  const end = 0.94
+  const end   = 0.94
   return start + ((end - start) * index / (count - 1))
 }
 
 const radiiForCluster = (count, band) => {
   const safeBand = safePlanetBand(band)
-  const spread = safeBand.outer - safeBand.inner
+  const spread   = safeBand.outer - safeBand.inner
   if (count <= 1) return [safeBand.inner + (spread * 0.84)]
   if (count === 2) return centeredRadii(safeBand, count, 22, 0.58)
   if (count === 3) return centeredRadii(safeBand, count, 18, 0.56)
@@ -316,8 +316,8 @@ const radiiForCluster = (count, band) => {
 const labelPlacement = (glyphPoint) => {
   return {
     labelAnchor: 'start',
-    labelSide: 'bottom-right',
-    labelPoint: {
+    labelSide:   'bottom-right',
+    labelPoint:  {
       x: glyphPoint.x + 7,
       y: glyphPoint.y + 8,
     },
@@ -333,20 +333,20 @@ export const planetPlacements = (chart, wheelShift, band, symbols = PLANET_SYMBO
   for (const cluster of clusteredPlanets(chart.positions || [], symbols)) {
     const radii = radiiForCluster(cluster.length, band)
     cluster.forEach((planet, index) => {
-      const radius = radii[index]
-      const longitude = norm360(planet.longitude + wheelShift)
+      const radius         = radii[index]
+      const longitude      = norm360(planet.longitude + wheelShift)
       const glyphLongitude = longitude
-      const glyphPoint = polarPoint(radius, glyphLongitude)
+      const glyphPoint     = polarPoint(radius, glyphLongitude)
       placements.push({
         planet,
         longitude,
         glyphLongitude,
         radius,
-        clusterSize: cluster.length,
-        laneIndex: index,
-        isCrowded: cluster.length > 1,
+        clusterSize:     cluster.length,
+        laneIndex:       index,
+        isCrowded:       cluster.length > 1,
         showDegreeLabel: true,
-        point: polarPoint(radius, longitude),
+        point:           polarPoint(radius, longitude),
         glyphPoint,
         ...labelPlacement(glyphPoint),
         tick: polarPoint(band.tickRadius || WHEEL_RADII.houseOuter - 4, longitude),
@@ -360,12 +360,12 @@ export const placementMap = (placements) =>
   new Map(placements.map(item => [item.planet.name, item]))
 
 export const naturalAspectLines = (chart, wheelShift, radius = WHEEL_RADII.aspect, placements = []) => {
-  const byName = new Map((chart.positions || []).map(item => [item.name, item]))
+  const byName      = new Map((chart.positions || []).map(item => [item.name, item]))
   const byPlacement = placementMap(placements)
   return naturalAspects(chart)
     .map((aspect) => {
-      const a = byName.get(aspect.a)
-      const b = byName.get(aspect.b)
+      const a       = byName.get(aspect.a)
+      const b       = byName.get(aspect.b)
       const placedA = byPlacement.get(aspect.a)
       const placedB = byPlacement.get(aspect.b)
       return {
@@ -373,7 +373,7 @@ export const naturalAspectLines = (chart, wheelShift, radius = WHEEL_RADII.aspec
         a,
         b,
         start: placedA?.point || (a ? polarPoint(radius, norm360(a.longitude + wheelShift)) : null),
-        end: placedB?.point || (b ? polarPoint(radius, norm360(b.longitude + wheelShift)) : null),
+        end:   placedB?.point || (b ? polarPoint(radius, norm360(b.longitude + wheelShift)) : null),
       }
     })
     .filter(line => line.a && line.b)

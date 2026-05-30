@@ -29,15 +29,15 @@ export const MANDALA_GATE_ORDER = [
 ]
 
 export const HARMONIC_GATES = {
-  1: [8],
-  2: [14],
-  3: [60],
-  4: [63],
-  5: [15],
-  6: [59],
-  7: [31],
-  8: [1],
-  9: [52],
+  1:  [8],
+  2:  [14],
+  3:  [60],
+  4:  [63],
+  5:  [15],
+  6:  [59],
+  7:  [31],
+  8:  [1],
+  9:  [52],
   10: [20, 34, 57],
   11: [56],
   12: [22],
@@ -96,14 +96,14 @@ export const HARMONIC_GATES = {
 }
 
 export const CHANNEL_CENTERS = {
-  '1-8': ['G', 'Throat'],
-  '2-14': ['Sacral', 'G'],
-  '3-60': ['Root', 'Sacral'],
-  '4-63': ['Head', 'Ajna'],
-  '5-15': ['Sacral', 'G'],
-  '6-59': ['Sacral', 'Solar Plexus'],
-  '7-31': ['G', 'Throat'],
-  '9-52': ['Root', 'Sacral'],
+  '1-8':   ['G', 'Throat'],
+  '2-14':  ['Sacral', 'G'],
+  '3-60':  ['Root', 'Sacral'],
+  '4-63':  ['Head', 'Ajna'],
+  '5-15':  ['Sacral', 'G'],
+  '6-59':  ['Sacral', 'Solar Plexus'],
+  '7-31':  ['G', 'Throat'],
+  '9-52':  ['Root', 'Sacral'],
   '10-20': ['G', 'Throat'],
   '10-34': ['G', 'Sacral'],
   '10-57': ['G', 'Spleen'],
@@ -135,14 +135,14 @@ export const CHANNEL_CENTERS = {
 }
 
 export const CHANNEL_CIRCUITS = {
-  '1-8': 'Individual',
-  '2-14': 'Individual',
-  '3-60': 'Individual',
-  '4-63': 'Collective Logic',
-  '5-15': 'Collective Logic',
-  '6-59': 'Tribal',
-  '7-31': 'Collective Logic',
-  '9-52': 'Collective Logic',
+  '1-8':   'Individual',
+  '2-14':  'Individual',
+  '3-60':  'Individual',
+  '4-63':  'Collective Logic',
+  '5-15':  'Collective Logic',
+  '6-59':  'Tribal',
+  '7-31':  'Collective Logic',
+  '9-52':  'Collective Logic',
   '10-20': 'Individual',
   '10-34': 'Individual',
   '10-57': 'Individual',
@@ -174,14 +174,14 @@ export const CHANNEL_CIRCUITS = {
 }
 
 export const CHANNEL_NAMES = {
-  '1-8': 'Inspiration',
-  '2-14': 'The Beat',
-  '3-60': 'Mutation',
-  '4-63': 'Logic',
-  '5-15': 'Rhythm',
-  '6-59': 'Mating',
-  '7-31': 'The Alpha',
-  '9-52': 'Concentration',
+  '1-8':   'Inspiration',
+  '2-14':  'The Beat',
+  '3-60':  'Mutation',
+  '4-63':  'Logic',
+  '5-15':  'Rhythm',
+  '6-59':  'Mating',
+  '7-31':  'The Alpha',
+  '9-52':  'Concentration',
   '10-20': 'Awakening',
   '10-34': 'Exploration',
   '10-57': 'Perfected Form',
@@ -213,21 +213,21 @@ export const CHANNEL_NAMES = {
 }
 
 export const CHANNEL_CIRCUIT_GROUPS = {
-  Individual: 'Individual',
-  'Collective Logic': 'Collective',
+  Individual:            'Individual',
+  'Collective Logic':    'Collective',
   'Collective Abstract': 'Collective',
-  Tribal: 'Tribal',
+  Tribal:                'Tribal',
 }
 
 export const CHANNEL_STREAMS = {
-  '1-8': 'Knowing',
-  '2-14': 'Knowing',
-  '3-60': 'Mutation',
-  '4-63': 'Understanding',
-  '5-15': 'Understanding',
-  '6-59': 'Defense',
-  '7-31': 'Understanding',
-  '9-52': 'Understanding',
+  '1-8':   'Knowing',
+  '2-14':  'Knowing',
+  '3-60':  'Mutation',
+  '4-63':  'Understanding',
+  '5-15':  'Understanding',
+  '6-59':  'Defense',
+  '7-31':  'Understanding',
+  '9-52':  'Understanding',
   '10-20': 'Integration',
   '10-34': 'Integration',
   '10-57': 'Integration',
@@ -259,71 +259,71 @@ export const CHANNEL_STREAMS = {
 }
 
 export const CIRCUIT_STREAM_THEMES = {
-  Knowing: 'individual knowing, mutation, and personal expression',
-  Mutation: 'individual pressure to adapt and transform limits',
-  Centering: 'self-love, direction, and centered empowerment',
-  Integration: 'self-preservation through present-time awareness',
+  Knowing:       'individual knowing, mutation, and personal expression',
+  Mutation:      'individual pressure to adapt and transform limits',
+  Centering:     'self-love, direction, and centered empowerment',
+  Integration:   'self-preservation through present-time awareness',
   Understanding: 'logical pattern recognition, correction, and projection',
-  Sensing: 'experiential memory, feeling, and storytelling',
-  Ego: 'tribal bargains, resources, loyalty, and material promises',
-  Defense: 'tribal sensitivity, bonding, care, and boundary setting',
+  Sensing:       'experiential memory, feeling, and storytelling',
+  Ego:           'tribal bargains, resources, loyalty, and material promises',
+  Defense:       'tribal sensitivity, bonding, care, and boundary setting',
 }
 
 export const TYPE_MECHANICS = {
   Generator: {
-    strategy: 'Wait to respond',
+    strategy:  'Wait to respond',
     signature: 'Satisfaction',
-    notSelf: 'Frustration',
-    aura: 'Open and enveloping',
+    notSelf:   'Frustration',
+    aura:      'Open and enveloping',
   },
   'Manifesting Generator': {
-    strategy: 'Wait to respond, then inform',
+    strategy:  'Wait to respond, then inform',
     signature: 'Satisfaction',
-    notSelf: 'Frustration',
-    aura: 'Open, enveloping, and fast-moving',
+    notSelf:   'Frustration',
+    aura:      'Open, enveloping, and fast-moving',
   },
   Manifestor: {
-    strategy: 'Inform before acting',
+    strategy:  'Inform before acting',
     signature: 'Peace',
-    notSelf: 'Anger',
-    aura: 'Closed and initiating',
+    notSelf:   'Anger',
+    aura:      'Closed and initiating',
   },
   Projector: {
-    strategy: 'Wait for recognition and invitation',
+    strategy:  'Wait for recognition and invitation',
     signature: 'Success',
-    notSelf: 'Bitterness',
-    aura: 'Focused and absorbing',
+    notSelf:   'Bitterness',
+    aura:      'Focused and absorbing',
   },
   Reflector: {
-    strategy: 'Wait through the lunar cycle',
+    strategy:  'Wait through the lunar cycle',
     signature: 'Surprise',
-    notSelf: 'Disappointment',
-    aura: 'Sampling and reflective',
+    notSelf:   'Disappointment',
+    aura:      'Sampling and reflective',
   },
 }
 
 export const CENTER_THEMES = {
-  Head: 'inspiration and mental pressure',
-  Ajna: 'conceptual processing and opinions',
-  Throat: 'expression, action, and manifestation',
-  G: 'identity, direction, and love',
-  Ego: 'will, value, and material promises',
+  Head:           'inspiration and mental pressure',
+  Ajna:           'conceptual processing and opinions',
+  Throat:         'expression, action, and manifestation',
+  G:              'identity, direction, and love',
+  Ego:            'will, value, and material promises',
   'Solar Plexus': 'emotional clarity and waves',
-  Spleen: 'instinct, intuition, and survival awareness',
-  Sacral: 'life-force response and sustainable energy',
-  Root: 'pressure, stress, and momentum',
+  Spleen:         'instinct, intuition, and survival awareness',
+  Sacral:         'life-force response and sustainable energy',
+  Root:           'pressure, stress, and momentum',
 }
 
 export const GATE_NAMES = {
-  1: 'Self-Expression',
-  2: 'Higher Knowing',
-  3: 'Ordering',
-  4: 'Formulization',
-  5: 'Fixed Rhythms',
-  6: 'Friction',
-  7: 'Role of the Self',
-  8: 'Contribution',
-  9: 'Focus',
+  1:  'Self-Expression',
+  2:  'Higher Knowing',
+  3:  'Ordering',
+  4:  'Formulization',
+  5:  'Fixed Rhythms',
+  6:  'Friction',
+  7:  'Role of the Self',
+  8:  'Contribution',
+  9:  'Focus',
   10: 'Behavior of the Self',
   11: 'Ideas',
   12: 'Caution',
@@ -382,15 +382,15 @@ export const GATE_NAMES = {
 }
 
 export const GATE_KEYNOTES = {
-  1: 'Creative direction that becomes useful when it is expressed in its own timing.',
-  2: 'Receptive direction that holds an inner compass without forcing the route.',
-  3: 'Ordering pressure that turns early confusion into a new pattern.',
-  4: 'Mental answers that test formulas before presenting certainty.',
-  5: 'Reliable rhythm that protects natural timing and sustainable repetition.',
-  6: 'Emotional friction that clarifies intimacy, boundaries, and repair.',
-  7: 'Leadership direction that guides by aligning people around a shared role.',
-  8: 'Contribution that gives individual creativity a social voice.',
-  9: 'Focused energy that concentrates on one detail long enough to refine it.',
+  1:  'Creative direction that becomes useful when it is expressed in its own timing.',
+  2:  'Receptive direction that holds an inner compass without forcing the route.',
+  3:  'Ordering pressure that turns early confusion into a new pattern.',
+  4:  'Mental answers that test formulas before presenting certainty.',
+  5:  'Reliable rhythm that protects natural timing and sustainable repetition.',
+  6:  'Emotional friction that clarifies intimacy, boundaries, and repair.',
+  7:  'Leadership direction that guides by aligning people around a shared role.',
+  8:  'Contribution that gives individual creativity a social voice.',
+  9:  'Focused energy that concentrates on one detail long enough to refine it.',
   10: 'Behavioral integrity that keeps self-respect at the center of action.',
   11: 'Ideas that stimulate perspective without needing every image to become action.',
   12: 'Selective expression that waits for the right mood and audience.',
@@ -450,76 +450,76 @@ export const GATE_KEYNOTES = {
 
 export const LINE_ARCHETYPES = {
   1: {
-    name: 'Foundation',
-    keynote: 'investigate the base before relying on the pattern',
+    name:     'Foundation',
+    keynote:  'investigate the base before relying on the pattern',
     polarity: {
-      exalted: 'grounded preparation, patience, and respect for fundamentals',
+      exalted:   'grounded preparation, patience, and respect for fundamentals',
       detriment: 'insecurity, haste, or over-reliance on borrowed certainty',
     },
   },
   2: {
-    name: 'Natural',
-    keynote: 'let innate capacity be called out by the right field',
+    name:     'Natural',
+    keynote:  'let innate capacity be called out by the right field',
     polarity: {
-      exalted: 'unforced talent, receptivity, and simple correctness',
+      exalted:   'unforced talent, receptivity, and simple correctness',
       detriment: 'withdrawal, projection pressure, or talent used without discernment',
     },
   },
   3: {
-    name: 'Adaptation',
-    keynote: 'learn by contact with what does and does not work',
+    name:     'Adaptation',
+    keynote:  'learn by contact with what does and does not work',
     polarity: {
-      exalted: 'resilience, experimentation, and practical adjustment',
+      exalted:   'resilience, experimentation, and practical adjustment',
       detriment: 'reactivity, wasteful trial, or discouragement from early friction',
     },
   },
   4: {
-    name: 'Externalization',
-    keynote: 'stabilize the theme through relationship and influence',
+    name:     'Externalization',
+    keynote:  'stabilize the theme through relationship and influence',
     polarity: {
-      exalted: 'reliable networks, clear communication, and consistent friendship',
+      exalted:   'reliable networks, clear communication, and consistent friendship',
       detriment: 'fixed agendas, opportunism, or dependence on approval',
     },
   },
   5: {
-    name: 'Projection',
-    keynote: 'meet expectations with practical leadership and clean boundaries',
+    name:     'Projection',
+    keynote:  'meet expectations with practical leadership and clean boundaries',
     polarity: {
-      exalted: 'useful guidance, disciplined timing, and serviceable solutions',
+      exalted:   'useful guidance, disciplined timing, and serviceable solutions',
       detriment: 'seduction by expectation, blame, or promising beyond capacity',
     },
   },
   6: {
-    name: 'Role Model',
-    keynote: 'observe the whole arc and model maturity after lived experience',
+    name:     'Role Model',
+    keynote:  'observe the whole arc and model maturity after lived experience',
     polarity: {
-      exalted: 'perspective, integrity, and wise distance',
+      exalted:   'perspective, integrity, and wise distance',
       detriment: 'aloofness, disillusionment, or superiority before integration',
     },
   },
 }
 
 export const PLANET_ARCHETYPES = {
-  Sun: 'core life-force and the visible theme of expression',
-  Earth: 'grounding, balance, and the stabilizing counterpoint',
+  Sun:       'core life-force and the visible theme of expression',
+  Earth:     'grounding, balance, and the stabilizing counterpoint',
   NorthNode: 'the direction of environmental development',
   SouthNode: 'familiar environmental patterning and early orientation',
-  Moon: 'movement, needs, and what pulls attention into motion',
-  Mercury: 'language, naming, exchange, and mental communication',
-  Venus: 'values, relating standards, aesthetics, and social agreements',
-  Mars: 'raw growth edge, immaturity becoming courage through experience',
-  Jupiter: 'principles, protection, law, and the larger field of meaning',
-  Saturn: 'discipline, consequence, responsibility, and maturation',
-  Uranus: 'difference, disruption, mutation, and unconventional intelligence',
-  Neptune: 'sensitivity, veiling, imagination, and spiritualized ambiguity',
-  Pluto: 'deep pressure, transformation, power, and irreversible truth',
+  Moon:      'movement, needs, and what pulls attention into motion',
+  Mercury:   'language, naming, exchange, and mental communication',
+  Venus:     'values, relating standards, aesthetics, and social agreements',
+  Mars:      'raw growth edge, immaturity becoming courage through experience',
+  Jupiter:   'principles, protection, law, and the larger field of meaning',
+  Saturn:    'discipline, consequence, responsibility, and maturation',
+  Uranus:    'difference, disruption, mutation, and unconventional intelligence',
+  Neptune:   'sensitivity, veiling, imagination, and spiritualized ambiguity',
+  Pluto:     'deep pressure, transformation, power, and irreversible truth',
 }
 
 export const CROSS_GATE_ROLES = {
-  personalitySun: 'conscious life theme',
+  personalitySun:   'conscious life theme',
   personalityEarth: 'conscious grounding theme',
-  designSun: 'unconscious life-force imprint',
-  designEarth: 'unconscious grounding imprint',
+  designSun:        'unconscious life-force imprint',
+  designEarth:      'unconscious grounding imprint',
 }
 
 export const INCARNATION_CROSS_GEOMETRY_BY_PROFILE = {
@@ -538,15 +538,15 @@ export const INCARNATION_CROSS_GEOMETRY_BY_PROFILE = {
 }
 
 export const INCARNATION_CROSS_NAMES_BY_GATE = {
-  1: { 'Right Angle': 'The Sphinx', Juxtaposition: 'Self-Expression', 'Left Angle': 'Defiance' },
-  2: { 'Right Angle': 'The Sphinx', Juxtaposition: 'The Driver', 'Left Angle': 'Defiance' },
-  3: { 'Right Angle': 'Laws', Juxtaposition: 'Mutation', 'Left Angle': 'Wishes' },
-  4: { 'Right Angle': 'Explanation', Juxtaposition: 'Formulization', 'Left Angle': 'Revolution' },
-  5: { 'Right Angle': 'Consciousness', Juxtaposition: 'Habits', 'Left Angle': 'Separation' },
-  6: { 'Right Angle': 'Eden', Juxtaposition: 'Conflict', 'Left Angle': 'The Plane' },
-  7: { 'Right Angle': 'The Sphinx', Juxtaposition: 'Interaction', 'Left Angle': 'Masks' },
-  8: { 'Right Angle': 'Contagion', Juxtaposition: 'Contribution', 'Left Angle': 'Uncertainty' },
-  9: { 'Right Angle': 'Planning', Juxtaposition: 'Focus', 'Left Angle': 'Identification' },
+  1:  { 'Right Angle': 'The Sphinx', Juxtaposition: 'Self-Expression', 'Left Angle': 'Defiance' },
+  2:  { 'Right Angle': 'The Sphinx', Juxtaposition: 'The Driver', 'Left Angle': 'Defiance' },
+  3:  { 'Right Angle': 'Laws', Juxtaposition: 'Mutation', 'Left Angle': 'Wishes' },
+  4:  { 'Right Angle': 'Explanation', Juxtaposition: 'Formulization', 'Left Angle': 'Revolution' },
+  5:  { 'Right Angle': 'Consciousness', Juxtaposition: 'Habits', 'Left Angle': 'Separation' },
+  6:  { 'Right Angle': 'Eden', Juxtaposition: 'Conflict', 'Left Angle': 'The Plane' },
+  7:  { 'Right Angle': 'The Sphinx', Juxtaposition: 'Interaction', 'Left Angle': 'Masks' },
+  8:  { 'Right Angle': 'Contagion', Juxtaposition: 'Contribution', 'Left Angle': 'Uncertainty' },
+  9:  { 'Right Angle': 'Planning', Juxtaposition: 'Focus', 'Left Angle': 'Identification' },
   10: { 'Right Angle': 'The Vessel of Love', Juxtaposition: 'Behavior', 'Left Angle': 'Prevention' },
   11: { 'Right Angle': 'Eden', Juxtaposition: 'Ideas', 'Left Angle': 'Education' },
   12: { 'Right Angle': 'Eden', Juxtaposition: 'Articulation', 'Left Angle': 'Education' },
@@ -619,14 +619,14 @@ export const VARIABLE_KEYS = [
 ]
 
 export const VARIABLE_COLOR_LABELS = {
-  digestion: ['Appetite', 'Taste', 'Thirst', 'Touch', 'Sound', 'Light'],
+  digestion:   ['Appetite', 'Taste', 'Thirst', 'Touch', 'Sound', 'Light'],
   environment: ['Caves', 'Markets', 'Kitchens', 'Mountains', 'Valleys', 'Shores'],
-  motivation: ['Fear', 'Hope', 'Desire', 'Need', 'Guilt', 'Innocence'],
+  motivation:  ['Fear', 'Hope', 'Desire', 'Need', 'Guilt', 'Innocence'],
   perspective: ['Survival', 'Possibility', 'Power', 'Wanting', 'Probability', 'Personal'],
 }
 
-export const PENTA_GATES = [31, 8, 33, 7, 1, 13, 15, 2, 46, 5, 14, 29]
-export const LOVE_GATES = [10, 15, 25, 46]
+export const PENTA_GATES       = [31, 8, 33, 7, 1, 13, 15, 2, 46, 5, 14, 29]
+export const LOVE_GATES        = [10, 15, 25, 46]
 export const MATERIAL_CHANNELS = ['21-45', '26-44', '32-54', '37-40']
 
 export const CENTERS = [
@@ -642,15 +642,15 @@ export const CENTERS = [
 ]
 
 export const CENTER_COORDS = {
-  Head: { x: 250, y: 38, points: '250,8 288,72 212,72' },
-  Ajna: { x: 250, y: 112, points: '212,88 288,88 288,136 212,136' },
-  Throat: { x: 250, y: 200, points: '205,170 295,170 295,230 205,230' },
-  G: { x: 250, y: 306, points: '250,250 305,306 250,362 195,306' },
-  Ego: { x: 348, y: 332, points: '326,304 384,318 370,366 316,352' },
+  Head:           { x: 250, y: 38, points: '250,8 288,72 212,72' },
+  Ajna:           { x: 250, y: 112, points: '212,88 288,88 288,136 212,136' },
+  Throat:         { x: 250, y: 200, points: '205,170 295,170 295,230 205,230' },
+  G:              { x: 250, y: 306, points: '250,250 305,306 250,362 195,306' },
+  Ego:            { x: 348, y: 332, points: '326,304 384,318 370,366 316,352' },
   'Solar Plexus': { x: 348, y: 456, points: '314,408 384,408 384,504 314,504' },
-  Spleen: { x: 152, y: 426, points: '116,378 190,398 178,486 108,468' },
-  Sacral: { x: 250, y: 448, points: '205,405 295,405 295,491 205,491' },
-  Root: { x: 250, y: 582, points: '250,520 310,610 190,610' },
+  Spleen:         { x: 152, y: 426, points: '116,378 190,398 178,486 108,468' },
+  Sacral:         { x: 250, y: 448, points: '205,405 295,405 295,491 205,491' },
+  Root:           { x: 250, y: 582, points: '250,520 310,610 190,610' },
 }
 
 export const GATE_CENTERS = Object.fromEntries(

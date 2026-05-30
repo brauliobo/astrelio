@@ -2,9 +2,9 @@
 import Wheel from './Wheel.vue'
 
 defineProps({
-  natal:   { type: Object, required: true },
-  overlay: { type: Object, required: true },
-  aspectOptions: { type: Object, default: () => ({}) },
+  natal:               { type: Object, required: true },
+  overlay:             { type: Object, required: true },
+  aspectOptions:       { type: Object, default: () => ({}) },
   planetGlyphRenderer: { type: String, default: null },
 })
 </script>

@@ -13,10 +13,10 @@ describe('solar return', () => {
   })
 
   it('uses the natal tropical Sun when building a sidereal solar return chart', () => {
-    const natalJd = 2446486.340277778
-    const near = new Date('2030-02-10T12:00Z').getTime()
-    const chart = solarReturnChartForNatal(natalJd, near, -23.18, -45.88, { zodiac: 'sidereal', houseSystem: 'placidus' })
-    const natalTropical = sunLongitude(natalJd)
+    const natalJd        = 2446486.340277778
+    const near           = new Date('2030-02-10T12:00Z').getTime()
+    const chart          = solarReturnChartForNatal(natalJd, near, -23.18, -45.88, { zodiac: 'sidereal', houseSystem: 'placidus' })
+    const natalTropical  = sunLongitude(natalJd)
     const returnTropical = sunLongitude(chart.jdUt)
     const returnChartSun = computeChart(chart.jdUt, -23.18, -45.88, { zodiac: 'sidereal', houseSystem: 'placidus' })
       .positions.find(p => p.name === 'Sun')

@@ -15,7 +15,7 @@ const props = defineProps({
 })
 
 const { t } = useI18n()
-const query = ref('')
+const query        = ref('')
 const selectedGate = ref(null)
 
 const fallbackLineThemes = [
@@ -27,7 +27,7 @@ const fallbackLineThemes = [
   { line: 6, role: 'Perspective', keynote: 'Modeling', summary: 'Steps back over time to model the mature expression of the gate.' },
 ]
 
-const gates = computed(() => props.chart.details?.gates || [])
+const gates         = computed(() => props.chart.details?.gates || [])
 const filteredGates = computed(() => {
   const term = query.value.trim().toLowerCase()
   if (!term) return gates.value
@@ -45,8 +45,8 @@ const activeGate = computed(() =>
 const activeActivations = computed(() =>
   (activeGate.value?.activations || []).map(activation => ({
     ...activation,
-    code: activation.code || activationCode(activation),
-    lineDetail: activation.lineDetail || fallbackLineThemes.find(line => line.line === activation.line) || null,
+    code:          activation.code || activationCode(activation),
+    lineDetail:    activation.lineDetail || fallbackLineThemes.find(line => line.line === activation.line) || null,
     planetMeaning: activation.planetMeaning || `${activation.planet} applies this gate through the ${activation.layer} layer.`,
   }))
 )
@@ -69,8 +69,8 @@ const streamsLabel = computed(() =>
 )
 const activationLineSummary = activation =>
   t('human_design.line_activation_summary', {
-    line: activation.lineDetail?.line || activation.line || '-',
-    role: humanDesignLineRoleLabel(t, activation.lineDetail?.role),
+    line:    activation.lineDetail?.line || activation.line || '-',
+    role:    humanDesignLineRoleLabel(t, activation.lineDetail?.role),
     keynote: humanDesignLineKeynoteLabel(t, activation.lineDetail?.keynote),
   })
 

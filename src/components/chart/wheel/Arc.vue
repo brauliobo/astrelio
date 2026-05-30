@@ -3,14 +3,14 @@ import { computed } from 'vue'
 import { ringSectorPath } from './geometry.js'
 
 const props = defineProps({
-  innerRadius: { type: Number, required: true },
-  outerRadius: { type: Number, required: true },
+  innerRadius:    { type: Number, required: true },
+  outerRadius:    { type: Number, required: true },
   startLongitude: { type: Number, required: true },
-  endLongitude: { type: Number, required: true },
-  fill: { type: String, default: 'transparent' },
-  stroke: { type: String, default: 'none' },
-  strokeWidth: { type: [Number, String], default: 0 },
-  opacity: { type: [Number, String], default: 1 },
+  endLongitude:   { type: Number, required: true },
+  fill:           { type: String, default: 'transparent' },
+  stroke:         { type: String, default: 'none' },
+  strokeWidth:    { type: [Number, String], default: 0 },
+  opacity:        { type: [Number, String], default: 1 },
 })
 
 const path = computed(() =>

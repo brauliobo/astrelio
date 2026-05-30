@@ -3,53 +3,53 @@ import { detectLocale, normalizeLocale } from '../i18n/locales.js'
 
 export const SETTING_PRESETS = {
   simple: {
-    houseSystem: 'equal',
-    zodiac: 'tropical',
-    nodeMode: 'mean',
-    skyEnabled: false,
-    aspectSet: 'major',
-    orbScale: 0.75,
-    applyingOnly: false,
+    houseSystem:          'equal',
+    zodiac:               'tropical',
+    nodeMode:             'mean',
+    skyEnabled:           false,
+    aspectSet:            'major',
+    orbScale:             0.75,
+    applyingOnly:         false,
     includeModernPlanets: false
   },
   traditional: {
-    houseSystem: 'whole_sign',
-    zodiac: 'tropical',
-    nodeMode: 'mean',
-    skyEnabled: false,
-    aspectSet: 'major',
-    orbScale: 1,
-    applyingOnly: true,
+    houseSystem:          'whole_sign',
+    zodiac:               'tropical',
+    nodeMode:             'mean',
+    skyEnabled:           false,
+    aspectSet:            'major',
+    orbScale:             1,
+    applyingOnly:         true,
     includeModernPlanets: false
   },
   modern: {
-    houseSystem: 'placidus',
-    zodiac: 'tropical',
-    nodeMode: 'mean',
-    skyEnabled: true,
-    aspectSet: 'all',
-    orbScale: 1,
-    applyingOnly: false,
+    houseSystem:          'placidus',
+    zodiac:               'tropical',
+    nodeMode:             'mean',
+    skyEnabled:           true,
+    aspectSet:            'all',
+    orbScale:             1,
+    applyingOnly:         false,
     includeModernPlanets: true
   },
   technical: {
-    houseSystem: 'regiomontanus',
-    zodiac: 'sidereal',
-    nodeMode: 'mean',
-    skyEnabled: true,
-    aspectSet: 'all',
-    orbScale: 1.25,
-    applyingOnly: false,
+    houseSystem:          'regiomontanus',
+    zodiac:               'sidereal',
+    nodeMode:             'mean',
+    skyEnabled:           true,
+    aspectSet:            'all',
+    orbScale:             1.25,
+    applyingOnly:         false,
     includeModernPlanets: true
   },
   print: {
-    houseSystem: 'placidus',
-    zodiac: 'tropical',
-    nodeMode: 'mean',
-    skyEnabled: false,
-    aspectSet: 'major',
-    orbScale: 0.75,
-    applyingOnly: false,
+    houseSystem:          'placidus',
+    zodiac:               'tropical',
+    nodeMode:             'mean',
+    skyEnabled:           false,
+    aspectSet:            'major',
+    orbScale:             0.75,
+    applyingOnly:         false,
     includeModernPlanets: true
   }
 }
@@ -72,44 +72,44 @@ const matchesPreset = (state, preset) =>
 
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
-    locale:      detectLocale(),
-    houseSystem: 'placidus',
-    zodiac:      'tropical',
-    nodeMode:    'mean',
-    skyEnabled:  true,
-    theme:       'dark',
-    aspectSet:   'all',
-    orbScale:    1,
-    applyingOnly: false,
+    locale:               detectLocale(),
+    houseSystem:          'placidus',
+    zodiac:               'tropical',
+    nodeMode:             'mean',
+    skyEnabled:           true,
+    theme:                'dark',
+    aspectSet:            'all',
+    orbScale:             1,
+    applyingOnly:         false,
     includeModernPlanets: true,
-    planetGlyphRenderer: 'svg',
-    vedic: {
-      ayanamsha: 'lahiri',
-      houseMode: 'whole_sign',
-      nodeMode: 'mean',
+    planetGlyphRenderer:  'svg',
+    vedic:                {
+      ayanamsha:            'lahiri',
+      houseMode:            'whole_sign',
+      nodeMode:             'mean',
       includeModernPlanets: false,
-      interpretationStyle: 'classical'
+      interpretationStyle:  'classical'
     }
   }),
   getters: {
     activePreset: (state) =>
       Object.entries(SETTING_PRESETS).find(([, preset]) => matchesPreset(state, preset))?.[0] || 'custom',
     aspectOptions: (state) => ({
-      aspectSet: state.aspectSet,
-      orbScale: state.orbScale,
-      applyingOnly: state.applyingOnly,
+      aspectSet:            state.aspectSet,
+      orbScale:             state.orbScale,
+      applyingOnly:         state.applyingOnly,
       includeModernPlanets: state.includeModernPlanets,
     }),
     chartOptions: (state) => ({
-      zodiac: state.zodiac,
+      zodiac:      state.zodiac,
       houseSystem: state.houseSystem,
-      nodeMode: state.nodeMode === 'true' ? 'true' : 'mean',
+      nodeMode:    state.nodeMode === 'true' ? 'true' : 'mean',
     })
   },
   actions: {
     setLocale(l) {
       const locale = normalizeLocale(l)
-      this.locale = locale
+      this.locale  = locale
       localStorage.setItem('astrelio_locale', locale)
     },
     normalize() {

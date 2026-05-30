@@ -6,7 +6,7 @@ export const channelCenters = (channel) => CHANNEL_CENTERS[channel] || []
 
 export const hoverMatchesChannel = (hover, channel) => {
   if (!hover) return false
-  const gates = channelGates(channel)
+  const gates   = channelGates(channel)
   const centers = channelCenters(channel)
 
   if (hover.type === 'channel') return hover.value === channel

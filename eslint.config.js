@@ -2,37 +2,37 @@ import js from '@eslint/js'
 import vue from 'eslint-plugin-vue'
 
 const globals = {
-  cancelAnimationFrame: 'readonly',
-  clearInterval: 'readonly',
-  clearTimeout: 'readonly',
-  console: 'readonly',
-  crypto: 'readonly',
-  document: 'readonly',
-  localStorage: 'readonly',
-  navigator: 'readonly',
-  process: 'readonly',
+  cancelAnimationFrame:  'readonly',
+  clearInterval:         'readonly',
+  clearTimeout:          'readonly',
+  console:               'readonly',
+  crypto:                'readonly',
+  document:              'readonly',
+  localStorage:          'readonly',
+  navigator:             'readonly',
+  process:               'readonly',
   requestAnimationFrame: 'readonly',
-  setInterval: 'readonly',
-  setTimeout: 'readonly',
-  window: 'readonly',
+  setInterval:           'readonly',
+  setTimeout:            'readonly',
+  window:                'readonly',
 }
 
 export default [
-  { ignores: ['.eslintrc.cjs', 'dist/**', 'mybodygraph/**', 'node_modules/**', 'research/**', 'test-results/**'] },
+  { ignores: ['.eslintrc.cjs', 'dist/**', 'docs/**', 'mybodygraph/**', 'node_modules/**', 'research/**', 'test-results/**'] },
   js.configs.recommended,
   ...vue.configs['flat/recommended'],
   {
-    files: ['**/*.{js,mjs,vue}'],
+    files:           ['**/*.{js,mjs,vue}'],
     languageOptions: {
       ecmaVersion: 'latest',
-      sourceType: 'module',
+      sourceType:  'module',
       globals,
     },
     rules: {
       'vue/multi-word-component-names': 'off',
-      'vue/html-indent': 'off',
-      'vue/html-self-closing': 'off',
-      'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      'vue/html-indent':                'off',
+      'vue/html-self-closing':          'off',
+      'no-unused-vars':                 ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     },
   },
   {

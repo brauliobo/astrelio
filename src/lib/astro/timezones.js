@@ -74,10 +74,10 @@ export const offsetMinutesForPerson = (person) => {
 }
 
 export const formatUtcOffset = (minutes = 0) => {
-  const sign = minutes >= 0 ? '+' : '-'
+  const sign     = minutes >= 0 ? '+' : '-'
   const absolute = Math.abs(minutes)
-  const hours = String(Math.floor(absolute / 60)).padStart(2, '0')
-  const mins = String(absolute % 60).padStart(2, '0')
+  const hours    = String(Math.floor(absolute / 60)).padStart(2, '0')
+  const mins     = String(absolute % 60).padStart(2, '0')
 
   return `UTC${sign}${hours}:${mins}`
 }
@@ -85,7 +85,7 @@ export const formatUtcOffset = (minutes = 0) => {
 export const timezoneLabelForPerson = (person) => {
   if (!person) return ''
 
-  const zone = timezoneNameForPerson(person)
+  const zone   = timezoneNameForPerson(person)
   const offset = formatUtcOffset(offsetMinutesForPerson(person))
   return zone ? `${zone} · ${offset}` : offset
 }

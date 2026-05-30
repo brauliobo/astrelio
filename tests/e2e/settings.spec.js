@@ -99,26 +99,26 @@ test.describe('Settings', () => {
 
     page.on('dialog', dialog => dialog.accept())
     await page.getByTestId('backup-file').setInputFiles({
-      name: 'astrelio-backup.json',
+      name:     'astrelio-backup.json',
       mimeType: 'application/json',
-      buffer: Buffer.from(JSON.stringify({
-        app: 'astrelio',
+      buffer:   Buffer.from(JSON.stringify({
+        app:     'astrelio',
         version: 1,
-        people: [{
+        people:  [{
           ...REF_PERSON,
-          id: 'imported-person',
-          name: 'Imported Chart',
+          id:        'imported-person',
+          name:      'Imported Chart',
           createdAt: 2234567890
         }],
         settings: {
-          locale: 'en',
-          houseSystem: 'whole_sign',
-          zodiac: 'sidereal',
-          skyEnabled: false,
-          theme: 'dark',
-          aspectSet: 'major',
-          orbScale: 0.75,
-          applyingOnly: true,
+          locale:               'en',
+          houseSystem:          'whole_sign',
+          zodiac:               'sidereal',
+          skyEnabled:           false,
+          theme:                'dark',
+          aspectSet:            'major',
+          orbScale:             0.75,
+          applyingOnly:         true,
           includeModernPlanets: false
         }
       }))

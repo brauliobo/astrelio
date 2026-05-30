@@ -6,32 +6,32 @@ import BodygraphFigure from './BodygraphFigure.vue'
 import { humanDesignPalette } from './visualTheme.js'
 
 const props = defineProps({
-  chart: { type: Object, required: true },
-  figureFill: { type: String, default: '#3b3b3e' },
-  figureOpacity: { type: Number, default: 0.66 },
-  showOpenChannels: { type: Boolean, default: true },
-  openChannelOpacity: { type: Number, default: 0.12 },
-  openChannelWidth: { type: Number, default: 5 },
-  definedChannelWidth: { type: Number, default: 10 },
-  gateInactiveFill: { type: String, default: 'rgba(255,255,255,0.58)' },
-  visualTheme: { type: String, default: 'dark' },
-  hoverState: { type: Object, default: null },
+  chart:                  { type: Object, required: true },
+  figureFill:             { type: String, default: '#3b3b3e' },
+  figureOpacity:          { type: Number, default: 0.66 },
+  showOpenChannels:       { type: Boolean, default: true },
+  openChannelOpacity:     { type: Number, default: 0.12 },
+  openChannelWidth:       { type: Number, default: 5 },
+  definedChannelWidth:    { type: Number, default: 10 },
+  gateInactiveFill:       { type: String, default: 'rgba(255,255,255,0.58)' },
+  visualTheme:            { type: String, default: 'dark' },
+  hoverState:             { type: Object, default: null },
   noDefinedChannelsLabel: { type: String, default: '' },
 })
 
 const emit = defineEmits(['hover-change'])
 
-const hasChannels = computed(() => (props.chart.channels || []).length > 0)
+const hasChannels   = computed(() => (props.chart.channels || []).length > 0)
 const internalHover = ref(null)
-const hover = computed(() => props.hoverState || internalHover.value)
-const palette = computed(() => humanDesignPalette(props.visualTheme))
+const hover         = computed(() => props.hoverState || internalHover.value)
+const palette       = computed(() => humanDesignPalette(props.visualTheme))
 
 const setHover = (value) => {
   internalHover.value = value
   emit('hover-change', value)
 }
 const setChannelHover = value => setHover({ type: 'channel', value })
-const clearHover = () => setHover(null)
+const clearHover      = () => setHover(null)
 </script>
 
 <template lang="pug">

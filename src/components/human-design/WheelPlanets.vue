@@ -4,23 +4,23 @@ import CelestialGlyph from '../common/CelestialGlyph.vue'
 import { planetGlyphLayout } from './planetGlyphGeometry.js'
 
 const props = defineProps({
-  chart: { type: Object, required: true },
+  chart:         { type: Object, required: true },
   glyphRenderer: { type: String, default: null },
 })
 
-const PLANET_GLYPH_SIZE = 28
+const PLANET_GLYPH_SIZE     = 28
 const HD_PLANET_GLYPH_SCALE = {
-  Moon: { x: 1.78, y: 1 },
+  Moon:    { x: 1.78, y: 1 },
   Mercury: { x: 2.2, y: 1 },
-  Venus: { x: 1.48, y: 1.03 },
-  Mars: { x: 0.98, y: 0.98 },
+  Venus:   { x: 1.48, y: 1.03 },
+  Mars:    { x: 0.98, y: 0.98 },
   Jupiter: { x: 1.24, y: 1 },
-  Saturn: { x: 1.5, y: 1 },
-  Uranus: { x: 1.72, y: 1 },
+  Saturn:  { x: 1.5, y: 1 },
+  Uranus:  { x: 1.72, y: 1 },
   Neptune: { x: 1.2, y: 1 },
-  Pluto: { x: 1.2, y: 1 },
-  Lilith: { x: 1.42, y: 1 },
-  Chiron: { x: 1.7, y: 1 },
+  Pluto:   { x: 1.2, y: 1 },
+  Lilith:  { x: 1.42, y: 1 },
+  Chiron:  { x: 1.7, y: 1 },
 }
 const hdPlanetGlyphScale = planet => HD_PLANET_GLYPH_SCALE[planet] || { x: 1, y: 1 }
 
@@ -34,7 +34,7 @@ const planets = computed(() => {
     return {
       ...item,
       color: item.layer === 'personality' ? 'rgba(248,250,252,0.86)' : 'rgba(239,85,87,0.88)',
-      size: PLANET_GLYPH_SIZE,
+      size:  PLANET_GLYPH_SIZE,
       scale: hdPlanetGlyphScale(item.planet),
     }
   })

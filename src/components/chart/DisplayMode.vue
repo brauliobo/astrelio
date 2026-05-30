@@ -3,7 +3,7 @@ import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   modelValue: { type: String, required: true },
-  modes: { type: Array, required: true },
+  modes:      { type: Array, required: true },
 })
 const emit = defineEmits(['update:modelValue'])
 
