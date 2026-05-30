@@ -1,6 +1,5 @@
 <script setup>
 import { computed } from 'vue'
-import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
@@ -13,6 +12,7 @@ import PlanetList from '../components/chart/PlanetList.vue'
 import AspectTable from '../components/chart/AspectTable.vue'
 import ChartInsight from '../components/chart/ChartInsight.vue'
 import InterpretationPanel from '../components/chart/InterpretationPanel.vue'
+import ModalityRouteSwitch from '../components/modalities/ModalityRouteSwitch.vue'
 
 const { t }    = useI18n()
 const people   = usePeopleStore()
@@ -34,16 +34,8 @@ section.natal-page(data-testid='natal-page')
       div
         h1.text-xl.font-semibold.text-slate-100.mb-1 {{ t('chart.natal_for', { name: person.name }) }}
         p.text-xs.text-slate-400 {{ person.isoLocal }} · {{ person.placeLabel }}
-      RouterLink.rounded.bg-white.px-3.py-2.text-sm.text-slate-300(
-        to='/report'
-        class='bg-opacity-5 hover:bg-opacity-10 hover:text-white'
-        data-testid='open-report'
-      ) {{ t('report.open') }}
-      RouterLink.rounded.bg-white.px-3.py-2.text-sm.text-slate-300(
-        to='/human-design'
-        class='bg-opacity-5 hover:bg-opacity-10 hover:text-white'
-        data-testid='open-human-design'
-      ) {{ t('human_design.open') }}
+      .flex.flex-wrap.items-center.gap-2
+        ModalityRouteSwitch(active='astrology')
     .grid.gap-6(class='lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]')
       .ui-panel
         ChartWheel(:natal='chart' :aspect-options='settings.aspectOptions' v-if='chart')

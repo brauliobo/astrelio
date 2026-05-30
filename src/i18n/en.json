@@ -24,7 +24,8 @@
   },
   "modalities": {
     "astrology": "Astrology",
-    "human_design": "Human Design"
+    "human_design": "Human Design",
+    "switch_aria": "Modality switch"
   },
   "home": {
     "heading": "Your charts",
@@ -83,6 +84,15 @@
     "authority": "Authority",
     "profile": "Profile",
     "definition": "Definition",
+    "design": "Design",
+    "personality": "Personality",
+    "planet": "Planet",
+    "activations": "Activations",
+    "insights": "Human Design insights",
+    "connection_themes": "Connection themes",
+    "no_defined_channels": "No defined channels",
+    "bodygraph_aria": "Human Design bodygraph",
+    "wheel_aria": "Human Design mandala wheel with bodygraph",
     "connection": "Human Design connection",
     "shared_centers": "Shared centers",
     "electromagnetic": "Electromagnetic",
@@ -402,6 +412,7 @@
     "Uranus":  "Uranus",
     "Neptune": "Neptune",
     "Pluto":   "Pluto",
+    "Earth":   "Earth",
     "Chiron":  "Chiron",
     "NorthNode": "North Node",
     "SouthNode": "South Node",

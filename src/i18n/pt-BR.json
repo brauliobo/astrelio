@@ -24,7 +24,8 @@
   },
   "modalities": {
     "astrology": "Astrologia",
-    "human_design": "Human Design"
+    "human_design": "Human Design",
+    "switch_aria": "Alternar modalidade"
   },
   "home": {
     "heading": "Seus mapas",
@@ -83,6 +84,15 @@
     "authority": "Autoridade",
     "profile": "Perfil",
     "definition": "Definição",
+    "design": "Design",
+    "personality": "Personalidade",
+    "planet": "Planeta",
+    "activations": "Ativações",
+    "insights": "Insights de Human Design",
+    "connection_themes": "Temas da conexão",
+    "no_defined_channels": "Sem canais definidos",
+    "bodygraph_aria": "Bodygraph de Human Design",
+    "wheel_aria": "Mandala de Human Design com bodygraph",
     "connection": "Conexão em Human Design",
     "shared_centers": "Centros compartilhados",
     "electromagnetic": "Eletromagnéticos",
@@ -402,6 +412,7 @@
     "Uranus":  "Urano",
     "Neptune": "Netuno",
     "Pluto":   "Plutão",
+    "Earth":   "Terra",
     "Chiron":  "Quíron",
     "NorthNode": "Nodo Norte",
     "SouthNode": "Nodo Sul",
