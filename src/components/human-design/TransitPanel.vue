@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { activationCode } from '../../lib/human-design/activations.js'
-import { humanDesignGateLabel } from '../../lib/human-design/labels.js'
+import { humanDesignGateLabel as gateLabel } from '../../lib/human-design/labels.js'
 import DetailTables from './DetailTables.vue'
 
 const props = defineProps({
@@ -52,7 +52,7 @@ const changeActivationCode = activation => activation ? activationCode(activatio
             tr(v-for='activation in activationRows' :key='activation.planet')
               td.py-2.pr-3.text-slate-100 {{ activation.planet }}
               td.py-2.px-3.text-amber-200 {{ activationCode(activation) }}
-              td.py-2.px-3.text-slate-400 {{ activation.gate }} · {{ humanDesignGateLabel(t, activation.gate, activation.name) }}
+              td.py-2.px-3.text-slate-400 {{ activation.gate }} · {{ gateLabel(t, activation.gate, activation.name) }}
               td.py-2.px-3.text-slate-400 {{ activation.color || '—' }}
               td.py-2.px-3.text-slate-400 {{ activation.tone || '—' }}
               td.py-2.pl-3.text-slate-400 {{ activation.base || '—' }}
