@@ -51,13 +51,14 @@ const copySwissEphAssets = () => {
 }
 
 export default defineConfig(({ mode }) => ({
-  base: process.env.GITHUB_PAGES === '1' ? '/astrelio/' : '/',
+  base: '/astrelio/',
   plugins: [
     vue(),
     tailwind(),
     copySwissEphAssets(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: 'inline',
       includeAssets: ['icons/*.png'],
       manifest: {
         name: 'Astrelio',
@@ -73,8 +74,17 @@ export default defineConfig(({ mode }) => ({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2,json}'],
-        globIgnores: ['**/data/cities.generated.json']
+        cleanupOutdatedCaches: true,
+        clientsClaim:          true,
+        skipWaiting:           true,
+        navigateFallback:      null,
+        globPatterns:          ['**/*.{js,css,svg,png,woff2,json,jpg,webp,wasm}'],
+        globIgnores:           [
+          '**/data/cities.generated.json',
+          'index.html',
+          'registerSW.js',
+          'manifest.webmanifest',
+        ],
       }
     })
   ],
