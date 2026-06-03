@@ -7,21 +7,22 @@ import { moonPhaseLighting, moonPhaseLitPoints } from './moonPhase.js'
 
 const STAR_COUNT                = 520
 const CHART_SELECTOR            = '[data-testid="chart-wheel-svg"]'
-const SKY_ASTERISMS_URL         = '/data/sky-asterisms.generated.json'
+const publicAssetUrl            = path => `${import.meta.env.BASE_URL}${String(path).replace(/^\//, '')}`
+const SKY_ASTERISMS_URL         = publicAssetUrl('data/sky-asterisms.generated.json')
 const ASTERISM_LONGITUDE_SPREAD = 1.55
 const ASTERISM_LATITUDE_SPREAD  = 1.85
 
 export const SKY_PLANETS = [
-  { name: 'Sun', color: '#f6c453', radius: 13, photo: 'solar', image: '/planets/sun.jpg', texture: ['#fff7ad', '#f6c453', '#b45309'] },
-  { name: 'Moon', color: '#dbeafe', radius: 8, photo: 'cratered', image: '/planets/moon.jpg', texture: ['#f8fafc', '#cbd5e1', '#64748b'] },
-  { name: 'Mercury', color: '#7dd3fc', radius: 6, photo: 'cratered', image: '/planets/mercury.jpg', texture: ['#e0f2fe', '#7dd3fc', '#475569'] },
-  { name: 'Venus', color: '#86efac', radius: 7, photo: 'clouds', image: '/planets/venus.jpg', texture: ['#dcfce7', '#86efac', '#4d7c0f'] },
-  { name: 'Mars', color: '#fb7185', radius: 7, photo: 'dust', image: '/planets/mars.jpg', texture: ['#fecdd3', '#fb7185', '#991b1b'] },
-  { name: 'Jupiter', color: '#fbbf24', radius: 10, photo: 'bands', image: '/planets/jupiter.jpg', texture: ['#fde68a', '#f59e0b', '#92400e'] },
-  { name: 'Saturn', color: '#c4b5fd', radius: 9, photo: 'rings', image: '/planets/saturn.jpg', texture: ['#ede9fe', '#c4b5fd', '#6d28d9'] },
-  { name: 'Uranus', color: '#67e8f9', radius: 6, photo: 'ice', image: '/planets/uranus.jpg', texture: ['#cffafe', '#67e8f9', '#0e7490'] },
-  { name: 'Neptune', color: '#38bdf8', radius: 6, photo: 'storms', image: '/planets/neptune.jpg', texture: ['#dbeafe', '#38bdf8', '#1d4ed8'] },
-  { name: 'Pluto', color: '#c084fc', radius: 5, photo: 'ice', image: '/planets/pluto.jpg', texture: ['#f3e8ff', '#c084fc', '#581c87'] },
+  { name: 'Sun', color: '#f6c453', radius: 13, photo: 'solar', image: publicAssetUrl('planets/sun.jpg'), texture: ['#fff7ad', '#f6c453', '#b45309'] },
+  { name: 'Moon', color: '#dbeafe', radius: 8, photo: 'cratered', image: publicAssetUrl('planets/moon.jpg'), texture: ['#f8fafc', '#cbd5e1', '#64748b'] },
+  { name: 'Mercury', color: '#7dd3fc', radius: 6, photo: 'cratered', image: publicAssetUrl('planets/mercury.jpg'), texture: ['#e0f2fe', '#7dd3fc', '#475569'] },
+  { name: 'Venus', color: '#86efac', radius: 7, photo: 'clouds', image: publicAssetUrl('planets/venus.jpg'), texture: ['#dcfce7', '#86efac', '#4d7c0f'] },
+  { name: 'Mars', color: '#fb7185', radius: 7, photo: 'dust', image: publicAssetUrl('planets/mars.jpg'), texture: ['#fecdd3', '#fb7185', '#991b1b'] },
+  { name: 'Jupiter', color: '#fbbf24', radius: 10, photo: 'bands', image: publicAssetUrl('planets/jupiter.jpg'), texture: ['#fde68a', '#f59e0b', '#92400e'] },
+  { name: 'Saturn', color: '#c4b5fd', radius: 9, photo: 'rings', image: publicAssetUrl('planets/saturn.jpg'), texture: ['#ede9fe', '#c4b5fd', '#6d28d9'] },
+  { name: 'Uranus', color: '#67e8f9', radius: 6, photo: 'ice', image: publicAssetUrl('planets/uranus.jpg'), texture: ['#cffafe', '#67e8f9', '#0e7490'] },
+  { name: 'Neptune', color: '#38bdf8', radius: 6, photo: 'storms', image: publicAssetUrl('planets/neptune.jpg'), texture: ['#dbeafe', '#38bdf8', '#1d4ed8'] },
+  { name: 'Pluto', color: '#c084fc', radius: 5, photo: 'ice', image: publicAssetUrl('planets/pluto.jpg'), texture: ['#f3e8ff', '#c084fc', '#581c87'] },
 ]
 
 const SIGNS = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
@@ -123,7 +124,10 @@ const loadSkyAsterisms = async () => {
 
 const loadAsterismImages = (skyData, schedule) => {
   if (typeof Image === 'undefined' || !skyData?.asterisms?.length) return new Map()
-  const urls = [...new Set(skyData.asterisms.map(item => item.image?.src || item.image).filter(Boolean))]
+  const urls = [...new Set(skyData.asterisms
+    .map(item => item.image?.src || item.image)
+    .filter(Boolean)
+    .map(publicAssetUrl))]
   return new Map(urls.map((url) => {
     const image    = new Image()
     image.decoding = 'async'
@@ -386,7 +390,7 @@ const drawAsterisms = (ctx, bounds, mode, wheelShift, palette, skyData, asterism
     ])
     const projectedByHip = new Map(asterism.stars.map(star => [star.hip, projectAsterismStar(star, bounds, mode, wheelShift, projection)]))
     const points         = [...projectedByHip.values()]
-    const imageSrc       = asterism.image?.src || asterism.image
+    const imageSrc       = publicAssetUrl(asterism.image?.src || asterism.image)
     if (imageSrc && !drawnImages.has(imageSrc)) {
       const image             = asterismImages?.get(imageSrc)
       const drewAnchoredImage = drawAnchoredAsterismImage(ctx, image, asterism.image, bounds, mode, wheelShift, palette, projection)

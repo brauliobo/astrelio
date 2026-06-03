@@ -4,7 +4,7 @@ import { moonPhaseLighting, moonPhaseLitPathData } from '../../lib/sky/moonPhase
 
 const props = defineProps({
   phase: { type: Number, default: 0 },
-  src:   { type: String, default: '/planets/moon.jpg' },
+  src:   { type: String, default: `${import.meta.env.BASE_URL}planets/moon.jpg` },
   size:  { type: Number, default: 32 },
   light: { type: Number, default: 1 },
   alt:   { type: String, default: 'Moon' },
