@@ -93,20 +93,24 @@ describe('chart display modes', () => {
     expect(wrapper.find('[data-testid="aspect-lines"]').exists()).toBe(false)
   })
 
-  it('places zoom controls before the display mode options', () => {
-    const wrapper     = mountWheel()
+  it('places the transit orbit control before the display mode options', () => {
+    const wrapper     = mountWheel({
+      overlay: {
+        ...chart,
+        positions: [position('Sun', 60)],
+      },
+    })
     const toolbarText = wrapper.get('[data-testid="chart-display-mode"]').text()
 
-    expect(toolbarText.indexOf('100%')).toBeLessThan(toolbarText.indexOf('Clean'))
+    expect(toolbarText.indexOf('Transits')).toBeLessThan(toolbarText.indexOf('Clean'))
   })
 
-  it('allows wider default framing for wheels with an outer nakshatra ring', () => {
+  it('uses full framing for wheels with an outer nakshatra ring', () => {
     const wrapper = mountWheel({
-      defaultZoomBase:   1.2,
       showNakshatraRing: true,
     })
 
-    expect(wrapper.get('[data-testid="chart-wheel-svg"]').attributes('viewBox')).toBe('43.333 43.333 433.333 433.333')
+    expect(wrapper.get('[data-testid="chart-wheel-svg"]').attributes('viewBox')).toBe('0 0 520 520')
   })
 
   it('keeps transit overlays hidden by default and shows them on a wider exterior orbit', async () => {
@@ -121,14 +125,14 @@ describe('chart display modes', () => {
     })
 
     expect(wrapper.get('[data-testid="chart-toggle-transit-orbit"]').attributes('aria-pressed')).toBe('false')
-    expect(wrapper.get('[data-testid="chart-wheel-svg"]').attributes('viewBox')).toBe('60 60 400 400')
+    expect(wrapper.get('[data-testid="chart-wheel-svg"]').attributes('viewBox')).toBe('40 40 440 440')
     expect(wrapper.find('[data-testid="transit-orbit-frame"]').exists()).toBe(false)
     expect(wrapper.find('[data-chart-map="overlay"]').exists()).toBe(false)
 
     await wrapper.get('[data-testid="chart-toggle-transit-orbit"]').trigger('click')
     await nextTick()
 
-    expect(wrapper.get('[data-testid="chart-wheel-svg"]').attributes('viewBox')).toBe('19.259 19.259 481.481 481.481')
+    expect(wrapper.get('[data-testid="chart-wheel-svg"]').attributes('viewBox')).toBe('0 0 520 520')
     expect(wrapper.get('[data-testid="transit-orbit-frame"]').exists()).toBe(true)
     expect(wrapper.get('[data-chart-map="overlay"] [data-testid="planet-glyph-Sun"]').exists()).toBe(true)
     expect(wrapper.get('[data-testid="transit-orbit-frame"] circle:nth-child(2)').attributes('r')).toBe(String(WHEEL_RADII.zodiacOuter))
@@ -154,7 +158,7 @@ describe('chart display modes', () => {
 
     const natalSunAfter = wrapper.get('[data-chart-map="natal"] [data-testid="planet-hit-Sun"]').attributes()
     expect(toggle.attributes('aria-pressed')).toBe('true')
-    expect(wrapper.get('[data-testid="chart-wheel-svg"]').attributes('viewBox')).toBe('19.259 19.259 481.481 481.481')
+    expect(wrapper.get('[data-testid="chart-wheel-svg"]').attributes('viewBox')).toBe('0 0 520 520')
     expect(wrapper.get('[data-testid="transit-orbit-frame"]').exists()).toBe(true)
     expect(natalSunAfter.cx).toBe(natalSunBefore.cx)
     expect(natalSunAfter.cy).toBe(natalSunBefore.cy)
@@ -164,7 +168,7 @@ describe('chart display modes', () => {
     await nextTick()
 
     expect(toggle.attributes('aria-pressed')).toBe('false')
-    expect(wrapper.get('[data-testid="chart-wheel-svg"]').attributes('viewBox')).toBe('60 60 400 400')
+    expect(wrapper.get('[data-testid="chart-wheel-svg"]').attributes('viewBox')).toBe('40 40 440 440')
     expect(wrapper.find('[data-testid="transit-orbit-frame"]').exists()).toBe(false)
   })
 

@@ -206,7 +206,7 @@ describe('chart interactions', () => {
     expect(wrapper.find('[data-testid="chart-selection-summary"]').exists()).toBe(false)
   })
 
-  it('zooms the wheel with compact controls without resizing the chart frame', async () => {
+  it('uses a predictable fixed wheel fit without zoom controls', async () => {
     const wrapper = mount(Wheel, {
       props:  { natal: chart },
       global: {
@@ -217,32 +217,15 @@ describe('chart interactions', () => {
     const svg            = wrapper.get('[data-testid="chart-wheel-svg"]')
     const initialViewBox = svg.attributes('viewBox')
 
-    expect(stage.attributes('data-zoom')).toBe('1.00')
-    expect(initialViewBox).toBe('60 60 400 400')
-    expect(wrapper.get('[data-testid="chart-zoom-reset"]').text()).toBe('100%')
-
-    await wrapper.get('[data-testid="chart-zoom-in"]').trigger('click')
-    await nextTick()
-
-    expect(stage.attributes('data-zoom')).toBe('1.15')
-    expect(svg.attributes('viewBox')).not.toBe(initialViewBox)
-    expect(wrapper.get('[data-testid="chart-zoom-reset"]').text()).toBe('115%')
-
-    await wrapper.get('[data-testid="chart-zoom-out"]').trigger('click')
-    await nextTick()
-
-    expect(stage.attributes('data-zoom')).toBe('1.00')
-    expect(svg.attributes('viewBox')).toBe(initialViewBox)
+    expect(stage.attributes('data-zoom')).toBeUndefined()
+    expect(initialViewBox).toBe('40 40 440 440')
+    expect(wrapper.find('[data-testid="chart-zoom-reset"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="chart-zoom-in"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="chart-zoom-out"]').exists()).toBe(false)
 
     await stage.trigger('keydown', { key: '+' })
     await nextTick()
 
-    expect(stage.attributes('data-zoom')).toBe('1.15')
-
-    await wrapper.get('[data-testid="chart-zoom-reset"]').trigger('click')
-    await nextTick()
-
-    expect(stage.attributes('data-zoom')).toBe('1.00')
     expect(svg.attributes('viewBox')).toBe(initialViewBox)
   })
 })

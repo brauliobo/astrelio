@@ -249,21 +249,40 @@ section.timing-page(data-testid='timing-page')
 
   template(v-else)
     section.transits-page(v-if='activeTechnique === "transits"' data-testid='transits-page')
-      .flex.items-center.gap-3.mb-4
-        label.text-xs.text-slate-400 {{ t('chart.transit_date') }}
-        input.ui-control.ui-control-sm(
-          type='datetime-local'
-          v-model='transitDateInput'
-          data-testid='transit-date'
-        )
-        button.text-xs.text-amber-300(
-          class='hover:text-amber-200'
-          type='button'
-          @click='transitDateInput = new Date().toISOString().slice(0,16)'
-          data-testid='btn-now'
-        ) {{ t('common.now') }}
-      ComparisonInsightPanel.mb-6(:aspects='transitAspects' :base='natal' :comparison='transit' mode='transit')
-      .ui-panel.mb-6(v-if='natal && transit')
+      .transit-toolbar
+        .transit-toolbar__title
+          h2 {{ t('nav.transits') }}
+          p {{ t('chart.natal_positions') }} × {{ t('chart.transit_positions') }}
+        .transit-toolbar__controls
+          label.transit-date-control
+            span {{ t('chart.transit_date') }}
+            input.ui-control.ui-control-sm(
+              type='datetime-local'
+              v-model='transitDateInput'
+              data-testid='transit-date'
+            )
+          button.transit-now-button(
+            type='button'
+            @click='transitDateInput = new Date().toISOString().slice(0,16)'
+            data-testid='btn-now'
+          ) {{ t('common.now') }}
+          .transit-count-pill(v-if='transitAspects.length')
+            span {{ t('chart.summary') }}
+            strong {{ transitAspects.length }}
+      .transit-main-grid
+        .transit-chart-panel
+          Biwheel(
+            v-if='natal && transit'
+            :natal='natal'
+            :overlay='transit'
+            :aspect-options='settings.aspectOptions'
+            :planet-glyph-renderer='settings.planetGlyphRenderer'
+          )
+        .transit-side-panel
+          ComparisonInsightPanel(:aspects='transitAspects' :base='natal' :comparison='transit' mode='transit')
+          .transit-aspects-panel(v-if='transitAspects.length')
+            AspectTable(:aspects='transitAspects')
+      .transit-matrix-panel(v-if='natal && transit')
         AspectMatrix(
           :base='natal'
           :comparison='transit'
@@ -272,17 +291,6 @@ section.timing-page(data-testid='timing-page')
           :comparison-label='t("chart.transit_positions")'
           :planet-glyph-renderer='settings.planetGlyphRenderer'
         )
-      .grid.gap-6(class='lg:grid-cols-2')
-        .ui-panel
-          Biwheel(
-            v-if='natal && transit'
-            :natal='natal'
-            :overlay='transit'
-            :aspect-options='settings.aspectOptions'
-            :planet-glyph-renderer='settings.planetGlyphRenderer'
-          )
-        .ui-panel(v-if='transitAspects.length')
-          AspectTable(:aspects='transitAspects')
 
     section.progressions-page(v-else-if='activeTechnique === "progressions"' data-testid='progressions-page')
       .flex.items-center.gap-3.mb-4
@@ -420,3 +428,165 @@ section.timing-page(data-testid='timing-page')
         :planet-glyph-renderer='settings.planetGlyphRenderer'
       )
 </template>
+
+<style scoped>
+.transit-toolbar {
+  align-items: center;
+  background: color-mix(in srgb, var(--app-panel-strong) 84%, transparent);
+  border: 1px solid var(--app-border);
+  border-radius: 0.5rem;
+  box-shadow: var(--app-shadow);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding: 0.9rem 1rem;
+}
+
+.transit-toolbar__title h2 {
+  color: var(--app-heading);
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.transit-toolbar__title p {
+  color: var(--app-text-muted);
+  font-size: 0.78rem;
+  line-height: 1.25;
+  margin: 0.2rem 0 0;
+}
+
+.transit-toolbar__controls {
+  align-items: end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.transit-date-control {
+  color: var(--app-text-muted);
+  display: grid;
+  font-size: 0.72rem;
+  font-weight: 700;
+  gap: 0.25rem;
+}
+
+.transit-date-control input {
+  min-width: 12.5rem;
+}
+
+.transit-now-button,
+.transit-count-pill {
+  align-items: center;
+  border-radius: 0.25rem;
+  display: inline-flex;
+  min-height: 2rem;
+}
+
+.transit-now-button {
+  background: rgb(252 211 77);
+  color: rgb(15 23 42);
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.4rem 0.72rem;
+}
+
+.transit-now-button:hover,
+.transit-now-button:focus-visible {
+  background: rgb(253 230 138);
+}
+
+.transit-count-pill {
+  background: var(--app-chip);
+  border: 1px solid var(--app-border);
+  color: var(--app-text-soft);
+  gap: 0.45rem;
+  padding: 0.35rem 0.7rem;
+}
+
+.transit-count-pill span {
+  color: var(--app-text-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.transit-count-pill strong {
+  color: var(--app-heading);
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.transit-main-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.transit-chart-panel,
+.transit-side-panel,
+.transit-matrix-panel,
+.transit-aspects-panel {
+  background: color-mix(in srgb, var(--app-panel) 88%, transparent);
+  border: 1px solid var(--app-border);
+  border-radius: 0.5rem;
+  box-shadow: var(--app-shadow);
+}
+
+.transit-chart-panel {
+  min-width: 0;
+  padding: 0.9rem;
+}
+
+.transit-side-panel {
+  align-content: start;
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+  padding: 0.9rem;
+}
+
+.transit-side-panel :deep(.comparison-insight-panel) {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
+.transit-aspects-panel {
+  box-shadow: none;
+  padding: 0.9rem;
+}
+
+.transit-matrix-panel {
+  margin-top: 1rem;
+  overflow: hidden;
+  padding: 0.9rem;
+}
+
+@media (min-width: 1180px) {
+  .transit-main-grid {
+    align-items: start;
+    grid-template-columns: minmax(34rem, 1.35fr) minmax(21rem, 0.65fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .transit-toolbar {
+    align-items: stretch;
+  }
+
+  .transit-toolbar__controls,
+  .transit-date-control,
+  .transit-date-control input,
+  .transit-now-button {
+    width: 100%;
+  }
+
+  .transit-now-button {
+    justify-content: center;
+  }
+}
+</style>

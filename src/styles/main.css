@@ -68,8 +68,8 @@
   --chart-angle-asc: #f87171;
   --chart-angle-mc: #93c5fd;
   --chart-sun-color: #ff4d4d;
-  --chart-overlay-ink: #94a3b8;
-  --chart-overlay-accent: #2dd4bf;
+  --chart-overlay-ink: #bfdbfe;
+  --chart-overlay-accent: #93c5fd;
   --chart-comparison-accent: #0f8f8f;
   --aspect-conjunction: #94a3b8;
   --aspect-opposition: #22c55e;
@@ -177,8 +177,8 @@ html[data-theme="light"] {
   --chart-angle-asc: #dc2626;
   --chart-angle-mc: #2563eb;
   --chart-sun-color: #dc2626;
-  --chart-overlay-ink: #334155;
-  --chart-overlay-accent: #0f766e;
+  --chart-overlay-ink: #1e3a8a;
+  --chart-overlay-accent: #2563eb;
   --chart-comparison-accent: #0f8f8f;
   --aspect-conjunction: #64748b;
   --aspect-opposition: #16a34a;

@@ -100,10 +100,30 @@ describe('chart wheel geometry', () => {
     }, 0, planetBandFor({}, 0, 1))
 
     expect(placements.map(item => item.planet.name)).toEqual(['Mars', 'Saturn'])
-    expect(placements.map(item => Number(item.radius.toFixed(2)))).toEqual([106.68, 128.68])
-    expect(placements[1].radius - placements[0].radius).toBeGreaterThan(18)
-    expect(placements[1].radius - placements[0].radius).toBeLessThan(24)
+    expect(placements.map(item => Number(item.radius.toFixed(2)))).toEqual([110.68, 124.68])
+    expect(placements[1].radius - placements[0].radius).toBeGreaterThan(12)
+    expect(placements[1].radius - placements[0].radius).toBeLessThan(16)
     expect(placements.every(item => item.glyphLongitude === item.longitude)).toBe(true)
+  })
+
+  it('keeps non-overlapping transit overlay glyphs on one exterior lane', () => {
+    const band = {
+      inner:         188,
+      outer:         232,
+      defaultRadius: 214,
+      tickRadius:    196,
+      glyphPadding:  8,
+    }
+    const placements = planetPlacements({
+      positions: [
+        mk('Sun', 40),
+        mk('Moon', 45),
+        mk('Mars', 82),
+      ],
+    }, 0, band)
+
+    expect(placements.map(item => item.radius)).toEqual([214, 214, 214])
+    expect(placements.every(item => !item.isCrowded)).toBe(true)
   })
 
   it('places every degree label at the bottom-right of its glyph', () => {

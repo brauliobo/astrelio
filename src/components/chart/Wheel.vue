@@ -12,9 +12,6 @@ import ZodiacRing from './wheel/ZodiacRing.vue'
 import { CENTER, VIEWBOX_SIZE, WHEEL_RADII, mapsFromProps, norm360 } from './wheel/geometry.js'
 
 const displayModes = ['clean', 'aspects', 'detailed', 'print']
-const zoomMin      = 0.85
-const zoomMax      = 1.6
-const zoomStep     = 0.15
 const modeSettings = {
   clean: {
     degrees:      false,
@@ -53,7 +50,6 @@ const props = defineProps({
   zodiacSymbols:        { type: Array, default: null },
   planetGlyphRenderer:  { type: String, default: null },
   showNakshatraRing:    { type: Boolean, default: false },
-  defaultZoomBase:      { type: Number, default: 1.3 },
 })
 const emit = defineEmits(['highlight', 'clear-highlight', 'toggle-highlight', 'update:display-mode'])
 const { t } = useI18n()
@@ -64,7 +60,6 @@ const sharedHoverHighlight  = ref(null)
 const sharedPinnedHighlight = ref(null)
 const localDisplayMode      = ref('')
 const isSmallScreen         = ref(false)
-const zoomLevel             = ref(1)
 const showExteriorOrbit     = ref(false)
 const chartHighlightEvent   = 'astrelio-chart-highlight'
 let smallScreenQuery        = null
@@ -81,7 +76,6 @@ const visibleMaps            = computed(() =>
 const baseChart            = computed(() => maps.value[0]?.chart || null)
 const isSimpleChart        = computed(() => visibleMaps.value.length === 1)
 const hasExteriorOrbit     = computed(() => visibleMaps.value.some(map => map.exteriorOrbit))
-const zoomBase             = computed(() => hasExteriorOrbit.value ? Math.min(props.defaultZoomBase, 1.08) : props.defaultZoomBase)
 const automaticDisplayMode = computed(() =>
   isSimpleChart.value && isSmallScreen.value ? 'clean' : 'detailed'
 )
@@ -102,17 +96,11 @@ const style      = computed(() => ({
   width:    `${props.size}px`,
   maxWidth: '100%',
 }))
-const zoomViewBox = computed(() => {
-  const viewSize = VIEWBOX_SIZE / (zoomBase.value * zoomLevel.value)
-  const offset   = (VIEWBOX_SIZE - viewSize) / 2
-  return [offset, offset, viewSize, viewSize]
-    .map(value => Number(value.toFixed(3)))
-    .join(' ')
-})
-const zoomPercent       = computed(() => `${Math.round(zoomLevel.value * 100)}%`)
-const isZoomMin         = computed(() => zoomLevel.value <= zoomMin)
-const isZoomMax         = computed(() => zoomLevel.value >= zoomMax)
-const isZoomDefault     = computed(() => zoomLevel.value === 1)
+const wheelViewBox = computed(() =>
+  hasExteriorOrbit.value || props.showNakshatraRing
+    ? `0 0 ${VIEWBOX_SIZE} ${VIEWBOX_SIZE}`
+    : '40 40 440 440'
+)
 const displayAttributes = computed(() => ({
   'data-chart-mode':         activeDisplayMode.value,
   'data-show-degrees':       String(displayOptions.value.degrees),
@@ -184,38 +172,8 @@ const selectDisplayMode = (mode) => {
   emit('update:display-mode', normalizedMode)
 }
 
-const setZoom = (value) => {
-  const clamped   = Math.min(zoomMax, Math.max(zoomMin, value))
-  zoomLevel.value = Number(clamped.toFixed(2))
-}
-
-const zoomIn = () => {
-  setZoom(zoomLevel.value + zoomStep)
-}
-
-const zoomOut = () => {
-  setZoom(zoomLevel.value - zoomStep)
-}
-
-const resetZoom = () => {
-  zoomLevel.value = 1
-}
-
 const toggleExteriorOrbit = () => {
   showExteriorOrbit.value = !showExteriorOrbit.value
-}
-
-const onWheelKeydown = (event) => {
-  if (event.key === '+' || event.key === '=') {
-    event.preventDefault()
-    zoomIn()
-  } else if (event.key === '-' || event.key === '_') {
-    event.preventDefault()
-    zoomOut()
-  } else if (event.key === '0') {
-    event.preventDefault()
-    resetZoom()
-  }
 }
 
 watch(() => props.displayMode, () => {
@@ -256,12 +214,11 @@ onBeforeUnmount(() => {
     :modes='displayModes'
     @update:model-value='selectDisplayMode'
   )
-    .chart-zoom-controls.inline-flex.items-center.gap-1.mr-1.border-r.pr-1(
-      v-if='baseChart'
-      aria-label='Chart zoom controls'
+    .chart-orbit-controls.inline-flex.items-center.mr-1.border-r.pr-1(
+      v-if='baseChart && hasExteriorOrbitOption'
+      aria-label='Chart orbit controls'
     )
-      button.chart-zoom-button.chart-transit-orbit-toggle(
-        v-if='hasExteriorOrbitOption'
+      button.chart-control-button.chart-transit-orbit-toggle(
         type='button'
         data-testid='chart-toggle-transit-orbit'
         :class='{ "chart-transit-orbit-toggle--active": showExteriorOrbit }'
@@ -269,38 +226,15 @@ onBeforeUnmount(() => {
         :aria-label='t("chart.transit_orbit")'
         @click='toggleExteriorOrbit'
       ) {{ t('chart.transit_orbit') }}
-      button.chart-zoom-button(
-        type='button'
-        data-testid='chart-zoom-out'
-        aria-label='Zoom out'
-        :disabled='isZoomMin'
-        @click='zoomOut'
-      ) -
-      button.chart-zoom-button.chart-zoom-button--reset(
-        type='button'
-        data-testid='chart-zoom-reset'
-        aria-label='Reset zoom'
-        :disabled='isZoomDefault'
-        @click='resetZoom'
-      ) {{ zoomPercent }}
-      button.chart-zoom-button(
-        type='button'
-        data-testid='chart-zoom-in'
-        aria-label='Zoom in'
-        :disabled='isZoomMax'
-        @click='zoomIn'
-      ) +
   .chart-wheel-stage.relative.aspect-square.overflow-hidden.rounded-md(
     v-if='baseChart'
     role='group'
     tabindex='0'
     aria-label='Chart wheel'
-    :data-zoom='zoomLevel.toFixed(2)'
-    @keydown='onWheelKeydown'
   )
     svg(
       class='block h-full w-full'
-      :viewBox='zoomViewBox'
+      :viewBox='wheelViewBox'
       role='img'
       data-testid='chart-wheel-svg'
     )
@@ -362,7 +296,7 @@ onBeforeUnmount(() => {
   outline-offset: 3px;
 }
 
-.chart-zoom-button {
+.chart-control-button {
   align-items: center;
   border-radius: 0.25rem;
   color: var(--chart-control-text);
@@ -376,15 +310,9 @@ onBeforeUnmount(() => {
   padding: 0 0.5rem;
 }
 
-.chart-zoom-controls {
+.chart-orbit-controls {
   background: var(--chart-control-bg);
   border-color: var(--app-border);
-}
-
-.chart-zoom-button--reset {
-  font-size: 0.6875rem;
-  font-weight: 800;
-  min-width: 2.875rem;
 }
 
 .chart-transit-orbit-toggle {
@@ -397,19 +325,14 @@ onBeforeUnmount(() => {
   color: var(--chart-control-active-text, var(--app-bg));
 }
 
-.chart-zoom-button:hover:not(:disabled),
-.chart-zoom-button:focus-visible {
+.chart-control-button:hover,
+.chart-control-button:focus-visible {
   background: var(--chart-control-hover-bg);
 }
 
-.chart-zoom-button:focus-visible {
+.chart-control-button:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 1px;
-}
-
-.chart-zoom-button:disabled {
-  color: var(--chart-control-disabled-text);
-  cursor: default;
 }
 
 .chart-wheel[data-show-degrees="false"] [data-testid="planet-layer"] g[data-planet] text:not([data-role="symbol"]) {

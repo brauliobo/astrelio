@@ -96,6 +96,7 @@ const pointMotion     = (point) => motionMarker(point)
 const aspectSymbol    = (aspect) => ASPECT_SYMBOLS[aspect?.type] || ''
 const aspectKey       = (aspect) => aspect ? `${aspect.a}-${aspect.b}-${aspect.type}` : ''
 const pointKey        = (point, prefix) => `${prefix}-${point.name}`
+const pointName       = (point) => t(`planets.${point.name}`)
 const setAspectFilter = (filter) => {
   activeAspectFilter.value = filter
   hoverHighlight.value     = null
@@ -253,6 +254,7 @@ onBeforeUnmount(() => {
           :weight='700'
           :renderer='planetGlyphRenderer'
         )
+        span.aspect-point-name {{ pointName(point) }}
         span.tabular-nums {{ formatPosition(point.longitude).degrees }}
         span.aspect-sign {{ formatPosition(point.longitude).sign }}
         span.tabular-nums {{ formatPosition(point.longitude).minutes }}
@@ -346,6 +348,7 @@ onBeforeUnmount(() => {
           :weight='700'
           :renderer='planetGlyphRenderer'
         )
+        span.aspect-point-name {{ pointName(point) }}
         span.tabular-nums {{ formatPosition(point.longitude).degrees }}
         span.aspect-sign {{ formatPosition(point.longitude).sign }}
         span.tabular-nums {{ formatPosition(point.longitude).minutes }}
@@ -429,8 +432,9 @@ onBeforeUnmount(() => {
 }
 
 .aspect-filter-button.is-active {
-  background: rgb(251 191 36 / 0.14);
-  color: rgb(253 230 138);
+  background: rgb(252 211 77);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.28);
+  color: rgb(15 23 42);
 }
 
 .aspectarian-body {
@@ -440,7 +444,7 @@ onBeforeUnmount(() => {
 
 .aspectarian-body.is-comparison {
   align-items: start;
-  grid-template-columns: minmax(5.7rem, 6.7rem) minmax(0, 1fr) minmax(5.7rem, 6.7rem);
+  grid-template-columns: minmax(9rem, 10.5rem) minmax(0, 1fr) minmax(9rem, 10.5rem);
 }
 
 .aspect-matrix-stage {
@@ -500,7 +504,8 @@ onBeforeUnmount(() => {
 
 .aspect-position-list {
   border: 1px solid rgb(255 255 255 / 0.1);
-  padding: 0.38rem 0.35rem;
+  background: rgb(2 6 23 / 0.24);
+  padding: 0.5rem 0.45rem;
 }
 
 .aspect-position-list h3 {
@@ -525,9 +530,19 @@ onBeforeUnmount(() => {
   color: rgb(203 213 225);
   display: grid;
   font-size: 0.66rem;
-  gap: 0.08rem;
-  grid-template-columns: 0.95rem 0.95rem 1rem 0.95rem 0.42rem;
-  min-height: 1rem;
+  gap: 0.15rem;
+  grid-template-columns: 1rem minmax(3.25rem, 1fr) 1rem 1rem 1rem 0.42rem;
+  min-height: 1.2rem;
+}
+
+.aspect-point-name {
+  color: rgb(226 232 240);
+  font-size: 0.66rem;
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .aspect-sign {

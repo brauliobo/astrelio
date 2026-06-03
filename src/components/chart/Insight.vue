@@ -253,7 +253,7 @@ const showDetailTab = tab => !useDetailTabs.value || activeDetailTab.value === t
 
 .chart-insight__tab {
   border-radius: 0.375rem;
-  color: var(--app-muted);
+  color: var(--app-text-soft);
   font-size: 0.75rem;
   font-weight: 700;
   min-height: 1.875rem;
@@ -263,7 +263,7 @@ const showDetailTab = tab => !useDetailTabs.value || activeDetailTab.value === t
 .chart-insight__tab:hover,
 .chart-insight__tab:focus-visible {
   background: var(--chart-control-hover-bg);
-  color: var(--app-fg);
+  color: var(--chart-control-text);
 }
 
 .chart-insight__tab:focus-visible {
@@ -272,8 +272,9 @@ const showDetailTab = tab => !useDetailTabs.value || activeDetailTab.value === t
 }
 
 .chart-insight__tab--active {
-  background: var(--chart-control-bg);
-  color: var(--app-fg);
+  background: rgb(252 211 77);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.28);
+  color: rgb(15 23 42);
 }
 
 .insight-retrograde-chip {

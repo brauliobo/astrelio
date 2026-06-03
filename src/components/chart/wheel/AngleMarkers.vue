@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { WHEEL_RADII, norm360, polarPoint, radialTrianglePath } from './geometry.js'
+import { VIEWBOX_SIZE, WHEEL_RADII, norm360, polarPoint, radialTrianglePath } from './geometry.js'
 
 const props = defineProps({
   chart:      { type: Object, required: true },
@@ -20,15 +20,17 @@ const MARKER_OFFSET = {
   arrowTip:       15,
   arrowBase:      1,
   arrowHalfWidth: 5.5,
-  label:          28,
+  label:          20,
 }
 
-const markerPoint      = (radius, longitude) => polarPoint(props.baseRadius + radius, longitude)
+const edgePadding      = 12
+const markerRadius     = (radius) => Math.min(props.baseRadius + radius, (VIEWBOX_SIZE / 2) - edgePadding)
+const markerPoint      = (radius, longitude) => polarPoint(markerRadius(radius), longitude)
 const outwardArrowPath = (longitude) =>
   radialTrianglePath(
     longitude,
-    props.baseRadius + MARKER_OFFSET.arrowTip,
-    props.baseRadius + MARKER_OFFSET.arrowBase,
+    markerRadius(MARKER_OFFSET.arrowTip),
+    markerRadius(MARKER_OFFSET.arrowBase),
     MARKER_OFFSET.arrowHalfWidth,
   )
 

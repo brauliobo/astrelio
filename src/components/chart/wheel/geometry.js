@@ -45,6 +45,7 @@ export const PLANET_SYMBOLS = {
   Ascendant: 'ASC',
   Midheaven: 'MC',
   Fortune:   '⊕',
+  Spirit:    '✶',
 }
 
 export const PLANET_COLORS = {
@@ -65,6 +66,7 @@ export const PLANET_COLORS = {
   Ascendant: 'var(--chart-angle-asc, var(--chart-angle-accent))',
   Midheaven: 'var(--chart-angle-mc, var(--chart-angle-accent))',
   Fortune:   'var(--chart-ink)',
+  Spirit:    'var(--chart-ink)',
 }
 
 // Keep tropical SVG glyphs compact; Human Design applies stronger optical
@@ -88,12 +90,13 @@ export const PLANET_GLYPH_SCALE = {
   Ascendant: { x: 0.72, y: 0.72 },
   Midheaven: { x: 0.8, y: 0.8 },
   Fortune:   { x: 1, y: 1 },
+  Spirit:    { x: 1, y: 1 },
 }
 
 export const planetGlyphScale = planet => PLANET_GLYPH_SCALE[planet] || { x: 1, y: 1 }
 
 const PLANET_ORDER                = new Map(Object.keys(PLANET_SYMBOLS).map((name, index) => [name, index]))
-const PLANET_CLUSTER_GAP          = 10.5
+const PLANET_CLUSTER_GAP          = 4.2
 const PLANET_GLYPH_RADIUS_PADDING = 13
 const PLANET_NARROW_BAND_PADDING  = 5
 const PLANET_LANE_RATIOS          = {
@@ -213,6 +216,7 @@ export const mapsFromProps = ({ natal, overlay, charts }) => {
       planetBand:      {
         inner:        WHEEL_RADII.transitInner,
         outer:        WHEEL_RADII.transitOuter,
+        defaultRadius: WHEEL_RADII.transitOuter - 18,
         tickRadius:   WHEEL_RADII.zodiacOuter + 8,
         glyphPadding: 8,
       },
@@ -281,13 +285,13 @@ const safePlanetBand = (band) => {
   return { inner: midpoint, outer: midpoint }
 }
 
-const centeredRadii = (safeBand, count, gap, centerRatio = 0.56) => {
+const centeredRadii = (safeBand, count, gap, centerRatio = 0.56, preferredCenter = null) => {
   const spread    = safeBand.outer - safeBand.inner
   const usableGap = Math.min(gap, count > 1 ? spread / (count - 1) : 0)
   const total     = usableGap * (count - 1)
   const minCenter = safeBand.inner + (total / 2)
   const maxCenter = safeBand.outer - (total / 2)
-  const center    = clamp(safeBand.inner + (spread * centerRatio), minCenter, maxCenter)
+  const center    = clamp(preferredCenter ?? safeBand.inner + (spread * centerRatio), minCenter, maxCenter)
   const start     = center - (total / 2)
   return Array.from({ length: count }, (_, index) => start + (usableGap * index))
 }
@@ -304,9 +308,13 @@ const radiusRatioFor = (index, count) => {
 const radiiForCluster = (count, band) => {
   const safeBand = safePlanetBand(band)
   const spread   = safeBand.outer - safeBand.inner
-  if (count <= 1) return [safeBand.inner + (spread * 0.84)]
-  if (count === 2) return centeredRadii(safeBand, count, 22, 0.58)
-  if (count === 3) return centeredRadii(safeBand, count, 18, 0.56)
+  const defaultRadius = Number.isFinite(band.defaultRadius)
+    ? clamp(band.defaultRadius, safeBand.inner, safeBand.outer)
+    : null
+
+  if (count <= 1) return [defaultRadius ?? safeBand.inner + (spread * 0.84)]
+  if (count === 2) return centeredRadii(safeBand, count, 14, 0.58, defaultRadius)
+  if (count === 3) return centeredRadii(safeBand, count, 14, 0.56, defaultRadius)
 
   return Array.from({ length: count }, (_, index) =>
     clamp(safeBand.inner + (spread * radiusRatioFor(index, count)), safeBand.inner, safeBand.outer)
