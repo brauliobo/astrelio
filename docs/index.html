@@ -12,7 +12,7 @@
     <link rel="modulepreload" crossorigin href="/astrelio/assets/vendor-swisseph-DS8G_fCW.js">
     <link rel="modulepreload" crossorigin href="/astrelio/assets/vendor-time-Cg8xfoQg.js">
     <link rel="stylesheet" crossorigin href="/astrelio/assets/index-L9hc1c8S.css">
-  <link rel="manifest" href="/astrelio/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/astrelio/registerSW.js"></script></head>
+  <link rel="manifest" href="/astrelio/manifest.webmanifest"><script id="vite-plugin-pwa:inline-sw">if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/astrelio/sw.js', { scope: '/astrelio/' })})}</script></head>
   <body class="bg-night text-slate-100 antialiased">
     <div id="app"></div>
   </body>
