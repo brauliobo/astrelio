@@ -11,7 +11,7 @@ import Frame from './wheel/Frame.vue'
 import ZodiacRing from './wheel/ZodiacRing.vue'
 import { CENTER, VIEWBOX_SIZE, WHEEL_RADII, mapsFromProps, norm360 } from './wheel/geometry.js'
 
-const displayModes = ['clean', 'aspects', 'detailed', 'print']
+const displayModes   = ['clean', 'aspects', 'detailed', 'print']
 const modeSettings = {
   clean: {
     degrees:      false,
@@ -208,28 +208,29 @@ onBeforeUnmount(() => {
   :style='style'
   v-bind='displayAttributes'
 )
-  DisplayMode.mb-3(
-    v-if='showModeControls'
-    :model-value='activeDisplayMode'
-    :modes='displayModes'
-    @update:model-value='selectDisplayMode'
-  )
-    .chart-orbit-controls.inline-flex.items-center.mr-1.border-r.pr-1(
-      v-if='baseChart && hasExteriorOrbitOption'
-      aria-label='Chart orbit controls'
+  .chart-wheel-toolbar.mb-3(v-if='showModeControls')
+    DisplayMode(
+      :model-value='activeDisplayMode'
+      :modes='displayModes'
+      @update:model-value='selectDisplayMode'
     )
-      button.chart-control-button.chart-transit-orbit-toggle(
-        type='button'
-        data-testid='chart-toggle-transit-orbit'
-        :class='{ "chart-transit-orbit-toggle--active": showExteriorOrbit }'
-        :aria-pressed='showExteriorOrbit'
-        :aria-label='t("chart.transit_orbit")'
-        @click='toggleExteriorOrbit'
-      ) {{ t('chart.transit_orbit') }}
+      .chart-orbit-controls.inline-flex.items-center.mr-1.border-r.pr-1(
+        v-if='baseChart && hasExteriorOrbitOption'
+        aria-label='Chart orbit controls'
+      )
+        button.chart-control-button.chart-transit-orbit-toggle(
+          type='button'
+          data-testid='chart-toggle-transit-orbit'
+          :class='{ "chart-transit-orbit-toggle--active": showExteriorOrbit }'
+          :aria-pressed='showExteriorOrbit'
+          :aria-label='t("chart.transit_orbit")'
+          @click='toggleExteriorOrbit'
+        ) {{ t('chart.transit_orbit') }}
   .chart-wheel-stage.relative.aspect-square.overflow-hidden.rounded-md(
     v-if='baseChart'
     role='group'
     tabindex='0'
+    data-testid='chart-wheel-stage'
     aria-label='Chart wheel'
   )
     svg(
@@ -294,6 +295,11 @@ onBeforeUnmount(() => {
 .chart-wheel-stage:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
+}
+
+.chart-wheel-toolbar {
+  display: grid;
+  gap: 0.5rem;
 }
 
 .chart-control-button {

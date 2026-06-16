@@ -83,6 +83,7 @@ export const useSettingsStore = defineStore('settings', {
     applyingOnly:         false,
     includeModernPlanets: true,
     planetGlyphRenderer:  'svg',
+    skyView:              'sky',
     vedic:                {
       ayanamsha:            'lahiri',
       houseMode:            'whole_sign',
@@ -121,6 +122,8 @@ export const useSettingsStore = defineStore('settings', {
       this.includeModernPlanets ??= true
       this.planetGlyphRenderer ||= 'svg'
       if (!['svg', 'utf8', 'text'].includes(this.planetGlyphRenderer)) this.planetGlyphRenderer = 'svg'
+      this.skyView ||= 'sky'
+      if (!['sky', 'planetarium'].includes(this.skyView)) this.skyView = 'sky'
       this.vedic ??= {}
       this.vedic.ayanamsha ||= 'lahiri'
       this.vedic.houseMode ||= 'whole_sign'
@@ -134,6 +137,11 @@ export const useSettingsStore = defineStore('settings', {
     },
     toggleTheme() {
       this.setTheme(this.theme === 'light' ? 'dark' : 'light')
+    },
+    setSkyView(view) {
+      if (!['sky', 'planetarium'].includes(view)) return
+      this.skyEnabled = true
+      this.skyView    = view
     },
     applyPreset(presetKey) {
       const preset = SETTING_PRESETS[presetKey]

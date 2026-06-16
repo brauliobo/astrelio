@@ -697,6 +697,13 @@
       "retrograde": "Retrograde",
       "stationary": "Stationary"
     },
+    "view_mode": "Chart view",
+    "view_modes": {
+      "sky": "Sky",
+      "planetarium": "Planetarium"
+    },
+    "planetarium_aria": "3D planetarium with the Sun centered inside the chart wheel",
+    "planetarium_unavailable": "3D planetarium unavailable",
     "display_mode": "Display",
     "display_modes": {
       "clean": "Clean",

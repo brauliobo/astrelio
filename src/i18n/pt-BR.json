@@ -697,6 +697,13 @@
       "retrograde": "Retrógrado",
       "stationary": "Estacionário"
     },
+    "view_mode": "Visualização do mapa",
+    "view_modes": {
+      "sky": "Céu",
+      "planetarium": "Planetário"
+    },
+    "planetarium_aria": "Planetário 3D com o Sol no centro da roda do mapa",
+    "planetarium_unavailable": "Planetário 3D indisponível",
     "display_mode": "Exibição",
     "display_modes": {
       "clean": "Limpo",

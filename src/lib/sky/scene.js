@@ -486,7 +486,7 @@ const drawPlanet = (ctx, cx, cy, radius, shiftedLongitude, planet, label, image 
 
   ctx.strokeStyle = planet.color
   ctx.fillStyle   = body
-  ctx.globalAlpha = 0.62
+  ctx.globalAlpha = image?.complete && image.naturalWidth > 0 ? 1 : 0.62
   ctx.lineWidth   = 1.2
   ctx.beginPath()
   ctx.arc(point.x, point.y, planet.radius, 0, Math.PI * 2)
@@ -535,7 +535,7 @@ const drawPlanetImage = (ctx, point, planet, image) => {
   const sourceSize = Math.min(image.naturalWidth, image.naturalHeight)
   const sx         = (image.naturalWidth - sourceSize) / 2
   const sy         = (image.naturalHeight - sourceSize) / 2
-  ctx.globalAlpha  = 0.96
+  ctx.globalAlpha  = 1
   ctx.drawImage(
     image,
     sx,

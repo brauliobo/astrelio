@@ -8,8 +8,15 @@ import { CENTER, WHEEL_RADII } from '../../../src/components/chart/wheel/geometr
 const messages = {
   en: {
     chart: {
-      display_mode:  'Display',
-      transit_orbit: 'Transits',
+      display_mode:            'Display',
+      planetarium_aria:        '3D planetarium with the Sun centered inside the chart wheel',
+      planetarium_unavailable: '3D planetarium unavailable',
+      transit_orbit:           'Transits',
+      view_mode:               'Chart view',
+      view_modes: {
+        sky:         'Sky',
+        planetarium: 'Planetarium',
+      },
       display_modes: {
         clean:    'Clean',
         aspects:  'Aspects',
@@ -91,6 +98,13 @@ describe('chart display modes', () => {
     expect(wrapper.get('[data-testid="chart-wheel"]').attributes('data-chart-mode')).toBe('print')
     expect(wrapper.get('[data-testid="chart-wheel"]').attributes('data-show-degrees')).toBe('true')
     expect(wrapper.find('[data-testid="aspect-lines"]').exists()).toBe(false)
+  })
+
+  it('keeps the wheel as the chart view', () => {
+    const wrapper = mountWheel()
+
+    expect(wrapper.get('[data-testid="chart-wheel-svg"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="chart-planetarium"]').exists()).toBe(false)
   })
 
   it('places the transit orbit control before the display mode options', () => {
