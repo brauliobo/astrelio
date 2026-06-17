@@ -100,7 +100,19 @@ const BODY_STYLE = {
   },
 }
 
-const ZODIAC_RADIUS = 270
+const ORBIT_SHAPES = {
+  Moon:    { semiMajorAu: 1.000, eccentricity: 0.017, perihelion: 103 },
+  Mercury: { semiMajorAu: 0.387, eccentricity: 0.206, perihelion: 77 },
+  Venus:   { semiMajorAu: 0.723, eccentricity: 0.007, perihelion: 131 },
+  Mars:    { semiMajorAu: 1.524, eccentricity: 0.093, perihelion: 336 },
+  Jupiter: { semiMajorAu: 5.203, eccentricity: 0.049, perihelion: 14 },
+  Saturn:  { semiMajorAu: 9.537, eccentricity: 0.057, perihelion: 93 },
+  Uranus:  { semiMajorAu: 19.191, eccentricity: 0.046, perihelion: 173 },
+  Neptune: { semiMajorAu: 30.070, eccentricity: 0.011, perihelion: 48 },
+  Pluto:   { semiMajorAu: 39.482, eccentricity: 0.249, perihelion: 224 },
+}
+
+const ZODIAC_RADIUS = 320
 
 const props = defineProps({
   chart:             { type: Object, required: true },
@@ -124,6 +136,7 @@ const bodies          = computed(() => {
   return Object.entries(BODY_STYLE).map(([name, style]) => ({
     name,
     style,
+    orbit:     positions.get(name)?.orbit || null,
     longitude: name === 'Sun'
       ? 0
       : norm360((positions.get(name)?.longitude || 0) + props.wheelShift),
@@ -214,10 +227,55 @@ const eclipticPoint = (radius, longitude, y = 0) => {
   )
 }
 
+const visualOrbitRadius = (distanceAu) => {
+  const safeDistance = Math.max(0, Number(distanceAu) || 0)
+  return 42 + Math.log1p(safeDistance) * 76
+}
+
+const bodyOrbitLongitude = (body) => norm360((body.orbit?.longitude ?? body.longitude) + props.wheelShift)
+
+const bodyOrbitRadius = (body) => body.orbit?.distanceAu
+  ? visualOrbitRadius(body.orbit.distanceAu)
+  : body.style.orbit
+
+const bodyOrbitPoint = (body) => {
+  const latitude = body.orbit?.latitude || 0
+  return eclipticPoint(
+    bodyOrbitRadius(body),
+    bodyOrbitLongitude(body),
+    Math.sin(latitude * DEG_TO_RAD) * 18
+  )
+}
+
 const circleLine = (radius, material, segments = 192) => {
   const points = Array.from({ length: segments }, (_, index) =>
     eclipticPoint(radius, index * 360 / segments)
   )
+  const line = new LineLoop(new BufferGeometry().setFromPoints(points), material)
+  rings.push(line)
+  return line
+}
+
+const ellipseLine = (body, material, segments = 192) => {
+  const shape = ORBIT_SHAPES[body.name]
+  if (!shape) return circleLine(bodyOrbitRadius(body), material, segments)
+
+  const semiMajor  = visualOrbitRadius(shape.semiMajorAu)
+  const semiMinor  = semiMajor * Math.sqrt(1 - shape.eccentricity ** 2)
+  const focus      = semiMajor * shape.eccentricity
+  const rotation   = (180 - norm360(shape.perihelion + props.wheelShift)) * DEG_TO_RAD
+  const cos        = Math.cos(rotation)
+  const sin        = Math.sin(rotation)
+  const points     = Array.from({ length: segments }, (_, index) => {
+    const angle = index * Math.PI * 2 / segments
+    const x     = semiMajor * Math.cos(angle) - focus
+    const z     = semiMinor * Math.sin(angle)
+    return new Vector3(
+      x * cos - z * sin,
+      0,
+      x * sin + z * cos
+    )
+  })
   const line = new LineLoop(new BufferGeometry().setFromPoints(points), material)
   rings.push(line)
   return line
@@ -328,7 +386,7 @@ const createWheel = () => {
   sceneRoot.add(circleLine(ZODIAC_RADIUS, zodiacMaterial))
   sceneRoot.add(circleLine(52, orbitMaterial))
   for (const body of bodies.value.filter(body => body.style.orbit > 0)) {
-    sceneRoot.add(circleLine(body.style.orbit, orbitMaterial, 144))
+    sceneRoot.add(ellipseLine(body, orbitMaterial, 192))
   }
   for (let index = 0; index < 12; index += 1) {
     const longitude = index * 30
@@ -349,7 +407,7 @@ const updateBodyPositions = () => {
 
     const point = body.name === 'Sun'
       ? new Vector3(0, 0, 0)
-      : eclipticPoint(body.style.orbit, body.longitude, Math.sin(body.longitude * DEG_TO_RAD) * 4)
+      : bodyOrbitPoint(body)
 
     mesh.position.copy(point)
     label.position.copy(point.clone().add(new Vector3(0, body.style.radius + 11, 0)))

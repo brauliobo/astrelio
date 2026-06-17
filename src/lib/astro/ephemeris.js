@@ -20,19 +20,39 @@ const BODIES = [
 
 const sidereal = (lon, jd, mode) => mode === 'sidereal' ? toSidereal(lon, jd) : lon
 
-const swissPoint = (name, body, jd, mode) => {
+const SWISS_HELIOCENTRIC_FLAGS = SWISS_FLAGS | swiss.SEFLG_HELCTR
+
+const swissOrbit = (body, jd, mode) => {
+  const result = swissPosition(body, jd, SWISS_HELIOCENTRIC_FLAGS)
+  return {
+    longitude:  sidereal(result[0], jd, mode),
+    latitude:   result[1],
+    distanceAu: result[2],
+  }
+}
+
+const swissPoint = (name, body, jd, mode, opts = {}) => {
   const result = swissPosition(body, jd, SWISS_FLAGS)
   const speed  = result[3]
   const motion = motionStateForSpeed(speed)
-  return {
+  const point  = {
     name,
-    longitude: sidereal(result[0], jd, mode),
-    latitude:  result[1],
+    longitude:  sidereal(result[0], jd, mode),
+    latitude:   result[1],
+    distanceAu: result[2],
     speed,
     motion,
     stationary: motion === 'stationary',
     retrograde: speed < 0,
   }
+
+  if (opts.orbit) {
+    point.orbit = name === 'Sun'
+      ? { longitude: 0, latitude: 0, distanceAu: 0 }
+      : swissOrbit(body, jd, mode)
+  }
+
+  return point
 }
 
 const siderealCusps = (houses, jd, mode, system) => {
@@ -62,7 +82,7 @@ export const computeChart = (
   opts = { zodiac: 'tropical', houseSystem: 'placidus' }
 ) => {
   const options   = { zodiac: 'tropical', houseSystem: 'placidus', nodeMode: 'mean', ...opts }
-  const positions = BODIES.map(({ name, body }) => swissPoint(name, body, jdUt, options.zodiac))
+  const positions = BODIES.map(({ name, body }) => swissPoint(name, body, jdUt, options.zodiac, { orbit: true }))
   const northNode = swissPoint(
     'NorthNode',
     options.nodeMode === 'true' ? SWISS_BODY.NorthNodeTrue : SWISS_BODY.NorthNodeMean,
