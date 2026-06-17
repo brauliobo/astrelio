@@ -18,6 +18,20 @@ const BODIES = [
   { name: 'Pluto',   body: SWISS_BODY.Pluto }
 ]
 
+const ORBIT_PERIOD_DAYS = {
+  Moon:    27.3217,
+  Mercury: 87.969,
+  Venus:   224.701,
+  Mars:    686.980,
+  Jupiter: 4332.589,
+  Saturn:  10759.22,
+  Uranus:  30688.5,
+  Neptune: 60182,
+  Pluto:   90560,
+}
+
+const ORBIT_SAMPLE_COUNT = 96
+
 const sidereal = (lon, jd, mode) => mode === 'sidereal' ? toSidereal(lon, jd) : lon
 
 const SWISS_HELIOCENTRIC_FLAGS = SWISS_FLAGS | swiss.SEFLG_HELCTR
@@ -29,6 +43,16 @@ const swissOrbit = (body, jd, mode) => {
     latitude:   result[1],
     distanceAu: result[2],
   }
+}
+
+const swissOrbitPath = (name, body, jd, mode) => {
+  const period = ORBIT_PERIOD_DAYS[name]
+  if (!period) return []
+
+  return Array.from({ length: ORBIT_SAMPLE_COUNT }, (_, index) => {
+    const sampleJd = jd + period * index / ORBIT_SAMPLE_COUNT
+    return swissOrbit(body, sampleJd, mode)
+  })
 }
 
 const swissPoint = (name, body, jd, mode, opts = {}) => {
@@ -50,6 +74,7 @@ const swissPoint = (name, body, jd, mode, opts = {}) => {
     point.orbit = name === 'Sun'
       ? { longitude: 0, latitude: 0, distanceAu: 0 }
       : swissOrbit(body, jd, mode)
+    point.orbitPath = name === 'Sun' ? [] : swissOrbitPath(name, body, jd, mode)
   }
 
   return point

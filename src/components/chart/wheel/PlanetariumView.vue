@@ -100,18 +100,6 @@ const BODY_STYLE = {
   },
 }
 
-const ORBIT_SHAPES = {
-  Moon:    { semiMajorAu: 1.000, eccentricity: 0.017, perihelion: 103 },
-  Mercury: { semiMajorAu: 0.387, eccentricity: 0.206, perihelion: 77 },
-  Venus:   { semiMajorAu: 0.723, eccentricity: 0.007, perihelion: 131 },
-  Mars:    { semiMajorAu: 1.524, eccentricity: 0.093, perihelion: 336 },
-  Jupiter: { semiMajorAu: 5.203, eccentricity: 0.049, perihelion: 14 },
-  Saturn:  { semiMajorAu: 9.537, eccentricity: 0.057, perihelion: 93 },
-  Uranus:  { semiMajorAu: 19.191, eccentricity: 0.046, perihelion: 173 },
-  Neptune: { semiMajorAu: 30.070, eccentricity: 0.011, perihelion: 48 },
-  Pluto:   { semiMajorAu: 39.482, eccentricity: 0.249, perihelion: 224 },
-}
-
 const ZODIAC_RADIUS = 320
 
 const props = defineProps({
@@ -137,6 +125,7 @@ const bodies          = computed(() => {
     name,
     style,
     orbit:     positions.get(name)?.orbit || null,
+    orbitPath: positions.get(name)?.orbitPath || [],
     longitude: name === 'Sun'
       ? 0
       : norm360((positions.get(name)?.longitude || 0) + props.wheelShift),
@@ -232,6 +221,12 @@ const visualOrbitRadius = (distanceAu) => {
   return 42 + Math.log1p(safeDistance) * 76
 }
 
+const visualOrbitPathRadius = (distanceAu, averageDistanceAu) => {
+  const radius        = visualOrbitRadius(distanceAu)
+  const averageRadius = visualOrbitRadius(averageDistanceAu)
+  return averageRadius + (radius - averageRadius) * 2.4
+}
+
 const bodyOrbitLongitude = (body) => norm360((body.orbit?.longitude ?? body.longitude) + props.wheelShift)
 
 const bodyOrbitRadius = (body) => body.orbit?.distanceAu
@@ -256,26 +251,15 @@ const circleLine = (radius, material, segments = 192) => {
   return line
 }
 
-const ellipseLine = (body, material, segments = 192) => {
-  const shape = ORBIT_SHAPES[body.name]
-  if (!shape) return circleLine(bodyOrbitRadius(body), material, segments)
+const sampledOrbitLine = (body, material) => {
+  if (!body.orbitPath.length) return circleLine(bodyOrbitRadius(body), material, 192)
 
-  const semiMajor  = visualOrbitRadius(shape.semiMajorAu)
-  const semiMinor  = semiMajor * Math.sqrt(1 - shape.eccentricity ** 2)
-  const focus      = semiMajor * shape.eccentricity
-  const rotation   = (180 - norm360(shape.perihelion + props.wheelShift)) * DEG_TO_RAD
-  const cos        = Math.cos(rotation)
-  const sin        = Math.sin(rotation)
-  const points     = Array.from({ length: segments }, (_, index) => {
-    const angle = index * Math.PI * 2 / segments
-    const x     = semiMajor * Math.cos(angle) - focus
-    const z     = semiMinor * Math.sin(angle)
-    return new Vector3(
-      x * cos - z * sin,
-      0,
-      x * sin + z * cos
-    )
-  })
+  const averageDistance = body.orbitPath.reduce((total, point) => total + (point.distanceAu || 0), 0) / body.orbitPath.length
+  const points          = body.orbitPath.map(point => eclipticPoint(
+    visualOrbitPathRadius(point.distanceAu, averageDistance),
+    norm360(point.longitude + props.wheelShift),
+    Math.sin((point.latitude || 0) * DEG_TO_RAD) * 18
+  ))
   const line = new LineLoop(new BufferGeometry().setFromPoints(points), material)
   rings.push(line)
   return line
@@ -386,7 +370,7 @@ const createWheel = () => {
   sceneRoot.add(circleLine(ZODIAC_RADIUS, zodiacMaterial))
   sceneRoot.add(circleLine(52, orbitMaterial))
   for (const body of bodies.value.filter(body => body.style.orbit > 0)) {
-    sceneRoot.add(ellipseLine(body, orbitMaterial, 192))
+    sceneRoot.add(sampledOrbitLine(body, orbitMaterial))
   }
   for (let index = 0; index < 12; index += 1) {
     const longitude = index * 30
