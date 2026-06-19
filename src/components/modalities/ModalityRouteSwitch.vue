@@ -4,17 +4,19 @@ import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
-  active: { type: String, required: true },
+  active: { type: String, default: '' },
   items:  { type: Array, default: null },
 })
 
 const { t } = useI18n()
 
 const switchItems = computed(() => props.items || [
-  { id: 'astrology', label: t('modalities.astrology'), to: '/natal', testId: 'modality-astrology' },
-  { id: 'vedic', label: t('modalities.vedic'), to: '/vedic', testId: 'modality-vedic' },
-  { id: 'humanDesign', label: t('modalities.human_design'), to: '/human-design', testId: 'modality-human-design' },
+  { id: 'astrology',   label: t('modalities.astrology'),    to: { name: 'natal' },        testId: 'modality-astrology' },
+  { id: 'vedic',       label: t('modalities.vedic'),        to: { name: 'vedic' },        testId: 'modality-vedic' },
+  { id: 'humanDesign', label: t('modalities.human_design'), to: { name: 'human-design' }, testId: 'modality-human-design' },
+  { id: 'report',      label: t('report.open'),             to: { name: 'report' },       testId: 'modality-report' },
 ])
+const activeModality = computed(() => props.active || 'astrology')
 </script>
 
 <template lang="pug">
@@ -23,8 +25,8 @@ nav.modality-switch(:aria-label='t("modalities.switch_aria")' data-testid='modal
     v-for='item in switchItems'
     :key='item.id'
     :to='item.to'
-    :class='{ active: item.id === active }'
-    :aria-current='item.id === active ? "page" : null'
+    :class='{ active: item.id === activeModality }'
+    :aria-current='item.id === activeModality ? "page" : null'
     :data-testid='item.testId'
   ) {{ item.label }}
 </template>

@@ -70,7 +70,7 @@ section.transits-page(data-testid='transits-page')
       .transit-side-panel
         ComparisonInsightPanel(:aspects='aspects' :base='natal' :comparison='transit' mode='transit')
         .transit-aspects-panel(v-if='aspects.length')
-          AspectTable(:aspects='aspects')
+          AspectTable(:aspects='aspects' :chart='natal')
     .transit-matrix-panel(v-if='natal && transit')
       AspectMatrix(
         :base='natal'

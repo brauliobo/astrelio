@@ -35,8 +35,26 @@ const openCenterLabel = computed(() =>
 )
 
 const compareWith          = ref(session.comparePersonId)
-const relationshipModality = ref('astrology')
+const relationshipModality = computed({
+  get: () => session.relationshipModality || 'astrology',
+  set: value => session.setRelationshipModality(value),
+})
 const onChange             = (e) => { session.setCompare(e.target.value); compareWith.value = e.target.value }
+const dominantAspect = computed(() => [...aspects.value].sort((a, b) => (b.strength || 0) - (a.strength || 0))[0] || null)
+const relationshipSummary = computed(() => relationshipModality.value === 'astrology'
+  ? [
+      { key: 'mode', label: t('relationship.overlay'), value: personB.value?.name || '—' },
+      { key: 'aspects', label: t('chart.summary'), value: aspects.value.length },
+      { key: 'tight', label: t('aspects.tight'), value: aspects.value.filter(aspect => aspect.delta <= 1).length },
+      { key: 'dominant', label: t('relationship.dominant_aspect'), value: dominantAspect.value ? `${t(`planets.${dominantAspect.value.a}`)} ${t(`aspects.${dominantAspect.value.type}`)} ${t(`planets.${dominantAspect.value.b}`)}` : '—' },
+    ]
+  : [
+      { key: 'mode', label: t('relationship.composite'), value: personB.value?.name || '—' },
+      { key: 'theme', label: t('human_design.connection_theme'), value: hdConnection.value?.connectionTheme || '—' },
+      { key: 'shared', label: t('human_design.shared_centers'), value: hdConnection.value?.sharedCenters?.length || 0 },
+      { key: 'channels', label: t('human_design.composite_channels'), value: hdConnection.value?.compositeChannels?.length || 0 },
+    ]
+)
 </script>
 
 <template lang="pug">
@@ -69,6 +87,11 @@ section.synastry-page(data-testid='synastry-page')
         data-testid='relationship-modality-human-design'
       ) {{ t('modalities.human_design') }}
 
+    .grid.gap-2.mb-4(class='sm:grid-cols-2 lg:grid-cols-4' data-testid='relationship-summary')
+      .rounded.border.p-3(v-for='item in relationshipSummary' :key='item.key' class='border-white/10 bg-white/5')
+        .text-xs.uppercase.tracking-wide.text-slate-500 {{ item.label }}
+        .mt-1.text-lg.font-semibold.text-slate-100 {{ item.value }}
+
     template(v-if='relationshipModality === "astrology"')
       ComparisonInsightPanel.mb-6(:aspects='aspects' :base='chartA' :comparison='chartB' mode='synastry')
       .grid.gap-6(class='lg:grid-cols-2')
@@ -81,7 +104,7 @@ section.synastry-page(data-testid='synastry-page')
             v-if='chartA && chartB'
           )
         .ui-panel(v-if='aspects.length')
-          AspectTable(:aspects='aspects')
+          AspectTable(:aspects='aspects' :chart='chartA')
     template(v-else)
       InsightPanel.mb-6(:connection='hdConnection' v-if='hdConnection')
       .grid.gap-6(class='lg:grid-cols-2' data-testid='human-design-connection')

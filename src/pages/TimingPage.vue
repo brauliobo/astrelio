@@ -21,6 +21,7 @@ import AspectMatrix from '../components/chart/AspectMatrix.vue'
 import Comparison from '../components/chart/Comparison.vue'
 import Insight from '../components/chart/Insight.vue'
 import ComparisonInsightPanel from '../components/chart/ComparisonInsightPanel.vue'
+import TimingContextChips from '../components/timing/TimingContextChips.vue'
 
 const props = defineProps({
   technique: { type: String, default: '' },
@@ -104,29 +105,38 @@ const progressionDateInput = computed({
   },
 })
 
-const solarReturnYear = ref(new Date().getFullYear())
+const solarReturnYear = computed({
+  get: () => session.solarReturnYear || new Date().getFullYear(),
+  set: (value) => {
+    const year = Number(value)
+    if (Number.isFinite(year)) session.setSolarReturnYear(year)
+  },
+})
 
-const profectionDateMs    = ref(Date.now())
+const profectionDateMs    = ref(session.profectionDateMs || Date.now())
 const profectionDateInput = computed({
   get: () => new Date(profectionDateMs.value).toISOString().slice(0, 10),
   set: (value) => {
     profectionDateMs.value = DateTime.fromISO(value).toMillis()
+    session.setProfectionDate(profectionDateMs.value)
   },
 })
 
-const solarArcDateMs    = ref(Date.now())
+const solarArcDateMs    = ref(session.solarArcDateMs || Date.now())
 const solarArcDateInput = computed({
   get: () => new Date(solarArcDateMs.value).toISOString().slice(0, 10),
   set: (value) => {
     solarArcDateMs.value = DateTime.fromISO(value).toMillis()
+    session.setSolarArcDate(solarArcDateMs.value)
   },
 })
 
-const lunarReturnDateMs    = ref(Date.now())
+const lunarReturnDateMs    = ref(session.lunarReturnDateMs || Date.now())
 const lunarReturnDateInput = computed({
   get: () => new Date(lunarReturnDateMs.value).toISOString().slice(0, 10),
   set: (value) => {
     lunarReturnDateMs.value = DateTime.fromISO(value).toMillis()
+    session.setLunarReturnDate(lunarReturnDateMs.value)
   },
 })
 
@@ -224,6 +234,22 @@ const formatUtcReturnDate = (chart) => {
 
 const solarReturnDate = computed(() => formatUtcReturnDate(solarReturn.value))
 const lunarReturnDate = computed(() => formatUtcReturnDate(lunarReturn.value))
+const activeAspectCount = computed(() => ({
+  transits:       transitAspects.value.length,
+  progressions:   progressionAspects.value.length,
+  'solar-return': solarReturnAspects.value.length,
+  profections:    profection.value ? 1 : 0,
+  'solar-arc':    solarArcAspects.value.length,
+  'lunar-return': lunarReturnAspects.value.length,
+})[activeTechnique.value] || 0)
+const activeTimingLabel = computed(() => ({
+  transits:       transitDateInput.value.replace('T', ' '),
+  progressions:   progressionDateInput.value,
+  'solar-return': String(solarReturnYear.value),
+  profections:    profectionDateInput.value,
+  'solar-arc':    solarArcDateInput.value,
+  'lunar-return': lunarReturnDateInput.value,
+})[activeTechnique.value] || '')
 </script>
 
 <template lang="pug">
@@ -231,7 +257,7 @@ section.timing-page(data-testid='timing-page')
   .flex.flex-wrap.items-center.justify-between.gap-3.mb-5
     div
       h1.text-xl.font-semibold.text-slate-100 {{ t('techniques.workspace.title') }}
-      p.text-sm.text-slate-400(v-if='person') {{ person.name }}
+      p.text-sm.text-slate-400(v-if='person') {{ t('techniques.workspace.subtitle') }} · {{ person.name }}
     .inline-flex.flex-wrap.gap-1.rounded-lg.border.p-1(class='border-white/10 bg-white/5' role='tablist' aria-label='Timing techniques')
       button.rounded-md.px-3.text-xs.font-medium.transition(
         v-for='option in techniqueOptions'
@@ -243,6 +269,14 @@ section.timing-page(data-testid='timing-page')
         :class='activeTechnique === option.id ? "py-1.5 bg-amber-300 text-slate-950" : "py-1.5 text-slate-300 hover:bg-white/10 hover:text-slate-100"'
         @click='selectTechnique(option.id)'
       ) {{ option.label() }}
+
+  TimingContextChips(
+    v-if='person'
+    :date-label='activeTimingLabel'
+    :contact-count='activeAspectCount'
+    :date-text='t("techniques.workspace.active_date")'
+    :contacts-text='t("techniques.workspace.active_contacts")'
+  )
 
   div(v-if='!person')
     p.text-slate-400 {{ t('chart.select_chart') }}
@@ -281,7 +315,7 @@ section.timing-page(data-testid='timing-page')
         .transit-side-panel
           ComparisonInsightPanel(:aspects='transitAspects' :base='natal' :comparison='transit' mode='transit')
           .transit-aspects-panel(v-if='transitAspects.length')
-            AspectTable(:aspects='transitAspects')
+            AspectTable(:aspects='transitAspects' :chart='natal')
       .transit-matrix-panel(v-if='natal && transit')
         AspectMatrix(
           :base='natal'

@@ -28,6 +28,33 @@
     "human_design": "Human Design",
     "switch_aria": "Alternar modalidade"
   },
+  "command_palette": {
+    "open": "Buscar",
+    "placeholder": "Busque pessoas, planetas, casas, técnicas...",
+    "empty": "Nenhum comando encontrado.",
+    "empty_query": "Nenhum comando corresponde a \"{query}\". Tente um nome de mapa, técnica, planeta ou preset.",
+    "switch_chart": "Trocar mapa para {name}",
+    "timing_now": "Tempo: trânsitos agora",
+    "progressions_today": "Tempo: progressões hoje",
+    "solar_return_this_year": "Tempo: revolução solar deste ano",
+    "profections_today": "Tempo: profecções hoje",
+    "solar_arc_today": "Tempo: arco solar hoje",
+    "lunar_return_today": "Tempo: revolução lunar hoje",
+    "groups": {
+      "navigation": "Navegação",
+      "modalities": "Lente do mapa",
+      "techniques": "Tempo",
+      "people": "Pessoas",
+      "planets": "Planetas",
+      "houses": "Casas",
+      "settings": "Configurações"
+    }
+  },
+  "relationship": {
+    "overlay": "Sobreposição",
+    "composite": "Composto",
+    "dominant_aspect": "Aspecto dominante"
+  },
   "home": {
     "heading": "Seus mapas",
     "empty": "Nenhum mapa salvo ainda. Crie o primeiro abaixo.",
@@ -81,7 +108,24 @@
     "wheel": "Roda",
     "positions": "Listas de posições",
     "aspectarian": "Aspectário",
-    "aspect_list": "Lista de aspectos"
+    "aspect_list": "Lista de aspectos",
+    "builder": "Seções do relatório",
+    "preset": "Preset do relatório",
+    "presets": {
+      "custom": "Personalizado",
+      "complete": "Completo",
+      "summary": "Resumo",
+      "technical": "Técnico",
+      "interpretive": "Interpretativo"
+    },
+    "sections": {
+      "wheel": "Roda",
+      "positions": "Posições",
+      "insights": "Insights",
+      "aspectarian": "Aspectário",
+      "interpretations": "Interpretações",
+      "aspects": "Lista de aspectos"
+    }
   },
   "human_design": {
     "open": "Human Design",
@@ -274,6 +318,8 @@
       "correlations": "Correlações",
       "team": "Equipe"
     },
+    "loading_transits": "Calculando contexto dos trânsitos...",
+    "transit_error": "Não foi possível calcular o contexto dos trânsitos.",
     "correlations": {
       "title": "Workspace de correlações",
       "note": "Lentes compactas que conectam portões, linhas, planetas, variáveis, relações e trânsitos sem copiar comentários de fonte.",
@@ -710,6 +756,29 @@
       "aspects": "Aspectos",
       "detailed": "Detalhado",
       "print": "Impressão"
+    },
+    "inspector": {
+      "kicker": "Dados do mapa",
+      "title": "Seleção",
+      "open": "Abrir dados",
+      "close": "Fechar dados do mapa",
+      "clear": "Limpar",
+      "clear_pins": "Limpar fixados",
+      "pinned_count": "fixados",
+      "active_chart": "Mapa",
+      "system": "Sistema",
+      "aspect": "Aspecto",
+      "bodies": "Corpos",
+      "human_design": "Human Design",
+      "pinned": "Seleções fixadas",
+      "sign": "Signo",
+      "degree": "Grau",
+      "house": "Casa",
+      "motion": "Movimento",
+      "allowed_orb": "Orbe permitido",
+      "strength": "Força",
+      "unavailable": "Sem dados de posição para este item.",
+      "context_hint": "Selecione pela roda do mapa ou tabela de posições para ver os detalhes completos."
     }
   },
   "analysis": {
@@ -983,7 +1052,9 @@
       "subtitle": "Trânsitos, progressões, retornos, profecções e direções em uma só área.",
       "technique": "Técnica",
       "chart": "Mapa",
-      "evidence": "Evidência"
+      "evidence": "Evidência",
+      "active_date": "Data",
+      "active_contacts": "Contatos"
     },
     "profections": {
       "title": "Profecção anual",

@@ -56,6 +56,24 @@ export const SETTING_PRESETS = {
 
 export const SETTING_PRESET_KEYS = Object.keys(SETTING_PRESETS)
 
+export const REPORT_SECTION_DEFAULTS = {
+  wheel:           true,
+  positions:       true,
+  insights:        true,
+  aspectarian:     true,
+  interpretations: true,
+  aspects:         true,
+}
+
+export const REPORT_PRESETS = {
+  complete:     { ...REPORT_SECTION_DEFAULTS },
+  summary:      { wheel: true, positions: true, insights: true, aspectarian: false, interpretations: false, aspects: false },
+  technical:    { wheel: true, positions: true, insights: false, aspectarian: true, interpretations: false, aspects: true },
+  interpretive: { wheel: true, positions: false, insights: true, aspectarian: false, interpretations: true, aspects: false },
+}
+
+export const REPORT_PRESET_KEYS = Object.keys(REPORT_PRESETS)
+
 const PRESET_FIELDS = [
   'houseSystem',
   'zodiac',
@@ -69,6 +87,9 @@ const PRESET_FIELDS = [
 
 const matchesPreset = (state, preset) =>
   PRESET_FIELDS.every((field) => state[field] === preset[field])
+
+const matchesReportPreset = (sections, preset) =>
+  Object.keys(REPORT_SECTION_DEFAULTS).every((field) => Boolean(sections?.[field]) === Boolean(preset[field]))
 
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
@@ -90,7 +111,8 @@ export const useSettingsStore = defineStore('settings', {
       nodeMode:             'mean',
       includeModernPlanets: false,
       interpretationStyle:  'classical'
-    }
+    },
+    reportSections:       { ...REPORT_SECTION_DEFAULTS }
   }),
   getters: {
     activePreset: (state) =>
@@ -105,7 +127,9 @@ export const useSettingsStore = defineStore('settings', {
       zodiac:      state.zodiac,
       houseSystem: state.houseSystem,
       nodeMode:    state.nodeMode === 'true' ? 'true' : 'mean',
-    })
+    }),
+    activeReportPreset: (state) =>
+      Object.entries(REPORT_PRESETS).find(([, preset]) => matchesReportPreset(state.reportSections, preset))?.[0] || 'custom',
   },
   actions: {
     setLocale(l) {
@@ -130,6 +154,7 @@ export const useSettingsStore = defineStore('settings', {
       this.vedic.nodeMode ||= 'mean'
       this.vedic.includeModernPlanets ??= false
       this.vedic.interpretationStyle ||= 'classical'
+      this.reportSections = { ...REPORT_SECTION_DEFAULTS, ...(this.reportSections || {}) }
       if (!['dark', 'light'].includes(this.theme)) this.theme = 'dark'
     },
     setTheme(theme) {
@@ -147,6 +172,15 @@ export const useSettingsStore = defineStore('settings', {
       const preset = SETTING_PRESETS[presetKey]
       if (!preset) return
       this.$patch({ ...preset })
+    },
+    applyReportPreset(presetKey) {
+      const preset = REPORT_PRESETS[presetKey]
+      if (!preset) return
+      this.reportSections = { ...REPORT_SECTION_DEFAULTS, ...preset }
+    },
+    setReportSection(key, value) {
+      if (!Object.hasOwn(REPORT_SECTION_DEFAULTS, key)) return
+      this.reportSections[key] = Boolean(value)
     },
     reset() {
       this.$reset()

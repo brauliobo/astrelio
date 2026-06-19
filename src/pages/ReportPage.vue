@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
-import { useSettingsStore } from '../stores/settings.js'
+import { REPORT_PRESET_KEYS, useSettingsStore } from '../stores/settings.js'
 import { useNatalChart } from '../composables/useChart.js'
 import { naturalAspects } from '../lib/astro/aspects.js'
 import { transitsFor } from '../lib/astro/transits.js'
@@ -17,6 +17,7 @@ import Insight from '../components/chart/Insight.vue'
 import Wheel from '../components/chart/Wheel.vue'
 import InterpretationPanel from '../components/chart/InterpretationPanel.vue'
 import PlanetList from '../components/chart/PlanetList.vue'
+import ModalityRouteSwitch from '../components/modalities/ModalityRouteSwitch.vue'
 import { downloadPng, downloadSvg } from '../lib/export/chartImage.js'
 import { safeFilePart, timestampFilePart } from '../lib/export/download.js'
 
@@ -43,6 +44,19 @@ const systemLabel    = computed(() => `${t(`settings.${settings.zodiac}`)} · ${
 const reportRoot     = ref(null)
 const exportStatus   = ref('')
 const isExportingPng = ref(false)
+const sectionOptions = computed(() => [
+  { key: 'wheel',           label: t('report.sections.wheel') },
+  { key: 'positions',       label: t('report.sections.positions') },
+  { key: 'insights',        label: t('report.sections.insights') },
+  { key: 'aspectarian',     label: t('report.sections.aspectarian') },
+  { key: 'interpretations', label: t('report.sections.interpretations') },
+  { key: 'aspects',         label: t('report.sections.aspects') },
+])
+const reportPresetOptions = REPORT_PRESET_KEYS
+
+const onReportPreset = (event) => {
+  settings.applyReportPreset(event.target.value)
+}
 
 const printReport = () => window.print()
 
@@ -90,6 +104,7 @@ section.report-page(ref='reportRoot' data-testid='report-page')
         h1.text-2xl.font-semibold.text-slate-100 {{ t('report.title', { name: person.name }) }}
         p.text-xs.text-slate-400 {{ birthHeader }}
       div
+        ModalityRouteSwitch.mb-2(active='report')
         .flex.flex-wrap.gap-2
           RouterLink.rounded.px-3.py-2.text-sm.text-slate-300(
             :to='natalRoute'
@@ -115,6 +130,22 @@ section.report-page(ref='reportRoot' data-testid='report-page')
             data-testid='report-print'
           ) {{ t('report.print') }}
         p.mt-2.text-right.text-xs.text-slate-400(data-testid='report-export-status' v-if='exportStatus') {{ exportStatus }}
+    .ui-panel.mb-5(data-testid='report-builder')
+      .flex.flex-wrap.items-center.justify-between.gap-3.mb-3
+        h2.text-sm.font-semibold.text-slate-100 {{ t('report.builder') }}
+        label.text-xs.text-slate-400
+          span.mr-2 {{ t('report.preset') }}
+          select.ui-control.ui-control-sm(:value='settings.activeReportPreset' @change='onReportPreset' data-testid='report-preset')
+            option(value='custom' disabled) {{ t('report.presets.custom') }}
+            option(v-for='preset in reportPresetOptions' :key='preset' :value='preset') {{ t(`report.presets.${preset}`) }}
+      .flex.flex-wrap.gap-2
+        label.report-section-toggle(
+          v-for='section in sectionOptions'
+          :key='section.key'
+          :data-testid='`report-section-${section.key}`'
+        )
+          input(type='checkbox' :checked='settings.reportSections[section.key]' @change='settings.setReportSection(section.key, $event.target.checked)')
+          span {{ section.label }}
     .report-print-surface(data-testid='tropical-print-report')
       header.report-print-header
         div
@@ -128,8 +159,8 @@ section.report-page(ref='reportRoot' data-testid='report-page')
           div
             dt {{ t('chart.moon_phase') }}
             dd {{ phase }}
-      section.report-print-grid(data-testid='report-wheel-section')
-        .report-chart-panel
+      section.report-print-grid(v-if='settings.reportSections.wheel || settings.reportSections.positions' data-testid='report-wheel-section')
+        .report-chart-panel(v-if='settings.reportSections.wheel')
           h2.report-section-title {{ t('report.wheel') }}
           Wheel(
             :natal='chart'
@@ -139,7 +170,7 @@ section.report-page(ref='reportRoot' data-testid='report-page')
             :show-mode-controls='false'
             v-if='chart'
           )
-        .report-position-panel(data-testid='report-position-lists')
+        .report-position-panel(v-if='settings.reportSections.positions' data-testid='report-position-lists')
           h2.report-section-title {{ t('report.positions') }}
           .report-position-lists
             section
@@ -148,9 +179,9 @@ section.report-page(ref='reportRoot' data-testid='report-page')
             section(v-if='transit')
               h3.report-subsection-title {{ t('chart.transit_positions') }}
               PlanetList(:chart='transit')
-      .report-section(data-testid='report-insight-section')
+      .report-section(v-if='settings.reportSections.insights' data-testid='report-insight-section')
         Insight(:chart='chart' :aspects='aspects' :phase-label='phase' v-if='chart')
-      .report-section(data-testid='report-aspectarian-section')
+      .report-section(v-if='settings.reportSections.aspectarian' data-testid='report-aspectarian-section')
         h2.report-section-title {{ t('report.aspectarian') }}
         AspectMatrix(
           :base='chart'
@@ -161,11 +192,11 @@ section.report-page(ref='reportRoot' data-testid='report-page')
           :planet-glyph-renderer='settings.planetGlyphRenderer'
           v-if='chart && transit'
         )
-      .report-section(data-testid='report-interpretations-section')
+      .report-section(v-if='settings.reportSections.interpretations' data-testid='report-interpretations-section')
         InterpretationPanel(:chart='chart' :aspects='aspects' :placement-limit='8' :aspect-limit='5' v-if='chart')
-      .report-section(v-if='aspects.length' data-testid='report-aspect-list-section')
+      .report-section(v-if='settings.reportSections.aspects && aspects.length' data-testid='report-aspect-list-section')
         h2.report-section-title {{ t('report.aspect_list') }}
-        AspectTable(:aspects='aspects')
+        AspectTable(:aspects='aspects' :chart='chart')
 </template>
 
 <style scoped>
@@ -256,6 +287,24 @@ section.report-page(ref='reportRoot' data-testid='report-page')
   font-size: 0.92rem;
   font-weight: 800;
   margin: 0 0 0.85rem;
+}
+
+.report-section-toggle {
+  align-items: center;
+  background: var(--app-chip);
+  border: 1px solid var(--app-border-soft);
+  border-radius: 999px;
+  color: var(--app-text-soft);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 700;
+  gap: 0.4rem;
+  padding: 0.35rem 0.65rem;
+}
+
+.report-section-toggle:hover {
+  background: var(--app-chip-hover);
 }
 
 .report-position-lists {

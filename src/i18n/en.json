@@ -28,6 +28,33 @@
     "human_design": "Human Design",
     "switch_aria": "Modality switch"
   },
+  "command_palette": {
+    "open": "Search",
+    "placeholder": "Search people, planets, houses, techniques...",
+    "empty": "No commands found.",
+    "empty_query": "No commands match \"{query}\". Try a chart name, technique, planet, or preset.",
+    "switch_chart": "Switch chart to {name}",
+    "timing_now": "Timing: Transits now",
+    "progressions_today": "Timing: Progressions today",
+    "solar_return_this_year": "Timing: Solar return this year",
+    "profections_today": "Timing: Profections today",
+    "solar_arc_today": "Timing: Solar arc today",
+    "lunar_return_today": "Timing: Lunar return today",
+    "groups": {
+      "navigation": "Navigation",
+      "modalities": "Map lens",
+      "techniques": "Timing",
+      "people": "People",
+      "planets": "Planets",
+      "houses": "Houses",
+      "settings": "Settings"
+    }
+  },
+  "relationship": {
+    "overlay": "Overlay",
+    "composite": "Composite",
+    "dominant_aspect": "Dominant aspect"
+  },
   "home": {
     "heading": "Your charts",
     "empty": "No charts saved yet. Create your first one below.",
@@ -81,7 +108,24 @@
     "wheel": "Wheel",
     "positions": "Position lists",
     "aspectarian": "Aspectarian",
-    "aspect_list": "Aspect list"
+    "aspect_list": "Aspect list",
+    "builder": "Report sections",
+    "preset": "Report preset",
+    "presets": {
+      "custom": "Custom",
+      "complete": "Complete",
+      "summary": "Summary",
+      "technical": "Technical",
+      "interpretive": "Interpretive"
+    },
+    "sections": {
+      "wheel": "Wheel",
+      "positions": "Positions",
+      "insights": "Insights",
+      "aspectarian": "Aspectarian",
+      "interpretations": "Interpretations",
+      "aspects": "Aspect list"
+    }
   },
   "human_design": {
     "open": "Human Design",
@@ -274,6 +318,8 @@
       "correlations": "Correlations",
       "team": "Team"
     },
+    "loading_transits": "Calculating transit context...",
+    "transit_error": "Transit context could not be calculated.",
     "correlations": {
       "title": "Correlation workspace",
       "note": "Compact lenses that connect gates, lines, planets, variables, relationships, and transits without copying source commentary.",
@@ -710,6 +756,29 @@
       "aspects": "Aspects",
       "detailed": "Detailed",
       "print": "Print"
+    },
+    "inspector": {
+      "kicker": "Chart data",
+      "title": "Selection",
+      "open": "Open data",
+      "close": "Close chart data",
+      "clear": "Clear",
+      "clear_pins": "Clear pins",
+      "pinned_count": "pinned",
+      "active_chart": "Chart",
+      "system": "System",
+      "aspect": "Aspect",
+      "bodies": "Bodies",
+      "human_design": "Human Design",
+      "pinned": "Pinned selections",
+      "sign": "Sign",
+      "degree": "Degree",
+      "house": "House",
+      "motion": "Motion",
+      "allowed_orb": "Allowed orb",
+      "strength": "Strength",
+      "unavailable": "No placement data for this item.",
+      "context_hint": "Select from a chart wheel or position table for full placement details."
     }
   },
   "analysis": {
@@ -983,7 +1052,9 @@
       "subtitle": "Transits, progressions, returns, profections, and directions in one workspace.",
       "technique": "Technique",
       "chart": "Chart",
-      "evidence": "Evidence"
+      "evidence": "Evidence",
+      "active_date": "Date",
+      "active_contacts": "Contacts"
     },
     "profections": {
       "title": "Annual profection",

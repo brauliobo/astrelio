@@ -70,7 +70,7 @@ const observeChartPanel = async () => {
 }
 
 watch(savedPerson, (next) => {
-  if (!next || hasRoutePerson.value) return
+  if (!next || hasRoutePerson.value || route.name !== 'natal') return
   router.replace(natalRouteForPerson(next))
 }, { immediate: true })
 
@@ -162,7 +162,7 @@ section.natal-page(data-testid='natal-page')
         PlanetList(:chart='chart' v-if='chart')
         .mt-4.text-xs.text-slate-400(data-testid='moon-phase') {{ t('chart.moon_phase') }}: {{ phase }}
       .ui-panel(v-if='aspects.length')
-        AspectTable(:aspects='aspects')
+        AspectTable(:aspects='aspects' :chart='chart')
 </template>
 
 <style scoped>
