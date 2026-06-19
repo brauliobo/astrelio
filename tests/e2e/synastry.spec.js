@@ -22,4 +22,12 @@ test.describe('Synastry', () => {
     const select = page.getByTestId('compare-select')
     await expect(select.locator('option')).toHaveCount(3) // empty + 2 people
   })
+
+  test('shows relationship summaries across modalities', async ({ page }) => {
+    await page.goto('/#/synastry')
+    await expect(page.getByTestId('relationship-summary')).toBeVisible()
+    await page.getByTestId('relationship-modality-human-design').click()
+    await expect(page.getByTestId('relationship-summary')).toBeVisible()
+    await expect(page.getByTestId('human-design-connection')).toBeVisible()
+  })
 })

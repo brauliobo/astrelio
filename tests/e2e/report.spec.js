@@ -36,4 +36,17 @@ test.describe('Report', () => {
     expect(download.suggestedFilename()).toMatch(/^astrelio-braulio-chart-.*\.png$/)
     await expect(page.getByTestId('report-export-status')).toHaveText(/PNG/)
   })
+
+  test('uses report presets to hide and restore report sections', async ({ page }) => {
+    await page.goto('/#/report')
+    await expect(page.getByTestId('report-builder')).toBeVisible()
+    await expect(page.getByTestId('report-interpretations-section')).toBeVisible()
+
+    await page.getByTestId('report-preset').selectOption('technical')
+    await expect(page.getByTestId('report-interpretations-section')).toBeHidden()
+    await expect(page.getByTestId('report-aspectarian-section')).toBeVisible()
+
+    await page.reload()
+    await expect(page.getByTestId('report-interpretations-section')).toBeHidden()
+  })
 })
