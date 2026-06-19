@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:verify": "vite build --mode verify",
     "preview": "vite preview",
     "lint": "node scripts/check-vue-pug.mjs && eslint .",
     "format": "prettier --write .",

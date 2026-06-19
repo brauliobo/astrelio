@@ -12,5 +12,6 @@ test-results
 playwright-report
 playwright/.cache
 coverage
+tmp/
 research/hdkit/
 mybodygraph/

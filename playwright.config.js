@@ -16,7 +16,7 @@ export default defineConfig({
     { name: 'mobile-pixel',     use: { ...devices['Pixel 7'] } }
   ],
   webServer: {
-    command: 'npm run build && npm run preview -- --port 4173 --strictPort',
+    command: 'npm run build:verify && npm run preview -- --outDir tmp/local-build --port 4173 --strictPort',
     url: BASE,
     reuseExistingServer: !process.env.CI,
     timeout: 180_000
