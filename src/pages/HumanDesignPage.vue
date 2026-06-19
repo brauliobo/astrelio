@@ -4,8 +4,9 @@ import { useI18n } from 'vue-i18n'
 import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
 import { useSettingsStore } from '../stores/settings.js'
+import { useHumanDesignTransitContext } from '../composables/useHumanDesignTransitContext.js'
 import { modalityChart } from '../lib/modalities/index.js'
-import { buildHumanDesignTransitChart, humanDesignTeamAnalysis, humanDesignTransitConnection } from '../lib/human-design/bodygraph.js'
+import { humanDesignTeamAnalysis } from '../lib/human-design/bodygraph.js'
 import { humanDesignCrossTitleLabel, humanDesignValueLabel } from '../lib/human-design/labels.js'
 import ActivationTable from '../components/human-design/ActivationTable.vue'
 import CircuitStreamPanel from '../components/human-design/CircuitStreamPanel.vue'
@@ -75,14 +76,15 @@ const transitDateInput = computed({
   },
 })
 
-const transitChart = computed(() =>
-  person.value ? buildHumanDesignTransitChart(transitDateMs.value, person.value.lat, person.value.lon) : null
-)
-const transitConnection = computed(() =>
-  chart.value && transitChart.value
-    ? humanDesignTransitConnection(chart.value, transitChart.value, { lat: person.value.lat, lon: person.value.lon })
-    : null
-)
+const transitContext = useHumanDesignTransitContext({
+  enabled:    computed(() => ['transits', 'correlations'].includes(activeTab.value)),
+  natalChart: chart,
+  person,
+  dateMs:     transitDateMs,
+})
+const transitStatus     = computed(() => transitContext.status.value)
+const transitChart      = computed(() => transitContext.data.value?.transitChart || null)
+const transitConnection = computed(() => transitContext.data.value?.connection || null)
 
 const teamIds = computed(() => {
   if (selectedTeamIds.value.length) return selectedTeamIds.value
@@ -187,6 +189,8 @@ section.human-design-page(data-testid='human-design-page')
 
     .ui-panel(v-else-if='activeTab === "transits"')
       h2.text-sm.font-semibold.text-slate-100.mb-4 {{ t('human_design.transits') }}
+      p.text-xs.text-slate-400.mb-3(v-if='transitStatus === "loading"' data-testid='hd-transit-status') {{ t('human_design.loading_transits') }}
+      p.text-xs.text-rose-200.mb-3(v-else-if='transitStatus === "error"' data-testid='hd-transit-status') {{ t('human_design.transit_error') }}
       TransitPanel(
         :transit-chart='transitChart'
         :connection='transitConnection'
@@ -195,6 +199,8 @@ section.human-design-page(data-testid='human-design-page')
       )
 
     .ui-panel(v-else-if='activeTab === "correlations"')
+      p.text-xs.text-slate-400.mb-3(v-if='transitStatus === "loading"' data-testid='hd-transit-status') {{ t('human_design.loading_transits') }}
+      p.text-xs.text-rose-200.mb-3(v-else-if='transitStatus === "error"' data-testid='hd-transit-status') {{ t('human_design.transit_error') }}
       CorrelationPanel(
         :chart='chart'
         :transit-chart='transitChart'
