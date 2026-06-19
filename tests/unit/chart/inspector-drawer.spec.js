@@ -77,6 +77,7 @@ describe('ChartInspectorDrawer', () => {
 
     inspector.setPinnedHighlight({ bodies: ['Sun'], aspectKey: '' }, chart)
     await nextTick()
+    await nextTick()
 
     document.body.querySelector('[data-testid="chart-inspector-close"]').click()
     await nextTick()
@@ -100,5 +101,29 @@ describe('ChartInspectorDrawer', () => {
 
     expect(inspector.pinnedCount).toBe(0)
     expect(document.body.querySelector('[data-testid="chart-inspector-drawer"]')).toBeNull()
+  })
+
+  it('uses dialog semantics, closes with Escape, and returns focus', async () => {
+    const returnButton = document.createElement('button')
+    returnButton.dataset.testid = 'return-focus'
+    document.body.append(returnButton)
+    returnButton.focus()
+
+    const { inspector } = mountDrawer()
+
+    inspector.setPinnedHighlight({ bodies: ['Sun'], aspectKey: '' }, chart)
+    await nextTick()
+
+    const drawer = document.body.querySelector('[data-testid="chart-inspector-drawer"]')
+
+    expect(drawer.getAttribute('role')).toBe('dialog')
+    expect(drawer.getAttribute('aria-modal')).toBe('true')
+
+    drawer.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+    await nextTick()
+    await nextTick()
+
+    expect(inspector.drawerOpen).toBe(false)
+    expect(returnButton).toBe(document.activeElement)
   })
 })

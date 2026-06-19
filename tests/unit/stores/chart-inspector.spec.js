@@ -1,5 +1,6 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it } from 'vitest'
+import { humanDesignHighlight } from '../../../src/lib/chart/highlight.js'
 import { useChartInspectorStore } from '../../../src/stores/chartInspector.js'
 
 const chart = {
@@ -66,5 +67,50 @@ describe('chartInspector store', () => {
     expect(inspector.pinnedCount).toBe(0)
     expect(inspector.drawerOpen).toBe(false)
     expect(inspector.canOpenDrawer).toBe(true)
+  })
+
+  it('tracks Human Design pinned selections without astrology carryover', () => {
+    const inspector = useChartInspectorStore()
+    const hdChart   = { type: 'Generator', details: { gates: [{ gate: 49 }] } }
+
+    inspector.setPinnedHighlight({ bodies: ['Sun', 'Mars'], aspectKey: 'Sun-Mars-sextile' }, chart)
+    inspector.receiveHighlightEvent({
+      chart:     hdChart,
+      pinned:    true,
+      highlight: humanDesignHighlight('gate', 49, { line: 6 }),
+    })
+
+    expect(inspector.selectionKind).toBe('gate')
+    expect(inspector.activeHumanDesign).toEqual({ type: 'gate', value: 49, line: 6 })
+    expect(inspector.activeBodies).toEqual([])
+    expect(inspector.activeAspectKey).toBe('')
+    expect(inspector.drawerOpen).toBe(true)
+    expect(inspector.sourceChart).toBe(hdChart)
+    expect(inspector.pinnedCount).toBe(2)
+
+    inspector.receiveHighlightEvent({
+      chart:     hdChart,
+      pinned:    true,
+      highlight: humanDesignHighlight('gate', 49, { line: 6 }),
+    })
+
+    expect(inspector.pinnedCount).toBe(2)
+  })
+
+  it('loads pinned selections by active chart key', () => {
+    const inspector = useChartInspectorStore()
+
+    inspector.setActiveChartKey('person:ada')
+    inspector.setPinnedHighlight({ bodies: ['Sun'], aspectKey: '' }, chart)
+
+    inspector.setActiveChartKey('person:marie')
+    expect(inspector.pinnedCount).toBe(0)
+    expect(inspector.canOpenDrawer).toBe(false)
+
+    inspector.setPinnedHighlight({ bodies: ['Mars'], aspectKey: '' }, chart)
+    inspector.setActiveChartKey('person:ada')
+
+    expect(inspector.pinnedCount).toBe(1)
+    expect(inspector.activeBodies).toEqual(['Sun'])
   })
 })

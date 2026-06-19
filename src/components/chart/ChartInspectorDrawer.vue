@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useChartInspectorStore } from '../../stores/chartInspector.js'
 import { houseOf } from '../../lib/astro/houses.js'
@@ -18,6 +18,20 @@ const { t, tm, te } = useI18n()
 const inspector     = useChartInspectorStore()
 const signs         = computed(() => tm('zodiac.signs'))
 const activeChart   = computed(() => inspector.sourceChart || props.chart || null)
+const drawerRef     = ref(null)
+const closeButtonRef = ref(null)
+const pinButtons    = ref([])
+const pinFocusIndex = ref(0)
+let returnFocusElement = null
+
+const focusableSelector = [
+  'button:not([disabled])',
+  '[href]',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(',')
 
 const label = (scope, key) => {
   const path = `${scope}.${key}`
@@ -178,6 +192,89 @@ const humanDesignRows = computed(() => {
 const hasPlacementData = computed(() =>
   placementRows.value.some(body => body.rows.length)
 )
+
+const closeDrawer = () => inspector.closeDrawer()
+
+const focusReturnTarget = () => {
+  if (returnFocusElement?.isConnected) return returnFocusElement
+  return document.querySelector('[data-testid="context-open-inspector"]')
+}
+
+const focusFirstControl = async () => {
+  await nextTick()
+  ;(closeButtonRef.value || document.querySelector('[data-testid="chart-inspector-close"]') || drawerRef.value)?.focus?.()
+}
+
+const focusPin = async (index) => {
+  if (!inspector.pinnedHighlights.length) return
+  pinFocusIndex.value = Math.max(0, Math.min(index, inspector.pinnedHighlights.length - 1))
+  await nextTick()
+  pinButtons.value?.[pinFocusIndex.value]?.focus?.()
+}
+
+const selectPin = (pin, index) => {
+  pinFocusIndex.value = index
+  inspector.setPinnedHighlight(pin)
+}
+
+const onDrawerKeydown = (event) => {
+  if (event.key === 'Escape') {
+    event.preventDefault()
+    closeDrawer()
+    return
+  }
+
+  if (event.key !== 'Tab' || !drawerRef.value) return
+
+  const focusable = [...drawerRef.value.querySelectorAll(focusableSelector)]
+    .filter(element => element.offsetParent !== null || element === document.activeElement)
+  if (!focusable.length) return
+
+  const first = focusable[0]
+  const last  = focusable.at(-1)
+
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault()
+    last.focus()
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault()
+    first.focus()
+  }
+}
+
+const onPinKeydown = (event, pin, index) => {
+  if (['ArrowDown', 'ArrowRight'].includes(event.key)) {
+    event.preventDefault()
+    focusPin((index + 1) % inspector.pinnedHighlights.length)
+  } else if (['ArrowUp', 'ArrowLeft'].includes(event.key)) {
+    event.preventDefault()
+    focusPin((index - 1 + inspector.pinnedHighlights.length) % inspector.pinnedHighlights.length)
+  } else if (event.key === 'Home') {
+    event.preventDefault()
+    focusPin(0)
+  } else if (event.key === 'End') {
+    event.preventDefault()
+    focusPin(inspector.pinnedHighlights.length - 1)
+  } else if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault()
+    selectPin(pin, index)
+  }
+}
+
+watch(() => inspector.drawerOpen, async (open) => {
+  if (open) {
+    returnFocusElement = document.activeElement
+    await focusFirstControl()
+  } else {
+    await nextTick()
+    focusReturnTarget()?.focus?.()
+  }
+}, { flush: 'post' })
+
+watch(() => inspector.activeHighlight, () => {
+  const index = inspector.pinnedHighlights.findIndex(pin => sameHighlight(pin, inspector.activeHighlight))
+  pinFocusIndex.value = Math.max(0, index)
+})
 </script>
 
 <template lang="pug">
@@ -185,17 +282,23 @@ Teleport(to='body')
   .chart-inspector-backdrop(
     v-if='inspector.drawerOpen && inspector.hasSelection'
     data-testid='chart-inspector-backdrop'
-    @click='inspector.closeDrawer()'
+    @click='closeDrawer()'
   )
   aside.chart-inspector-drawer(
     v-if='inspector.drawerOpen && inspector.hasSelection'
     aria-live='polite'
+    aria-modal='true'
+    aria-labelledby='chart-inspector-title'
     data-testid='chart-inspector-drawer'
+    ref='drawerRef'
+    role='dialog'
+    tabindex='-1'
+    @keydown='onDrawerKeydown'
   )
     header.chart-inspector-drawer__header
       div
         p.chart-inspector-drawer__kicker {{ t('chart.inspector.kicker') }}
-        h2.chart-inspector-drawer__title {{ title }}
+        h2#chart-inspector-title.chart-inspector-drawer__title {{ title }}
         span.chart-inspector-drawer__count(
           v-if='inspector.pinnedCount'
           data-testid='chart-inspector-pin-count'
@@ -209,8 +312,9 @@ Teleport(to='body')
         button.chart-inspector-drawer__close(
           type='button'
           :aria-label='t("chart.inspector.close")'
-          @click='inspector.closeDrawer()'
+          @click='closeDrawer()'
           data-testid='chart-inspector-close'
+          ref='closeButtonRef'
         )
           span(aria-hidden='true') x
 
@@ -261,12 +365,15 @@ Teleport(to='body')
         ) {{ t('chart.inspector.clear_pins') }}
       .chart-inspector-drawer__pins(data-testid='chart-inspector-pins')
         button.chart-inspector-drawer__pin(
-          v-for='pin in inspector.pinnedHighlights'
+          v-for='(pin, index) in inspector.pinnedHighlights'
           :key='`${pin.aspectKey || "selection"}-${pin.bodies?.join("-") || ""}-${pin.hd?.type || ""}-${pin.hd?.value || ""}`'
           type='button'
           :class='{ active: sameHighlight(pin, inspector.activeHighlight) }'
-          @click='inspector.setPinnedHighlight(pin)'
+          :tabindex='index === pinFocusIndex ? 0 : -1'
+          @click='selectPin(pin, index)'
+          @keydown='onPinKeydown($event, pin, index)'
           data-testid='chart-inspector-pin'
+          ref='pinButtons'
         ) {{ titleForHighlight(pin) }}
 </template>
 

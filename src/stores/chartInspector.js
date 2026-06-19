@@ -7,6 +7,8 @@ export const useChartInspectorStore = defineStore('chartInspector', {
     hoverHighlight:  null,
     pinnedHighlight: null,
     pinnedHighlights: [],
+    pinnedHighlightsByChart: {},
+    activeChartKey:  'global',
     lastActiveHighlight: null,
     drawerOpen:      false,
     sourceChart:     null,
@@ -22,6 +24,25 @@ export const useChartInspectorStore = defineStore('chartInspector', {
     selectionKind() { return this.activeHumanDesign ? this.activeHumanDesign.type : this.activeAspectKey ? 'aspect' : this.activeBodies.length ? 'planet' : '' },
   },
   actions: {
+    savePinnedHighlights() {
+      this.pinnedHighlightsByChart = {
+        ...this.pinnedHighlightsByChart,
+        [this.activeChartKey]: this.pinnedHighlights,
+      }
+    },
+    setActiveChartKey(key = 'global') {
+      const nextKey = key || 'global'
+      const saved   = this.pinnedHighlightsByChart[nextKey] || []
+      if (this.activeChartKey === nextKey && this.pinnedHighlights.length) return
+
+      this.activeChartKey     = nextKey
+      this.hoverHighlight     = null
+      this.pinnedHighlights   = saved
+      this.pinnedHighlight    = this.pinnedHighlights[0] || null
+      this.lastActiveHighlight = this.pinnedHighlight
+      this.drawerOpen         = false
+      this.sourceChart        = null
+    },
     receiveHighlightEvent(detail = {}) {
       const highlight = detail.highlight ? normalizeHighlight(detail.highlight) : null
       if (detail.chart) this.sourceChart = markRaw(detail.chart)
@@ -32,6 +53,7 @@ export const useChartInspectorStore = defineStore('chartInspector', {
           this.pinnedHighlights    = []
           this.lastActiveHighlight = null
           this.drawerOpen          = false
+          this.savePinnedHighlights()
           return
         }
         if (this.pinnedHighlight && !this.pinnedHighlights.some(item => sameHighlight(item, this.pinnedHighlight))) {
@@ -39,6 +61,7 @@ export const useChartInspectorStore = defineStore('chartInspector', {
         }
         this.lastActiveHighlight = this.pinnedHighlight
         this.drawerOpen      = Boolean(this.pinnedHighlight)
+        this.savePinnedHighlights()
         return
       }
 
@@ -61,6 +84,7 @@ export const useChartInspectorStore = defineStore('chartInspector', {
       }
       if (this.pinnedHighlight) this.lastActiveHighlight = this.pinnedHighlight
       this.drawerOpen      = Boolean(this.pinnedHighlight)
+      this.savePinnedHighlights()
     },
     removePinnedHighlight(highlight) {
       this.pinnedHighlights = this.pinnedHighlights.filter(item => !sameHighlight(item, highlight))
@@ -68,11 +92,13 @@ export const useChartInspectorStore = defineStore('chartInspector', {
         this.pinnedHighlight = this.pinnedHighlights[0] || null
         this.drawerOpen      = Boolean(this.pinnedHighlight)
       }
+      this.savePinnedHighlights()
     },
     clearPinnedHighlights() {
       this.pinnedHighlight  = null
       this.pinnedHighlights = []
       if (!this.hoverHighlight) this.drawerOpen = false
+      this.savePinnedHighlights()
     },
     openDrawer() {
       if (!this.pinnedHighlight && this.pinnedHighlights.length) this.pinnedHighlight = this.pinnedHighlights[0]
@@ -89,6 +115,11 @@ export const useChartInspectorStore = defineStore('chartInspector', {
       this.lastActiveHighlight = null
       this.drawerOpen      = false
       this.sourceChart     = null
+      this.savePinnedHighlights()
     },
+  },
+  persist: {
+    key:  'astrelio_chart_inspector',
+    pick: ['activeChartKey', 'pinnedHighlightsByChart'],
   },
 })

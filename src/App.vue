@@ -47,6 +47,13 @@ const activeTheme     = computed(() => settings.theme === 'light' ? 'light' : 'd
 const isVedicRoute    = computed(() => routeModality.value === 'vedic')
 const backgroundChart = useNatalChart(activePerson, settings)
 const planetariumChart = computed(() => backgroundChart.value || transitsFor(Date.now(), 0, 0, settings.chartOptions))
+const activeChartKey = computed(() => {
+  if (routePerson.value) {
+    return `route:${routePerson.value.name}|${routePerson.value.isoLocal}|${routePerson.value.lat}|${routePerson.value.lon}|${routePerson.value.tzOffsetMinutes}`
+  }
+  if (activePerson.value?.id) return `person:${activePerson.value.id}`
+  return 'global'
+})
 const planetariumCenterOffset = ref({ x: 0, y: 0 })
 const showSkyView     = computed(() => settings.skyEnabled && settings.skyView === 'sky')
 const showPlanetarium = computed(() => settings.skyEnabled && settings.skyView === 'planetarium')
@@ -93,6 +100,7 @@ watchEffect(() => {
 })
 
 watch(() => [route.fullPath, settings.skyView, showPlanetarium.value], updatePlanetariumCenter, { flush: 'post' })
+watch(activeChartKey, key => chartInspector.setActiveChartKey(key), { immediate: true })
 
 onMounted(() => {
   updatePlanetariumCenter()
