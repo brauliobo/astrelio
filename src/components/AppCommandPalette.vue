@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
+import { REPORT_PRESET_KEYS, SETTING_PRESET_KEYS, useSettingsStore } from '../stores/settings.js'
 import { natalRouteForPerson } from '../lib/people/routeQuery.js'
 import { broadcastChartHighlight } from '../lib/chart/highlight.js'
 
@@ -15,6 +16,7 @@ const { t, tm } = useI18n()
 const router    = useRouter()
 const people    = usePeopleStore()
 const session   = useSessionStore()
+const settings  = useSettingsStore()
 const open      = ref(false)
 const query     = ref('')
 const activeIndex = ref(0)
@@ -116,6 +118,30 @@ const houseCommands = computed(() => {
   }))
 })
 
+const settingPresetCommands = computed(() => SETTING_PRESET_KEYS.map(preset => command({
+  id:       `setting-preset-${preset}`,
+  label:    `${t('settings.preset')}: ${t(`settings.presets.${preset}`)}`,
+  group:    'settings',
+  keywords: ['preset', 'chart preset', 'settings preset', preset, t(`settings.presets.${preset}`)],
+  priority: 12,
+  run:      () => {
+    settings.applyPreset(preset)
+    close()
+  },
+})))
+
+const reportPresetCommands = computed(() => REPORT_PRESET_KEYS.map(preset => command({
+  id:       `report-preset-${preset}`,
+  label:    `${t('report.preset')}: ${t(`report.presets.${preset}`)}`,
+  group:    'settings',
+  keywords: ['preset', 'report preset', 'report', preset, t(`report.presets.${preset}`)],
+  priority: 12,
+  run:      () => {
+    settings.applyReportPreset(preset)
+    navigate({ name: 'report' })
+  },
+})))
+
 const commands = computed(() => [
   command({ id: 'home', label: t('nav.home'), group: 'navigation', keywords: ['home', 'people', 'library'], run: () => navigate({ name: 'home' }) }),
   command({ id: 'map', label: t('nav.map'), group: 'navigation', keywords: ['map', 'natal', 'chart'], run: () => navigate({ name: 'natal' }) }),
@@ -149,6 +175,8 @@ const commands = computed(() => [
       navigate(natalRouteForPerson(person))
     },
   })),
+  ...settingPresetCommands.value,
+  ...reportPresetCommands.value,
   ...planetCommands.value,
   ...houseCommands.value,
 ])
