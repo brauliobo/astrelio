@@ -5,7 +5,7 @@ defineProps({
   dimmed:  { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['hover', 'leave'])
+const emit = defineEmits(['hover', 'select', 'leave'])
 </script>
 
 <template lang="pug">
@@ -21,6 +21,7 @@ path(
   class='wheel-gate-segment'
   @pointerenter='emit("hover", { type: "gate", value: segment.gate })'
   @pointerleave='emit("leave")'
+  @click.stop='emit("select", { type: "gate", value: segment.gate })'
 )
 </template>
 

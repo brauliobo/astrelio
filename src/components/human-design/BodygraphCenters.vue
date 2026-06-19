@@ -15,7 +15,7 @@ const props = defineProps({
   visualTheme:  { type: String, default: 'dark' },
 })
 
-const emit = defineEmits(['hover', 'leave'])
+const emit = defineEmits(['hover', 'select', 'leave'])
 
 const definedCenters   = computed(() => new Set(props.chart.centers || []))
 const personalityGates = computed(() => new Set(props.chart.personalityGates || []))
@@ -77,6 +77,7 @@ g(data-testid='bodygraph-centers')
     :show-gates='showGates'
     @center-hover='emit("hover", { type: "center", value: $event })'
     @gate-hover='emit("hover", { type: "gate", value: $event })'
+    @select='emit("select", $event)'
     @leave='emit("leave")'
   )
 </template>

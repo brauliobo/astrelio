@@ -5,7 +5,7 @@ defineProps({
   dimmed:      { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['hover', 'leave'])
+const emit = defineEmits(['hover', 'leave', 'select'])
 
 const splitPath = (item, side, radius) => {
   const sweep = side === 'right' ? 1 : 0
@@ -24,6 +24,7 @@ g(
   :data-active='String(item.active)'
   @pointerenter='emit("hover", item.gate)'
   @pointerleave='emit("leave")'
+  @click.stop='emit("select", { type: "gate", value: item.gate })'
 )
   template(v-if='item.active && item.parts?.length > 1')
     path(

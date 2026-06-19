@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import BodygraphCore from './BodygraphCore.vue'
 import ActivationColumns from './ActivationColumns.vue'
 import { humanDesignPalette } from './visualTheme.js'
+import { broadcastChartHighlight, humanDesignHighlight } from '../../lib/chart/highlight.js'
 
 const props = defineProps({
   chart:       { type: Object, required: true },
@@ -15,6 +16,13 @@ const { t } = useI18n()
 const palette    = computed(() => humanDesignPalette(props.visualTheme))
 const setHover   = value => { hover.value = value }
 const clearHover = () => { hover.value = null }
+const selectItem = (selection) => {
+  broadcastChartHighlight({
+    chart:     props.chart,
+    pinned:    true,
+    highlight: humanDesignHighlight(selection.type, selection.value),
+  })
+}
 </script>
 
 <template lang="pug">
@@ -26,6 +34,7 @@ const clearHover = () => { hover.value = null }
       :hover='hover'
       :visual-theme='visualTheme'
       @hover='setHover'
+      @select='selectItem'
       @leave='clearHover'
     )
     svg.bodygraph-svg(
@@ -50,6 +59,7 @@ const clearHover = () => { hover.value = null }
       :hover='hover'
       :visual-theme='visualTheme'
       @hover='setHover'
+      @select='selectItem'
       @leave='clearHover'
     )
   .mt-3.flex.flex-wrap.gap-2.text-xs

@@ -15,7 +15,7 @@ const props = defineProps({
   glyphRenderer: { type: String, default: null },
 })
 
-const emit = defineEmits(['hover', 'leave'])
+const emit = defineEmits(['hover', 'select', 'leave'])
 const { t } = useI18n()
 
 const rows = computed(() =>
@@ -41,6 +41,7 @@ const hasHover      = computed(() => Boolean(props.hover))
     :highlighted='isHighlighted(row)'
     :dimmed='hasHover && !isHighlighted(row)'
     @hover='emit("hover", $event)'
+    @select='emit("select", $event)'
     @leave='emit("leave")'
   )
 </template>

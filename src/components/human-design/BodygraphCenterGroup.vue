@@ -11,7 +11,7 @@ defineProps({
   showGates: { type: Boolean, default: true },
 })
 
-const emit = defineEmits(['center-hover', 'gate-hover', 'leave'])
+const emit = defineEmits(['center-hover', 'gate-hover', 'select', 'leave'])
 </script>
 
 <template lang="pug">
@@ -23,6 +23,7 @@ g(:data-center-group='center.name')
     :dimmed='hasHover && !hoverMatchesCenter(hover, center.name, center.gateNumbers)'
     @hover='emit("center-hover", $event)'
     @leave='emit("leave")'
+    @select='emit("select", $event)'
   )
   BodygraphGateMarker(
     v-if='showGates'
@@ -33,5 +34,6 @@ g(:data-center-group='center.name')
     :dimmed='hasHover && !hoverMatchesGate(hover, gate.gate, center.name)'
     @hover='emit("gate-hover", $event)'
     @leave='emit("leave")'
+    @select='emit("select", $event)'
   )
 </template>

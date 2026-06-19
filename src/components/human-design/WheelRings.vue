@@ -14,7 +14,7 @@ const props = defineProps({
   visualTheme: { type: String, default: 'dark' },
 })
 
-const emit = defineEmits(['hover', 'leave'])
+const emit = defineEmits(['hover', 'select', 'leave'])
 
 const activeGates       = computed(() => new Set(props.chart.gates || []))
 const personalityGates  = computed(() => new Set(props.chart.personalityGates || []))
@@ -110,6 +110,7 @@ g.hd-wheel-rings
       :hovered='isGateHovered(segment.gate)'
       :dimmed='hasGateHover && !isGateHovered(segment.gate)'
       @hover='emit("hover", $event)'
+      @select='emit("select", $event)'
       @leave='emit("leave")'
     )
     line(
@@ -139,6 +140,7 @@ g.hd-wheel-rings
       class='wheel-gate-label'
       @pointerenter='emit("hover", { type: "gate", value: segment.gate })'
       @pointerleave='emit("leave")'
+      @click.stop='emit("select", { type: "gate", value: segment.gate })'
     ) {{ segment.gate }}
 </template>
 

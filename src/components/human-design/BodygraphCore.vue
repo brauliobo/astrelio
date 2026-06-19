@@ -4,6 +4,7 @@ import BodygraphCenters from './BodygraphCenters.vue'
 import BodygraphChannels from './BodygraphChannels.vue'
 import BodygraphFigure from './BodygraphFigure.vue'
 import { humanDesignPalette } from './visualTheme.js'
+import { broadcastChartHighlight, humanDesignHighlight } from '../../lib/chart/highlight.js'
 
 const props = defineProps({
   chart:                  { type: Object, required: true },
@@ -19,7 +20,7 @@ const props = defineProps({
   noDefinedChannelsLabel: { type: String, default: '' },
 })
 
-const emit = defineEmits(['hover-change'])
+const emit = defineEmits(['hover-change', 'select'])
 
 const hasChannels   = computed(() => (props.chart.channels || []).length > 0)
 const internalHover = ref(null)
@@ -32,6 +33,14 @@ const setHover = (value) => {
 }
 const setChannelHover = value => setHover({ type: 'channel', value })
 const clearHover      = () => setHover(null)
+const selectItem      = (selection) => {
+  emit('select', selection)
+  broadcastChartHighlight({
+    chart:     props.chart,
+    pinned:    true,
+    highlight: humanDesignHighlight(selection.type, selection.value),
+  })
+}
 </script>
 
 <template lang="pug">
@@ -48,6 +57,7 @@ g
     :hover='hover'
     :visual-theme='visualTheme'
     @hover='setChannelHover'
+    @select='selectItem'
     @leave='clearHover'
   )
   BodygraphCenters(
@@ -57,6 +67,7 @@ g
     :show-gates='false'
     :visual-theme='visualTheme'
     @hover='setHover'
+    @select='selectItem'
     @leave='clearHover'
   )
   BodygraphChannels(
@@ -70,6 +81,7 @@ g
     :hover='hover'
     :visual-theme='visualTheme'
     @hover='setChannelHover'
+    @select='selectItem'
     @leave='clearHover'
   )
   BodygraphCenters(
@@ -79,6 +91,7 @@ g
     :show-shapes='false'
     :visual-theme='visualTheme'
     @hover='setHover'
+    @select='selectItem'
     @leave='clearHover'
   )
   text(

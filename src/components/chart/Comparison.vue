@@ -125,6 +125,7 @@ const toggleHighlight = (payload) => {
   .border.rounded-xl.p-4.mt-6(class='border-white/10 bg-night/40' v-if='aspects.length')
     AspectTable(
       :aspects='aspects'
+      :chart='base'
       :highlighted-bodies='activeHighlight.bodies'
       :highlighted-aspect-key='activeHighlight.aspectKey'
       @highlight='setHighlight'

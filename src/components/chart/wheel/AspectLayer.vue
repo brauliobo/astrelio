@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { ASPECT_COLORS, naturalAspectLines } from './geometry.js'
+import { aspectKey } from '../../../lib/chart/highlight.js'
 
 const ASPECT_LINE_STYLES = {
   conjunction: { color: 'var(--aspect-conjunction)', dasharray: '1 4', opacity: 0.26 },
@@ -22,7 +23,6 @@ const props = defineProps({
 })
 defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 
-const aspectKey          = (aspect) => `${aspect.a}-${aspect.b}-${aspect.type}`
 const defaultAspectColor = (type) => ASPECT_LINE_STYLES[type]?.color || ASPECT_COLORS[type]
 const aspectColor        = (type) => {
   const configured = props.colors[type]
@@ -77,6 +77,14 @@ const visualLines = computed(() =>
 const highlightPayload = (line) => ({
   bodies:    [line.aspect.a, line.aspect.b],
   aspectKey: aspectKey(line.aspect),
+  aspect:    {
+    type:     line.aspect.type,
+    exact:    line.aspect.exact,
+    delta:    line.aspect.delta,
+    orb:      line.aspect.orb,
+    applying: line.aspect.applying,
+    strength: line.aspect.strength,
+  },
 })
 </script>
 

@@ -6,6 +6,7 @@ import { motionMarker } from '../../lib/astro/motion.js'
 import { degInSign, signIndex } from '../../lib/astro/zodiac.js'
 import CelestialGlyph from '../common/CelestialGlyph.vue'
 import { PLANET_SYMBOLS, ZODIAC_SIGNS } from './wheel/geometry.js'
+import { aspectKey, broadcastChartHighlight, CHART_HIGHLIGHT_EVENT, normalizeHighlight, sameHighlight } from '../../lib/chart/highlight.js'
 
 const props = defineProps({
   base:                { type: Object, required: true },
@@ -23,7 +24,6 @@ const hoverHighlight        = ref(null)
 const pinnedHighlight       = ref(null)
 const sharedHoverHighlight  = ref(null)
 const sharedPinnedHighlight = ref(null)
-const chartHighlightEvent   = 'astrelio-chart-highlight'
 const activeAspectFilter    = ref('major')
 const EXACT_FILTER_ORB      = 1
 
@@ -94,7 +94,6 @@ const pointLabel      = (name) => t(`planets.${name}`)
 const pointSymbol     = (name) => PLANET_SYMBOLS[name] || name.slice(0, 2)
 const pointMotion     = (point) => motionMarker(point)
 const aspectSymbol    = (aspect) => ASPECT_SYMBOLS[aspect?.type] || ''
-const aspectKey       = (aspect) => aspect ? `${aspect.a}-${aspect.b}-${aspect.type}` : ''
 const pointKey        = (point, prefix) => `${prefix}-${point.name}`
 const pointName       = (point) => t(`planets.${point.name}`)
 const setAspectFilter = (filter) => {
@@ -148,24 +147,21 @@ const aspectClass = (type) => ({
   quincunx:    'text-violet-300',
 }[type] || 'text-slate-300')
 
-const normalizeHighlight = (payload) => ({
-  bodies:    [...new Set(payload?.bodies || [])],
-  aspectKey: payload?.aspectKey || '',
-})
-
-const sameHighlight = (a, b) =>
-  a.aspectKey === b.aspectKey &&
-  a.bodies.length === b.bodies.length &&
-  a.bodies.every(body => b.bodies.includes(body))
-
 const highlightPayload = (cell) => ({
   bodies:    [cell.a, cell.b],
   aspectKey: aspectKey(cell),
+  aspect:    {
+    type:     cell.type,
+    exact:    cell.exact,
+    delta:    cell.delta,
+    orb:      cell.orb,
+    applying: cell.applying,
+    strength: cell.strength,
+  },
 })
 
 const broadcastHighlight = (highlight, pinned = false) => {
-  if (typeof window === 'undefined') return
-  window.dispatchEvent(new CustomEvent(chartHighlightEvent, { detail: { highlight, pinned } }))
+  broadcastChartHighlight({ highlight, pinned, chart: props.base })
 }
 
 const onSharedHighlight = (event) => {
@@ -218,11 +214,11 @@ const cellClass = (cell) => {
 }
 
 onMounted(() => {
-  window.addEventListener(chartHighlightEvent, onSharedHighlight)
+  window.addEventListener(CHART_HIGHLIGHT_EVENT, onSharedHighlight)
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener(chartHighlightEvent, onSharedHighlight)
+  window.removeEventListener(CHART_HIGHLIGHT_EVENT, onSharedHighlight)
 })
 </script>
 

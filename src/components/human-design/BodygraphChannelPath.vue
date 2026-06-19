@@ -7,7 +7,7 @@ defineProps({
   highlighted: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['hover', 'leave'])
+const emit = defineEmits(['hover', 'leave', 'select'])
 
 const rounded             = value => Number.parseFloat(value.toFixed(3)).toString()
 const laneStrokeWidth     = (strokeWidth) => rounded(Math.max(2.2, strokeWidth * 0.5))
@@ -59,6 +59,7 @@ g
       :class='{ highlighted }'
       @pointerenter='emit("hover", line.channel)'
       @pointerleave='emit("leave")'
+      @click.stop='emit("select", { type: "channel", value: line.channel })'
     )
   template(v-else-if='line.parts?.length > 1 && line.splitBounds')
     path(
@@ -81,6 +82,7 @@ g
       :class='{ highlighted }'
       @pointerenter='emit("hover", line.channel)'
       @pointerleave='emit("leave")'
+      @click.stop='emit("select", { type: "channel", value: line.channel })'
     )
   path(
     v-else
@@ -98,6 +100,7 @@ g
     :class='{ highlighted }'
     @pointerenter='emit("hover", line.channel)'
     @pointerleave='emit("leave")'
+    @click.stop='emit("select", { type: "channel", value: line.channel })'
   )
 </template>
 

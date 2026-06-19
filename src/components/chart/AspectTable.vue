@@ -1,9 +1,11 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { aspectKey, broadcastChartHighlight, CHART_HIGHLIGHT_EVENT, normalizeHighlight, sameHighlight } from '../../lib/chart/highlight.js'
 
 const props = defineProps({
   aspects:              { type: Array, required: true },
+  chart:                { type: Object, default: null },
   highlightedBodies:    { type: Array, default: () => [] },
   highlightedAspectKey: { type: String, default: '' },
 })
@@ -14,9 +16,6 @@ const hoverHighlight        = ref(null)
 const pinnedHighlight       = ref(null)
 const sharedHoverHighlight  = ref(null)
 const sharedPinnedHighlight = ref(null)
-const chartHighlightEvent   = 'astrelio-chart-highlight'
-
-const aspectKey = (aspect) => `${aspect.a}-${aspect.b}-${aspect.type}`
 
 const colorOf = (type) => ({
   conjunction: 'text-slate-200',
@@ -67,21 +66,18 @@ const hasHighlight = computed(() => activeBodies.value.size > 0 || Boolean(activ
 const highlightPayload = (row) => ({
   bodies:    [row.a, row.b],
   aspectKey: row.aspectKey,
+  aspect:    {
+    type:     row.type,
+    exact:    row.exact,
+    delta:    row.delta,
+    orb:      row.orb,
+    applying: row.applying,
+    strength: row.strength,
+  },
 })
-
-const normalizeHighlight = (payload) => ({
-  bodies:    [...new Set(payload?.bodies || [])],
-  aspectKey: payload?.aspectKey || '',
-})
-
-const sameHighlight = (a, b) =>
-  a.aspectKey === b.aspectKey &&
-  a.bodies.length === b.bodies.length &&
-  a.bodies.every(body => b.bodies.includes(body))
 
 const broadcastHighlight = (highlight, pinned = false) => {
-  if (typeof window === 'undefined') return
-  window.dispatchEvent(new CustomEvent(chartHighlightEvent, { detail: { highlight, pinned } }))
+  broadcastChartHighlight({ highlight, pinned, chart: props.chart })
 }
 
 const onSharedHighlight = (event) => {
@@ -130,11 +126,11 @@ const rowClass = (row) => {
 }
 
 onMounted(() => {
-  window.addEventListener(chartHighlightEvent, onSharedHighlight)
+  window.addEventListener(CHART_HIGHLIGHT_EVENT, onSharedHighlight)
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener(chartHighlightEvent, onSharedHighlight)
+  window.removeEventListener(CHART_HIGHLIGHT_EVENT, onSharedHighlight)
 })
 </script>
 

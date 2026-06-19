@@ -5,6 +5,7 @@ import { fortuneLongitude } from '../../lib/astro/aspectarian.js'
 import { houseOf } from '../../lib/astro/houses.js'
 import { motionMarker } from '../../lib/astro/motion.js'
 import { signIndex, degInSign, norm360 } from '../../lib/astro/zodiac.js'
+import { broadcastChartHighlight, CHART_HIGHLIGHT_EVENT, normalizeHighlight, sameHighlight } from '../../lib/chart/highlight.js'
 
 const props = defineProps({
   chart:             { type: Object, required: true },
@@ -17,7 +18,6 @@ const hoverHighlight        = ref(null)
 const pinnedHighlight       = ref(null)
 const sharedHoverHighlight  = ref(null)
 const sharedPinnedHighlight = ref(null)
-const chartHighlightEvent   = 'astrelio-chart-highlight'
 
 const fmt = (lon) => {
   const d  = degInSign(lon)
@@ -52,17 +52,8 @@ const hasHighlight = computed(() => activeBodies.value.size > 0)
 const _            = norm360
 
 const highlightPayload   = (body) => ({ bodies: [body], aspectKey: '' })
-const normalizeHighlight = (payload) => ({
-  bodies:    [...new Set(payload?.bodies || [])],
-  aspectKey: payload?.aspectKey || '',
-})
-const sameHighlight = (a, b) =>
-  a.bodies.length === b.bodies.length &&
-  a.bodies.every(body => b.bodies.includes(body))
-
 const broadcastHighlight = (highlight, pinned = false) => {
-  if (typeof window === 'undefined') return
-  window.dispatchEvent(new CustomEvent(chartHighlightEvent, { detail: { highlight, pinned } }))
+  broadcastChartHighlight({ highlight, pinned, chart: props.chart })
 }
 
 const onSharedHighlight = (event) => {
@@ -109,11 +100,11 @@ const rowClass = (body) => {
 }
 
 onMounted(() => {
-  window.addEventListener(chartHighlightEvent, onSharedHighlight)
+  window.addEventListener(CHART_HIGHLIGHT_EVENT, onSharedHighlight)
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener(chartHighlightEvent, onSharedHighlight)
+  window.removeEventListener(CHART_HIGHLIGHT_EVENT, onSharedHighlight)
 })
 </script>
 

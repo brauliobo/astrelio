@@ -6,6 +6,7 @@ import ActivationColumns from './ActivationColumns.vue'
 import WheelPlanets from './WheelPlanets.vue'
 import WheelRings from './WheelRings.vue'
 import { humanDesignPalette } from './visualTheme.js'
+import { broadcastChartHighlight, humanDesignHighlight } from '../../lib/chart/highlight.js'
 
 const props = defineProps({
   chart:               { type: Object, required: true },
@@ -18,6 +19,13 @@ const { t } = useI18n()
 const palette    = computed(() => humanDesignPalette(props.visualTheme))
 const setHover   = value => { hover.value = value }
 const clearHover = () => { hover.value = null }
+const selectItem = (selection) => {
+  broadcastChartHighlight({
+    chart:     props.chart,
+    pinned:    true,
+    highlight: humanDesignHighlight(selection.type, selection.value),
+  })
+}
 </script>
 
 <template lang="pug">
@@ -31,6 +39,7 @@ const clearHover = () => { hover.value = null }
       :visual-theme='visualTheme'
       :glyph-renderer='planetGlyphRenderer'
       @hover='setHover'
+      @select='selectItem'
       @leave='clearHover'
     )
     .wheel-viewport
@@ -48,6 +57,7 @@ const clearHover = () => { hover.value = null }
           :hover='hover'
           :visual-theme='visualTheme'
           @hover='setHover'
+          @select='selectItem'
           @leave='clearHover'
         )
         WheelPlanets(:chart='chart' :glyph-renderer='planetGlyphRenderer')
@@ -73,6 +83,7 @@ const clearHover = () => { hover.value = null }
       :visual-theme='visualTheme'
       :glyph-renderer='planetGlyphRenderer'
       @hover='setHover'
+      @select='selectItem'
       @leave='clearHover'
     )
 </template>

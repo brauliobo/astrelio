@@ -10,14 +10,19 @@ defineProps({
   dimmed:        { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['hover', 'leave'])
+const emit = defineEmits(['hover', 'select', 'leave'])
 </script>
 
 <template lang="pug">
 .activation-row(
   :class='{ highlighted, dimmed }'
+  role='button'
+  tabindex='0'
   @pointerenter='emit("hover", { type: "gate", value: row.activation.gate })'
   @pointerleave='emit("leave")'
+  @click='emit("select", { type: "gate", value: row.activation.gate })'
+  @keydown.enter.prevent='emit("select", { type: "gate", value: row.activation.gate })'
+  @keydown.space.prevent='emit("select", { type: "gate", value: row.activation.gate })'
 )
   template(v-if='side === "design"')
     span.activation-glyph

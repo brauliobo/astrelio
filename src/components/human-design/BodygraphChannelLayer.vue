@@ -11,7 +11,7 @@ defineProps({
   keyPrefix:   { type: String, required: true },
 })
 
-const emit = defineEmits(['hover', 'leave'])
+const emit = defineEmits(['hover', 'select', 'leave'])
 </script>
 
 <template lang="pug">
@@ -25,6 +25,7 @@ g(:data-testid='testid')
     :highlighted='hoverMatchesChannel(hover, line.channel)'
     :dimmed='hasHover && !hoverMatchesChannel(hover, line.channel)'
     @hover='emit("hover", $event)'
+    @select='emit("select", $event)'
     @leave='emit("leave")'
   )
 </template>

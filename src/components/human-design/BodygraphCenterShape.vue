@@ -8,7 +8,7 @@ defineProps({
   dimmed:      { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['hover', 'leave'])
+const emit = defineEmits(['hover', 'leave', 'select'])
 const { t } = useI18n()
 </script>
 
@@ -21,6 +21,7 @@ g(
   @pointerleave='emit("leave")'
   @focus='emit("hover", center.name)'
   @blur='emit("leave")'
+  @click.stop='emit("select", { type: "center", value: center.name })'
   tabindex='0'
   role='button'
   :aria-label='t("human_design.center_aria", { center: humanDesignValueLabel(t, "center", center.name) })'

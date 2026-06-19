@@ -18,7 +18,7 @@ const props = defineProps({
   visualTheme:        { type: String, default: 'dark' },
 })
 
-const emit = defineEmits(['hover', 'leave'])
+const emit = defineEmits(['hover', 'select', 'leave'])
 
 const definedChannels  = computed(() => new Set(props.chart.channels || []))
 const designGates      = computed(() => new Set(props.chart.designGates || []))
@@ -116,6 +116,7 @@ g
     testid='bodygraph-channels'
     key-prefix='base'
     @hover='emit("hover", $event)'
+    @select='emit("select", $event)'
     @leave='emit("leave")'
   )
   BodygraphChannelLayer(
@@ -127,6 +128,7 @@ g
     testid='bodygraph-channel-highlights'
     key-prefix='defined'
     @hover='emit("hover", $event)'
+    @select='emit("select", $event)'
     @leave='emit("leave")'
   )
 </template>

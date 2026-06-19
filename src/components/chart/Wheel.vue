@@ -10,6 +10,7 @@ import TickRing from './wheel/TickRing.vue'
 import Frame from './wheel/Frame.vue'
 import ZodiacRing from './wheel/ZodiacRing.vue'
 import { CENTER, VIEWBOX_SIZE, WHEEL_RADII, mapsFromProps, norm360 } from './wheel/geometry.js'
+import { broadcastChartHighlight, CHART_HIGHLIGHT_EVENT, normalizeHighlight, sameHighlight } from '../../lib/chart/highlight.js'
 
 const displayModes   = ['clean', 'aspects', 'detailed', 'print']
 const modeSettings = {
@@ -61,7 +62,6 @@ const sharedPinnedHighlight = ref(null)
 const localDisplayMode      = ref('')
 const isSmallScreen         = ref(false)
 const showExteriorOrbit     = ref(false)
-const chartHighlightEvent   = 'astrelio-chart-highlight'
 let smallScreenQuery        = null
 
 const updateSmallScreen = () => {
@@ -119,14 +119,8 @@ const activeAspectKey = computed(() =>
   hasExternalHighlight.value ? props.highlightedAspectKey : localHighlight.value?.aspectKey || ''
 )
 
-const normalizeHighlight = (payload) => ({
-  bodies:    [...new Set(payload?.bodies || [])],
-  aspectKey: payload?.aspectKey || '',
-})
-
 const broadcastHighlight = (highlight, pinned = false) => {
-  if (typeof window === 'undefined') return
-  window.dispatchEvent(new CustomEvent(chartHighlightEvent, { detail: { highlight, pinned } }))
+  broadcastChartHighlight({ highlight, pinned, chart: baseChart.value })
 }
 
 const onSharedHighlight = (event) => {
@@ -138,11 +132,6 @@ const onSharedHighlight = (event) => {
     sharedHoverHighlight.value = highlight
   }
 }
-
-const sameHighlight = (a, b) =>
-  a.aspectKey === b.aspectKey &&
-  a.bodies.length === b.bodies.length &&
-  a.bodies.every(body => b.bodies.includes(body))
 
 const setHoverHighlight = (payload) => {
   const highlight      = normalizeHighlight(payload)
@@ -181,7 +170,7 @@ watch(() => props.displayMode, () => {
 })
 
 onMounted(() => {
-  window.addEventListener(chartHighlightEvent, onSharedHighlight)
+  window.addEventListener(CHART_HIGHLIGHT_EVENT, onSharedHighlight)
   smallScreenQuery = window.matchMedia?.('(max-width: 640px)') || null
   updateSmallScreen()
   if (smallScreenQuery?.addEventListener) {
@@ -192,7 +181,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener(chartHighlightEvent, onSharedHighlight)
+  window.removeEventListener(CHART_HIGHLIGHT_EVENT, onSharedHighlight)
   if (smallScreenQuery?.removeEventListener) {
     smallScreenQuery.removeEventListener('change', updateSmallScreen)
   } else {

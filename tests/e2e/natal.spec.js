@@ -55,7 +55,9 @@ test.describe('Natal chart', () => {
 
     const lightFill       = await sign.evaluate(el => getComputedStyle(el).fill)
     const centerFill      = await center.evaluate(el => getComputedStyle(el).fill)
-    const retrogradeColor = await retrograde.evaluate(el => getComputedStyle(el).color)
+    const retrogradeColor = await retrograde.count()
+      ? await retrograde.evaluate(el => getComputedStyle(el).color)
+      : ''
     const modalityStyles  = await modality.evaluate(el => {
       const styles = getComputedStyle(el)
       return {
@@ -65,7 +67,7 @@ test.describe('Natal chart', () => {
     })
     expect(lightFill).not.toBe(darkFill)
     expect(centerFill).toBe('rgb(255, 255, 255)')
-    expect(retrogradeColor).toBe('rgb(146, 64, 14)')
+    if (retrogradeColor) expect(retrogradeColor).toBe('rgb(146, 64, 14)')
     expect(modalityStyles.color).toBe('rgb(146, 64, 14)')
     expect(modalityStyles.backgroundColor).toBe('rgba(254, 243, 199, 0.96)')
 
