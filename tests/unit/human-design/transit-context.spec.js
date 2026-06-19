@@ -3,6 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useHumanDesignTransitContext } from '../../../src/composables/useHumanDesignTransitContext.js'
 import { buildHumanDesignTransitChart, humanDesignTransitConnection } from '../../../src/lib/human-design/bodygraph.js'
 
+const flushPromises = () => new Promise(resolve => queueMicrotask(resolve))
+
 vi.mock('../../../src/lib/human-design/bodygraph.js', () => ({
   buildHumanDesignTransitChart: vi.fn(() => ({ id: 'transit' })),
   humanDesignTransitConnection: vi.fn(() => ({ id: 'connection' })),
@@ -39,6 +41,7 @@ describe('useHumanDesignTransitContext', () => {
     expect(context.data.value).toBeNull()
 
     vi.advanceTimersByTime(20)
+    await flushPromises()
 
     expect(context.status.value).toBe('ready')
     expect(context.data.value.transitChart).toEqual({ id: 'transit' })
@@ -64,6 +67,7 @@ describe('useHumanDesignTransitContext', () => {
     dateMs.value = 2000
     await nextTick()
     vi.advanceTimersByTime(20)
+    await flushPromises()
 
     expect(buildHumanDesignTransitChart).toHaveBeenCalledTimes(1)
     expect(buildHumanDesignTransitChart).toHaveBeenCalledWith(2000, 1, 2)

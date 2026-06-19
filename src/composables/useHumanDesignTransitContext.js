@@ -1,21 +1,14 @@
 import { computed, onScopeDispose, ref, unref, watch } from 'vue'
-import { buildHumanDesignTransitChart, humanDesignTransitConnection } from '../lib/human-design/bodygraph.js'
+import { buildHumanDesignTransitContext } from '../lib/human-design/transit-context.js'
+import { createHumanDesignTransitWorkerClient } from '../lib/human-design/transit-worker-client.js'
 
-export const buildHumanDesignTransitContext = ({ natalChart, dateMs, lat, lon }) => {
-  const transitChart = buildHumanDesignTransitChart(dateMs, lat, lon)
-
-  return {
-    transitChart,
-    connection: transitChart
-      ? humanDesignTransitConnection(natalChart, transitChart, { lat, lon })
-      : null,
-  }
-}
+export { buildHumanDesignTransitContext }
 
 export const useHumanDesignTransitContext = ({ enabled, natalChart, person, dateMs, debounceMs = 450 }) => {
   const data    = ref(null)
   const error   = ref(null)
   const status  = ref('idle')
+  const client   = createHumanDesignTransitWorkerClient()
   let timer     = null
   let requestId = 0
 
@@ -47,12 +40,12 @@ export const useHumanDesignTransitContext = ({ enabled, natalChart, person, date
     error.value          = null
     status.value         = 'loading'
 
-    timer = globalThis.setTimeout(() => {
+    timer = globalThis.setTimeout(async () => {
       timer = null
       if (currentRequest !== requestId) return
 
       try {
-        const nextData = buildHumanDesignTransitContext({
+        const nextData = await client.build({
           natalChart: currentChart,
           dateMs:     Number(currentDateMs),
           lat:        currentPerson.lat,
@@ -80,6 +73,7 @@ export const useHumanDesignTransitContext = ({ enabled, natalChart, person, date
   onScopeDispose(() => {
     requestId += 1
     cancelTimer()
+    client.terminate()
   })
 
   return {

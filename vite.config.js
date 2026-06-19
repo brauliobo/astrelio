@@ -93,6 +93,7 @@ export default defineConfig(({ mode }) => ({
   preview: { port: 4173, host: '127.0.0.1' },
   assetsInclude: ['**/*.wasm', '**/*.data'],
   optimizeDeps: { exclude: ['swisseph-wasm'] },
+  worker:  { format: 'es' },
   build:   {
     outDir: mode === 'verify' ? 'tmp/local-build' : 'docs',
     emptyOutDir: true,
