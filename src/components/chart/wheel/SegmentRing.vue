@@ -17,31 +17,32 @@ defineProps({
 </script>
 
 <template lang="pug">
-g(:data-testid='testId' pointer-events='none')
-  Arc(
+g(:data-testid='testId')
+  g(
     v-for='sector in sectors'
     :key='sector.key ?? sector.index'
-    :inner-radius='innerRadius'
-    :outer-radius='outerRadius'
-    :start-longitude='sector.start'
-    :end-longitude='sector.end'
-    :fill='sector.fill'
-    :stroke='stroke'
-    :stroke-width='strokeWidth'
   )
-  text(
-    v-for='sector in sectors'
-    :key='`label-${sector.key ?? sector.index}`'
-    :x='sector.label.x'
-    :y='sector.label.y'
-    :fill='sector.textFill || textFill'
-    :font-family='fontFamily'
-    :font-size='sector.fontSize || fontSize'
-    :font-weight='fontWeight'
-    :stroke='textStroke'
-    stroke-width='1.8'
-    paint-order='stroke fill'
-    text-anchor='middle'
-    dominant-baseline='central'
-  ) {{ sector.symbol }}
+    title(v-if='sector.title') {{ sector.title }}
+    Arc(
+      :inner-radius='innerRadius'
+      :outer-radius='outerRadius'
+      :start-longitude='sector.start'
+      :end-longitude='sector.end'
+      :fill='sector.fill'
+      :stroke='stroke'
+      :stroke-width='strokeWidth'
+    )
+    text(
+      :x='sector.label.x'
+      :y='sector.label.y'
+      :fill='sector.textFill || textFill'
+      :font-family='fontFamily'
+      :font-size='sector.fontSize || fontSize'
+      :font-weight='fontWeight'
+      :stroke='textStroke'
+      stroke-width='1.8'
+      paint-order='stroke fill'
+      text-anchor='middle'
+      dominant-baseline='central'
+    ) {{ sector.symbol }}
 </template>

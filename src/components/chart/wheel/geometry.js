@@ -119,6 +119,31 @@ export const ZODIAC_SIGNS = [
   '♓︎',
 ]
 
+export const ZODIAC_SIGN_NAMES = [
+  'Aries',
+  'Taurus',
+  'Gemini',
+  'Cancer',
+  'Leo',
+  'Virgo',
+  'Libra',
+  'Scorpio',
+  'Sagittarius',
+  'Capricorn',
+  'Aquarius',
+  'Pisces',
+]
+
+export const longitudeLabel = (longitude) => {
+  const normalized = norm360(longitude)
+  const signIndex  = Math.floor(normalized / 30)
+  const rawDegree  = normalized % 30
+  const degree     = Math.floor(rawDegree)
+  const minute     = Math.floor((rawDegree - degree) * 60)
+
+  return `${degree}°${minute.toString().padStart(2, '0')} ${ZODIAC_SIGN_NAMES[signIndex]}`
+}
+
 export const polarPoint = (radius, longitude, cx = CENTER, cy = CENTER) => {
   const angle = (180 - longitude) * Math.PI / 180
   return {

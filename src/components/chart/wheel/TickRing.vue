@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { WHEEL_RADII, norm360, polarPoint } from './geometry.js'
+import { WHEEL_RADII, longitudeLabel, norm360, polarPoint } from './geometry.js'
 
 const props = defineProps({
   wheelShift: { type: Number, required: true },
@@ -21,23 +21,36 @@ const ticks = computed(() =>
       stroke:  isSign ? 'var(--chart-cusp-angle)' : 'var(--chart-ink-muted)',
       width:   isSign ? 1.35 : isDecan ? 0.8 : isFive ? 0.55 : 0.35,
       opacity: isSign ? 0.9 : isDecan ? 0.5 : isFive ? 0.34 : 0.18,
+      title:   `${degree}° wheel tick: ${longitudeLabel(degree)}`,
     }
   })
 )
 </script>
 
 <template lang="pug">
-g(data-testid='tick-ring' pointer-events='none')
-  line(
+g(data-testid='tick-ring')
+  g(
     v-for='tick in ticks'
     :key='tick.degree'
-    :x1='tick.inner.x'
-    :y1='tick.inner.y'
-    :x2='tick.outer.x'
-    :y2='tick.outer.y'
-    :stroke='tick.stroke'
-    :stroke-width='tick.width'
-    :stroke-opacity='tick.opacity'
-    stroke-linecap='round'
   )
+    title {{ tick.title }}
+    line(
+      :x1='tick.inner.x'
+      :y1='tick.inner.y'
+      :x2='tick.outer.x'
+      :y2='tick.outer.y'
+      stroke='transparent'
+      stroke-width='4'
+      stroke-linecap='round'
+    )
+    line(
+      :x1='tick.inner.x'
+      :y1='tick.inner.y'
+      :x2='tick.outer.x'
+      :y2='tick.outer.y'
+      :stroke='tick.stroke'
+      :stroke-width='tick.width'
+      :stroke-opacity='tick.opacity'
+      stroke-linecap='round'
+    )
 </template>

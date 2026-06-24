@@ -34,13 +34,14 @@ const sectors = computed(() =>
       symbol:   labelFor(key),
       fill:     fills[index % fills.length],
       fontSize: 6.7,
+      title:    key.replaceAll('_', ' '),
     }
   })
 )
 </script>
 
 <template lang="pug">
-g(pointer-events='none')
+g
   SegmentRing(
     test-id='nakshatra-ring'
     :sectors='sectors'
@@ -55,4 +56,5 @@ g(pointer-events='none')
     font-weight='700'
   )
   circle(:cx='CENTER' :cy='CENTER' r='210' fill='none' stroke='var(--chart-frame-stroke)' stroke-width='1')
+    title Nakshatra outer boundary
 </template>

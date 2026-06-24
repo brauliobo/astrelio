@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import Arc from './Arc.vue'
-import { CENTER, WHEEL_RADII, midpointLongitude, norm360, polarPoint } from './geometry.js'
+import { CENTER, WHEEL_RADII, longitudeLabel, midpointLongitude, norm360, polarPoint } from './geometry.js'
 
 const props = defineProps({
   cusps:      { type: Array, required: true },
@@ -26,6 +26,7 @@ const cusps = computed(() =>
       outer:   polarPoint(WHEEL_RADII.zodiacInner, longitude),
       stroke:  angleStroke || 'var(--chart-cusp-line)',
       opacity: isAngle ? 0.74 : 0.46,
+      title:   `House ${index + 1} cusp: ${longitudeLabel(cusp)}`,
       width:   isAngle ? 1.75 : 0.75,
     }
   })
@@ -38,25 +39,41 @@ const sectors = computed(() =>
     end:      norm360(props.cusps[(index + 1) % 12] + props.wheelShift),
     midpoint: midpointLongitude(cusp, props.cusps[(index + 1) % 12]),
     fill:     index % 2 === 0 ? 'var(--chart-house-fill-a)' : 'var(--chart-house-fill-b)',
+    title:    `House ${index + 1}: ${longitudeLabel(cusp)} to ${longitudeLabel(props.cusps[(index + 1) % 12])}`,
   }))
 )
 </script>
 
 <template lang="pug">
-g(data-testid='house-cusps' pointer-events='none')
-  Arc(
+g(data-testid='house-cusps')
+  g(
     v-for='sector in sectors'
     :key='`house-sector-${sector.index}`'
-    :inner-radius='WHEEL_RADII.houseInner'
-    :outer-radius='WHEEL_RADII.houseOuter'
-    :start-longitude='sector.start'
-    :end-longitude='sector.end'
-    :fill='sector.fill'
-    stroke='none'
   )
+    title {{ sector.title }}
+    Arc(
+      :inner-radius='WHEEL_RADII.houseInner'
+      :outer-radius='WHEEL_RADII.houseOuter'
+      :start-longitude='sector.start'
+      :end-longitude='sector.end'
+      :fill='sector.fill'
+      stroke='none'
+    )
   line(
     v-for='cusp in cusps'
     :key='cusp.index'
+    :x1='cusp.inner.x'
+    :y1='cusp.inner.y'
+    :x2='cusp.outer.x'
+    :y2='cusp.outer.y'
+    stroke='transparent'
+    stroke-width='8'
+    stroke-linecap='round'
+  )
+    title {{ cusp.title }}
+  line(
+    v-for='cusp in cusps'
+    :key='`visible-${cusp.index}`'
     :data-testid='`house-cusp-${cusp.index + 1}`'
     :x1='cusp.inner.x'
     :y1='cusp.inner.y'
@@ -67,6 +84,9 @@ g(data-testid='house-cusps' pointer-events='none')
     :stroke-opacity='cusp.opacity'
     stroke-linecap='round'
   )
+    title {{ cusp.title }}
   circle(:cx='CENTER' :cy='CENTER' :r='WHEEL_RADII.houseOuter' fill='none' stroke='var(--chart-ink-muted)' stroke-width='1.05')
+    title House ring outer boundary
   circle(:cx='CENTER' :cy='CENTER' :r='WHEEL_RADII.houseInner' fill='none' stroke='var(--chart-frame-stroke)' stroke-width='1.55')
+    title House ring inner boundary
 </template>

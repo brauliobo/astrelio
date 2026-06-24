@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { WHEEL_RADII, midpointLongitude, norm360, polarPoint } from './geometry.js'
+import { WHEEL_RADII, longitudeLabel, midpointLongitude, norm360, polarPoint } from './geometry.js'
 
 const props = defineProps({
   cusps:      { type: Array, required: true },
@@ -11,7 +11,8 @@ const labels = computed(() =>
   props.cusps.map((cusp, index) => {
     const longitude = midpointLongitude(cusp, props.cusps[(index + 1) % 12])
     const point     = polarPoint(WHEEL_RADII.houseInner + 10, norm360(longitude + props.wheelShift))
-    return { index, point, label: String(index + 1) }
+    const label     = String(index + 1)
+    return { index, point, label, title: `House ${label}: midpoint ${longitudeLabel(longitude)}` }
   })
 )
 </script>
@@ -19,7 +20,6 @@ const labels = computed(() =>
 <template lang="pug">
 g(
   data-testid='house-numbers'
-  pointer-events='none'
   font-family='"Inter", "Avenir Next", system-ui, sans-serif'
   font-weight='600'
   font-size='7.5'
@@ -28,6 +28,7 @@ g(
   text-anchor='middle'
 )
   g(v-for='item in labels' :key='item.index')
+    title {{ item.title }}
     text(
       :x='item.point.x'
       :y='item.point.y'

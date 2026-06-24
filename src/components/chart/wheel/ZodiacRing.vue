@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import SegmentRing from './SegmentRing.vue'
-import { CENTER, WHEEL_RADII, ZODIAC_SIGNS, polarPoint, norm360 } from './geometry.js'
+import { CENTER, WHEEL_RADII, ZODIAC_SIGN_NAMES, ZODIAC_SIGNS, polarPoint, norm360 } from './geometry.js'
 
 const props = defineProps({
   wheelShift: { type: Number, required: true },
@@ -19,13 +19,21 @@ const sectors = computed(() =>
     const start = norm360(index * 30 + props.wheelShift)
     const end   = norm360((index + 1) * 30 + props.wheelShift)
     const label = polarPoint((WHEEL_RADII.zodiacInner + WHEEL_RADII.zodiacOuter) / 2, index * 30 + 15 + props.wheelShift)
-    return { symbol, index, start, end, label, fill: sectorFills[index % sectorFills.length] }
+    return {
+      symbol,
+      index,
+      start,
+      end,
+      label,
+      fill:  sectorFills[index % sectorFills.length],
+      title: `${ZODIAC_SIGN_NAMES[index]} (${symbol})`,
+    }
   })
 )
 </script>
 
 <template lang="pug">
-g(pointer-events='none')
+g
   SegmentRing(
     test-id='zodiac-ring'
     :sectors='sectors'
@@ -36,5 +44,7 @@ g(pointer-events='none')
     font-size='23'
   )
   circle(:cx='CENTER' :cy='CENTER' :r='WHEEL_RADII.zodiacOuter' fill='none' stroke='var(--chart-frame-stroke)' stroke-width='2.2')
+    title Zodiac outer boundary
   circle(:cx='CENTER' :cy='CENTER' :r='WHEEL_RADII.zodiacInner' fill='none' stroke='var(--chart-ink-muted)' stroke-width='1.35')
+    title Zodiac inner boundary
 </template>
