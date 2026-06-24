@@ -58,7 +58,6 @@ export default defineConfig(({ mode }) => ({
     copySwissEphAssets(),
     VitePWA({
       registerType: 'autoUpdate',
-      injectRegister: 'inline',
       includeAssets: ['icons/*.png'],
       manifest: {
         name: 'Astrelio',
