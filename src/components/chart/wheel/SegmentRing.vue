@@ -22,7 +22,6 @@ g(:data-testid='testId')
     v-for='sector in sectors'
     :key='sector.key ?? sector.index'
   )
-    title(v-if='sector.title') {{ sector.title }}
     Arc(
       :inner-radius='innerRadius'
       :outer-radius='outerRadius'
@@ -31,6 +30,7 @@ g(:data-testid='testId')
       :fill='sector.fill'
       :stroke='stroke'
       :stroke-width='strokeWidth'
+      :title='sector.title || ""'
     )
     text(
       :x='sector.label.x'
@@ -44,5 +44,7 @@ g(:data-testid='testId')
       paint-order='stroke fill'
       text-anchor='middle'
       dominant-baseline='central'
-    ) {{ sector.symbol }}
+    )
+      title(v-if='sector.title') {{ sector.title }}
+      | {{ sector.symbol }}
 </template>

@@ -11,6 +11,7 @@ const props = defineProps({
   stroke:         { type: String, default: 'none' },
   strokeWidth:    { type: [Number, String], default: 0 },
   opacity:        { type: [Number, String], default: 1 },
+  title:          { type: String, default: '' },
 })
 
 const path = computed(() =>
@@ -27,4 +28,5 @@ path(
   :opacity='opacity'
   stroke-linejoin='round'
 )
+  title(v-if='title') {{ title }}
 </template>

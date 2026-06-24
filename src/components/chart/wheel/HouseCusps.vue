@@ -58,6 +58,7 @@ g(data-testid='house-cusps')
       :end-longitude='sector.end'
       :fill='sector.fill'
       stroke='none'
+      :title='sector.title'
     )
   line(
     v-for='cusp in cusps'
