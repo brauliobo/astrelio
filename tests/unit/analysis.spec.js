@@ -61,6 +61,21 @@ describe('chart analysis', () => {
     expect(chartSignature({ ...chart, zodiac: 'sidereal' }).tropical).toBeNull()
   })
 
+  it('includes sign-axis analysis only in Tropical diagnostics', () => {
+    const signature = chartSignature(chart)
+
+    expect(signature.tropical.signAxes).toHaveLength(6)
+    expect(signature.tropical.signAxes[0]).toMatchObject({
+      id:          'aries_libra',
+      totalWeight: 8,
+      sides: [
+        { signIndex: 0, weight: 5, bodies: ['Sun'] },
+        { signIndex: 6, weight: 3, bodies: ['Mars'] },
+      ],
+    })
+    expect(chartSignature({ ...chart, zodiac: 'sidereal' }).tropical).toBeNull()
+  })
+
   it('sorts aspects by computed strength before orb', () => {
     const aspects = [
       { type: 'square', delta: 0.5, strength: 0.2 },

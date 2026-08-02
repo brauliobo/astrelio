@@ -1,5 +1,8 @@
 import { houseOf } from './houses.js'
+import { analyzeSignAxes, PLANET_WEIGHTS } from './sign-axes.js'
 import { norm180, norm360, signIndex } from './zodiac.js'
+
+export { analyzeSignAxes, PLANET_WEIGHTS } from './sign-axes.js'
 
 export const SIGN_TRAITS = [
   { element: 'fire',  modality: 'cardinal', polarity: 'yang' },
@@ -15,23 +18,6 @@ export const SIGN_TRAITS = [
   { element: 'air',   modality: 'fixed',    polarity: 'yang' },
   { element: 'water', modality: 'mutable',  polarity: 'yin' },
 ]
-
-export const PLANET_WEIGHTS = {
-  Sun:       5,
-  Moon:      5,
-  Mercury:   3,
-  Venus:     3,
-  Mars:      3,
-  Jupiter:   2,
-  Saturn:    2,
-  Uranus:    1,
-  Neptune:   1,
-  Pluto:     1,
-  NorthNode: 1,
-  SouthNode: 1,
-  Lilith:    1,
-  Chiron:    1,
-}
 
 export const TROPICAL_SIGN_RULERS = [
   'Mars',
@@ -218,6 +204,7 @@ export const tropicalDiagnostics = (chart) => {
     houseRulers,
     sect: sectFor(chart),
     dignityBasics,
+    signAxes: analyzeSignAxes(chart),
   }
 }
 
