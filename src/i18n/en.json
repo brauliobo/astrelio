@@ -262,10 +262,10 @@
     },
     "reading": {
       "document": {
-        "title": "Human Design reflective reading"
+        "title": "Human Design chart reading"
       },
       "caveats": {
-        "exact_time": "Lines, variables, and the incarnation-cross calculation are sensitive to birth-time precision. Treat these layers as hypotheses to test against lived experience when the recorded time is uncertain."
+        "exact_time": "Lines, variables, and the incarnation cross can change when the recorded birth time changes. Treat these results as uncertain when the time is approximate."
       },
       "strategies": {
         "generator": "Wait for something concrete to engage before committing energy",
@@ -300,113 +300,113 @@
       "variables": {
         "digestion": {
           "label": "Digestion and sensory intake",
-          "transference": "Under pressure, attention may drift toward a transferred intake pattern associated with color {color}; noticing the shift matters more than enforcing a rule."
+          "transference": "Human Design names color {color} as this variable's transference counterpart. This is a system label, not a measured response."
         },
         "environment": {
           "label": "Supportive environment",
-          "transference": "When context feels strained, color {color} may describe the environment being pursued rather than the one that supports ease and orientation."
+          "transference": "Human Design names color {color} as this variable's transference counterpart. The chart does not measure which environment works best."
         },
         "motivation": {
           "label": "Motivational perspective",
-          "transference": "Color {color} can mark a transferred motive that becomes louder under pressure; curiosity helps distinguish it from a steadier inner orientation."
+          "transference": "Human Design names color {color} as this variable's transference counterpart. It does not establish a person's actual motive."
         },
         "perspective": {
           "label": "View and attention",
-          "transference": "A color {color} transfer can narrow what receives attention. Use it as a prompt to widen perspective, not as a judgment about perception."
+          "transference": "Human Design names color {color} as this variable's transference counterpart. It does not measure attention or perception."
         }
       },
       "center_themes": {
-        "head": "The Head organizes inspiration and questions. When open, mental pressure can be sampled from the environment without requiring every question to be answered.",
-        "ajna": "The Ajna describes recurring ways of organizing concepts. Definition can bring consistency; openness can support intellectual range when certainty is not forced.",
-        "throat": "The Throat concerns expression and visible action. Its pattern becomes clearer through timing, audience, and the channels that connect expression to the rest of the design.",
-        "g": "The G center frames identity, direction, and love. Whether defined or open, place and relationship context can reveal how direction feels coherent.",
-        "ego": "The Ego concerns will, value, and promises. Sustainable commitments come from honest capacity rather than attempts to prove worth.",
-        "solar_plexus": "The Solar Plexus concerns emotional movement and relational sensitivity. Space for changing feeling states can support more considered choices.",
-        "spleen": "The Spleen describes immediate instinct, pattern recognition, and present-time awareness. Its signals are subtle and are best observed without turning them into fear-based rules.",
-        "sacral": "The Sacral concerns responsive vitality and sustainable engagement. Energy often becomes easier to read in relation to a concrete option rather than an abstract obligation.",
-        "root": "The Root organizes pressure and momentum. Distinguishing useful activation from urgency can protect pacing and completion."
+        "head": "Traditional domain: questions, inspiration, and mental pressure.",
+        "ajna": "Traditional domain: concepts, opinions, and certainty.",
+        "throat": "Traditional domain: speech, expression, and visible action.",
+        "g": "Traditional domain: identity, direction, and love.",
+        "ego": "Traditional domain: will, promises, and material value.",
+        "solar_plexus": "Traditional domain: emotions, desire, and social awareness.",
+        "spleen": "Traditional domain: instinct, risk, and present-time awareness.",
+        "sacral": "Traditional domain: work capacity, sexuality, and response.",
+        "root": "Traditional domain: pressure, stress, and momentum."
       },
       "themes": {
-        "type": "The {type} pattern describes how energy and opportunity are most naturally encountered; it is an experiment in pacing, not a fixed identity.",
-        "authority": "{authority} authority invites decisions to be grounded in a repeatable inner process rather than immediate social or mental pressure.",
-        "profile": "Profile {personalityLine}/{designLine} combines a conscious social role with a less deliberate way others may experience the person.",
-        "definition": "{definition} describes how consistently defined centers exchange information and where other people or environments may add temporary bridges."
+        "type": "Calculated type: {type}.",
+        "authority": "Calculated authority: {authority}.",
+        "profile": "Calculated profile: {personalityLine}/{designLine}.",
+        "definition": "Calculated definition: {definition}."
       },
       "prominence": {
-        "repeated_gate": "Gate {gate} appears {count} times, giving its theme repeated emphasis across planetary and conscious/unconscious layers.",
-        "line": "Line {line} occurs {count} times, making its learning style a recurring lens for how themes are approached.",
-        "circuit": "The {circuit} circuit appears in {count} defined channel(s), concentrating attention around its characteristic way of relating and contributing."
+        "repeated_gate": "Gate {gate} appears in {count} of {total} activations.",
+        "line": "Line {line} appears in {count} of {total} activations.",
+        "circuit": "The {circuit} circuit accounts for {count} of {total} defined channels."
       },
       "chapters": {
         "decision_making": {
           "title": "Decision-making mechanics",
-          "overview": "As a {type} with {authority} authority, clarity is supported by coordinating energetic timing with the body's repeatable decision process."
+          "overview": "Calculated type: {type}. Strategy: {strategy}. Authority: {authority}. Traditional signature: {signature}; traditional not-self theme: {notSelf}."
         },
         "energy_and_expression": {
           "title": "Energy and expression",
-          "overview": "{definedCenters} defined center(s) and {channels} channel(s) describe where energy and expression tend to repeat with greater consistency."
+          "overview": "Defined centers ({definedCenters}): {definedCenterNames}. Defined channels ({channels}): {channelNames}."
         },
         "identity_and_role": {
-          "title": "Identity and social role",
-          "overview": "Lines {personalityLine}/{designLine} combine an observable role with a deeper learning pattern, shaping how participation and recognition develop over time."
+          "title": "Profile",
+          "overview": "Profile {personalityLine}/{designLine}: the first number comes from the Personality line and the second from the Design line."
         },
         "conditioning_and_openness": {
-          "title": "Openness and contextual learning",
-          "overview": "{openCenters} open center(s) highlight areas where sensitivity to people and setting can become discernment when experience is observed without self-judgment."
+          "title": "Undefined centers",
+          "overview": "Centers not defined in this calculation ({openCenters}): {openCenterNames}."
         },
         "relationships_and_circuitry": {
-          "title": "Relationships and circuitry",
-          "overview": "{channels} defined channel(s) show recurring pathways of connection; relationships can amplify, bridge, or contrast these patterns without determining their outcome."
+          "title": "Channels and relationships",
+          "overview": "Defined channels ({channels}): {channelNames}. Channel structure does not measure compatibility or relationship quality."
         },
         "life_theme": {
-          "title": "Life-theme orientation",
-          "overview": "Incarnation-cross availability is {available}. When present, its four Sun/Earth gates offer a broad thematic frame rather than a prescribed purpose."
+          "title": "Incarnation cross",
+          "overview": "The incarnation cross is calculated from four Personality and Design Sun/Earth activations. It is a system label, not a prescribed purpose."
         },
         "variables_and_transference": {
           "title": "Variables and transference",
-          "overview": "{variables} variable(s) add a time-sensitive lens on intake, environment, motivation, and view. They are most useful as gentle experiments after basic mechanics."
+          "overview": "Calculated variables ({variables}): {variableNames}. These results are sensitive to birth-time precision."
         },
         "gates_and_lines": {
           "title": "Gates, lines, and activations",
-          "overview": "{gates} active gate(s) across {activations} activation(s) describe the detailed vocabulary through which broader center and channel themes become specific."
+          "overview": "Active gates ({gates}): {gateNames}. Total Personality and Design activations: {activations}."
         },
         "integration": {
           "title": "Integration",
-          "overview": "{definition} provides the structural backdrop for integrating decision-making, relationships, openness, and recurring themes into one lived experiment."
+          "overview": "Definition type: {definition}. This label summarizes how the defined centers connect in the chart."
         }
       },
       "strengths": {
-        "decision_making": "A reliable strength is the ability to let {type} timing and {authority} authority cooperate before commitment.",
-        "energy_and_expression": "Defined energy can provide continuity without requiring constant output; consistency becomes a resource when pacing remains responsive.",
-        "identity_and_role": "The {personalityLine}/{designLine} profile can translate lived experience into a recognizable and increasingly authentic social contribution.",
-        "conditioning_and_openness": "Openness can become nuanced social intelligence, revealing distinctions that a consistently defined experience may overlook.",
-        "relationships_and_circuitry": "Defined circuitry offers dependable ways of connecting, organizing exchange, and recognizing which relationships support mutual movement.",
-        "life_theme": "When available, the cross can gather recurring interests into a coherent narrative while leaving room for choice and development.",
-        "variables_and_transference": "Variable awareness can sharpen sensitivity to supportive conditions without turning preference into rigid self-management.",
-        "gates_and_lines": "Repeated gates and lines offer a rich vocabulary for observing how the same theme matures across different situations.",
-        "integration": "The {definition} pattern can support recognition of what is internally consistent and what benefits from dialogue or environmental input."
+        "decision_making": "The chart provides a specific strategy and authority sequence that can be compared with actual decisions.",
+        "energy_and_expression": "Defined centers and channels are listed explicitly, so the calculation can be checked against the bodygraph.",
+        "identity_and_role": "The profile keeps Personality and Design line numbers separate.",
+        "conditioning_and_openness": "Undefined centers are listed rather than treated as personal flaws.",
+        "relationships_and_circuitry": "Channel names, gates, and centers provide a concrete structural reference.",
+        "life_theme": "The cross records the four source activations in one calculation.",
+        "variables_and_transference": "Each variable records orientation, color, tone, and base in the chart data.",
+        "gates_and_lines": "Every activation keeps its planet, layer, gate, and line.",
+        "integration": "{definition} gives a concise label for the connection pattern among defined centers."
       },
       "challenges": {
-        "decision_making": "Immediate pressure may compete with {authority} authority; urgency can be noticed without being treated as proof of clarity.",
-        "energy_and_expression": "Consistent energy may be overused or assumed to be endlessly available, especially when external expectations reward constant performance.",
-        "identity_and_role": "Profile projections can invite roles that do not fit; recognition becomes clearer when expectations are named rather than silently carried.",
-        "conditioning_and_openness": "Open-center sensitivity may be mistaken for a personal deficiency or obligation, obscuring what actually belongs to the surrounding context.",
-        "relationships_and_circuitry": "Chemistry and completion can feel compelling, yet neither guarantees compatibility, consent, or shared priorities.",
-        "life_theme": "A thematic label can become restrictive when treated as a destiny instead of a reflective frame for recurring experience.",
-        "variables_and_transference": "Precision language may encourage overcontrol when birth time is uncertain or when subtle preferences are treated as universal rules.",
-        "gates_and_lines": "Detailed activation language can fragment the reading unless each gate and line is returned to its center, channel, and lived context.",
-        "integration": "The {definition} pattern may be overidentified with, reducing openness to growth, contradiction, and situational complexity."
+        "decision_making": "Human Design strategy and authority are interpretive rules; they do not guarantee better decisions.",
+        "energy_and_expression": "A defined center does not measure stamina, health, or work capacity.",
+        "identity_and_role": "A profile number does not determine a social role or how other people will respond.",
+        "conditioning_and_openness": "An undefined center does not prove conditioning, weakness, or sensitivity.",
+        "relationships_and_circuitry": "Channels do not establish compatibility, consent, or shared priorities.",
+        "life_theme": "An incarnation-cross label should not be treated as destiny or obligation.",
+        "variables_and_transference": "Variables can change with birth-time corrections and are not measured preferences.",
+        "gates_and_lines": "Canonical gate names are labels, not personality descriptions.",
+        "integration": "{definition} is a chart classification, not a fixed identity."
       },
       "practices": {
-        "decision_making": "For a meaningful choice, record the first impulse, then revisit it through the {type} strategy and {authority} process before acting.",
-        "energy_and_expression": "Notice which activities leave energy more coherent afterward and which create depletion despite appearing productive.",
-        "identity_and_role": "Compare roles that arrive through genuine recognition with roles accepted mainly to satisfy projection or expectation.",
-        "conditioning_and_openness": "After intense contact, spend time in a neutral setting and observe which pressures, moods, or certainties naturally soften.",
-        "relationships_and_circuitry": "Discuss pacing, boundaries, and contribution directly instead of inferring relational meaning from channel chemistry alone.",
-        "life_theme": "Journal recurring themes across several months and keep only the language that expands agency and accurate self-recognition.",
-        "variables_and_transference": "Change one environmental or intake condition at a time, then observe ease, attention, and sustainability without forcing a preferred result.",
-        "gates_and_lines": "Choose one repeated gate or line and track how its constructive and strained expressions differ across real situations.",
-        "integration": "Review the reading as a whole and identify one experiment that supports choice, relationship clarity, and sustainable participation."
+        "decision_making": "For several decisions, record the options, first preference, waiting time, final choice, and later result.",
+        "energy_and_expression": "Compare the center and channel list with the rendered bodygraph; report any mismatch as a calculation issue.",
+        "identity_and_role": "Use the profile as a lookup label; do not infer a role without separate evidence.",
+        "conditioning_and_openness": "Describe a specific situation before linking it to an undefined center.",
+        "relationships_and_circuitry": "Discuss boundaries and expectations directly instead of inferring them from channels.",
+        "life_theme": "Check the four cross activations against the Personality and Design Sun/Earth rows.",
+        "variables_and_transference": "If birth time is uncertain, compare variable results across the plausible time range.",
+        "gates_and_lines": "Read a gate together with its center, line, activating planet, and completed channels.",
+        "integration": "Keep only claims that refer to a visible calculation or a recorded observation."
       }
     },
     "orientations": {
@@ -962,14 +962,14 @@
     },
     "reading": {
       "chapters": {
-        "identity": "Identity and orientation",
-        "emotional_life": "Emotional life and responsiveness",
-        "cognition": "Cognition and communication",
+        "identity": "Identity and direction",
+        "emotional_life": "Emotional needs",
+        "cognition": "Thinking and communication",
         "relationships": "Relationships and values",
-        "agency": "Agency, courage, and conflict",
-        "meaning": "Meaning, learning, and confidence",
-        "growth": "Responsibility and developmental direction",
-        "current_context": "Current dasha context"
+        "agency": "Action and conflict",
+        "meaning": "Beliefs and learning",
+        "growth": "Duties and change",
+        "current_context": "Current dasha period"
       },
       "evidence": {
         "placement": "{body} in {signIndex}, house {house}, {dignity}; nakshatra {nakshatra}, pada {pada}; Navamsa {d9SignIndex}.",
@@ -978,23 +978,30 @@
         "node_axis": "Rahu occupies {rahu} while Ketu occupies {ketu}, forming the chart's nodal axis.",
         "vimshottari": "The current Vimshottari sequence is {mahadasha} mahadasha with {antardasha} antardasha.",
         "pattern": {
-          "vargottama": "{participants} repeats the same sign in Rasi and Navamsa, the supported vargottama pattern.",
-          "mutual_reception": "{participants} occupy one another's signs, forming the supported mutual-reception pattern."
+          "vargottama": "{participants} is in the same sign in Rasi and Navamsa; this is called vargottama.",
+          "mutual_reception": "{participants} occupy signs ruled by one another; this is mutual reception."
         }
       },
+      "dignity_meanings": {
+        "exalted": "the traditional model treats this placement as especially strong",
+        "own_sign": "the planet rules this sign and can express its usual topics directly",
+        "debilitated": "the traditional model treats this placement as requiring more adjustment",
+        "neutral": "the sign does not add a major dignity advantage or disadvantage",
+        "unassessed": "this dignity is not assessed by the current model"
+      },
       "insights": {
-        "placement": "{body} in {signIndex} and house {house}, with {dignity} dignity and a {nakshatra} pada {pada} emphasis, describes a recurring field of attention. Its Navamsa placement in {d9SignIndex} adds a relational and developmental counterpoint rather than replacing the Rasi position.",
-        "node_axis": "Rahu in {rahu} and Ketu in {ketu} frame a polarity between unfamiliar development and familiar habits. Read the axis as an invitation to balance both ends, not as a demand to reject the past.",
-        "vimshottari": "The {mahadasha} mahadasha establishes the broader period while {antardasha} colors its current chapter. This timing describes emphasis and context, not a guaranteed event."
+        "placement": "{body} in {signIndex}, house {house}: {bodyRole}. It acts {signStyle} in matters of {houseArea}. In this dignity model, {dignityMeaning}. Nakshatra: {nakshatra}, pada {pada}; Navamsa: {d9SignIndex}.",
+        "node_axis": "Rahu is in {rahu}; Ketu is in {ketu}. In this system, Rahu marks less familiar development and Ketu marks established habits.",
+        "vimshottari": "Current period: {mahadasha} mahadasha and {antardasha} antardasha. These lords identify the topics emphasized by the timing model, not guaranteed events."
       },
       "strengths": {
-        "placement": "{body} carries supportive dignity as {dignity} in house {house}; its qualities may be easier to access when expressed with proportion and awareness of the whole chart."
+        "placement": "{body} is {dignity} in house {house}. In this model, {dignityMeaning}; its topics are {bodyRole}."
       },
       "challenges": {
-        "placement": "{body} is {dignity} in house {house}. This can make its themes require more reflection, skill, and contextual support, without implying deficiency or a fixed outcome."
+        "placement": "{body} is {dignity} in house {house}. In this model, {dignityMeaning}; practical attention goes to {houseArea}."
       },
       "practices": {
-        "placement": "Observe how {body} themes arise through house {house} and {signIndex}. Record what supports deliberate expression before drawing conclusions from dignity alone."
+        "placement": "For {body}, track one concrete situation involving {houseArea}. Note the choice made and the result instead of judging the placement by dignity alone."
       }
     },
     "ayanamshas": {
@@ -1059,6 +1066,7 @@
     },
     "presentation": {
       "list_separator": ", ",
+      "house_label": "house {house}",
       "evidence_reference": "{description}",
       "evidence_toggle": "Evidence ({count})",
       "titles": {
@@ -1075,7 +1083,7 @@
         "caveats": "Reading notes"
       },
       "prominence": {
-        "vedic": "#{rank} {body}, prominence score {score}"
+        "vedic": "#{rank} {body}"
       },
       "values": {
         "true": "yes",
@@ -1127,6 +1135,58 @@
         "supported_pattern": "Supported-pattern evidence"
       }
     },
+    "vocabulary": {
+      "body_roles": {
+        "Sun": "identity, confidence, and purpose",
+        "Moon": "emotional needs, habits, and security",
+        "Mercury": "thinking, learning, and communication",
+        "Venus": "affection, values, and attraction",
+        "Mars": "initiative, desire, and conflict",
+        "Jupiter": "growth, beliefs, and opportunity",
+        "Saturn": "limits, responsibility, and long-term effort",
+        "Uranus": "independence, disruption, and change",
+        "Neptune": "imagination, ideals, and blurred boundaries",
+        "Pluto": "power, endings, and deep change",
+        "NorthNode": "unfamiliar skills and future development",
+        "SouthNode": "familiar habits and existing skills",
+        "Chiron": "a sensitive area that develops through practice",
+        "Lilith": "autonomy, refusal, and excluded desires"
+      },
+      "sign_styles": {
+        "0": "directly and independently",
+        "1": "steadily and practically",
+        "2": "through curiosity and exchange",
+        "3": "protectively and personally",
+        "4": "visibly and confidently",
+        "5": "carefully and methodically",
+        "6": "through balance and cooperation",
+        "7": "intensely and privately",
+        "8": "openly and experimentally",
+        "9": "carefully and strategically",
+        "10": "independently and collectively",
+        "11": "sensitively and imaginatively"
+      },
+      "house_areas": {
+        "1": "identity and first impressions",
+        "2": "money, possessions, and self-worth",
+        "3": "learning, speech, and daily contacts",
+        "4": "home, family, and private life",
+        "5": "creativity, pleasure, and children",
+        "6": "work routines, service, and health habits",
+        "7": "partnerships and agreements",
+        "8": "shared resources, trust, and loss",
+        "9": "beliefs, higher study, and travel",
+        "10": "career, reputation, and public duties",
+        "11": "friends, groups, and long-term plans",
+        "12": "rest, privacy, and unfinished matters"
+      },
+      "motion_notes": {
+        "direct": "Motion is direct.",
+        "retrograde": "Motion is retrograde, so this topic is often reviewed before it is expressed.",
+        "stationary": "Motion is stationary, which gives this topic extra emphasis.",
+        "unknown": "Motion data is unavailable."
+      }
+    },
     "tropical": {
       "document": {
         "title": "Tropical psychological reading"
@@ -1141,43 +1201,48 @@
         "integration": { "title": "Whole-chart integration" }
       },
       "items": {
-        "placement": "{body} in {signIndex}, house {house}, directs this planetary function toward a particular style and life area. Its motion is {retrograde}; use that detail to explore how expression may become more internally reviewed.",
-        "angle": "{angle} in {signIndex} describes a threshold between inner experience and visible participation, emphasizing how orientation develops through contact with the world.",
-        "chart_ruler": "{planet}, ruler of the {ascSignIndex} Ascendant, is placed in {signIndex}, house {house}. It links first impressions and self-direction with this planet's priorities; its motion is {retrograde}.",
+        "placement": "{body} in {signIndex}, house {house}: {bodyRole}. It tends to act {signStyle}, with most attention on {houseArea}. {motionNote}",
+        "placement_without_house": "{body} in {signIndex}: {bodyRole}. It tends to act {signStyle}. {motionNote}",
+        "angle": {
+          "ascendant": "Ascendant in {signIndex}: first impressions and the initial approach to situations tend to be {signStyle}.",
+          "midheaven": "Midheaven in {signIndex}: career and public responsibilities tend to be approached {signStyle}."
+        },
+        "chart_ruler": "{planet} rules the {ascSignIndex} Ascendant and is in {signIndex}, house {house}. Its topics are {bodyRole}, focused on {houseArea}. {motionNote}",
         "lunar_phase": {
-          "new_moon": "The New Moon phase joins intention and feeling closely, favoring subjective beginnings and learning through direct engagement.",
-          "waxing_crescent": "The Waxing Crescent phase develops commitment through early friction, asking emerging intentions to find practical support.",
-          "first_quarter": "The First Quarter phase emphasizes action, adjustment, and the courage to shape circumstances rather than wait for certainty.",
-          "waxing_gibbous": "The Waxing Gibbous phase refines what has begun, combining aspiration with a strong impulse to improve and prepare.",
-          "full_moon": "The Full Moon phase heightens awareness through contrast, relationship, and the need to see an experience from more than one side.",
-          "waning_gibbous": "The Waning Gibbous phase favors interpretation and sharing, turning completed experience into perspective that can benefit others.",
-          "last_quarter": "The Last Quarter phase questions inherited assumptions and supports deliberate revision of habits, loyalties, and direction.",
-          "waning_crescent": "The Waning Crescent phase favors release, integration, and quiet preparation before another cycle of initiative begins."
+          "new_moon": "New Moon: feelings and intentions start together; action often begins from a personal need.",
+          "waxing_crescent": "Waxing Crescent: new plans need practical support before they gain momentum.",
+          "first_quarter": "First Quarter: obstacles are usually met through action and adjustment.",
+          "waxing_gibbous": "Waxing Gibbous: attention goes to improving and completing what has already started.",
+          "full_moon": "Full Moon: relationships and opposing views make feelings easier to see.",
+          "waning_gibbous": "Waning Gibbous: experience is processed by explaining, teaching, or sharing it.",
+          "last_quarter": "Last Quarter: established habits are questioned and revised.",
+          "waning_crescent": "Waning Crescent: energy turns toward closure, rest, and preparation."
         },
         "aspect": {
-          "conjunction": "{a} and {b} form a conjunction, concentrating both functions into one insistent theme that benefits from conscious differentiation.",
-          "opposition": "{a} and {b} form an opposition, making their needs visible through contrast, relationship, and ongoing negotiation.",
-          "trine": "{a} and {b} form a trine, offering an easy channel of cooperation whose gifts grow stronger when used deliberately.",
-          "square": "{a} and {b} form a square, creating productive friction that asks for action, skill, and room for both priorities.",
-          "sextile": "{a} and {b} form a sextile, opening a practical opportunity for cooperation that develops through initiative and practice.",
-          "quincunx": "{a} and {b} form a quincunx, calling for repeated recalibration between functions that do not automatically share a common rhythm."
+          "conjunction": "{a} and {b} are conjunct: their topics tend to operate together.",
+          "opposition": "{a} and {b} are opposite: their priorities need regular negotiation.",
+          "trine": "{a} and {b} are trine: cooperation between them tends to come easily.",
+          "square": "{a} and {b} are square: competing demands create pressure to act.",
+          "sextile": "{a} and {b} are sextile: cooperation grows when an opportunity is used.",
+          "quincunx": "{a} and {b} are quincunx: their routines need repeated adjustment."
         },
         "distribution": {
-          "element": "The element distribution emphasizes {dominant} and gives least weight to {minimum}. This describes preferred modes of engagement, not an absence of the less represented quality.",
-          "modality": "The modality distribution emphasizes {dominant} and gives least weight to {minimum}, shaping whether change is approached through initiation, continuity, or adaptation.",
-          "house_mode": "The house-mode distribution emphasizes {dominant} houses and gives least weight to {minimum} houses, describing where experience tends to become most active or visible."
+          "element": "{dominant} is the strongest element; {minimum} is the least represented.",
+          "modality": "{dominant} is the strongest modality; {minimum} is the least represented.",
+          "house_mode": "{dominant} houses receive the most emphasis; {minimum} houses receive the least."
         },
         "configuration": {
-          "sign_stellium": "A sign stellium gathers {bodies} in {signIndex}, concentrating attention and making this sign's style a major channel for development.",
-          "house_stellium": "A house stellium gathers {bodies} in house {house}, making that life area a repeated site of investment, learning, and choice.",
-          "grand_trine": "A grand trine among {bodies} creates a self-reinforcing circuit of ease and talent that becomes more useful through conscious application.",
-          "t_square": "A T-square among {bodies}, focused through {apex}, organizes pressure into a recurring developmental task requiring movement and perspective.",
-          "grand_cross": "A grand cross among {bodies} distributes tension across competing priorities, cultivating coordination, endurance, and flexible sequencing.",
-          "yod": "A yod among {bodies}, focused through {apex}, emphasizes fine adjustment and a path that becomes clearer through experimentation rather than certainty."
+          "stellium": "{bodies} form a stellium in {signIndex} and house {house}, concentrating attention on {houseArea}.",
+          "sign_stellium": "{bodies} form a stellium in {signIndex}; this sign's style is repeated across several chart factors.",
+          "house_stellium": "{bodies} form a stellium in house {house}, concentrating attention on one life area.",
+          "grand_trine": "{bodies} form a grand trine: these topics support one another with little friction.",
+          "t_square": "{bodies} form a T-square. {apex} carries much of the pressure and needs a direct outlet.",
+          "grand_cross": "{bodies} form a grand cross: several competing demands must be handled in sequence.",
+          "yod": "{bodies} form a yod. {apex} requires repeated, precise adjustments."
         }
       },
       "prominence": {
-        "factor": "#{rank} {factor}, prominence score {score}",
+        "factor": "#{rank} {factor}",
         "reasons": {
           "luminary": "{body} is a luminary and carries foundational weight in the reading.",
           "chart_ruler": "{body} rules the Ascendant and connects identity with the chart's broader organization.",
@@ -1186,62 +1251,63 @@
         }
       },
       "summary": {
-        "factor": "{factor} ranks #{rank} with a prominence score of {score}, making it a useful anchor for reading the chart as a whole.",
+        "factor": "{factor} is one of the chart's main reference points.",
         "distribution": {
-          "element": "{dominant} is the leading element, suggesting that its style is a frequent starting point for engagement.",
-          "modality": "{dominant} is the leading modality, shaping the chart's preferred rhythm of change and continuity.",
-          "house_mode": "{dominant} houses carry the strongest distributional emphasis, concentrating activity in that mode of participation."
+          "element": "{dominant} is the most represented element.",
+          "modality": "{dominant} is the most represented modality.",
+          "house_mode": "{dominant} houses receive the most emphasis."
         },
         "configuration": {
-          "sign_stellium": "The {bodies} sign stellium is a central concentration that benefits from varied outlets and conscious balance.",
-          "house_stellium": "The {bodies} house stellium makes one life area a sustained arena for attention, learning, and contribution.",
-          "grand_trine": "The grand trine among {bodies} describes a stable resource that becomes visible when ease is translated into action.",
-          "t_square": "The T-square among {bodies}, focused through {apex}, turns tension into a repeated invitation to develop range and agency.",
-          "grand_cross": "The grand cross among {bodies} asks for coordination among several valid priorities rather than a single final solution.",
-          "yod": "The yod among {bodies}, focused through {apex}, highlights a process of precise adjustment and evolving responsiveness."
+          "sign_stellium": "{bodies} are concentrated in one sign.",
+          "house_stellium": "{bodies} are concentrated in one house.",
+          "stellium": "{bodies} concentrate the chart in {signIndex} and house {house}.",
+          "grand_trine": "{bodies} form a grand trine with low internal friction.",
+          "t_square": "{bodies} form a T-square, with pressure concentrated on {apex}.",
+          "grand_cross": "{bodies} form a grand cross with several competing demands.",
+          "yod": "{bodies} form a yod that requires repeated adjustment through {apex}."
         }
       },
       "strengths": {
         "aspect": {
-          "trine": "The trine between {a} and {b} supports fluent cooperation, perspective, and recovery when its ease is actively used.",
-          "sextile": "The sextile between {a} and {b} offers a practical bridge that strengthens through curiosity, initiative, and repetition."
+          "trine": "{a} and {b} can be used together without much internal conflict.",
+          "sextile": "{a} and {b} work well together when a concrete opportunity is taken."
         },
         "configuration": {
-          "grand_trine": "The grand trine among {bodies} can provide a dependable reservoir of talent, internal coherence, and creative recovery."
+          "grand_trine": "The grand trine links {bodies} into an accessible set of skills."
         },
         "distribution": {
-          "element": "The strong {dominant} element can be a ready resource for engagement; consciously inviting {minimum} qualities broadens its expression.",
-          "modality": "The strong {dominant} modality provides a reliable rhythm; borrowing from {minimum} can make that rhythm more flexible.",
-          "house_mode": "Emphasis in {dominant} houses supports activity in that mode, while attention to {minimum} houses can round out participation."
+          "element": "{dominant} is readily available; {minimum} may require deliberate practice.",
+          "modality": "{dominant} is the familiar way of handling change; {minimum} adds flexibility.",
+          "house_mode": "{dominant} life areas receive attention easily; {minimum} areas may need planning."
         }
       },
       "challenges": {
         "aspect": {
-          "square": "The square between {a} and {b} can produce pressure or competing impulses when one function is asked to carry the whole problem.",
-          "opposition": "The opposition between {a} and {b} can polarize experience, especially when one side is projected onto another person or situation.",
-          "quincunx": "The quincunx between {a} and {b} can create recurring misalignment that is easy to personalize instead of treating as a calibration task."
+          "square": "{a} and {b} can compete for time, energy, or control.",
+          "opposition": "{a} and {b} can alternate between extremes instead of working together.",
+          "quincunx": "{a} and {b} often require changes in timing, method, or priority."
         },
         "configuration": {
-          "t_square": "The T-square among {bodies}, focused through {apex}, can intensify urgency and overreliance on the apex function.",
-          "grand_cross": "The grand cross among {bodies} can feel like simultaneous demands, making prioritization and recovery as important as persistence.",
-          "yod": "The yod among {bodies}, focused through {apex}, can amplify uncertainty when subtle adjustments are forced into one definitive answer."
+          "t_square": "The T-square can overload {apex} when every problem is handled through the same response.",
+          "grand_cross": "The grand cross can create several urgent demands at the same time.",
+          "yod": "The yod can make {apex} feel inconsistent until a workable routine is found."
         },
         "distribution": {
-          "element": "A wide gap between {dominant} and {minimum} elements may encourage overuse of the familiar style when another response would be more effective.",
-          "modality": "A strong {dominant} and quieter {minimum} modality can make certain phases of change feel less familiar or less immediately rewarding.",
-          "house_mode": "A strong {dominant} and quieter {minimum} house mode may concentrate attention so heavily that other forms of participation receive less practice."
+          "element": "Relying only on {dominant} can leave {minimum} responses underused.",
+          "modality": "A strong {dominant} pattern can make {minimum} phases of change less familiar.",
+          "house_mode": "Heavy focus on {dominant} houses can leave {minimum} areas unattended."
         }
       },
       "practices": {
         "aspect": {
-          "square": "Name the separate needs of {a} and {b}, then choose one small action that gives each function a legitimate role.",
-          "opposition": "Track when {a} or {b} is assigned to someone else; practice holding both perspectives before negotiating a response.",
-          "quincunx": "Experiment with timing, scale, and sequence between {a} and {b}; evaluate improvement rather than demanding perfect alignment."
+          "square": "List what {a} needs and what {b} needs; schedule one action for each.",
+          "opposition": "Before deciding, write down the two positions represented by {a} and {b}.",
+          "quincunx": "Change one part of the timing or method between {a} and {b}, then compare the result."
         },
         "configuration": {
-          "t_square": "When pressure rises, widen attention beyond {apex} and identify a neglected perspective that can distribute the load.",
-          "grand_cross": "Separate the demands represented by {bodies}, sequence them, and include recovery time instead of attempting total resolution at once.",
-          "yod": "Treat the pattern among {bodies} as an iterative experiment: make one precise adjustment, observe, and revise without self-blame."
+          "t_square": "When {apex} is overloaded, pause and use one of the other two factors in the pattern.",
+          "grand_cross": "Put the demands represented by {bodies} in order instead of handling all of them at once.",
+          "yod": "Make one small change involving {apex}, observe the result, and adjust again."
         },
         "distribution": {
           "element": "Choose a weekly activity that exercises the less represented {minimum} element while respecting the chart's natural {dominant} starting point.",
@@ -1322,6 +1388,57 @@
       "house_outer_boundary": "House ring outer boundary",
       "house_inner_boundary": "House ring inner boundary",
       "nakshatra_outer_boundary": "Nakshatra ring outer boundary"
+    },
+    "wheel_details": {
+      "labels": {
+        "layer": "Layer",
+        "span": "Span",
+        "mode": "Mode",
+        "longitude": "Longitude",
+        "boundary": "Boundary",
+        "cusp": "Cusp",
+        "next_cusp": "Next cusp",
+        "midpoint": "Midpoint",
+        "axis": "Axis",
+        "scale": "Scale",
+        "action": "Action"
+      },
+      "titles": {
+        "zodiac_ring": "Zodiac ring",
+        "house_ring": "House ring",
+        "aspect_center": "Aspect center",
+        "house": "House {house}",
+        "house_cusp": "House {house} cusp",
+        "house_cusp_position": "House {house} cusp: {longitude}",
+        "house_span": "House {house}: {start} to {end}",
+        "house_midpoint": "House {house}: midpoint {longitude}",
+        "tick": "{degree}° tick",
+        "tick_position": "{degree}° wheel tick: {longitude}",
+        "angle_position": "{label}: {name} {longitude}"
+      },
+      "angles": {
+        "asc": "Ascendant",
+        "desc": "Descendant",
+        "mc": "Midheaven",
+        "ic": "Imum Coeli"
+      },
+      "values": {
+        "signs_degree_ruler": "Signs and degree ruler",
+        "zodiac_to_houses": "Zodiac to houses",
+        "house_sectors_cusps": "House sectors and cusps",
+        "aspect_geometry_center": "Aspect geometry and chart center",
+        "starts_house": "Starts house {house}",
+        "zodiac_sign_sector": "Zodiac sign sector",
+        "vedic_lunar_mansion": "Vedic lunar mansion",
+        "asc_axis": "Ascendant / Descendant",
+        "mc_axis": "Midheaven / Imum Coeli",
+        "sign_boundary": "Sign boundary",
+        "decan_marker": "Decan marker",
+        "five_degree_marker": "Five-degree marker",
+        "degree_marker": "Degree marker",
+        "house_label_sector": "House label and sector"
+      },
+      "span_value": "{start} to {end}"
     },
     "display_mode": "Display",
     "display_modes": {
