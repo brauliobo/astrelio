@@ -112,6 +112,45 @@ describe('Tropical psychological reading document', () => {
     expect(first.evidence.filter(row => row.kind === 'placement')).toHaveLength(14)
   })
 
+  it('emits concrete placement facts and ignores unsupported aspects', () => {
+    const document = tropicalReadingDocument(chart, [
+      ...aspects,
+      { a: 'Sun', b: 'Mercury', type: 'semisquare', delta: 0.1, strength: 1 },
+    ])
+    const sun    = document.evidence.find(row => row.id === 'placement:sun')
+    const saturn = document.evidence.find(row => row.id === 'placement:saturn')
+
+    expect(sun.facts).toMatchObject({
+      bodyRole:  'Sun',
+      signStyle: 0,
+      houseArea: 1,
+      motionNote: 'direct',
+    })
+    expect(saturn.facts.motionNote).toBe('retrograde')
+    expect(document.completeness.available.aspects).toBe(aspects.length)
+    expect(document.evidence.some(row => row.facts?.type === 'semisquare')).toBe(false)
+    expect(document.summary.themes.length).toBeLessThanOrEqual(4)
+    expect(document.prominence).toHaveLength(3)
+    expect(document.strengths.length).toBeLessThanOrEqual(3)
+    expect(document.challenges.length).toBeLessThanOrEqual(3)
+  })
+
+  it('merges matching sign and house stelliums into one configuration', () => {
+    const stelliumChart = {
+      ...chart,
+      positions: chart.positions.map(position =>
+        position.name === 'Venus' ? { ...position, longitude: 25 } : position
+      ),
+    }
+    const document = tropicalReadingDocument(stelliumChart, [])
+    const stelliums = document.evidence.filter(row =>
+      row.kind === 'configuration' && row.facts.bodies.join('|') === 'Mercury|Sun|Venus'
+    )
+
+    expect(stelliums).toHaveLength(1)
+    expect(stelliums[0].facts).toMatchObject({ type: 'stellium', signIndex: 0, house: 1 })
+  })
+
   it('contains translation tokens instead of embedded user-facing prose', () => {
     const document = tropicalReadingDocument(chart, aspects)
     const tokens   = [

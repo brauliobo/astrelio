@@ -301,6 +301,7 @@ const prominenceFacts = (gates, activations, channels) => {
       content: token('human_design.reading.prominence.repeated_gate', {
         gate:  item.gate,
         count: item.count,
+        total: activations.length,
       }),
       evidenceIds: item.evidenceIds,
     }))
@@ -313,7 +314,7 @@ const prominenceFacts = (gates, activations, channels) => {
     .map(([line, count]) => ({
       id:      `line:${line}`,
       score:   count,
-      content: token('human_design.reading.prominence.line', { line, count }),
+      content: token('human_design.reading.prominence.line', { line, count, total: activations.length }),
       evidenceIds: activations.filter(activation => activation.line === line).map(activation => activation.id),
     }))
 
@@ -327,11 +328,11 @@ const prominenceFacts = (gates, activations, channels) => {
     .map(([circuit, count]) => ({
       id:      `circuit:${circuit}`,
       score:   count,
-      content: token('human_design.reading.prominence.circuit', { circuit, count }),
+      content: token('human_design.reading.prominence.circuit', { circuit, count, total: channels.length }),
       evidenceIds: channels.filter(channel => channel.circuit === circuit).flatMap(channel => channel.evidenceIds),
     }))
 
-  return [...repeatedGates, ...prominentLines, ...prominentCircuits]
+  return [...repeatedGates, ...prominentLines, ...prominentCircuits].slice(0, 4)
 }
 
 const readingChapters = ({ mechanics, profile, definition, centers, channels, gates, activations, cross, variables }) => {
@@ -341,29 +342,47 @@ const readingChapters = ({ mechanics, profile, definition, centers, channels, ga
   const activationIds    = activations.map(activation => activation.id)
   return [
     chapter('decision_making', ['mechanics:type', 'mechanics:authority'], {
-      type: mechanics.type.value,
+      type:      mechanics.type.value,
+      strategy:  mechanics.strategy.value,
       authority: mechanics.authority.value,
+      signature: mechanics.signature.value,
+      notSelf:   mechanics.notSelf.value,
     }),
     chapter('energy_and_expression', [...definedCenterIds, ...channelIds], {
-      definedCenters: definedCenterIds.length,
-      channels:       channels.length,
+      definedCenters:    definedCenterIds.length,
+      definedCenterNames: centers.filter(center => center.defined).map(center => center.id),
+      channels:          channels.length,
+      channelNames:      channels.map(channel => channel.id),
     }),
     chapter('identity_and_role', ['profile', ...(cross ? ['incarnation-cross'] : [])], {
       personalityLine: profile.personalityLine,
       designLine:      profile.designLine,
     }),
-    chapter('conditioning_and_openness', openCenterIds, { openCenters: openCenterIds.length }),
-    chapter('relationships_and_circuitry', channelIds, { channels: channels.length }),
+    chapter('conditioning_and_openness', openCenterIds, {
+      openCenters:    openCenterIds.length,
+      openCenterNames: centers.filter(center => !center.defined).map(center => center.id),
+    }),
+    chapter('relationships_and_circuitry', channelIds, {
+      channels:     channels.length,
+      channelNames: channels.map(channel => channel.id),
+    }),
     chapter('life_theme', cross ? ['incarnation-cross'] : [], { available: Boolean(cross) }),
     chapter('variables_and_transference', variables.map(variable => `variable:${variable.id}`), {
-      variables: variables.length,
+      variables:     variables.length,
+      variableNames: variables.map(variable => variable.id),
     }),
     chapter('gates_and_lines', activationIds, {
       gates:       gates.length,
+      gateNames:   gates.map(gate => gate.gate),
       activations: activations.length,
     }),
     chapter('integration', ['definition', ...definedCenterIds], { definition: definition.value }),
-  ]
+  ].filter(item => {
+    if (item.id === 'life_theme') return Boolean(cross)
+    if (item.id === 'variables_and_transference') return variables.length > 0
+    if (item.id === 'relationships_and_circuitry') return channels.length > 0
+    return true
+  })
 }
 
 export const buildHumanDesignReadingDocument = chart => {

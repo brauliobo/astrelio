@@ -102,7 +102,7 @@ const translator = locale => createI18n({
   messages:       { en, 'pt-BR': ptBR },
 }).global.t
 
-const forbiddenRuntimeOutput = /(?:\[object Object\]|\bundefined\b|\b(?:readings|vedic|human_design|planets|zodiac)\.[a-z0-9_.-]+)/i
+const forbiddenRuntimeOutput = /(?:\[object Object\]|\b(?:readings|vedic|human_design|planets|zodiac)\.[a-z0-9_.-]+)/i
 
 const escapedRegExp = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 

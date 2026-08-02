@@ -32,6 +32,7 @@ const READING_BODIES  = [...CORE_BODIES, ...OPTIONAL_BODIES]
 const BODY_ORDER      = new Map(READING_BODIES.map((name, index) => [name, index]))
 const EASY_ASPECTS    = new Set(['trine', 'sextile'])
 const HARD_ASPECTS    = new Set(['square', 'opposition', 'quincunx'])
+const SUPPORTED_ASPECTS = new Set(['conjunction', 'opposition', 'trine', 'square', 'sextile', 'quincunx'])
 const ANGLES          = [
   { name: 'Ascendant', field: 'ascendant', chapter: 'core_identity' },
   { name: 'Midheaven', field: 'mc',        chapter: 'core_identity' },
@@ -55,11 +56,11 @@ const CHAPTER_BY_BODY = {
 }
 
 const DEFAULT_LIMITS = {
-  aspects:        12,
-  prominence:     10,
-  themes:         6,
-  resources:      8,
-  configurations: 8,
+  aspects:        8,
+  prominence:     3,
+  themes:         4,
+  resources:      3,
+  configurations: 4,
 }
 
 const token = (key, params = {}) => ({ key, params })
@@ -89,10 +90,15 @@ const orderedBodies = chart => [...(chart?.positions || [])]
 
 const placementFacts = (position, chart) => ({
   body:       position.name,
+  bodyRole:   position.name,
   longitude: norm360(position.longitude),
   signIndex: signIndex(position.longitude),
+  signStyle: signIndex(position.longitude),
   house:     validCusps(chart) ? houseOf(position.longitude, chart.cusps) : null,
-  retrograde: !!position.retrograde,
+  houseArea: validCusps(chart) ? houseOf(position.longitude, chart.cusps) : null,
+  motionNote: position.stationary || position.motion === 'stationary'
+    ? 'stationary'
+    : position.retrograde ? 'retrograde' : position.motion === undefined && position.retrograde === undefined ? 'unknown' : 'direct',
 })
 
 const aspectIdBase = aspect => {
@@ -105,7 +111,7 @@ const sortedAspects = (aspects, availableNames) => [...aspects]
     aspect &&
     availableNames.has(aspect.a) &&
     availableNames.has(aspect.b) &&
-    typeof aspect.type === 'string'
+    SUPPORTED_ASPECTS.has(aspect.type)
   )
   .sort((a, b) =>
     (b.strength || 0) - (a.strength || 0) ||
@@ -248,12 +254,30 @@ const detectStelliums = (bodies, chart) => {
     const house = houseOf(body.longitude, chart.cusps)
     houses.set(house, [...(houses.get(house) || []), body.name])
   }
-  return [
+  const rows = [
     ...signStelliums,
     ...[...houses.entries()]
       .filter(([, names]) => names.length >= 3)
       .map(([house, names]) => ({ type: 'house_stellium', bodies: names.sort(), house })),
   ]
+
+  const byBodies = new Map()
+  for (const row of rows) {
+    const key      = row.bodies.join('|')
+    const existing = byBodies.get(key)
+    if (!existing) {
+      byBodies.set(key, row)
+      continue
+    }
+    byBodies.set(key, {
+      type:      'stellium',
+      bodies:    row.bodies,
+      signIndex: existing.signIndex ?? row.signIndex,
+      house:     existing.house ?? row.house,
+      houseArea: existing.house ?? row.house,
+    })
+  }
+  return [...byBodies.values()]
 }
 
 const configurationEvidenceIds = (configuration, aspectEvidence) => aspectEvidence
@@ -305,7 +329,11 @@ const buildProminence = ({ bodies, placements, aspectEvidence, chartRuler, angul
     }
   })
     .sort((a, b) => b.score - a.score || bodySort({ name: a.factorId }, { name: b.factorId }))
-    .map((row, index) => ({ ...row, rank: index + 1 }))
+    .map((row, index) => ({
+      ...row,
+      rank:  index + 1,
+      token: token('readings.tropical.prominence.factor', { factor: row.factorId, rank: index + 1 }),
+    }))
 }
 
 const item = (id, key, params, evidenceIds) => ({
@@ -344,7 +372,7 @@ export const tropicalReadingDocument = (chart, aspects = [], options = {}) => {
     evidence.push({ id, kind: 'placement', facts })
     chapterItems[CHAPTER_BY_BODY[body.name]].push(item(
       `item:${id}`,
-      'readings.tropical.items.placement',
+      facts.house ? 'readings.tropical.items.placement' : 'readings.tropical.items.placement_without_house',
       facts,
       [id]
     ))
@@ -360,7 +388,12 @@ export const tropicalReadingDocument = (chart, aspects = [], options = {}) => {
     const row   = { id, kind: 'angle', facts }
     evidence.push(row)
     angleEvidence.push(row)
-    chapterItems[angle.chapter].push(item(`item:${id}`, 'readings.tropical.items.angle', facts, [id]))
+    chapterItems[angle.chapter].push(item(
+      `item:${id}`,
+      `readings.tropical.items.angle.${slug(angle.name)}`,
+      { ...facts, signStyle: facts.signIndex },
+      [id]
+    ))
   }
 
   const ascendant = angleEvidence.find(row => row.facts.angle === 'Ascendant')
@@ -371,7 +404,11 @@ export const tropicalReadingDocument = (chart, aspects = [], options = {}) => {
     ascSignIndex: ascendant.facts.signIndex,
     signIndex:    signIndex(rulerBody.longitude),
     house:        validCusps(chart) ? houseOf(rulerBody.longitude, chart.cusps) : null,
-    retrograde:   !!rulerBody.retrograde,
+    bodyRole:     rulerBody.name,
+    houseArea:    validCusps(chart) ? houseOf(rulerBody.longitude, chart.cusps) : null,
+    motionNote:   rulerBody.stationary || rulerBody.motion === 'stationary'
+      ? 'stationary'
+      : rulerBody.retrograde ? 'retrograde' : 'direct',
   } : null
   if (chartRuler) {
     const id = 'chart-ruler'
@@ -490,7 +527,7 @@ export const tropicalReadingDocument = (chart, aspects = [], options = {}) => {
   const prominenceThemes = allProminence.map(row => item(
     `theme:factor:${slug(row.factorId)}`,
     'readings.tropical.summary.factor',
-    { factor: row.factorId, rank: row.rank, score: row.score },
+    { factor: row.factorId, rank: row.rank },
     row.evidenceIds
   ))
   const distributionThemes = distributions
@@ -501,7 +538,14 @@ export const tropicalReadingDocument = (chart, aspects = [], options = {}) => {
       row,
       [`distribution:${slug(row.category)}`]
     ))
-  const allThemes = [...configurationThemes, ...prominenceThemes, ...distributionThemes]
+  const allThemes = [
+    ...prominenceThemes.slice(0, 2),
+    ...configurationThemes.slice(0, 1),
+    ...distributionThemes.slice(0, 1),
+    ...configurationThemes.slice(1),
+    ...distributionThemes.slice(1),
+    ...prominenceThemes.slice(2),
+  ]
   const themes    = allThemes.slice(0, limits.themes)
 
   const distributionStrengths = distributions.map(row => resource(

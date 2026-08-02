@@ -48,12 +48,29 @@ describe('Vedic psychological ReadingDocument', () => {
     ].flatMap(item => item.evidenceIds)
 
     expect(document.prominence[0].body).toBe('Sun')
+    expect(document.prominence).toHaveLength(3)
     expect(document.strengths.map(item => item.id)).toEqual(expect.arrayContaining(['strengths:Sun', 'strengths:Moon']))
     expect(document.challenges.map(item => item.id)).toContain('challenges:Mars')
     expect(document.practices).toHaveLength(3)
     expect(references.every(id => evidenceIds.has(id))).toBe(true)
     expect(document.evidence).toContainEqual(expect.objectContaining({ id: 'node-axis', type: 'node_axis' }))
     expect(document.evidence).toContainEqual(expect.objectContaining({ id: 'vimshottari:current', type: 'vimshottari' }))
+  })
+
+  it('provides concrete role, sign, house, and dignity parameters for every placement', () => {
+    const document   = buildVedicReadingDocument(vedicChartFixture())
+    const placements = document.chapters.flatMap(chapter => chapter.insights)
+      .filter(insight => insight.id.startsWith('insight:placement:'))
+
+    expect(placements).toHaveLength(9)
+    for (const placement of placements) {
+      expect(placement.text.params).toMatchObject({
+        bodyRole:       expect.any(String),
+        signStyle:      expect.any(Number),
+        houseArea:      expect.any(Number),
+        dignityMeaning: expect.any(String),
+      })
+    }
   })
 
   it('uses flat scalar sign and house parameters for the node axis', () => {

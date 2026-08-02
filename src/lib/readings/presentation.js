@@ -11,6 +11,7 @@ const BODY_PARAMS = new Set([
 ])
 
 const BODY_LIST_PARAMS = new Set(['bodies', 'participants', 'planets'])
+const CENTER_LIST_PARAMS = new Set(['definedCenterNames', 'openCenterNames'])
 
 const HUMAN_DESIGN_PARAMS = {
   authority:    'authorities',
@@ -85,6 +86,14 @@ export const localizeReadingParams = (params = {}, t, tokenKey = '') => Object.f
       if (name === 'retrograde' && typeof item === 'boolean')
         return t(`readings.presentation.values.${item ? 'retrograde' : 'direct'}`)
       if (typeof item === 'boolean') return t(`readings.presentation.values.${item}`)
+      if (name === 'bodyRole') return t(`readings.vocabulary.body_roles.${planetId(item)}`)
+      if (name === 'signStyle') return t(`readings.vocabulary.sign_styles.${item}`)
+      if (name === 'houseArea') return t(`readings.vocabulary.house_areas.${item}`)
+      if (name === 'motionNote') return t(`readings.vocabulary.motion_notes.${item}`)
+      if (name === 'dignityMeaning') return t(`vedic.reading.dignity_meanings.${item}`)
+      if (name === 'strategy') return t(`human_design.reading.strategies.${item}`)
+      if (name === 'signature') return t(`human_design.reading.signatures.${item}`)
+      if (name === 'notSelf') return t(`human_design.reading.not_self.${item}`)
       if (BODY_PARAMS.has(name)) return t(`planets.${planetId(item)}`)
       if (/signIndex$/i.test(name)) return t(`zodiac.signs.${item}`)
       if (name === 'dignity') return t(`vedic.dignities.${item}`)
@@ -102,9 +111,12 @@ export const localizeReadingParams = (params = {}, t, tokenKey = '') => Object.f
     }
 
     if (Array.isArray(value)) {
-      const itemLocalizer = BODY_LIST_PARAMS.has(name)
-        ? item => t(`planets.${planetId(item)}`)
-        : localize
+      let itemLocalizer = localize
+      if (BODY_LIST_PARAMS.has(name)) itemLocalizer = item => t(`planets.${planetId(item)}`)
+      if (CENTER_LIST_PARAMS.has(name)) itemLocalizer = item => t(`human_design.centers.${item}`)
+      if (name === 'channelNames') itemLocalizer = item => t(`human_design.channel_names.${String(item).replace('-', '_')}`)
+      if (name === 'gateNames') itemLocalizer = item => `${item} — ${t(`human_design.gate_names.${item}`)}`
+      if (name === 'variableNames') itemLocalizer = item => t(`human_design.reading.variables.${item}.label`)
       return [name, translatedList(value, itemLocalizer, t)]
     }
     return [name, localize(value)]
@@ -116,8 +128,8 @@ const interpolationParams = (token, t) => {
   if (!token.key.endsWith('.node_axis')) return params
   return {
     ...params,
-    rahu: `${params.rahuSignIndex} (${params.rahuHouse})`,
-    ketu: `${params.ketuSignIndex} (${params.ketuHouse})`,
+    rahu: `${params.rahuSignIndex}, ${t('readings.presentation.house_label', { house: params.rahuHouse })}`,
+    ketu: `${params.ketuSignIndex}, ${t('readings.presentation.house_label', { house: params.ketuHouse })}`,
   }
 }
 
@@ -168,7 +180,7 @@ const normalizeThemes = (document, modality, evidenceById, t) => {
     if (modality !== 'vedic') return null
     return presentationRow({
       id:          row.id || `prominence-${row.body}`,
-      token:       { key: 'readings.presentation.prominence.vedic', params: { body: row.body, rank: index + 1, score: row.score } },
+      token:       { key: 'readings.presentation.prominence.vedic', params: { body: row.body, rank: index + 1 } },
       evidenceIds: row.evidenceIds,
     }, index, evidenceById, t)
   }).filter(Boolean)

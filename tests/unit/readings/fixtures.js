@@ -23,7 +23,7 @@ const shared = {
       },
       list_separator: ', ',
       prominence: {
-        vedic: '#{rank} {body} ({score})',
+        vedic: '#{rank} {body}',
       },
       sections: {
         caveats:   'Caveats',

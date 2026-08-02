@@ -58,7 +58,7 @@ describe('reading presentation adapter', () => {
     expect(tropical.chapters).toHaveLength(1)
     expect(vedic).toMatchObject({
       title:      'Vedic reading',
-      prominence: [{ text: '#1 Sun (8)', evidence: [{ id: 'placement:sun' }] }],
+      prominence: [{ text: '#1 Sun', evidence: [{ id: 'placement:sun' }] }],
       chapters:   [{ items: [{ text: 'Sun in Aries, exalted, Rohini' }] }],
     })
     expect(design).toMatchObject({

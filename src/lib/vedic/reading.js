@@ -55,9 +55,13 @@ const insightFor = placement => ({
   chapter:     BODY_CHAPTERS[placement.body],
   text:        token('vedic.reading.insights.placement', {
     body:       placement.body,
+    bodyRole:   placement.body,
     signIndex:  placement.d1.signIndex,
+    signStyle:  placement.d1.signIndex,
     house:      placement.d1.house,
+    houseArea:  placement.d1.house,
     dignity:    placement.dignity,
+    dignityMeaning: placement.dignity,
     nakshatra:  placement.nakshatra.key,
     pada:       placement.nakshatra.pada,
     d9SignIndex: placement.d9?.signIndex ?? null,
@@ -69,8 +73,11 @@ const resourceFor = (kind, placement) => ({
   id:          `${kind}:${placement.body}`,
   text:        token(`vedic.reading.${kind}.placement`, {
     body:      placement.body,
+    bodyRole:  placement.body,
     dignity:   placement.dignity,
+    dignityMeaning: placement.dignity,
     house:     placement.d1.house,
+    houseArea: placement.d1.house,
     signIndex: placement.d1.signIndex,
   }),
   evidenceIds: [`placement:${placement.body}`],
@@ -154,6 +161,7 @@ export const buildVedicReadingDocument = (chart) => {
   const prominence = facts.placements
     .map(placement => prominenceFor(facts, placement))
     .sort((a, b) => b.score - a.score || VEDIC_GRAHAS.indexOf(a.body) - VEDIC_GRAHAS.indexOf(b.body))
+    .slice(0, 3)
   const strengths = facts.placements
     .filter(placement => ['exalted', 'own_sign'].includes(placement.dignity))
     .map(placement => resourceFor('strengths', placement))

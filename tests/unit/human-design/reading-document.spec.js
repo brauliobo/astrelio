@@ -178,4 +178,28 @@ describe('Human Design ReadingDocument', () => {
     expect(buildHumanDesignReadingDocument(chart)).toEqual(buildHumanDesignReadingDocument(chart))
     expect(buildHumanDesignReadingDocument(null)).toBeNull()
   })
+
+  it('limits prominence and omits chapters whose facts are unavailable', () => {
+    const chart = readingChart()
+    const document = buildHumanDesignReadingDocument({
+      ...chart,
+      channels:         [],
+      incarnationCross: null,
+      variables:        [],
+      details: {
+        ...chart.details,
+        channels:      [],
+        circuits:      [],
+        streamSummary: [],
+      },
+    })
+    const chapterIds = document.chapters.map(item => item.id)
+
+    expect(document.summary.prominence.length).toBeLessThanOrEqual(4)
+    expect(chapterIds).not.toContain('relationships_and_circuitry')
+    expect(chapterIds).not.toContain('life_theme')
+    expect(chapterIds).not.toContain('variables_and_transference')
+    expect(document.coverage.represented.incarnationCross).toBe(false)
+    expect(document.coverage.represented.variables).toBe(false)
+  })
 })
