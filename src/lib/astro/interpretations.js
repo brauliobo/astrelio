@@ -2,6 +2,12 @@ import { houseOf } from './houses.js'
 import { signIndex } from './zodiac.js'
 import { rankTransitAspects, topAspects } from './analysis.js'
 
+export {
+  TROPICAL_READING_CHAPTERS,
+  TROPICAL_READING_SCHEMA_VERSION,
+  tropicalReadingDocument,
+} from './readings/tropical.js'
+
 export const INTERPRETED_PLANETS = [
   'Sun',
   'Moon',

@@ -92,7 +92,20 @@ const interpret = (key, params = {}) => {
     'human_design.insight_text.gate_design':                 'Unconscious activation often noticed through pattern and body.',
     'human_design.insight_text.gate_both':                   'Conscious and design layers repeat the same gate.',
   }
-  return messages[key] || key
+  if (messages[key]) return messages[key]
+
+  const labelNamespaces = [
+    'human_design.strategies.',
+    'human_design.circuits.',
+    'human_design.stream_names.',
+    'human_design.quarters.',
+    'human_design.orientations.',
+    'human_design.variable_labels.',
+    'human_design.variable_colors.',
+  ]
+  return labelNamespaces.some(namespace => key.startsWith(namespace))
+    ? key.split('.').at(-1).replaceAll('_', ' ')
+    : key
 }
 
 describe('Human Design comprehensive reference expectations', () => {

@@ -1,9 +1,38 @@
-import { humanDesignListLabel, humanDesignValueKey, humanDesignValueLabel } from './labels.js'
+import {
+  humanDesignChannelLabel,
+  humanDesignCrossTitleLabel,
+  humanDesignGateLabel,
+  humanDesignListLabel,
+  humanDesignStreamLabel,
+  humanDesignValueKey,
+  humanDesignValueLabel,
+} from './labels.js'
+
+export {
+  buildHumanDesignReadingDocument,
+  HUMAN_DESIGN_READING_SCHEMA,
+  HUMAN_DESIGN_READING_VERSION,
+  humanDesignReadingDocument,
+} from './readings/index.js'
 
 const fallbackT = (key, params = {}) =>
   Object.entries(params).reduce((text, [name, value]) => text.replace(`{${name}}`, value), key)
 
 const insightText = (t, path, params = {}) => t(`human_design.insight_text.${path}`, params)
+
+const strategyKeys = {
+  'Wait to respond':                       'wait_to_respond',
+  'Wait to respond, then inform':          'wait_to_respond_inform',
+  'Inform before acting':                  'inform_before_acting',
+  'Wait for recognition and invitation': 'wait_for_invitation',
+  'Wait through the lunar cycle':          'wait_lunar_cycle',
+}
+
+const strategyLabel = (t, strategy) => t(`human_design.strategies.${strategyKeys[strategy] || strategy}`)
+const variableLabel = (t, variable) => t(`human_design.variable_labels.${variable.id}.label`)
+const orientationLabel = (t, orientation) => t(`human_design.orientations.${orientation || 'unknown'}`)
+const variableColorLabel = (t, variable) =>
+  variable.color ? t(`human_design.variable_colors.${variable.id}.${variable.color}`) : '-'
 
 export const humanDesignInterpretationSections = (chart, t = fallbackT) => {
   if (!chart) return []
@@ -39,7 +68,9 @@ export const humanDesignInterpretationSections = (chart, t = fallbackT) => {
         {
           key:   'strategy',
           title: t('human_design.strategy'),
-          text:  `${chart.strategy}. ${t('human_design.insight_text.strategy')}`,
+          text:  chart.strategy
+            ? `${strategyLabel(t, chart.strategy)}. ${t('human_design.insight_text.strategy')}`
+            : t('human_design.insight_text.strategy'),
         },
       ],
     },
@@ -57,7 +88,13 @@ export const humanDesignInterpretationSections = (chart, t = fallbackT) => {
           title: circuitTitle,
           text:  chart.details?.circuits?.length
             ? chart.details.circuits.map(circuit =>
-              `${circuit.circuit}: ${circuit.streams.join(', ') || circuit.channels.join(', ')}`
+              `${humanDesignValueLabel(t, 'circuit', circuit.circuit)}: ${
+                circuit.streams?.length
+                  ? circuit.streams.map(stream => humanDesignStreamLabel(t, stream)).join(', ')
+                  : circuit.channels
+                    .map(channel => `${channel} · ${humanDesignChannelLabel(t, channel)}`)
+                    .join(', ')
+              }`
             ).join(' · ')
             : insightText(t, 'circuits'),
         },
@@ -78,9 +115,11 @@ export const humanDesignInterpretationSections = (chart, t = fallbackT) => {
     title: t('human_design.incarnation_cross'),
     items: [{
       key:   'incarnation-cross',
-      title: chart.incarnationCross.name,
+      title: humanDesignCrossTitleLabel(t, chart.incarnationCross),
       text:  t('human_design.insight_text.incarnation_cross', {
-        quarter: chart.incarnationCross.quarter?.name || '-',
+        quarter: chart.incarnationCross.quarter?.name
+          ? t(`human_design.quarters.${chart.incarnationCross.quarter.name}`)
+          : '-',
         gates:   chart.incarnationCross.gates.join(' / '),
       }),
     }],
@@ -91,10 +130,10 @@ export const humanDesignInterpretationSections = (chart, t = fallbackT) => {
     title: t('human_design.variables'),
     items: chart.variables.map(variable => ({
       key:   `variable-${variable.id}`,
-      title: `${variable.label}: ${variable.colorLabel || variable.orientation}`,
+      title: `${variableLabel(t, variable)}: ${variableColorLabel(t, variable)}`,
       text:  t('human_design.insight_text.variable', {
-        orientation: variable.orientation,
-        color:       variable.color || '-',
+        orientation: orientationLabel(t, variable.orientation),
+        color:       variableColorLabel(t, variable),
         tone:        variable.tone || '-',
         base:        variable.base || '-',
       }),
@@ -103,14 +142,17 @@ export const humanDesignInterpretationSections = (chart, t = fallbackT) => {
 
   const gateItems = (chart.details?.gates || []).slice(0, 8).map(gate => ({
     key:   `gate-${gate.gate}`,
-    title: `${t('human_design.gate_title', { gate: gate.gate })} · ${gate.name}`,
+    title: `${t('human_design.gate_title', { gate: gate.gate })} · ${humanDesignGateLabel(t, gate.gate, gate.name)}`,
     text:  gate.activations.length > 1
-      ? `${gate.summary} ${t('human_design.insight_text.gate_multiple', { count: gate.activations.length, center: gate.center })}`
+      ? t('human_design.insight_text.gate_multiple', {
+        count:  gate.activations.length,
+        center: humanDesignValueLabel(t, 'center', gate.center),
+      })
       : chart.personalityGates.includes(gate.gate) && chart.designGates.includes(gate.gate)
-        ? `${gate.summary} ${insightText(t, 'gate_both')}`
+        ? insightText(t, 'gate_both')
         : chart.personalityGates.includes(gate.gate)
-          ? `${gate.summary} ${insightText(t, 'gate_personality')}`
-          : `${gate.summary} ${insightText(t, 'gate_design')}`,
+          ? insightText(t, 'gate_personality')
+          : insightText(t, 'gate_design'),
   }))
 
   return [

@@ -4,6 +4,7 @@ import {
   natalAspectInterpretations,
   natalInterpretationSections,
   natalPlacementInterpretations,
+  tropicalReadingDocument,
 } from '../../src/lib/astro/interpretations.js'
 
 const mk = (name, longitude) => ({ name, longitude, latitude: 0, speed: 1, retrograde: false })
@@ -46,6 +47,19 @@ describe('interpretations', () => {
     expect(sections.map(section => section.key)).toEqual(['placements', 'aspects'])
     expect(sections[0].items).toHaveLength(1)
     expect(sections[1].items).toHaveLength(1)
+  })
+
+  it('builds the normalized reading consumed by the natal Reading view', () => {
+    const document = tropicalReadingDocument(chart, aspects)
+
+    expect(document).toMatchObject({
+      id:        'tropical-psychological',
+      modality:  'astrology',
+      tradition: 'tropical',
+      title:     { key: 'readings.tropical.document.title', params: {} },
+    })
+    expect(document.chapters.some(section => section.items.length)).toBe(true)
+    expect(document.summary.themes.length).toBeGreaterThan(0)
   })
 
   it('uses overlay planets as transit and progression actors', () => {

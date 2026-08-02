@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { buildVedicChart } from '../../src/lib/vedic/chart.js'
 import { nakshatraOf, navamsaSignIndex, vimshottariDashas } from '../../src/lib/vedic/derivations.js'
+import { buildVedicReading } from '../../src/lib/vedic/reading.js'
 
 const REF = {
   id:              'ref',
@@ -56,5 +57,17 @@ describe('vedic astrology', () => {
     expect(dashas.mahadashas).toHaveLength(10)
     expect(dashas.active.mahadasha).toBeTruthy()
     expect(dashas.active.antardasha).toBeTruthy()
+  })
+
+  it('awaits chart construction when building a reading document', async () => {
+    const document = await buildVedicReading(REF, {
+      ayanamsha: 'lahiri',
+      houseMode: 'whole_sign',
+      nodeMode:  'mean',
+    })
+
+    expect(document.schemaVersion).toBe('vedic-reading-document.v1')
+    expect(document.chartId).toBe('vedic-ref')
+    expect(document.evidence.some(item => item.type === 'vimshottari')).toBe(true)
   })
 })
