@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useChartInspectorStore } from '../../stores/chartInspector.js'
 import { houseOf } from '../../lib/astro/houses.js'
 import { motionMarker } from '../../lib/astro/motion.js'
+import { signAxisFor } from '../../lib/astro/sign-axes.js'
 import { degInSign, signIndex } from '../../lib/astro/zodiac.js'
 import { humanDesignChannelLabel, humanDesignGateLabel, humanDesignValueLabel } from '../../lib/human-design/labels.js'
 import { sameHighlight } from '../../lib/chart/highlight.js'
@@ -49,6 +50,25 @@ const positionsByName = computed(() =>
   new Map((activeChart.value?.positions || []).map(position => [position.name, position]))
 )
 const activeHumanDesign = computed(() => inspector.activeHumanDesign)
+const activeWheel       = computed(() => inspector.activeHighlight.wheel || null)
+
+const signAxis = computed(() => {
+  if (activeWheel.value?.kind !== 'sign' || !activeWheel.value.axisId) return null
+  return signAxisFor(activeWheel.value.signIndex)
+})
+
+const wheelTitle = (wheel) => {
+  if (!wheel) return ''
+  if (wheel.kind !== 'sign') return wheel.title || wheel.label || t('chart.inspector.wheel_selection')
+
+  const selected = signs.value[wheel.signIndex] || ''
+  if (!wheel.axisId) return [selected, wheel.symbol].filter(Boolean).join(' ')
+
+  const axis          = signAxisFor(wheel.signIndex)
+  const oppositeIndex = wheel.oppositeSignIndex ?? axis?.signIndices.find(index => index !== wheel.signIndex)
+  const opposite      = signs.value[oppositeIndex] || ''
+  return t('chart.sign_axis.selected_title', { selected, opposite })
+}
 
 const aspect = computed(() => {
   const key = inspector.activeAspectKey
@@ -92,6 +112,7 @@ const selectedBodies = computed(() => {
 
 const title = computed(() => {
   if (activeHumanDesign.value) return humanDesignTitle(activeHumanDesign.value)
+  if (activeWheel.value) return wheelTitle(activeWheel.value)
   if (aspect.value) {
     return `${label('planets', aspect.value.a)} ${label('aspects', aspect.value.type)} ${label('planets', aspect.value.b)}`
   }
@@ -108,6 +129,7 @@ const humanDesignTitle = (selection) => {
 
 const titleForHighlight = (highlight) => {
   if (highlight?.hd) return humanDesignTitle(highlight.hd)
+  if (highlight?.wheel) return wheelTitle(highlight.wheel)
   if (highlight?.aspectKey) {
     const parts = highlight.aspectKey.split('-')
     const bodyA = highlight.bodies?.[0] || parts[0]
@@ -187,6 +209,35 @@ const humanDesignRows = computed(() => {
   }
 
   return []
+})
+
+const signOccupants = sign => (activeChart.value?.positions || [])
+  .filter(position => signIndex(position.longitude) === sign)
+  .map(position => label('planets', position.name))
+
+const signAxisRows = computed(() => {
+  const axis = signAxis.value
+  if (!axis) return []
+
+  const selectedIndex = activeWheel.value.signIndex
+  const oppositeIndex = activeWheel.value.oppositeSignIndex ?? axis.signIndices.find(index => index !== selectedIndex)
+  const occupantsFor   = index => signOccupants(index).join(', ') || t('chart.sign_axis.none')
+
+  return [
+    { key: 'axis', label: t('chart.sign_axis.axis'), value: t(`chart.sign_axis.themes.${axis.id}`) },
+    { key: 'selected', label: t('chart.sign_axis.selected_sign'), value: signs.value[selectedIndex] || '' },
+    { key: 'opposite', label: t('chart.sign_axis.complementary_sign'), value: signs.value[oppositeIndex] || '' },
+    { key: 'elements', label: t('chart.sign_axis.elements'), value: axis.elements.map(element => t(`analysis.elements.${element}`)).join(' + ') },
+    { key: 'modality', label: t('chart.sign_axis.modality'), value: t(`analysis.modalities.${axis.modality}`) },
+    { key: 'polarity', label: t('chart.sign_axis.polarity'), value: t(`analysis.polarities.${axis.polarity}`) },
+    { key: 'selected-occupants', label: t('chart.sign_axis.occupants', { sign: signs.value[selectedIndex] }), value: occupantsFor(selectedIndex) },
+    { key: 'opposite-occupants', label: t('chart.sign_axis.occupants', { sign: signs.value[oppositeIndex] }), value: occupantsFor(oppositeIndex) },
+  ].filter(row => row.value)
+})
+
+const wheelRows = computed(() => {
+  if (!activeWheel.value || signAxis.value) return []
+  return (activeWheel.value.details || []).filter(detail => detail?.label && detail?.value)
 })
 
 const hasPlacementData = computed(() =>
@@ -340,7 +391,21 @@ Teleport(to='body')
             dt {{ row.label }}
             dd {{ row.value }}
 
-      section.chart-inspector-drawer__section(v-if='!activeHumanDesign')
+      section.chart-inspector-drawer__section(v-if='signAxis')
+        h3 {{ t('chart.sign_axis.details') }}
+        dl.chart-inspector-drawer__placements.chart-inspector-drawer__aspect(data-testid='chart-inspector-sign-axis')
+          div(v-for='row in signAxisRows' :key='row.key')
+            dt {{ row.label }}
+            dd {{ row.value }}
+
+      section.chart-inspector-drawer__section(v-if='wheelRows.length')
+        h3 {{ t('chart.inspector.wheel_selection') }}
+        dl.chart-inspector-drawer__placements.chart-inspector-drawer__aspect(data-testid='chart-inspector-wheel-details')
+          div(v-for='row in wheelRows' :key='`${row.label}-${row.value}`')
+            dt {{ row.label }}
+            dd {{ row.value }}
+
+      section.chart-inspector-drawer__section(v-if='!activeHumanDesign && !activeWheel')
         h3 {{ t('chart.inspector.bodies') }}
         .chart-inspector-drawer__body(
           v-for='body in placementRows'
@@ -354,7 +419,7 @@ Teleport(to='body')
               dd {{ row.value }}
           p.chart-inspector-drawer__empty(v-else) {{ t('chart.inspector.unavailable') }}
 
-      p.chart-inspector-drawer__empty(v-if='!activeHumanDesign && !hasPlacementData') {{ t('chart.inspector.context_hint') }}
+      p.chart-inspector-drawer__empty(v-if='!activeHumanDesign && !activeWheel && !hasPlacementData') {{ t('chart.inspector.context_hint') }}
 
       section.chart-inspector-drawer__section(v-if='inspector.pinnedCount')
         .chart-inspector-drawer__section-heading
@@ -367,7 +432,7 @@ Teleport(to='body')
         .chart-inspector-drawer__pins(data-testid='chart-inspector-pins')
           button.chart-inspector-drawer__pin(
             v-for='(pin, index) in inspector.pinnedHighlights'
-            :key='`${pin.aspectKey || "selection"}-${pin.bodies?.join("-") || ""}-${pin.hd?.type || ""}-${pin.hd?.value || ""}`'
+            :key='`${pin.aspectKey || "selection"}-${pin.bodies?.join("-") || ""}-${pin.hd?.type || ""}-${pin.hd?.value || ""}-${pin.wheel?.id || ""}`'
             type='button'
             :class='{ active: sameHighlight(pin, inspector.activeHighlight) }'
             :tabindex='index === pinFocusIndex ? 0 : -1'

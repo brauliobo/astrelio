@@ -54,6 +54,9 @@ const traceableRows = document => [
   ...document.practices,
 ]
 
+const axisThemes = document => document.summary.themes.filter(row => row.id.startsWith('theme:sign-axis:'))
+const axisEvidence = document => document.evidence.filter(row => row.kind === 'sign_axis')
+
 describe('Tropical psychological reading document', () => {
   it('returns a normalized schema with stable psychological chapters and supported factors', () => {
     const document = tropicalReadingDocument(chart, aspects)
@@ -103,13 +106,162 @@ describe('Tropical psychological reading document', () => {
 
     expect(second).toEqual(first)
     expect(first.completeness).toMatchObject({
-      available: { placements: 14, aspects: 6 },
-      included:  { placements: 14, aspects: 2, configurations: 0 },
+      available: { placements: 14, aspects: 6, signAxes: 6 },
+      included:  { placements: 14, aspects: 2, signAxes: 6, configurations: 0 },
       truncated: { aspects: true, prominence: true, configurations: true },
     })
     expect(first.prominence).toHaveLength(3)
     expect(first.summary.themes).toHaveLength(2)
     expect(first.evidence.filter(row => row.kind === 'placement')).toHaveLength(14)
+  })
+
+  it('adds factual evidence only for sign axes represented by reading bodies on both sides', () => {
+    const axisChart = {
+      zodiac: 'tropical',
+      positions: [
+        mk('Sun', 5),
+        mk('Mercury', 10),
+        mk('Moon', 185),
+        mk('Venus', 190),
+      ],
+    }
+    const document = tropicalReadingDocument(axisChart, [])
+    const rows     = axisEvidence(document)
+
+    expect(rows).toHaveLength(1)
+    expect(rows[0]).toMatchObject({
+      id:   expect.stringMatching(/^sign-axis:/),
+      kind: 'sign_axis',
+      facts: {
+        primarySignIndex:  0,
+        oppositeSignIndex: 6,
+        signIndices:       [0, 6],
+        modality:          expect.any(String),
+        polarity:          expect.anything(),
+        elements:          expect.anything(),
+        totalWeight:       16,
+        balance:           1,
+        bothRepresented:   true,
+        sides: [
+          { signIndex: 0, weight: 8, bodies: ['Sun', 'Mercury'] },
+          { signIndex: 6, weight: 8, bodies: ['Moon', 'Venus'] },
+        ],
+      },
+    })
+    expect(axisThemes(document)[0].token.params).toEqual({
+      primarySignIndex:  0,
+      oppositeSignIndex: 6,
+      primaryBodies:     ['Sun', 'Mercury'],
+      oppositeBodies:    ['Moon', 'Venus'],
+    })
+    expect(document.completeness.available.signAxes).toBe(1)
+    expect(document.completeness.included.signAxes).toBe(1)
+    expect(document.evidence.some(row => row.kind === 'aspect')).toBe(false)
+    expect(JSON.stringify(document)).not.toContain('summary.aspect.opposition')
+  })
+
+  it('excludes unsupported chart bodies from sign-axis evidence, weights, and qualification', () => {
+    const document = tropicalReadingDocument({
+      zodiac: 'tropical',
+      positions: [
+        mk('Sun', 5),
+        mk('Moon', 185),
+        mk('Earth', 10),
+        mk('Vertex', 35),
+        mk('PartOfFortune', 215),
+      ],
+    }, [])
+
+    expect(axisEvidence(document)).toEqual([expect.objectContaining({
+      id: 'sign-axis:aries_libra',
+      facts: expect.objectContaining({
+        totalWeight: 10,
+        balance:     1,
+        sides: [
+          { signIndex: 0, weight: 5, bodies: ['Sun'] },
+          { signIndex: 6, weight: 5, bodies: ['Moon'] },
+        ],
+      }),
+    })])
+    expect(document.completeness).toMatchObject({
+      available: { placements: 2, signAxes: 1 },
+      included:  { placements: 2, signAxes: 1 },
+    })
+  })
+
+  it('selects one strongest axis deterministically within the four-theme quota', () => {
+    const higherWeightChart = {
+      zodiac: 'tropical',
+      positions: [
+        mk('Sun', 5),
+        mk('Uranus', 10),
+        mk('Moon', 185),
+        mk('Mercury', 35),
+        mk('Jupiter', 40),
+        mk('Venus', 215),
+        mk('Saturn', 220),
+      ],
+    }
+    const higherBalanceChart = {
+      zodiac: 'tropical',
+      positions: [
+        mk('Sun', 5),
+        mk('Uranus', 10),
+        mk('Mercury', 185),
+        mk('Neptune', 190),
+        mk('Moon', 35),
+        mk('Venus', 215),
+        mk('Jupiter', 220),
+      ],
+    }
+    const canonicalTieChart = {
+      zodiac: 'tropical',
+      positions: [
+        mk('Sun', 5),
+        mk('Moon', 185),
+        mk('Mercury', 35),
+        mk('Jupiter', 40),
+        mk('Venus', 215),
+        mk('Saturn', 220),
+      ],
+    }
+    const weighted = tropicalReadingDocument(higherWeightChart, [])
+    const balanced = tropicalReadingDocument(higherBalanceChart, [])
+    const tied     = tropicalReadingDocument(canonicalTieChart, [])
+    const theme    = axisThemes(balanced)[0]
+
+    expect(axisThemes(weighted)[0].token.params.primarySignIndex).toBe(0)
+    expect(axisThemes(balanced)).toHaveLength(1)
+    expect(theme.token).toEqual({
+      key:    'readings.tropical.summary.sign_axis.taurus_scorpio',
+      params: {
+        primarySignIndex:  1,
+        oppositeSignIndex: 7,
+        primaryBodies:     ['Moon'],
+        oppositeBodies:    ['Venus', 'Jupiter'],
+      },
+    })
+    expect(theme.evidenceIds).toEqual([theme.id.replace('theme:', '')])
+    expect(balanced.evidence.some(row => row.id === theme.evidenceIds[0])).toBe(true)
+    expect(balanced.summary.themes).toHaveLength(4)
+    expect(axisThemes(tied)).toHaveLength(1)
+    expect(axisThemes(tied)[0].token.params.primarySignIndex).toBe(0)
+  })
+
+  it('excludes one-sided axes and node-only axes from summary themes', () => {
+    const oneSided = tropicalReadingDocument({
+      zodiac:    'tropical',
+      positions: [mk('Sun', 5), mk('Moon', 35)],
+    }, [])
+    const nodeOnly = tropicalReadingDocument({
+      zodiac:    'tropical',
+      positions: [mk('NorthNode', 5), mk('SouthNode', 185)],
+    }, [])
+
+    expect(axisEvidence(oneSided)).toHaveLength(0)
+    expect(axisThemes(oneSided)).toHaveLength(0)
+    expect(axisEvidence(nodeOnly)).toHaveLength(1)
+    expect(axisThemes(nodeOnly)).toHaveLength(0)
   })
 
   it('emits concrete placement facts and ignores unsupported aspects', () => {

@@ -82,6 +82,9 @@ const hemisphereRows = computed(() => [
   signature.value.hemisphereEmphasis.vertical,
 ].filter(Boolean))
 const dignityRows     = computed(() => tropical.value?.dignityBasics?.slice(0, 4) || [])
+const signAxisRows    = computed(() => (tropical.value?.signAxes || [])
+  .filter(axis => axis.totalWeight > 0)
+  .slice(0, 3))
 const featuredAspects = computed(() => topAspects(props.aspects, 4))
 const correlations    = computed(() =>
   props.houseCorrelations || combinedHouseCorrelations({
@@ -109,6 +112,12 @@ const aspectGridClass    = computed(() => props.panel === 'full' ? 'sm:grid-cols
 
 const pct           = (share) => `${Math.round(share * 100)}%`
 const showDetailTab = tab => !useDetailTabs.value || activeDetailTab.value === tab
+
+const axisSide = (axis, sign) => axis.sides?.find(side => side.signIndex === sign) || { bodies: [], weight: 0 }
+const axisBodies = side => side.bodies?.length
+  ? side.bodies.map(body => t(`planets.${body}`)).join(', ')
+  : t('analysis.sign_axes.none')
+const axisShare = (axis, side) => axis.totalWeight > 0 ? pct((side.weight || 0) / axis.totalWeight) : '0%'
 </script>
 
 <template lang="pug">
@@ -198,6 +207,21 @@ const showDetailTab = tab => !useDetailTabs.value || activeDetailTab.value === t
           span(v-if='row.rulerHouse')
             span.text-slate-500  ·
             span {{ t('analysis.house_n', { house: row.rulerHouse }) }}
+    section(v-if='signAxisRows.length' data-testid='insight-sign-axes')
+      h3.text-xs.font-semibold.text-slate-300.mb-3 {{ t('analysis.sign_axes.title') }}
+      .grid.gap-3
+        .grid.gap-1(v-for='axis in signAxisRows' :key='axis.id' :data-axis-id='axis.id')
+          .flex.items-baseline.justify-between.gap-2.text-xs
+            div
+              span.font-semibold.text-slate-100 {{ signs[axis.primarySignIndex] }} ↔ {{ signs[axis.oppositeSignIndex] }}
+              span.ml-1.text-slate-500 · {{ t(`chart.sign_axis.themes.${axis.id}`) }}
+            span.text-slate-500.tabular-nums {{ t('analysis.sign_axes.weight', { weight: Math.round(axis.totalWeight) }) }}
+          div(class='h-1.5 flex overflow-hidden rounded-full bg-white/10' :aria-label='t("analysis.sign_axes.balance")')
+            .h-full.bg-amber-300(:style='{ width: axisShare(axis, axisSide(axis, axis.primarySignIndex)) }')
+            .h-full.bg-sky-300(:style='{ width: axisShare(axis, axisSide(axis, axis.oppositeSignIndex)) }')
+          .grid.grid-cols-2.gap-2.text-xs.text-slate-400
+            span {{ signs[axis.primarySignIndex] }} · {{ axisBodies(axisSide(axis, axis.primarySignIndex)) }}
+            span.text-right {{ signs[axis.oppositeSignIndex] }} · {{ axisBodies(axisSide(axis, axis.oppositeSignIndex)) }}
   .grid.gap-5(:class='[showPrimary ? "mt-5" : "", detailGridClass]' v-if='showDetails && showDetailTab("factors")')
     section
       h3.text-xs.font-semibold.text-slate-300.mb-3 {{ t('analysis.angularity') }}

@@ -1,4 +1,7 @@
 import { describe, expect, it } from 'vitest'
+import { createI18n } from 'vue-i18n'
+import en from '../../../src/i18n/en.json'
+import ptBR from '../../../src/i18n/pt-BR.json'
 import {
   compareLocales,
   scanPugTemplates,
@@ -6,6 +9,41 @@ import {
 } from '../../../scripts/check-i18n.mjs'
 
 describe('i18n checker', () => {
+  it('keeps every sign-axis theme and reading template available in both locales', () => {
+    const axisIds = [
+      'aries_libra',
+      'taurus_scorpio',
+      'gemini_sagittarius',
+      'cancer_capricorn',
+      'leo_aquarius',
+      'virgo_pisces',
+    ]
+    const placeholders = value => [...new Set([...value.matchAll(/\{(\w+)\}/g)].map(match => match[1]))].sort()
+    const expectedPlaceholders = ['oppositeBodies', 'oppositeSignIndex', 'primaryBodies', 'primarySignIndex'].sort()
+
+    expect(Object.keys(en.chart.sign_axis.themes)).toEqual(axisIds)
+    expect(Object.keys(ptBR.chart.sign_axis.themes)).toEqual(axisIds)
+    expect(Object.keys(en.readings.tropical.summary.sign_axis)).toEqual(axisIds)
+    expect(Object.keys(ptBR.readings.tropical.summary.sign_axis)).toEqual(axisIds)
+
+    for (const locale of ['en', 'pt-BR']) {
+      const messages = locale === 'en' ? en : ptBR
+      const t        = createI18n({ legacy: false, locale, messages: { [locale]: messages } }).global.t
+
+      for (const axisId of axisIds) {
+        const template = messages.readings.tropical.summary.sign_axis[axisId]
+        expect(placeholders(template)).toEqual(expectedPlaceholders)
+        expect(t(`chart.sign_axis.themes.${axisId}`)).not.toContain('chart.sign_axis')
+        expect(t(`readings.tropical.summary.sign_axis.${axisId}`, {
+          primarySignIndex:  'A',
+          oppositeSignIndex: 'B',
+          primaryBodies:     'C',
+          oppositeBodies:    'D',
+        })).not.toContain('readings.tropical')
+      }
+    }
+  })
+
   it('checks recursive keys, types, arrays, and placeholders', () => {
     const findings = compareLocales(
       {

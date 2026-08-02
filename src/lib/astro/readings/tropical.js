@@ -1,5 +1,6 @@
 import { PLANET_WEIGHTS, SIGN_TRAITS, TROPICAL_SIGN_RULERS, isTropicalChart } from '../analysis.js'
 import { houseOf } from '../houses.js'
+import { analyzeSignAxes } from '../sign-axes.js'
 import { norm360, signIndex } from '../zodiac.js'
 
 export const TROPICAL_READING_SCHEMA_VERSION = 1
@@ -348,6 +349,26 @@ const resource = (id, key, params, evidenceIds) => ({
   evidenceIds,
 })
 
+const representedReadingBodies = side => side.bodies.filter(body => BODY_ORDER.has(body))
+const axisSide = (axis, sign) => axis.sides.find(side => side.signIndex === sign)
+
+const signAxisFacts = axis => ({
+  primarySignIndex:  axis.primarySignIndex,
+  oppositeSignIndex: axis.oppositeSignIndex,
+  signIndices:       axis.signIndices,
+  modality:          axis.modality,
+  polarity:          axis.polarity,
+  elements:          axis.elements,
+  sides:             axis.sides.map(side => ({
+    signIndex: side.signIndex,
+    weight:    side.weight,
+    bodies:    side.bodies,
+  })),
+  totalWeight:       axis.totalWeight,
+  balance:           axis.balance,
+  bothRepresented:   axis.bothRepresented,
+})
+
 export const tropicalReadingDocument = (chart, aspects = [], options = {}) => {
   if (!chart || !isTropicalChart(chart)) return null
 
@@ -475,6 +496,16 @@ export const tropicalReadingDocument = (chart, aspects = [], options = {}) => {
     ))
   }
 
+  const signAxes = analyzeSignAxes({ ...chart, positions: bodies })
+    .map(axis => ({ axis, canonicalOrder: axis.primarySignIndex }))
+    .filter(({ axis }) => axis.sides.every(side => representedReadingBodies(side).length > 0))
+  const signAxisEvidence = signAxes.map(({ axis }) => ({
+    id:    `sign-axis:${axis.id}`,
+    kind:  'sign_axis',
+    facts: signAxisFacts(axis),
+  }))
+  evidence.push(...signAxisEvidence)
+
   const detectedConfigurations = [
     ...detectStelliums(bodies, chart),
     ...detectAspectConfigurations(allAspects),
@@ -538,9 +569,31 @@ export const tropicalReadingDocument = (chart, aspects = [], options = {}) => {
       row,
       [`distribution:${slug(row.category)}`]
     ))
+  const signAxisTheme = signAxes
+    .filter(({ axis }) => axis.sides.every(side =>
+      representedReadingBodies(side).some(body => CORE_BODIES.includes(body))
+    ))
+    .sort((a, b) =>
+      b.axis.totalWeight - a.axis.totalWeight ||
+      b.axis.balance - a.axis.balance ||
+      a.canonicalOrder - b.canonicalOrder
+    )
+    .slice(0, 1)
+    .map(({ axis }) => item(
+      `theme:sign-axis:${axis.id}`,
+      `readings.tropical.summary.sign_axis.${axis.id}`,
+      {
+        primarySignIndex:  axis.primarySignIndex,
+        oppositeSignIndex: axis.oppositeSignIndex,
+        primaryBodies:     representedReadingBodies(axisSide(axis, axis.primarySignIndex)),
+        oppositeBodies:    representedReadingBodies(axisSide(axis, axis.oppositeSignIndex)),
+      },
+      [`sign-axis:${axis.id}`]
+    ))
   const allThemes = [
     ...prominenceThemes.slice(0, 2),
     ...configurationThemes.slice(0, 1),
+    ...signAxisTheme,
     ...distributionThemes.slice(0, 1),
     ...configurationThemes.slice(1),
     ...distributionThemes.slice(1),
@@ -633,24 +686,26 @@ export const tropicalReadingDocument = (chart, aspects = [], options = {}) => {
     evidence,
     completeness: {
       available: {
-        placements:    bodies.length,
-        aspects:       allAspects.length,
-        angles:        angleEvidence.length,
+        placements:     bodies.length,
+        aspects:        allAspects.length,
+        angles:         angleEvidence.length,
+        signAxes:       signAxes.length,
         configurations: detectedConfigurations.length,
-        prominence:    allProminence.length,
-        themes:        allThemes.length,
-        strengths:     allStrengths.length,
-        challenges:    allChallenges.length,
+        prominence:     allProminence.length,
+        themes:         allThemes.length,
+        strengths:      allStrengths.length,
+        challenges:     allChallenges.length,
       },
       included: {
-        placements:    bodies.length,
-        aspects:       includedAspects.length,
-        angles:        angleEvidence.length,
+        placements:     bodies.length,
+        aspects:        includedAspects.length,
+        angles:         angleEvidence.length,
+        signAxes:       signAxisEvidence.length,
         configurations: configurations.length,
-        prominence:    prominence.length,
-        themes:        themes.length,
-        strengths:     strengths.length,
-        challenges:    challenges.length,
+        prominence:     prominence.length,
+        themes:         themes.length,
+        strengths:      strengths.length,
+        challenges:     challenges.length,
       },
       truncated: {
         aspects:       includedAspects.length < allAspects.length,

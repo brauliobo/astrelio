@@ -10,7 +10,7 @@ const BODY_PARAMS = new Set([
   'target',
 ])
 
-const BODY_LIST_PARAMS = new Set(['bodies', 'participants', 'planets'])
+const BODY_LIST_PARAMS = new Set(['bodies', 'oppositeBodies', 'participants', 'planets', 'primaryBodies'])
 const CENTER_LIST_PARAMS = new Set(['definedCenterNames', 'openCenterNames'])
 
 const HUMAN_DESIGN_PARAMS = {
@@ -34,6 +34,7 @@ const FACT_EVIDENCE_KINDS = new Set([
   'aspect',
   'distribution',
   'configuration',
+  'sign_axis',
 ])
 
 const PLANET_IDS = {

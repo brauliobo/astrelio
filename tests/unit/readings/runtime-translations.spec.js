@@ -151,4 +151,22 @@ describe('runtime reading translations', () => {
       warn.mockRestore()
     }
   })
+
+  it.each([
+    ['en', 'Aries', 'Libra', 'Sun, Mercury', 'Moon', 'Aries ↔ Libra complementary sign axis'],
+    ['pt-BR', 'Áries', 'Libra', 'Sol, Mercúrio', 'Lua', 'Eixo complementar de signos Áries ↔ Libra'],
+  ])('localizes emitted sign-axis themes and evidence in %s', (locale, primary, opposite, primaryBodies, oppositeBodies, evidence) => {
+    const t        = translator(locale)
+    const document = tropicalReadingDocument(tropicalChart(), tropicalAspects())
+    const token    = translationTokens(document).find(item => item.key === 'readings.tropical.summary.sign_axis.aries_libra')
+    const reading  = normalizeReadingDocument(document, t)
+    const theme    = reading.themes.find(item => item.id === 'theme:sign-axis:aries_libra')
+    const text     = translateReadingToken(token, t)
+
+    expect(text).toContain(`${primary}–${opposite}`)
+    expect(text).toContain(primaryBodies)
+    expect(text).toContain(oppositeBodies)
+    expect(theme.evidence[0].text).toBe(evidence)
+    if (locale === 'pt-BR') expect(`${text}\n${theme.evidence[0].text}`).not.toMatch(/\b(?:Sun|Mercury|Moon|Aries)\b/)
+  })
 })

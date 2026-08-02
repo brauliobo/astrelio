@@ -97,6 +97,16 @@ describe('chartInspector store', () => {
     expect(inspector.pinnedCount).toBe(2)
   })
 
+  it('reports the wheel selection kind', () => {
+    const inspector = useChartInspectorStore()
+
+    inspector.setPinnedHighlight({
+      wheel: { kind: 'sign', id: 'sign-0', signIndex: 0, oppositeSignIndex: 6 },
+    }, chart)
+
+    expect(inspector.selectionKind).toBe('sign')
+  })
+
   it('loads pinned selections by active chart key', () => {
     const inspector = useChartInspectorStore()
 

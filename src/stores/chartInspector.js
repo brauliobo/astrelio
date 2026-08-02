@@ -21,7 +21,7 @@ export const useChartInspectorStore = defineStore('chartInspector', {
     hasSelection() { return hasHighlight(this.activeHighlight) },
     pinnedCount: state => state.pinnedHighlights.length,
     canOpenDrawer() { return this.hasSelection || this.pinnedCount > 0 },
-    selectionKind() { return this.activeHumanDesign ? this.activeHumanDesign.type : this.activeAspectKey ? 'aspect' : this.activeBodies.length ? 'planet' : '' },
+    selectionKind() { return this.activeHumanDesign ? this.activeHumanDesign.type : this.activeHighlight.wheel?.kind || (this.activeAspectKey ? 'aspect' : this.activeBodies.length ? 'planet' : '') },
   },
   actions: {
     savePinnedHighlights() {

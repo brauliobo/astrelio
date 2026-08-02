@@ -11,8 +11,15 @@ import {
   tropicalDocument,
   vedicDocument,
 } from './fixtures.js'
+import en from '../../../src/i18n/en.json'
+import ptBR from '../../../src/i18n/pt-BR.json'
 
 const translator = locale => createI18n({ legacy: false, locale, messages }).global.t
+const fullTranslator = locale => createI18n({
+  legacy:   false,
+  locale,
+  messages: { en, 'pt-BR': ptBR },
+}).global.t
 
 describe('reading presentation adapter', () => {
   it.each(['en', 'pt-BR'])('localizes canonical parameters before interpolation in %s', locale => {
@@ -102,6 +109,45 @@ describe('reading presentation adapter', () => {
       category:  'Element',
       dominant:  'Fire',
       signIndex: 'Unavailable',
+    })
+  })
+
+  it.each([
+    [
+      'en',
+      'The Aries–Libra axis is a complementary focus, not an automatic aspect: Sun, Mercury represent the Aries side and Moon represent the Libra side.',
+      'Aries ↔ Libra complementary sign axis',
+    ],
+    [
+      'pt-BR',
+      'O eixo Áries–Libra é um foco complementar, não um aspecto automático: Sol, Mercúrio representam o lado de Áries e Lua representam o lado de Libra.',
+      'Eixo complementar de signos Áries ↔ Libra',
+    ],
+  ])('localizes sign-axis theme bodies and factual evidence in %s', (locale, expectedTheme, expectedEvidence) => {
+    const t     = fullTranslator(locale)
+    const token = {
+      key:    'readings.tropical.summary.sign_axis.aries_libra',
+      params: {
+        primarySignIndex:  0,
+        oppositeSignIndex: 6,
+        primaryBodies:     ['Sun', 'Mercury'],
+        oppositeBodies:    ['Moon'],
+      },
+    }
+    const reading = normalizeReadingDocument({
+      title:   { key: 'readings.tropical.document.title', params: {} },
+      summary: { themes: [{ id: 'theme:sign-axis:aries_libra', token, evidenceIds: ['sign-axis:aries_libra'] }] },
+      evidence: [{
+        id:    'sign-axis:aries_libra',
+        kind:  'sign_axis',
+        facts: { primarySignIndex: 0, oppositeSignIndex: 6 },
+      }],
+    }, t)
+
+    expect(translateReadingToken(token, t)).toBe(expectedTheme)
+    expect(reading.themes[0]).toMatchObject({
+      text:     expectedTheme,
+      evidence: [{ id: 'sign-axis:aries_libra', text: expectedEvidence }],
     })
   })
 })

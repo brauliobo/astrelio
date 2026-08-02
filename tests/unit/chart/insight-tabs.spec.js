@@ -26,6 +26,12 @@ const messages = {
     chart: {
       asc: 'ASC',
       mc:  'MC',
+      sign_axis: {
+        themes: {
+          aries_libra:       'Initiative and reciprocity',
+          cancer_capricorn: 'Private foundations and public responsibility',
+        },
+      },
     },
     zodiac: {
       tropical: 'Tropical',
@@ -72,6 +78,12 @@ const messages = {
       sect_hemispheres: 'Sect + emphasis',
       sect_detail:      'Sect favors {benefic}; {malefic} carries the active malefic role.',
       house_rulers:     'House rulers',
+      sign_axes:        {
+        title:   'Complementary sign axes',
+        weight:  'Weight {weight}',
+        balance: 'Relative weight by side',
+        none:    'None',
+      },
       angularity:       'Angularity',
       dignity_basics:   'Dignity basics',
       retrogrades:      'Retrogrades',
