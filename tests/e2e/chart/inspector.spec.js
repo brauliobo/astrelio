@@ -25,6 +25,33 @@ test.describe('Chart inspector', () => {
     await expect(page.getByTestId('chart-inspector-aspect')).toBeHidden()
   })
 
+  test('shows the complementary sign axis beside the Tropical wheel', async ({ page }) => {
+    await page.goto('/astrelio/map/astrology/chart')
+
+    const selected = page.locator('[data-wheel-id="sign-0"]')
+    const opposite = page.locator('[data-wheel-id="sign-6"]')
+    const stage    = page.getByTestId('chart-wheel-stage')
+    const summary  = page.getByTestId('chart-selection-summary')
+
+    await selected.hover()
+    await expect(selected).toHaveAttribute('data-highlight', 'active')
+    await expect(opposite).toHaveAttribute('data-highlight', 'related')
+    await expect(page.getByTestId('sign-axis-guide')).toBeVisible()
+    await expect(summary).toContainText('Áries ↔ Libra')
+    await expect(summary).toContainText('Eixo Iniciativa e reciprocidade')
+    await expect(summary).toContainText('Signo oposto Libra')
+
+    const stageBox   = await stage.boundingBox()
+    const summaryBox = await summary.boundingBox()
+    if (page.viewportSize().width >= 640)
+      expect(summaryBox.x).toBeGreaterThan(stageBox.x + stageBox.width / 2)
+    else
+      expect(summaryBox.y).toBeGreaterThan(stageBox.y + stageBox.height / 2)
+
+    await selected.click()
+    await expect(page.getByTestId('chart-inspector-sign-axis')).toContainText('Iniciativa e reciprocidade')
+  })
+
   test('closes with Escape and returns focus to the context trigger', async ({ page }) => {
     await page.goto('/astrelio/map/astrology/data')
     await page.locator('[data-aspect-row]').first().click()

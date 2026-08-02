@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { motionMarker } from '../../../lib/astro/motion.js'
+import { norm360 } from '../../../lib/astro/zodiac.js'
 import CelestialGlyph from '../../common/CelestialGlyph.vue'
 import { PLANET_COLORS, PLANET_SYMBOLS, WHEEL_RADII, degreeLabel, planetGlyphScale } from './geometry.js'
 
@@ -13,11 +14,11 @@ const props = defineProps({
   glyphRenderer:     { type: String, default: null },
   mapIndex:          { type: Number, default: 0 },
   highlightedBodies: { type: Array, default: () => [] },
+  signAxis:          { type: Object, default: null },
 })
 defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 
 const highlightedBodySet = computed(() => new Set(props.highlightedBodies))
-const hasHighlight       = computed(() => highlightedBodySet.value.size > 0)
 
 const glyphs = computed(() =>
   props.placements.map((item) => {
@@ -49,9 +50,15 @@ const glyphs = computed(() =>
 )
 
 const highlightPayload    = (body) => ({ bodies: [body], aspectKey: '' })
-const glyphHighlightState = (body) => {
-  if (!hasHighlight.value) return 'idle'
-  return highlightedBodySet.value.has(body) ? 'active' : 'dimmed'
+const glyphHighlightState = (item) => {
+  if (highlightedBodySet.value.size) {
+    return highlightedBodySet.value.has(item.planet.name) ? 'active' : 'dimmed'
+  }
+  if (!props.signAxis) return 'idle'
+
+  const signIndex = Math.floor(norm360(item.planet.longitude) / 30)
+  if (signIndex === props.signAxis.signIndex) return 'active'
+  return signIndex === props.signAxis.oppositeSignIndex ? 'related' : 'dimmed'
 }
 </script>
 
@@ -63,13 +70,12 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
     :key='`${item.planet.name}-${item.planet.longitude}`'
     :data-planet='item.planet.name'
     :data-testid='`planet-glyph-${item.planet.name}`'
-    :data-highlight='glyphHighlightState(item.planet.name)'
+    :data-highlight='glyphHighlightState(item)'
     :aria-label='`${item.name} ${item.degree} degrees`'
     :aria-pressed='highlightedBodySet.has(item.planet.name)'
     role='button'
     tabindex='0'
     class='planet-glyph-group cursor-pointer transition-opacity'
-    :class='glyphHighlightState(item.planet.name) === "dimmed" ? "opacity-30" : "opacity-100"'
     @mouseenter='$emit("highlight", highlightPayload(item.planet.name))'
     @mouseleave='$emit("clear-highlight")'
     @focus='$emit("highlight", highlightPayload(item.planet.name))'
@@ -96,7 +102,7 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
       :y='item.glyph.y'
       :color='item.color'
       :size='item.fontSize'
-      :weight='glyphHighlightState(item.planet.name) === "active" ? 700 : 400'
+      :weight='glyphHighlightState(item) === "active" ? 700 : glyphHighlightState(item) === "related" ? 600 : 400'
       :scale='item.glyphScale'
       data-role='symbol'
     )
@@ -107,7 +113,7 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
       :font-size='mapIndex === 0 ? 7.8 : 6.6'
       font-weight='600'
       :text-anchor='item.labelAnchor'
-      :data-visible='item.showDegreeLabel || glyphHighlightState(item.planet.name) === "active"'
+      :data-visible='item.showDegreeLabel || glyphHighlightState(item) === "active"'
       class='planet-degree-label'
       dominant-baseline='central'
     )
@@ -122,6 +128,16 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
 <style scoped>
 .planet-glyph-group {
   pointer-events: bounding-box;
+  transition: filter 140ms ease, opacity 140ms ease;
+}
+
+.planet-glyph-group[data-highlight='related'] {
+  filter: drop-shadow(0 0 2px var(--chart-overlay-accent));
+  opacity: 0.82;
+}
+
+.planet-glyph-group[data-highlight='dimmed'] {
+  opacity: 0.3;
 }
 
 .planet-degree-label {

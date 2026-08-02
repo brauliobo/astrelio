@@ -1098,7 +1098,8 @@
         "chart_ruler": "{planet} as chart ruler",
         "aspect": "Aspect between {a} and {b}",
         "distribution": "{category} distribution",
-        "configuration": "Configuration involving {bodies}"
+        "configuration": "Configuration involving {bodies}",
+        "sign_axis": "{primarySignIndex} ↔ {oppositeSignIndex} complementary sign axis"
       },
       "distribution_categories": {
         "element": "element",
@@ -1119,6 +1120,7 @@
         "aspect": "Aspect evidence",
         "distribution": "Distribution evidence",
         "configuration": "Configuration evidence",
+        "sign_axis": "Sign-axis evidence",
         "mechanics": "Mechanics evidence",
         "profile": "Profile evidence",
         "definition": "Definition evidence",
@@ -1252,6 +1254,14 @@
       },
       "summary": {
         "factor": "{factor} is one of the chart's main reference points.",
+        "sign_axis": {
+          "aries_libra": "The {primarySignIndex}–{oppositeSignIndex} axis is a complementary focus, not an automatic aspect: {primaryBodies} represent the {primarySignIndex} side and {oppositeBodies} represent the {oppositeSignIndex} side.",
+          "taurus_scorpio": "The {primarySignIndex}–{oppositeSignIndex} axis is a complementary focus, not an automatic aspect: {primaryBodies} represent the {primarySignIndex} side and {oppositeBodies} represent the {oppositeSignIndex} side.",
+          "gemini_sagittarius": "The {primarySignIndex}–{oppositeSignIndex} axis is a complementary focus, not an automatic aspect: {primaryBodies} represent the {primarySignIndex} side and {oppositeBodies} represent the {oppositeSignIndex} side.",
+          "cancer_capricorn": "The {primarySignIndex}–{oppositeSignIndex} axis is a complementary focus, not an automatic aspect: {primaryBodies} represent the {primarySignIndex} side and {oppositeBodies} represent the {oppositeSignIndex} side.",
+          "leo_aquarius": "The {primarySignIndex}–{oppositeSignIndex} axis is a complementary focus, not an automatic aspect: {primaryBodies} represent the {primarySignIndex} side and {oppositeBodies} represent the {oppositeSignIndex} side.",
+          "virgo_pisces": "The {primarySignIndex}–{oppositeSignIndex} axis is a complementary focus, not an automatic aspect: {primaryBodies} represent the {primarySignIndex} side and {oppositeBodies} represent the {oppositeSignIndex} side."
+        },
         "distribution": {
           "element": "{dominant} is the most represented element.",
           "modality": "{dominant} is the most represented modality.",
@@ -1467,8 +1477,32 @@
       "motion": "Motion",
       "allowed_orb": "Allowed orb",
       "strength": "Strength",
+      "wheel_selection": "Wheel selection",
       "unavailable": "No placement data for this item.",
       "context_hint": "Select from a chart wheel or position table for full placement details."
+    },
+    "sign_axis": {
+      "selected_title": "{selected} ↔ {opposite}",
+      "details": "Sign axis",
+      "axis": "Axis",
+      "opposite": "Opposite sign",
+      "relationship": "Relationship",
+      "relationship_value": "Zodiac complement, not an automatic aspect · {theme}",
+      "selected_sign": "Selected sign",
+      "complementary_sign": "Complementary sign",
+      "elements": "Complementary elements",
+      "modality": "Shared modality",
+      "polarity": "Polarity",
+      "occupants": "{sign} occupants",
+      "none": "None",
+      "themes": {
+        "aries_libra": "Initiative and reciprocity",
+        "taurus_scorpio": "Stability and transformation",
+        "gemini_sagittarius": "Local inquiry and wider perspective",
+        "cancer_capricorn": "Private foundations and public responsibility",
+        "leo_aquarius": "Personal expression and collective participation",
+        "virgo_pisces": "Practical discernment and holistic context"
+      }
     }
   },
   "analysis": {
@@ -1493,6 +1527,12 @@
     "sect_hemispheres": "Sect + emphasis",
     "sect_detail": "Sect favors {benefic}; {malefic} carries the active malefic role.",
     "house_rulers": "House rulers",
+    "sign_axes": {
+      "title": "Complementary sign axes",
+      "weight": "Weight {weight}",
+      "balance": "Relative weight by side",
+      "none": "None"
+    },
     "angularity": "Angularity",
     "dignity_basics": "Dignity basics",
     "retrogrades": "Retrogrades",
@@ -1509,6 +1549,10 @@
       "cardinal": "Cardinal",
       "fixed": "Fixed",
       "mutable": "Mutable"
+    },
+    "polarities": {
+      "yang": "Yang",
+      "yin": "Yin"
     },
     "hemispheres": {
       "east": "Eastern",

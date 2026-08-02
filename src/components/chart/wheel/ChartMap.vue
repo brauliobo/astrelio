@@ -15,6 +15,7 @@ const props = defineProps({
   highlightedBodies:    { type: Array, default: () => [] },
   highlightedAspectKey: { type: String, default: '' },
   highlightedWheel:     { type: Object, default: null },
+  signAxis:             { type: Object, default: null },
   aspectOptions:        { type: Object, default: () => ({}) },
   glyphRenderer:        { type: String, default: null },
   planetAlignment:      { type: String, default: RADIAL_ALIGNMENT.CENTERED, validator: isRadialAlignment },
@@ -65,6 +66,7 @@ g(:data-chart-map='map.id')
     :labels='map.planetLabels'
     :glyph-renderer='glyphRenderer'
     :highlighted-bodies='highlightedBodies'
+    :sign-axis='signAxis'
     @highlight='$emit("highlight", $event)'
     @clear-highlight='$emit("clear-highlight")'
     @toggle-highlight='$emit("toggle-highlight", $event)'

@@ -2,13 +2,15 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import SegmentRing from './SegmentRing.vue'
+import { oppositeSignIndex, signAxisFor } from '../../../lib/astro/sign-axes.js'
 import { wheelHighlight } from '../../../lib/chart/highlight.js'
 import { CENTER, WHEEL_RADII, ZODIAC_SIGNS, polarPoint, norm360 } from './geometry.js'
 
 const props = defineProps({
-  wheelShift:       { type: Number, required: true },
-  symbols:          { type: Array, default: () => ZODIAC_SIGNS },
-  highlightedWheel: { type: Object, default: null },
+  wheelShift:            { type: Number, required: true },
+  symbols:               { type: Array, default: () => ZODIAC_SIGNS },
+  highlightedWheel:      { type: Object, default: null },
+  complementarySignAxis: { type: Boolean, default: true },
 })
 defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 const { t } = useI18n()
@@ -26,6 +28,41 @@ const sectors = computed(() =>
     const label = polarPoint((WHEEL_RADII.zodiacInner + WHEEL_RADII.zodiacOuter) / 2, index * 30 + 15 + props.wheelShift)
     const name  = t(`zodiac.signs.${index}`)
     const span  = t('chart.wheel_details.span_value', { start: `${index * 30}°`, end: `${(index + 1) * 30}°` })
+    const detail = {
+      signIndex: index,
+      symbol,
+      title:     `${name} ${symbol}`,
+      details:   [
+        { label: t('chart.wheel_details.labels.span'), value: span },
+        { label: t('chart.wheel_details.labels.mode'), value: t('chart.wheel_details.values.zodiac_sign_sector') },
+      ],
+    }
+
+    if (props.complementarySignAxis) {
+      const oppositeIndex = oppositeSignIndex(index)
+      const axis          = signAxisFor(index)
+      Object.assign(detail, {
+        oppositeSignIndex: oppositeIndex,
+        axisId:            axis.id,
+        axis:              {
+          id:          axis.id,
+          modality:    axis.modality,
+          polarity:    axis.polarity,
+          elements:    [...axis.elements],
+          signIndices: [...axis.signIndices],
+        },
+        relatedSectorId:   `sign-${oppositeIndex}`,
+        relatedIds:        [`sign-${oppositeIndex}`],
+        oppositeSymbol:    props.symbols[oppositeIndex],
+        signName:          name,
+        oppositeSignName:  t(`zodiac.signs.${oppositeIndex}`),
+        startLongitude:    index * 30,
+        endLongitude:      (index + 1) * 30,
+        centerLongitude:   index * 30 + 15,
+        oppositeLongitude: oppositeIndex * 30 + 15,
+      })
+    }
+
     return {
       symbol,
       index,
@@ -34,15 +71,7 @@ const sectors = computed(() =>
       label,
       fill:  sectorFills[index % sectorFills.length],
       title: `${name} (${symbol})`,
-      payload: wheelHighlight('sign', `sign-${index}`, {
-        signIndex: index,
-        symbol,
-        title:     `${name} ${symbol}`,
-        details:   [
-          { label: t('chart.wheel_details.labels.span'), value: span },
-          { label: t('chart.wheel_details.labels.mode'), value: t('chart.wheel_details.values.zodiac_sign_sector') },
-        ],
-      }),
+      payload: wheelHighlight('sign', `sign-${index}`, detail),
     }
   })
 )

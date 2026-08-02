@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { houseOf } from '../../lib/astro/houses.js'
+import { signAxisFor } from '../../lib/astro/sign-axes.js'
 import { degInSign, signIndex } from '../../lib/astro/zodiac.js'
 
 const props = defineProps({
@@ -81,8 +82,13 @@ const placementText = (placement) =>
 const wheelTitle = computed(() => {
   if (!props.wheel) return ''
   if (props.wheel.kind === 'sign') {
-    const sign = signs.value[props.wheel.signIndex] || props.wheel.title || props.wheel.label || ''
-    return [sign, props.wheel.symbol].filter(Boolean).join(' ')
+    const selected = signs.value[props.wheel.signIndex] || ''
+    if (!props.wheel.axisId) return [selected, props.wheel.symbol].filter(Boolean).join(' ')
+
+    const axis          = signAxisFor(props.wheel.signIndex)
+    const oppositeIndex = props.wheel.oppositeSignIndex ?? axis?.signIndices.find(index => index !== props.wheel.signIndex)
+    const opposite      = signs.value[oppositeIndex] || ''
+    return t('chart.sign_axis.selected_title', { selected, opposite })
   }
   if (props.wheel.kind === 'house') return houseLabel(props.wheel.house)
   if (props.wheel.kind === 'cusp') return `${houseLabel(props.wheel.house)} cusp`
@@ -95,9 +101,26 @@ const title = computed(() => {
   return `${label('planets', aspect.value.a)} ${label('aspects', aspect.value.type)} ${label('planets', aspect.value.b)}`
 })
 
-const wheelDetails = computed(() =>
-  (props.wheel?.details || []).filter(Boolean)
-)
+const wheelDetails = computed(() => {
+  if (props.wheel?.kind !== 'sign' || !props.wheel.axisId) return (props.wheel?.details || []).filter(Boolean)
+
+  const axis = signAxisFor(props.wheel.signIndex)
+  if (!axis) return []
+  const oppositeIndex = props.wheel.oppositeSignIndex ?? axis.signIndices.find(index => index !== props.wheel.signIndex)
+
+  return [
+    {
+      key:   'axis',
+      label: t('chart.sign_axis.axis'),
+      value: t(`chart.sign_axis.themes.${axis.id}`),
+    },
+    {
+      key:   'opposite',
+      label: t('chart.sign_axis.opposite'),
+      value: signs.value[oppositeIndex] || '',
+    },
+  ]
+})
 
 const hasSummary = computed(() =>
   placements.value.length > 0 || Boolean(aspect.value) || Boolean(props.wheel)
@@ -109,10 +132,10 @@ const selectionKind = computed(() =>
 </script>
 
 <template lang="pug">
-.chart-selection-summary.pointer-events-none.absolute.inset-x-2.bottom-2.z-10.rounded-md.border.px-3.py-2.shadow-lg.backdrop-blur-sm(
+.chart-selection-summary.chart-selection-summary--responsive.pointer-events-none.absolute.z-10.rounded-md.border.px-3.py-2.shadow-lg.backdrop-blur-sm(
   v-if='hasSummary'
-  class='sm:inset-x-4'
   data-testid='chart-selection-summary'
+  data-responsive-placement='desktop-side-mobile-bottom'
   :data-selection-kind='selectionKind'
 )
   .chart-selection-summary__title.text-xs.font-semibold.leading-snug {{ title }}
@@ -122,7 +145,7 @@ const selectionKind = computed(() =>
   )
     .chart-selection-summary__line.text-xs.leading-snug(
       v-for='detail in wheelDetails'
-      :key='detail.label || detail'
+      :key='detail.key || detail.label || detail'
     )
       span.chart-selection-summary__label.font-medium(v-if='detail.label') {{ detail.label }}
       template(v-if='detail.label && detail.value') {{ ' ' }}
@@ -145,9 +168,16 @@ const selectionKind = computed(() =>
 .chart-selection-summary {
   background: var(--chart-selection-bg);
   border-color: var(--chart-selection-border);
+  bottom: 0.5rem;
   color: var(--chart-selection-text);
-  max-height: 6.75rem;
-  overflow: hidden;
+  left: 0.5rem;
+  max-height: min(11rem, calc(100% - 1rem));
+  max-width: calc(100% - 1rem);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  right: 0.5rem;
+  width: auto;
 }
 
 .chart-selection-summary__title {
@@ -160,5 +190,18 @@ const selectionKind = computed(() =>
 
 .chart-selection-summary__line {
   overflow-wrap: anywhere;
+}
+
+@media (min-width: 640px) {
+  .chart-selection-summary {
+    bottom: auto;
+    left: auto;
+    max-height: calc(100% - 1.5rem);
+    max-width: 14rem;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: min(14rem, 34%);
+  }
 }
 </style>

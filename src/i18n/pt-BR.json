@@ -1098,7 +1098,8 @@
         "chart_ruler": "{planet} como regente do mapa",
         "aspect": "Aspecto entre {a} e {b}",
         "distribution": "Distribuição de {category}",
-        "configuration": "Configuração envolvendo {bodies}"
+        "configuration": "Configuração envolvendo {bodies}",
+        "sign_axis": "Eixo complementar de signos {primarySignIndex} ↔ {oppositeSignIndex}"
       },
       "distribution_categories": {
         "element": "elemento",
@@ -1119,6 +1120,7 @@
         "aspect": "Evidência de aspecto",
         "distribution": "Evidência de distribuição",
         "configuration": "Evidência de configuração",
+        "sign_axis": "Evidência de eixo de signos",
         "mechanics": "Evidência da mecânica",
         "profile": "Evidência do perfil",
         "definition": "Evidência da definição",
@@ -1252,6 +1254,14 @@
       },
       "summary": {
         "factor": "{factor} é um dos principais pontos de referência do mapa.",
+        "sign_axis": {
+          "aries_libra": "O eixo {primarySignIndex}–{oppositeSignIndex} é um foco complementar, não um aspecto automático: {primaryBodies} representam o lado de {primarySignIndex} e {oppositeBodies} representam o lado de {oppositeSignIndex}.",
+          "taurus_scorpio": "O eixo {primarySignIndex}–{oppositeSignIndex} é um foco complementar, não um aspecto automático: {primaryBodies} representam o lado de {primarySignIndex} e {oppositeBodies} representam o lado de {oppositeSignIndex}.",
+          "gemini_sagittarius": "O eixo {primarySignIndex}–{oppositeSignIndex} é um foco complementar, não um aspecto automático: {primaryBodies} representam o lado de {primarySignIndex} e {oppositeBodies} representam o lado de {oppositeSignIndex}.",
+          "cancer_capricorn": "O eixo {primarySignIndex}–{oppositeSignIndex} é um foco complementar, não um aspecto automático: {primaryBodies} representam o lado de {primarySignIndex} e {oppositeBodies} representam o lado de {oppositeSignIndex}.",
+          "leo_aquarius": "O eixo {primarySignIndex}–{oppositeSignIndex} é um foco complementar, não um aspecto automático: {primaryBodies} representam o lado de {primarySignIndex} e {oppositeBodies} representam o lado de {oppositeSignIndex}.",
+          "virgo_pisces": "O eixo {primarySignIndex}–{oppositeSignIndex} é um foco complementar, não um aspecto automático: {primaryBodies} representam o lado de {primarySignIndex} e {oppositeBodies} representam o lado de {oppositeSignIndex}."
+        },
         "distribution": {
           "element": "{dominant} é o elemento mais representado.",
           "modality": "{dominant} é a modalidade mais representada.",
@@ -1467,8 +1477,32 @@
       "motion": "Movimento",
       "allowed_orb": "Orbe permitido",
       "strength": "Força",
+      "wheel_selection": "Seleção da roda",
       "unavailable": "Sem dados de posição para este item.",
       "context_hint": "Selecione pela roda do mapa ou tabela de posições para ver os detalhes completos."
+    },
+    "sign_axis": {
+      "selected_title": "{selected} ↔ {opposite}",
+      "details": "Eixo de signos",
+      "axis": "Eixo",
+      "opposite": "Signo oposto",
+      "relationship": "Relação",
+      "relationship_value": "Complemento zodiacal, não um aspecto automático · {theme}",
+      "selected_sign": "Signo selecionado",
+      "complementary_sign": "Signo complementar",
+      "elements": "Elementos complementares",
+      "modality": "Modalidade compartilhada",
+      "polarity": "Polaridade",
+      "occupants": "Ocupantes em {sign}",
+      "none": "Nenhum",
+      "themes": {
+        "aries_libra": "Iniciativa e reciprocidade",
+        "taurus_scorpio": "Estabilidade e transformação",
+        "gemini_sagittarius": "Investigação local e perspectiva ampla",
+        "cancer_capricorn": "Bases privadas e responsabilidade pública",
+        "leo_aquarius": "Expressão pessoal e participação coletiva",
+        "virgo_pisces": "Discernimento prático e contexto integral"
+      }
     }
   },
   "analysis": {
@@ -1493,6 +1527,12 @@
     "sect_hemispheres": "Seita + ênfase",
     "sect_detail": "A seita favorece {benefic}; {malefic} carrega o papel maléfico ativo.",
     "house_rulers": "Regentes das casas",
+    "sign_axes": {
+      "title": "Eixos complementares de signos",
+      "weight": "Peso {weight}",
+      "balance": "Peso relativo por lado",
+      "none": "Nenhum"
+    },
     "angularity": "Angularidade",
     "dignity_basics": "Dignidades básicas",
     "retrogrades": "Retrógrados",
@@ -1509,6 +1549,10 @@
       "cardinal": "Cardinal",
       "fixed": "Fixo",
       "mutable": "Mutável"
+    },
+    "polarities": {
+      "yang": "Yang",
+      "yin": "Yin"
     },
     "hemispheres": {
       "east": "Oriental",

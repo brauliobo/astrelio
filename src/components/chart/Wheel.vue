@@ -8,8 +8,10 @@ import ChartMap from './wheel/ChartMap.vue'
 import NakshatraRing from './wheel/NakshatraRing.vue'
 import TickRing from './wheel/TickRing.vue'
 import Frame from './wheel/Frame.vue'
+import SignAxisLayer from './wheel/SignAxisLayer.vue'
 import ZodiacRing from './wheel/ZodiacRing.vue'
 import { CENTER, VIEWBOX_SIZE, WHEEL_RADII, mapsFromProps, norm360 } from './wheel/geometry.js'
+import { isTropicalChart } from '../../lib/astro/analysis.js'
 import { broadcastChartHighlight, CHART_HIGHLIGHT_EVENT, normalizeHighlight, sameHighlight } from '../../lib/chart/highlight.js'
 import { isRadialAlignment, RADIAL_ALIGNMENT } from '../../lib/chart/radialSpacing.js'
 
@@ -76,6 +78,7 @@ const visibleMaps            = computed(() =>
   maps.value.filter(map => !map.exteriorOrbit || showExteriorOrbit.value)
 )
 const baseChart            = computed(() => maps.value[0]?.chart || null)
+const tropicalChart        = computed(() => isTropicalChart(baseChart.value))
 const isSimpleChart        = computed(() => visibleMaps.value.length === 1)
 const hasExteriorOrbit     = computed(() => visibleMaps.value.some(map => map.exteriorOrbit))
 const automaticDisplayMode = computed(() =>
@@ -122,6 +125,15 @@ const activeAspectKey = computed(() =>
 )
 const activeWheel = computed(() =>
   hasExternalHighlight.value ? null : localHighlight.value?.wheel || null
+)
+const activeSignAxis = computed(() =>
+  tropicalChart.value && activeWheel.value?.kind === 'sign'
+    ? {
+        axisId:            activeWheel.value.axisId,
+        signIndex:         activeWheel.value.signIndex,
+        oppositeSignIndex: activeWheel.value.oppositeSignIndex,
+      }
+    : null
 )
 
 const broadcastHighlight = (highlight, pinned = false) => {
@@ -266,6 +278,11 @@ onBeforeUnmount(() => {
         @clear-highlight='clearHoverHighlight'
         @toggle-highlight='togglePinnedHighlight'
       )
+      SignAxisLayer(
+        v-if='activeSignAxis'
+        :sign-axis='activeSignAxis'
+        :wheel-shift='wheelShift'
+      )
       ChartMap(
         v-for='(map, index) in displayMaps'
         :key='map.id'
@@ -276,6 +293,7 @@ onBeforeUnmount(() => {
         :highlighted-bodies='activeBodies'
         :highlighted-aspect-key='activeAspectKey'
         :highlighted-wheel='activeWheel'
+        :sign-axis='activeSignAxis'
         :aspect-options='aspectOptions'
         :glyph-renderer='map.planetGlyphRenderer || planetGlyphRenderer'
         :planet-alignment='planetAlignment'
@@ -287,6 +305,7 @@ onBeforeUnmount(() => {
         :wheel-shift='wheelShift'
         :symbols='zodiacSymbols || undefined'
         :highlighted-wheel='activeWheel'
+        :complementary-sign-axis='tropicalChart'
         @highlight='setHoverHighlight'
         @clear-highlight='clearHoverHighlight'
         @toggle-highlight='togglePinnedHighlight'

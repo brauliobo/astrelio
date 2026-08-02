@@ -22,10 +22,14 @@ const payloadFor = sector => sector.payload || null
 const isInteractive = sector => Boolean(payloadFor(sector))
 const isSameWheel = payload =>
   payload?.wheel?.kind === props.highlightedWheel?.kind && payload?.wheel?.id === props.highlightedWheel?.id
+const isRelatedWheel = payload =>
+  payload?.wheel?.kind === props.highlightedWheel?.kind &&
+  props.highlightedWheel?.relatedIds?.includes(payload?.wheel?.id)
 const sectorState = (sector) => {
   const payload = payloadFor(sector)
   if (!payload || !props.highlightedWheel || payload.wheel.kind !== props.highlightedWheel.kind) return 'idle'
-  return isSameWheel(payload) ? 'active' : 'dimmed'
+  if (isSameWheel(payload)) return 'active'
+  return isRelatedWheel(payload) ? 'related' : 'dimmed'
 }
 const emitPayload = (event, sector) => {
   const payload = payloadFor(sector)
@@ -108,6 +112,17 @@ g(:data-testid='testId')
 .segment-ring-sector:hover .segment-ring-sector__label,
 .segment-ring-sector:focus-visible .segment-ring-sector__label {
   filter: drop-shadow(0 0 3px var(--chart-angle-accent));
+}
+
+.segment-ring-sector[data-highlight='related'] .segment-ring-sector__arc {
+  filter: drop-shadow(0 0 2px var(--chart-overlay-accent));
+  opacity: 0.86;
+  stroke-width: 1;
+}
+
+.segment-ring-sector[data-highlight='related'] .segment-ring-sector__label {
+  filter: drop-shadow(0 0 2px var(--chart-overlay-accent));
+  opacity: 0.9;
 }
 
 .segment-ring-sector[data-highlight='dimmed'] .segment-ring-sector__arc,
