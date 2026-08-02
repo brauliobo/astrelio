@@ -91,7 +91,9 @@ const translationTokens = (value, tokens = []) => {
 const renderedStrings = (value, strings = []) => {
   if (typeof value === 'string') strings.push(value)
   else if (Array.isArray(value)) value.forEach(item => renderedStrings(item, strings))
-  else if (value && typeof value === 'object') Object.values(value).forEach(item => renderedStrings(item, strings))
+  else if (value && typeof value === 'object') Object.entries(value).forEach(([name, item]) => {
+    if (name !== 'highlight') renderedStrings(item, strings)
+  })
   return strings
 }
 

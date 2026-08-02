@@ -18,6 +18,7 @@ import MandalaPrecisionPanel from '../components/human-design/MandalaPrecisionPa
 import RaveMandala from '../components/human-design/RaveMandala.vue'
 import VariableSummary from '../components/human-design/VariableSummary.vue'
 import Wheel from '../components/human-design/Wheel.vue'
+import BodygraphChart from '../components/human-design/BodygraphChart.vue'
 import ModalityRouteSwitch from '../components/modalities/ModalityRouteSwitch.vue'
 
 const props = defineProps({
@@ -92,7 +93,10 @@ section.human-design-page(data-testid='human-design-page')
       VariableSummary(:variables='chart.variables')
       InsightPanel(:chart='chart')
 
-    ReadingDocumentView(v-else-if='activeView === "reading"' :document='readingDocument')
+    ReadingDocumentView(v-else-if='activeView === "reading"' :document='readingDocument' :chart='chart')
+      template(#reference)
+        .workspace-reference-chart(data-testid='workspace-reference-chart')
+          BodygraphChart(:chart='chart' :visual-theme='settings.theme' compact)
 
     .grid.gap-3(v-else data-testid='human-design-data')
       details.ui-panel(data-testid='hd-data-section-bodygraph')

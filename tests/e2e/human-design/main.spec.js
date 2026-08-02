@@ -24,14 +24,21 @@ test.describe('Human Design', () => {
     await expect(page.getByTestId('mandala-gate')).toHaveCount(64)
     await expect(page.locator('[data-testid="mandala-gate"][data-active="true"]').first()).toBeVisible()
     await expect(page.getByTestId('human-design-insights')).toBeVisible()
+    await expect(page.getByTestId('workspace-reference-panel')).toHaveCount(0)
 
     await page.getByTestId('workspace-view-reading').click()
     await expect(page).toHaveURL(/\/map\/human-design\/reading$/)
     await expect(page.getByTestId('reading-document-view')).toBeVisible()
+    await expect(page.locator('[data-testid="reading-reference-chart"] [data-testid="workspace-reference-chart"]')).toBeVisible()
+    await expect(page.getByTestId('workspace-reference-panel')).toHaveCount(0)
+    await expect(page.locator('[data-testid="workspace-reference-chart"] [data-testid="rave-mandala"]')).toHaveCount(0)
+    await expect(page.locator('[data-testid="workspace-reference-chart"] activation-columns')).toHaveCount(0)
+    await expect(page.locator('[data-testid="workspace-reference-chart"] [data-testid="bodygraph-channel-chip"]')).toHaveCount(0)
 
     await page.getByTestId('workspace-view-data').click()
     await expect(page).toHaveURL(/\/map\/human-design\/data$/)
     await expect(page.getByTestId('human-design-data')).toBeVisible()
+    await expect(page.getByTestId('workspace-reference-chart')).toHaveCount(0)
     await page.getByTestId('hd-data-toggle-activations').click()
     await expect(page.getByTestId('human-design-activation-table')).toBeVisible()
 

@@ -18,6 +18,7 @@ const { chart, readingDocument } = vi.hoisted(() => ({
     strategy:         'Wait to respond',
     incarnationCross: { geometry: 'Right Angle', name: 'Right Angle Cross of Revolution' },
     variables:        [],
+    channels:         [],
   },
   readingDocument: { schema: 'human-design.reading-document' },
 }))
@@ -51,6 +52,7 @@ const mountPage = (props = {}) => {
     props,
     global: {
       plugins: [pinia, createI18n({ legacy: false, locale: 'en', messages: { en } })],
+      renderStubDefaultSlot: true,
     },
   })
 }
@@ -67,6 +69,7 @@ describe('Human Design workspace page', () => {
     expect(wrapper.get('[data-testid="human-design-summary"]').element.children).toHaveLength(6)
     expect(wrapper.findComponent(ModalityRouteSwitch).exists()).toBe(true)
     expect(wrapper.find('[data-testid="human-design-data"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="workspace-reference-chart"]').exists()).toBe(false)
   })
 
   it('renders the reading document and hides the switch owned by Map', () => {
@@ -74,6 +77,7 @@ describe('Human Design workspace page', () => {
     const reading = wrapper.getComponent(ReadingDocumentView)
 
     expect(reading.props('document')).toBe(readingDocument)
+    expect(reading.vm.$slots.reference).toBeTypeOf('function')
     expect(wrapper.findComponent(ModalityRouteSwitch).exists()).toBe(false)
   })
 
@@ -85,5 +89,6 @@ describe('Human Design workspace page', () => {
     expect(wrapper.find('[data-testid="hd-data-section-correlations"]').exists()).toBe(false)
     expect(wrapper.find('[data-testid="hd-data-section-transits"]').exists()).toBe(false)
     expect(wrapper.find('[data-testid="hd-data-section-team"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="workspace-reference-chart"]').exists()).toBe(false)
   })
 })

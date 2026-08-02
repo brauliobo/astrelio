@@ -51,6 +51,12 @@ const props = defineProps({
   aspectOptions:        { type: Object, default: () => ({}) },
   displayMode:          { type: String, default: 'auto' },
   showModeControls:     { type: Boolean, default: true },
+  showSelectionSummary: { type: Boolean, default: true },
+  selectionSummaryPlacement: {
+    type:      String,
+    default:   'overlay',
+    validator: value => ['overlay', 'below', 'hidden'].includes(value),
+  },
   zodiacSymbols:        { type: Array, default: null },
   planetGlyphRenderer:  { type: String, default: null },
   planetAlignment:      { type: String, default: RADIAL_ALIGNMENT.CENTERED, validator: isRadialAlignment },
@@ -123,6 +129,9 @@ const activeBodies = computed(() =>
 const activeAspectKey = computed(() =>
   hasExternalHighlight.value ? props.highlightedAspectKey : localHighlight.value?.aspectKey || ''
 )
+const activeAspect = computed(() =>
+  hasExternalHighlight.value ? null : localHighlight.value?.aspect || null
+)
 const activeWheel = computed(() =>
   hasExternalHighlight.value ? null : localHighlight.value?.wheel || null
 )
@@ -134,6 +143,12 @@ const activeSignAxis = computed(() =>
         oppositeSignIndex: activeWheel.value.oppositeSignIndex,
       }
     : null
+)
+const activeSummaryPlacement = computed(() =>
+  props.showSelectionSummary ? props.selectionSummaryPlacement : 'hidden'
+)
+const hasActiveSummary = computed(() =>
+  activeBodies.value.length || activeAspectKey.value || activeWheel.value
 )
 
 const broadcastHighlight = (highlight, pinned = false) => {
@@ -328,12 +343,23 @@ onBeforeUnmount(() => {
         @toggle-highlight='togglePinnedHighlight'
       )
     SelectionSummary(
-      v-if='activeBodies.length || activeAspectKey || activeWheel'
+      v-if='activeSummaryPlacement === "overlay" && hasActiveSummary'
       :chart='baseChart'
       :bodies='activeBodies'
       :aspect-key='activeAspectKey'
+      :aspect='activeAspect'
       :wheel='activeWheel'
+      placement='overlay'
     )
+  SelectionSummary(
+    v-if='activeSummaryPlacement === "below" && hasActiveSummary'
+    :chart='baseChart'
+    :bodies='activeBodies'
+    :aspect-key='activeAspectKey'
+    :aspect='activeAspect'
+    :wheel='activeWheel'
+    placement='below'
+  )
 </template>
 
 <style>

@@ -39,6 +39,15 @@ const messages = {
       mc:           'MC',
       house_system: 'House',
       summary:      'Summary',
+      selection_details: {
+        ...en.chart.selection_details,
+        sign:        'Sign',
+        degree:      'Degree',
+        house:       'House',
+        motion:      'Motion',
+        allowed_orb: 'Allowed orb',
+        strength:    'Strength',
+      },
       wheel_accessibility: {
         ...en.chart.wheel_accessibility,
         chart_shadow:             'Chart shadow',
@@ -108,6 +117,15 @@ const messages = {
       asc:           'ASC',
       mc:            'MC',
       transit_orbit: 'Trânsitos',
+      selection_details: {
+        ...ptBR.chart.selection_details,
+        sign:        'Signo',
+        degree:      'Grau',
+        house:       'Casa',
+        motion:      'Movimento',
+        allowed_orb: 'Orbe permitido',
+        strength:    'Força',
+      },
       wheel_accessibility: {
         ...ptBR.chart.wheel_accessibility,
         chart_shadow:             'Sombra do mapa',
@@ -199,9 +217,60 @@ const mountChartTools = () => mount({
 })
 
 describe('chart interactions', () => {
+  it('suppresses only the local selection summary when configured', async () => {
+    const wrapper = mount(Wheel, {
+      props: {
+        natal:                chart,
+        showSelectionSummary: false,
+      },
+      global: {
+        plugins: [createI18n({ legacy: false, locale: 'en', messages })],
+      },
+    })
+
+    await wrapper.get('[data-testid="planet-glyph-Sun"]').trigger('mouseenter')
+    await nextTick()
+
+    expect(wrapper.get('[data-testid="planet-glyph-Sun"]').attributes('data-highlight')).toBe('active')
+    expect(wrapper.find('[data-testid="chart-selection-summary"]').exists()).toBe(false)
+  })
+
+  it('renders a configured below summary outside the chart stage', async () => {
+    const wrapper = mount(Wheel, {
+      props: {
+        natal:                     chart,
+        selectionSummaryPlacement: 'below',
+      },
+      global: {
+        plugins: [createI18n({ legacy: false, locale: 'en', messages })],
+      },
+    })
+
+    await wrapper.get('[data-testid="planet-glyph-Sun"]').trigger('mouseenter')
+    await nextTick()
+
+    const summary = wrapper.get('[data-testid="chart-selection-summary"]')
+    expect(summary.attributes('data-selection-summary-placement')).toBe('below')
+    expect(summary.attributes('data-responsive-placement')).toBe('below-stage')
+    expect(summary.classes()).toContain('chart-selection-summary--below')
+    expect(summary.classes()).not.toContain('absolute')
+    expect(wrapper.get('[data-testid="chart-wheel-stage"]').find('[data-testid="chart-selection-summary"]').exists()).toBe(false)
+
+    const sun = wrapper.get('[data-testid="planet-glyph-Sun"]')
+    await sun.trigger('click')
+    await sun.trigger('mouseleave')
+    await nextTick()
+    expect(wrapper.find('[data-testid="chart-selection-summary"]').exists()).toBe(true)
+
+    await sun.trigger('click')
+    await nextTick()
+    expect(wrapper.find('[data-testid="chart-selection-summary"]').exists()).toBe(false)
+  })
+
   it('shares planet hover state with glyphs and related aspect rows and lines', async () => {
     const wrapper = mountChartTools()
 
+    expect(wrapper.getComponent(Wheel).props('showSelectionSummary')).toBe(true)
     await wrapper.get('[data-testid="planet-Sun"]').trigger('mouseenter')
     await nextTick()
 
@@ -211,9 +280,14 @@ describe('chart interactions', () => {
     expect(wrapper.get('[data-aspect="Sun-Mars-sextile"]').attributes('data-highlight')).toBe('active')
     expect(wrapper.get('[data-testid="planet-glyph-Moon"]').attributes('data-highlight')).toBe('dimmed')
     const summary = wrapper.get('[data-testid="chart-selection-summary"]')
-    expect(summary.text()).toContain('Sun 23°49′ Aquarius · House 7 · Partnerships')
+    expect(summary.get('[data-selection-fact="sign"]').text()).toBe('Sign Aquarius')
+    expect(summary.get('[data-selection-fact="degree"]').text()).toBe('Degree 23°49′')
+    expect(summary.get('[data-selection-fact="house"]').text()).toBe('House 7 · Partnerships')
+    expect(summary.get('[data-selection-fact="motion"]').text()).toBe('Motion Direct')
     expect(summary.attributes('data-responsive-placement')).toBe('desktop-side-mobile-bottom')
+    expect(summary.attributes('data-selection-summary-placement')).toBe('overlay')
     expect(summary.classes()).toEqual(expect.arrayContaining(['pointer-events-none', 'chart-selection-summary--responsive']))
+    expect(wrapper.get('[data-testid="chart-wheel-stage"]').find('[data-testid="chart-selection-summary"]').exists()).toBe(true)
   })
 
   it('localizes selected house labels with house names', async () => {
@@ -227,9 +301,11 @@ describe('chart interactions', () => {
     await wrapper.get('[data-testid="planet-glyph-Sun"]').trigger('mouseenter')
     await nextTick()
 
-    const summary = wrapper.get('[data-testid="chart-selection-summary"]').text()
-    expect(summary).toContain('Sol 23°49′ Aquário · Casa 7 · Parcerias')
-    expect(summary).not.toContain('House 7')
+    const summary = wrapper.get('[data-testid="chart-selection-summary"]')
+    expect(summary.get('[data-selection-fact="sign"]').text()).toBe('Signo Aquário')
+    expect(summary.get('[data-selection-fact="degree"]').text()).toBe('Grau 23°49′')
+    expect(summary.get('[data-selection-fact="house"]').text()).toBe('Casa 7 · Parcerias')
+    expect(summary.get('[data-selection-fact="motion"]').text()).toBe('Movimento Direto')
   })
 
   it('highlights non-planet wheel elements with enriched summaries', async () => {
@@ -408,7 +484,13 @@ describe('chart interactions', () => {
     expect(wrapper.get('[data-testid="planet-glyph-Sun"]').attributes('data-highlight')).toBe('active')
     expect(wrapper.get('[data-testid="planet-glyph-Mars"]').attributes('data-highlight')).toBe('active')
     expect(wrapper.get('[data-testid="chart-selection-summary"]').attributes('data-selection-kind')).toBe('aspect')
-    expect(wrapper.get('[data-testid="chart-selection-summary"]').text()).toContain('Sun Sextile Mars')
+    const summary = wrapper.get('[data-testid="chart-selection-summary"]')
+    expect(summary.text()).toContain('Sun Sextile Mars')
+    expect(summary.get('[data-selection-fact="orb"]').text()).toBe('Orb 0°12′')
+    expect(summary.get('[data-selection-fact="allowed"]').text()).toBe('Allowed orb 5°00′')
+    expect(summary.get('[data-selection-fact="exact"]').text()).toBe('Exact 60°')
+    expect(summary.get('[data-selection-fact="motion"]').text()).toBe('Motion Applying')
+    expect(summary.get('[data-selection-fact="strength"]').text()).toBe('Strength 80%')
 
     await aspectRow.trigger('click')
     await nextTick()

@@ -42,16 +42,16 @@ test.describe('Command palette', () => {
     await expect(page).toHaveURL(/\/transits/)
   })
 
-  test('pins planets from command results', async ({ page }) => {
+  test('selects planets on the chart from command results', async ({ page }) => {
     await page.goto('/#/natal')
     await page.getByTestId('command-palette-trigger').click()
     await page.getByTestId('command-palette-input').fill('Sun inspect')
     await page.getByTestId('command-planet-Sun').click()
 
-    await expect(page.getByTestId('chart-inspector-drawer')).toBeVisible()
-    await expect(page.getByTestId('chart-inspector-body-Sun')).toBeVisible()
-    await expect(page.getByTestId('chart-inspector-pin-count')).toContainText('1')
-    await expect(page.getByTestId('chart-inspector-human-design')).toBeHidden()
+    await expect(page.getByTestId('command-palette')).toBeHidden()
+    await expect(page.getByTestId('planet-glyph-Sun')).toHaveAttribute('data-highlight', 'active')
+    await expect(page.getByTestId('chart-selection-summary')).toBeVisible()
+    await expect(page.getByTestId('chart-selection-summary')).toContainText(/Sol|Sun/)
   })
 
   test('applies chart and report presets from commands', async ({ page }) => {

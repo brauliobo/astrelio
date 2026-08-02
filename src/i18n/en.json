@@ -1255,12 +1255,12 @@
       "summary": {
         "factor": "{factor} is one of the chart's main reference points.",
         "sign_axis": {
-          "aries_libra": "The {primarySignIndex}–{oppositeSignIndex} axis is a complementary focus, not an automatic aspect: {primaryBodies} represent the {primarySignIndex} side and {oppositeBodies} represent the {oppositeSignIndex} side.",
-          "taurus_scorpio": "The {primarySignIndex}–{oppositeSignIndex} axis is a complementary focus, not an automatic aspect: {primaryBodies} represent the {primarySignIndex} side and {oppositeBodies} represent the {oppositeSignIndex} side.",
-          "gemini_sagittarius": "The {primarySignIndex}–{oppositeSignIndex} axis is a complementary focus, not an automatic aspect: {primaryBodies} represent the {primarySignIndex} side and {oppositeBodies} represent the {oppositeSignIndex} side.",
-          "cancer_capricorn": "The {primarySignIndex}–{oppositeSignIndex} axis is a complementary focus, not an automatic aspect: {primaryBodies} represent the {primarySignIndex} side and {oppositeBodies} represent the {oppositeSignIndex} side.",
-          "leo_aquarius": "The {primarySignIndex}–{oppositeSignIndex} axis is a complementary focus, not an automatic aspect: {primaryBodies} represent the {primarySignIndex} side and {oppositeBodies} represent the {oppositeSignIndex} side.",
-          "virgo_pisces": "The {primarySignIndex}–{oppositeSignIndex} axis is a complementary focus, not an automatic aspect: {primaryBodies} represent the {primarySignIndex} side and {oppositeBodies} represent the {oppositeSignIndex} side."
+          "aries_libra": "The {primarySignIndex}–{oppositeSignIndex} axis links complementary priorities: {primaryBodies} represent the {primarySignIndex} side and {oppositeBodies} represent the {oppositeSignIndex} side.",
+          "taurus_scorpio": "The {primarySignIndex}–{oppositeSignIndex} axis links complementary priorities: {primaryBodies} represent the {primarySignIndex} side and {oppositeBodies} represent the {oppositeSignIndex} side.",
+          "gemini_sagittarius": "The {primarySignIndex}–{oppositeSignIndex} axis links complementary priorities: {primaryBodies} represent the {primarySignIndex} side and {oppositeBodies} represent the {oppositeSignIndex} side.",
+          "cancer_capricorn": "The {primarySignIndex}–{oppositeSignIndex} axis links complementary priorities: {primaryBodies} represent the {primarySignIndex} side and {oppositeBodies} represent the {oppositeSignIndex} side.",
+          "leo_aquarius": "The {primarySignIndex}–{oppositeSignIndex} axis links complementary priorities: {primaryBodies} represent the {primarySignIndex} side and {oppositeBodies} represent the {oppositeSignIndex} side.",
+          "virgo_pisces": "The {primarySignIndex}–{oppositeSignIndex} axis links complementary priorities: {primaryBodies} represent the {primarySignIndex} side and {oppositeBodies} represent the {oppositeSignIndex} side."
         },
         "distribution": {
           "element": "{dominant} is the most represented element.",
@@ -1457,29 +1457,13 @@
       "detailed": "Detailed",
       "print": "Print"
     },
-    "inspector": {
-      "kicker": "Chart data",
-      "title": "Selection",
-      "open": "Open data",
-      "close": "Close chart data",
-      "clear": "Clear",
-      "clear_pins": "Clear pins",
-      "pinned_count": "pinned",
-      "active_chart": "Chart",
-      "system": "System",
-      "aspect": "Aspect",
-      "bodies": "Bodies",
-      "human_design": "Human Design",
-      "pinned": "Pinned selections",
+    "selection_details": {
       "sign": "Sign",
       "degree": "Degree",
       "house": "House",
       "motion": "Motion",
       "allowed_orb": "Allowed orb",
-      "strength": "Strength",
-      "wheel_selection": "Wheel selection",
-      "unavailable": "No placement data for this item.",
-      "context_hint": "Select from a chart wheel or position table for full placement details."
+      "strength": "Strength"
     },
     "sign_axis": {
       "selected_title": "{selected} ↔ {opposite}",

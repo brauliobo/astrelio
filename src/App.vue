@@ -5,13 +5,11 @@ import { useI18n } from 'vue-i18n'
 import { useSettingsStore } from './stores/settings.js'
 import { usePeopleStore } from './stores/people.js'
 import { useSessionStore } from './stores/session.js'
-import { useChartInspectorStore } from './stores/chartInspector.js'
 import { birthHeaderForPerson } from './lib/people/labels.js'
 import { hasPersonRouteQuery, personFromRouteQuery } from './lib/people/routeQuery.js'
 import { transitsFor } from './lib/astro/transits.js'
 import { useNatalChart } from './composables/useChart.js'
 import AppLogo from './components/AppLogo.vue'
-import ChartInspectorDrawer from './components/chart/ChartInspectorDrawer.vue'
 import AppCommandPalette from './components/AppCommandPalette.vue'
 
 const { t, locale } = useI18n()
@@ -20,7 +18,6 @@ const settings = useSettingsStore()
 settings.normalize()
 const people             = usePeopleStore()
 const session            = useSessionStore()
-const chartInspector     = useChartInspectorStore()
 const storedActivePerson = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
 const routePerson        = computed(() =>
   route.name === 'natal' && hasPersonRouteQuery(route.query) ? personFromRouteQuery(route.query) : null
@@ -47,13 +44,6 @@ const activeTheme     = computed(() => settings.theme === 'light' ? 'light' : 'd
 const isVedicRoute    = computed(() => routeModality.value === 'vedic')
 const backgroundChart = useNatalChart(activePerson, settings)
 const planetariumChart = computed(() => backgroundChart.value || transitsFor(Date.now(), 0, 0, settings.chartOptions))
-const activeChartKey = computed(() => {
-  if (routePerson.value) {
-    return `route:${routePerson.value.name}|${routePerson.value.isoLocal}|${routePerson.value.lat}|${routePerson.value.lon}|${routePerson.value.tzOffsetMinutes}`
-  }
-  if (activePerson.value?.id) return `person:${activePerson.value.id}`
-  return 'global'
-})
 const planetariumCenterOffset = ref({ x: 0, y: 0 })
 const showSkyView     = computed(() => settings.skyEnabled && settings.skyView === 'sky')
 const showPlanetarium = computed(() => settings.skyEnabled && settings.skyView === 'planetarium')
@@ -70,10 +60,6 @@ const systemLabel = computed(() => {
   if (routeModality.value === 'humanDesign') return t('modalities.human_design')
   return `${t(`settings.${settings.zodiac}`)} · ${t(`houses.${settings.houseSystem}`)}`
 })
-
-const onChartHighlight = (event) => {
-  chartInspector.receiveHighlightEvent(event.detail)
-}
 
 const updatePlanetariumCenter = async () => {
   await nextTick()
@@ -100,24 +86,16 @@ watchEffect(() => {
 })
 
 watch(() => [route.fullPath, settings.skyView, showPlanetarium.value], updatePlanetariumCenter, { flush: 'post' })
-watch(activeChartKey, key => chartInspector.setActiveChartKey(key), { immediate: true })
 
 onMounted(() => {
   updatePlanetariumCenter()
   window.addEventListener('resize', updatePlanetariumCenter)
   window.addEventListener('scroll', updatePlanetariumCenter, { passive: true })
-  window.addEventListener('astrelio-chart-highlight', onChartHighlight)
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', updatePlanetariumCenter)
   window.removeEventListener('scroll', updatePlanetariumCenter)
-  window.removeEventListener('astrelio-chart-highlight', onChartHighlight)
-})
-
-watch(() => route.fullPath, () => {
-  chartInspector.clearHoverHighlight()
-  chartInspector.closeDrawer()
 })
 
 const links = computed(() => [
@@ -141,12 +119,6 @@ const contextItems = computed(() => {
     { key: 'preset', label: t('settings.preset'), value: t(`settings.presets.${presetKey}`), to: { name: 'settings' } },
   ]
 })
-
-const inspectorOpenLabel = computed(() =>
-  chartInspector.pinnedCount
-    ? `${t('chart.inspector.open')} (${chartInspector.pinnedCount})`
-    : t('chart.inspector.open')
-)
 </script>
 
 <template lang="pug">
@@ -248,20 +220,9 @@ const inspectorOpenLabel = computed(() =>
           )
             span.app-chart-context__label {{ item.label }}
             span.app-chart-context__value {{ item.value }}
-          button.app-chart-context__inspector(
-            v-if='chartInspector.canOpenDrawer'
-            type='button'
-            data-testid='context-open-inspector'
-            @click='chartInspector.openDrawer()'
-          ) {{ inspectorOpenLabel }}
   main.relative.z-10.flex-1
     .mx-auto.max-w-6xl.px-4.py-6
       RouterView
-  ChartInspectorDrawer(
-    :chart='backgroundChart'
-    :person='activePerson'
-    :system-label='systemLabel'
-  )
   footer.text-xs.text-slate-500.text-center.py-4.relative.z-0
     | Astrelio · MIT · {{ new Date().getFullYear() }} · 
     a.underline-offset-2(
@@ -325,8 +286,7 @@ const inspectorOpenLabel = computed(() =>
   justify-content: flex-end;
 }
 
-.app-chart-context__chip,
-.app-chart-context__inspector {
+.app-chart-context__chip {
   align-items: center;
   border-radius: 999px;
   display: inline-flex;
@@ -359,17 +319,6 @@ const inspectorOpenLabel = computed(() =>
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.app-chart-context__inspector {
-  background: rgb(252 211 77 / 0.15);
-  color: rgb(253 230 138);
-  white-space: nowrap;
-}
-
-.app-chart-context__inspector:hover,
-.app-chart-context__inspector:focus-visible {
-  background: rgb(252 211 77 / 0.25);
 }
 
 .app-header__nav {

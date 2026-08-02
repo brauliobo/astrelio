@@ -9,6 +9,7 @@ import { broadcastChartHighlight, humanDesignHighlight } from '../../lib/chart/h
 const props = defineProps({
   chart:       { type: Object, required: true },
   visualTheme: { type: String, default: 'dark' },
+  compact:     { type: Boolean, default: false },
 })
 
 const hover = ref(null)
@@ -26,9 +27,10 @@ const selectItem = (selection) => {
 </script>
 
 <template lang="pug">
-.bodygraph-chart(data-testid='bodygraph-chart' :data-theme='visualTheme')
-  .bodygraph-dashboard
+.bodygraph-chart(data-testid='bodygraph-chart' :data-theme='visualTheme' :data-compact='compact')
+  .bodygraph-dashboard(:class='{ "bodygraph-dashboard--compact": compact }')
     ActivationColumns(
+      v-if='!compact'
       :chart='chart'
       side='design'
       :hover='hover'
@@ -54,6 +56,7 @@ const selectItem = (selection) => {
         @hover-change='setHover'
       )
     ActivationColumns(
+      v-if='!compact'
       :chart='chart'
       side='personality'
       :hover='hover'
@@ -62,7 +65,7 @@ const selectItem = (selection) => {
       @select='selectItem'
       @leave='clearHover'
     )
-  .mt-3.flex.flex-wrap.gap-2.text-xs
+  .mt-3.flex.flex-wrap.gap-2.text-xs(v-if='!compact' data-testid='bodygraph-channel-chips')
     span.rounded-full.px-2.py-1.text-slate-300(
       v-for='channel in chart.channels'
       :key='channel'
@@ -85,6 +88,10 @@ const selectItem = (selection) => {
   width: 100%;
   max-width: 430px;
   margin: 0 auto;
+}
+
+.bodygraph-dashboard--compact {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 @media (max-width: 760px) {

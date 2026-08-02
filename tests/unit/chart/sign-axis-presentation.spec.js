@@ -52,6 +52,7 @@ describe('sign-axis presentation', () => {
     expect(wrapper.text()).not.toContain('raw.key')
     expect(wrapper.text()).not.toMatch(/chart\.sign_axis|analysis\.(?:elements|modalities)/)
     expect(wrapper.get('[data-testid="chart-selection-summary"]').attributes('data-responsive-placement')).toBe('desktop-side-mobile-bottom')
+    expect(wrapper.get('[data-testid="chart-selection-summary"]').attributes('data-selection-summary-placement')).toBe('overlay')
     expect(wrapper.get('[data-testid="chart-selection-summary"]').classes()).toContain('pointer-events-none')
     expect(wrapper.get('[data-testid="chart-selection-summary"]').classes()).toContain('chart-selection-summary--responsive')
   })

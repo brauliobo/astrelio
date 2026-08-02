@@ -11,6 +11,7 @@ import { degInSign, signIndex } from '../lib/astro/zodiac.js'
 import Wheel from '../components/chart/Wheel.vue'
 import ReadingDocumentView from '../components/readings/ReadingDocumentView.vue'
 import ModalityRouteSwitch from '../components/modalities/ModalityRouteSwitch.vue'
+import { broadcastChartHighlight } from '../lib/chart/highlight.js'
 
 const props = defineProps({
   workspace: {
@@ -152,6 +153,16 @@ const technicalRows = computed(() => chart.value ? [
   { label: t('vedic.data.longitude'), value: chart.value.lon.toFixed(4) },
   { label: t('vedic.data.calculated_at'), value: calculatedAt.value },
 ] : [])
+
+const selectedBody = ref(null)
+const bodyHighlight = row => ({ bodies: [row.name], aspectKey: '' })
+const broadcastBody = (row, pinned = false) => {
+  broadcastChartHighlight({ chart: chart.value, highlight: row ? bodyHighlight(row) : null, pinned })
+}
+const toggleBody = (row) => {
+  selectedBody.value = selectedBody.value === row.name ? null : row.name
+  broadcastBody(selectedBody.value ? row : null, true)
+}
 </script>
 
 <template lang="pug">
@@ -195,8 +206,19 @@ section.vedic-page(data-testid='vedic-page')
       ReadingDocumentView(
         v-else-if='activeView === "reading" && readingDocument'
         :document='readingDocument'
+        :chart='chart'
         data-testid='vedic-reading'
       )
+        template(#reference)
+          .workspace-reference-chart(data-testid='workspace-reference-chart')
+            Wheel(
+              v-if='vedicMaps.length'
+              :charts='vedicMaps'
+              :show-mode-controls='false'
+              selection-summary-placement='below'
+              :show-nakshatra-ring='false'
+              display-mode='clean'
+            )
 
       .grid.gap-4(v-else-if='activeView === "data"' data-testid='vedic-data')
         details.ui-panel(open)
@@ -218,27 +240,55 @@ section.vedic-page(data-testid='vedic-page')
               input(type='checkbox' v-model='settings.vedic.includeModernPlanets' data-testid='vedic-modern-planets')
               | {{ t('settings.include_modern_planets') }}
 
-        details.ui-panel(open)
+        details.ui-panel(open data-testid='vedic-rasi-panel')
           summary.cursor-pointer.text-sm.font-semibold.text-slate-100 {{ t('vedic.rasi_positions') }}
-          .overflow-x-auto.mt-4
-            table.w-full.text-xs(data-testid='vedic-position-table')
-              thead
-                tr.text-left.text-slate-400
-                  th.py-1.pr-2(scope='col') {{ t('vedic.data.body') }}
-                  th.py-1.px-2(scope='col') {{ t('vedic.data.sign') }}
-                  th.py-1.px-2(scope='col') {{ t('vedic.data.degree') }}
-                  th.py-1.px-2(scope='col') {{ t('vedic.data.nakshatra') }}
-                  th.py-1.px-2(scope='col') {{ t('vedic.data.pada') }}
-                  th.py-1.pl-2(scope='col') {{ t('vedic.data.motion') }}
-              tbody
-                tr.border-t(class='border-white/5' v-for='row in placementRows' :key='row.name')
-                  td.py-1.pr-2.text-slate-300 {{ row.label }}
-                  td.py-1.px-2.text-slate-100 {{ row.sign }}
-                  td.py-1.px-2.tabular-nums {{ row.degree }}
-                  td.py-1.px-2.text-slate-400 {{ row.nakshatra }}
-                  td.py-1.px-2.tabular-nums.text-slate-400 {{ row.pada }}
-                  td.py-1.pl-2(:class='row.retrograde ? "text-amber-300" : "text-slate-400"')
-                    | {{ t(row.retrograde ? 'vedic.data.retrograde' : 'vedic.data.direct') }}
+          .vedic-rasi-layout.mt-4
+            .min-w-0.overflow-x-auto
+              table.w-full.text-xs(data-testid='vedic-position-table')
+                thead
+                  tr.text-left.text-slate-400
+                    th.py-1.pr-2(scope='col') {{ t('vedic.data.body') }}
+                    th.py-1.px-2(scope='col') {{ t('vedic.data.sign') }}
+                    th.py-1.px-2(scope='col') {{ t('vedic.data.degree') }}
+                    th.py-1.px-2(scope='col') {{ t('vedic.data.nakshatra') }}
+                    th.py-1.px-2(scope='col') {{ t('vedic.data.pada') }}
+                    th.py-1.pl-2(scope='col') {{ t('vedic.data.motion') }}
+                tbody
+                  tr.border-t.cursor-pointer(
+                    v-for='row in placementRows'
+                    :key='row.name'
+                    class='border-white/5'
+                    role='button'
+                    tabindex='0'
+                    :aria-pressed='selectedBody === row.name'
+                    :data-testid='`vedic-position-${row.name}`'
+                    @mouseenter='broadcastBody(row)'
+                    @mouseleave='broadcastBody(null)'
+                    @focus='broadcastBody(row)'
+                    @blur='broadcastBody(null)'
+                    @click='toggleBody(row)'
+                    @keydown.enter.prevent='toggleBody(row)'
+                    @keydown.space.prevent='toggleBody(row)'
+                  )
+                    td.py-1.pr-2.text-slate-300 {{ row.label }}
+                    td.py-1.px-2.text-slate-100 {{ row.sign }}
+                    td.py-1.px-2.tabular-nums {{ row.degree }}
+                    td.py-1.px-2.text-slate-400 {{ row.nakshatra }}
+                    td.py-1.px-2.tabular-nums.text-slate-400 {{ row.pada }}
+                    td.py-1.pl-2(:class='row.retrograde ? "text-amber-300" : "text-slate-400"')
+                      | {{ t(row.retrograde ? 'vedic.data.retrograde' : 'vedic.data.direct') }}
+            .workspace-reference-chart.vedic-data-reference.rounded.border.p-3(
+              class='border-white/10 bg-white/5'
+              data-testid='workspace-reference-chart'
+            )
+              Wheel(
+                v-if='vedicMaps.length'
+                :charts='vedicMaps'
+                :show-mode-controls='false'
+                selection-summary-placement='below'
+                :show-nakshatra-ring='false'
+                display-mode='clean'
+              )
 
         details.ui-panel(open)
           summary.cursor-pointer.text-sm.font-semibold.text-slate-100 {{ t('vedic.navamsa') }}
@@ -274,3 +324,24 @@ section.vedic-page(data-testid='vedic-page')
               dt.text-xs.text-slate-400 {{ row.label }}
               dd.mt-1.text-sm.text-slate-100.tabular-nums {{ row.value }}
 </template>
+
+<style scoped>
+.vedic-rasi-layout {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.vedic-data-reference {
+  margin-inline: auto;
+  max-width: 20rem;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .vedic-rasi-layout {
+    align-items: start;
+    grid-template-columns: minmax(0, 1fr) minmax(17.5rem, 20rem);
+  }
+}
+</style>

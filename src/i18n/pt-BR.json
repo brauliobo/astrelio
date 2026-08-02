@@ -1255,12 +1255,12 @@
       "summary": {
         "factor": "{factor} é um dos principais pontos de referência do mapa.",
         "sign_axis": {
-          "aries_libra": "O eixo {primarySignIndex}–{oppositeSignIndex} é um foco complementar, não um aspecto automático: {primaryBodies} representam o lado de {primarySignIndex} e {oppositeBodies} representam o lado de {oppositeSignIndex}.",
-          "taurus_scorpio": "O eixo {primarySignIndex}–{oppositeSignIndex} é um foco complementar, não um aspecto automático: {primaryBodies} representam o lado de {primarySignIndex} e {oppositeBodies} representam o lado de {oppositeSignIndex}.",
-          "gemini_sagittarius": "O eixo {primarySignIndex}–{oppositeSignIndex} é um foco complementar, não um aspecto automático: {primaryBodies} representam o lado de {primarySignIndex} e {oppositeBodies} representam o lado de {oppositeSignIndex}.",
-          "cancer_capricorn": "O eixo {primarySignIndex}–{oppositeSignIndex} é um foco complementar, não um aspecto automático: {primaryBodies} representam o lado de {primarySignIndex} e {oppositeBodies} representam o lado de {oppositeSignIndex}.",
-          "leo_aquarius": "O eixo {primarySignIndex}–{oppositeSignIndex} é um foco complementar, não um aspecto automático: {primaryBodies} representam o lado de {primarySignIndex} e {oppositeBodies} representam o lado de {oppositeSignIndex}.",
-          "virgo_pisces": "O eixo {primarySignIndex}–{oppositeSignIndex} é um foco complementar, não um aspecto automático: {primaryBodies} representam o lado de {primarySignIndex} e {oppositeBodies} representam o lado de {oppositeSignIndex}."
+          "aries_libra": "O eixo {primarySignIndex}–{oppositeSignIndex} reúne prioridades complementares: {primaryBodies} representam o lado de {primarySignIndex} e {oppositeBodies} representam o lado de {oppositeSignIndex}.",
+          "taurus_scorpio": "O eixo {primarySignIndex}–{oppositeSignIndex} reúne prioridades complementares: {primaryBodies} representam o lado de {primarySignIndex} e {oppositeBodies} representam o lado de {oppositeSignIndex}.",
+          "gemini_sagittarius": "O eixo {primarySignIndex}–{oppositeSignIndex} reúne prioridades complementares: {primaryBodies} representam o lado de {primarySignIndex} e {oppositeBodies} representam o lado de {oppositeSignIndex}.",
+          "cancer_capricorn": "O eixo {primarySignIndex}–{oppositeSignIndex} reúne prioridades complementares: {primaryBodies} representam o lado de {primarySignIndex} e {oppositeBodies} representam o lado de {oppositeSignIndex}.",
+          "leo_aquarius": "O eixo {primarySignIndex}–{oppositeSignIndex} reúne prioridades complementares: {primaryBodies} representam o lado de {primarySignIndex} e {oppositeBodies} representam o lado de {oppositeSignIndex}.",
+          "virgo_pisces": "O eixo {primarySignIndex}–{oppositeSignIndex} reúne prioridades complementares: {primaryBodies} representam o lado de {primarySignIndex} e {oppositeBodies} representam o lado de {oppositeSignIndex}."
         },
         "distribution": {
           "element": "{dominant} é o elemento mais representado.",
@@ -1457,29 +1457,13 @@
       "detailed": "Detalhado",
       "print": "Impressão"
     },
-    "inspector": {
-      "kicker": "Dados do mapa",
-      "title": "Seleção",
-      "open": "Abrir dados",
-      "close": "Fechar dados do mapa",
-      "clear": "Limpar",
-      "clear_pins": "Limpar fixados",
-      "pinned_count": "fixados",
-      "active_chart": "Mapa",
-      "system": "Sistema",
-      "aspect": "Aspecto",
-      "bodies": "Corpos",
-      "human_design": "Human Design",
-      "pinned": "Seleções fixadas",
+    "selection_details": {
       "sign": "Signo",
       "degree": "Grau",
       "house": "Casa",
       "motion": "Movimento",
       "allowed_orb": "Orbe permitido",
-      "strength": "Força",
-      "wheel_selection": "Seleção da roda",
-      "unavailable": "Sem dados de posição para este item.",
-      "context_hint": "Selecione pela roda do mapa ou tabela de posições para ver os detalhes completos."
+      "strength": "Força"
     },
     "sign_axis": {
       "selected_title": "{selected} ↔ {opposite}",

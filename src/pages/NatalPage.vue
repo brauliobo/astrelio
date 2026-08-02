@@ -132,20 +132,43 @@ section.natal-page(data-testid='natal-page')
       )
 
     div(v-else-if='activeView === "reading" && reading' data-testid='natal-reading')
-      ReadingDocumentView(:document='reading')
+      ReadingDocumentView(:document='reading' :chart='chart')
+        template(#reference)
+          .workspace-reference-chart(data-testid='workspace-reference-chart')
+            Wheel(
+              v-if='chart'
+              :natal='chart'
+              :show-mode-controls='false'
+              selection-summary-placement='below'
+              :planet-glyph-renderer='settings.planetGlyphRenderer'
+              display-mode='clean'
+            )
     .ui-panel(v-else-if='activeView === "reading"')
       p.text-sm.text-slate-400 {{ t('readings.document.unavailable') }}
 
     .grid.gap-6(v-else-if='activeView === "data"' data-testid='natal-data')
-      .ui-panel(v-if='chart && transit')
-        AspectMatrix(
-          :base='chart'
-          :comparison='transit'
-          :aspect-options='settings.aspectOptions'
-          :base-label='t("chart.natal_positions")'
-          :comparison-label='t("chart.transit_positions")'
-          :planet-glyph-renderer='settings.planetGlyphRenderer'
-        )
+      .ui-panel(v-if='chart && transit' data-testid='natal-aspect-matrix-panel')
+        .natal-data-aspect-grid
+          .min-w-0
+            AspectMatrix(
+              :base='chart'
+              :comparison='transit'
+              :aspect-options='settings.aspectOptions'
+              :base-label='t("chart.natal_positions")'
+              :comparison-label='t("chart.transit_positions")'
+              :planet-glyph-renderer='settings.planetGlyphRenderer'
+            )
+          .workspace-reference-chart.natal-data-reference.rounded.border.p-3(
+            class='border-white/10 bg-white/5'
+            data-testid='workspace-reference-chart'
+          )
+            Wheel(
+              :natal='chart'
+              :show-mode-controls='false'
+              selection-summary-placement='below'
+              :planet-glyph-renderer='settings.planetGlyphRenderer'
+              display-mode='clean'
+            )
       .grid.gap-6(class='xl:grid-cols-[minmax(320px,0.8fr)_minmax(0,1fr)]')
         .ui-panel
           PlanetList(:chart='chart' v-if='chart')
@@ -166,5 +189,24 @@ section.natal-page(data-testid='natal-page')
 .natal-page [data-testid='natal-chart-panel'],
 .natal-page :deep(.chart-insight) {
   max-width: 64rem;
+}
+
+.natal-data-aspect-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.natal-data-reference {
+  margin-inline: auto;
+  max-width: 20rem;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .natal-data-aspect-grid {
+    align-items: start;
+    grid-template-columns: minmax(0, 1fr) minmax(17.5rem, 20rem);
+  }
 }
 </style>

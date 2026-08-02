@@ -16,6 +16,7 @@ const shared = {
       },
       evidence_reference: '{description}',
       evidence_toggle:    'Evidence ({count})',
+      house_label:        'house {house}',
       house_modes: {
         angular:   'Angular',
         cadent:    'Cadent',
@@ -54,6 +55,14 @@ const shared = {
       practices: { placement: '{body} practice' },
       strengths: { placement: '{body} strength' },
       summary: { factor: '{factor} is prominent' },
+    },
+  },
+  chart: {
+    wheel_details: {
+      labels: { mode: 'Mode', span: 'Span' },
+      span_value: '{start} to {end}',
+      titles: { house: 'House {house}' },
+      values: { zodiac_sign_sector: 'Zodiac sign sector' },
     },
   },
   vedic: {
@@ -108,18 +117,20 @@ const shared = {
   },
   planets: {
     Jupiter: 'Jupiter',
+    Mercury: 'Mercury',
     Moon:    'Moon',
     Sun:     'Sun',
   },
   zodiac: {
-    signs: ['Aries', 'Taurus'],
+    signs: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'],
   },
   analysis: {
     elements:   { fire: 'Fire' },
     modalities: { fixed: 'Fixed' },
   },
   test: {
-    params: '{body};{bodies};{signIndex};{dignity};{nakshatra};{mahadasha};{type};{authority};{definition};{center};{circuit};{layer};{geometry};{quarter};{orientation}',
+    params:           '{body};{bodies};{signIndex};{dignity};{nakshatra};{mahadasha};{type};{authority};{definition};{center};{circuit};{layer};{geometry};{quarter};{orientation}',
+    segment_boundary: 'Mercury and Mercuryish; Mercury.',
   },
 }
 
@@ -127,6 +138,7 @@ const portuguese = structuredClone(shared)
 Object.assign(portuguese.readings.presentation, {
   evidence_reference: '{description}',
   evidence_toggle:    'Evidências ({count})',
+  house_label:        'casa {house}',
   list_separator:     ' e ',
 })
 Object.assign(portuguese.readings.presentation.evidence_descriptions, {
@@ -197,8 +209,9 @@ Object.assign(portuguese.human_design, {
   stream_names: { knowing: 'Conhecimento' },
   types:       { generator: 'Gerador' },
 })
-Object.assign(portuguese.planets, { Jupiter: 'Júpiter', Moon: 'Lua', Sun: 'Sol' })
-portuguese.zodiac.signs = ['Áries', 'Touro']
+Object.assign(portuguese.planets, { Jupiter: 'Júpiter', Mercury: 'Mercúrio', Moon: 'Lua', Sun: 'Sol' })
+portuguese.zodiac.signs = ['Áries', 'Touro', 'Gêmeos', 'Câncer', 'Leão', 'Virgem', 'Libra', 'Escorpião', 'Sagitário', 'Capricórnio', 'Aquário', 'Peixes']
+portuguese.test.segment_boundary = 'Mercúrio e Mercúriozinho; Mercúrio.'
 
 export const messages = { en: shared, 'pt-BR': portuguese }
 

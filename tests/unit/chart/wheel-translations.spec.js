@@ -26,7 +26,7 @@ const payloadFrom = async (component, props, selector) => {
   return wrapper.emitted('highlight')[0][0]
 }
 
-describe('wheel inspector translations', () => {
+describe('wheel selection translations', () => {
   it('localizes every interactive wheel-layer payload in Brazilian Portuguese', async () => {
     const cusps = Array.from({ length: 12 }, (_, index) => index * 30)
     const payloads = [
