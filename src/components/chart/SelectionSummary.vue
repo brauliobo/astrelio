@@ -8,6 +8,7 @@ const props = defineProps({
   chart:     { type: Object, required: true },
   bodies:    { type: Array, default: () => [] },
   aspectKey: { type: String, default: '' },
+  wheel:     { type: Object, default: null },
 })
 
 const { t, tm, te } = useI18n()
@@ -77,13 +78,33 @@ const placements = computed(() =>
 const placementText = (placement) =>
   [placement?.label, placement?.detail].filter(Boolean).join(' ')
 
+const wheelTitle = computed(() => {
+  if (!props.wheel) return ''
+  if (props.wheel.kind === 'sign') {
+    const sign = signs.value[props.wheel.signIndex] || props.wheel.title || props.wheel.label || ''
+    return [sign, props.wheel.symbol].filter(Boolean).join(' ')
+  }
+  if (props.wheel.kind === 'house') return houseLabel(props.wheel.house)
+  if (props.wheel.kind === 'cusp') return `${houseLabel(props.wheel.house)} cusp`
+  return props.wheel.title || props.wheel.label || ''
+})
+
 const title = computed(() => {
+  if (props.wheel) return wheelTitle.value
   if (!aspect.value) return placementText(placements.value[0])
   return `${label('planets', aspect.value.a)} ${label('aspects', aspect.value.type)} ${label('planets', aspect.value.b)}`
 })
 
+const wheelDetails = computed(() =>
+  (props.wheel?.details || []).filter(Boolean)
+)
+
 const hasSummary = computed(() =>
-  placements.value.length > 0 || Boolean(aspect.value)
+  placements.value.length > 0 || Boolean(aspect.value) || Boolean(props.wheel)
+)
+
+const selectionKind = computed(() =>
+  props.wheel?.kind || (aspect.value ? 'aspect' : 'planet')
 )
 </script>
 
@@ -92,11 +113,23 @@ const hasSummary = computed(() =>
   v-if='hasSummary'
   class='sm:inset-x-4'
   data-testid='chart-selection-summary'
-  :data-selection-kind='aspect ? "aspect" : "planet"'
+  :data-selection-kind='selectionKind'
 )
   .chart-selection-summary__title.text-xs.font-semibold.leading-snug {{ title }}
   .mt-1.grid(
-    v-if='aspect'
+    v-if='wheelDetails.length'
+    class='gap-0.5'
+  )
+    .chart-selection-summary__line.text-xs.leading-snug(
+      v-for='detail in wheelDetails'
+      :key='detail.label || detail'
+    )
+      span.chart-selection-summary__label.font-medium(v-if='detail.label') {{ detail.label }}
+      template(v-if='detail.label && detail.value') {{ ' ' }}
+      template(v-if='detail.value') {{ detail.value }}
+      template(v-else-if='typeof detail === "string"') {{ detail }}
+  .mt-1.grid(
+    v-if='aspect && !wheel'
     class='gap-0.5'
   )
     .chart-selection-summary__line.text-xs.leading-snug(

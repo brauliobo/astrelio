@@ -13,6 +13,16 @@ const messages = {
       planetarium_unavailable: '3D planetarium unavailable',
       transit_orbit:           'Transits',
       view_mode:               'Chart view',
+      wheel_accessibility: {
+        chart_shadow:             'Chart shadow',
+        house_inner_boundary:     'House ring inner boundary',
+        house_outer_boundary:     'House ring outer boundary',
+        nakshatra_outer_boundary: 'Nakshatra outer boundary',
+        orbit_controls:           'Chart orbit controls',
+        wheel:                    'Chart wheel',
+        zodiac_inner_boundary:    'Zodiac inner boundary',
+        zodiac_outer_boundary:    'Zodiac outer boundary',
+      },
       view_modes: {
         sky:         'Sky',
         planetarium: 'Planetarium',
@@ -104,7 +114,29 @@ describe('chart display modes', () => {
     const wrapper = mountWheel()
 
     expect(wrapper.get('[data-testid="chart-wheel-svg"]').exists()).toBe(true)
+    expect(wrapper.get('[data-testid="chart-wheel-stage"]').attributes('aria-label')).toBe('Chart wheel')
     expect(wrapper.find('[data-testid="chart-planetarium"]').exists()).toBe(false)
+  })
+
+  it('localizes wheel controls and SVG boundary titles', () => {
+    const wrapper = mountWheel({
+      overlay: {
+        ...chart,
+        positions: [position('Sun', 60)],
+      },
+      showNakshatraRing: true,
+    })
+    const titles = wrapper.findAll('title').map(title => title.text())
+
+    expect(wrapper.get('.chart-orbit-controls').attributes('aria-label')).toBe('Chart orbit controls')
+    expect(titles).toEqual(expect.arrayContaining([
+      'Chart shadow',
+      'House ring outer boundary',
+      'House ring inner boundary',
+      'Nakshatra outer boundary',
+      'Zodiac outer boundary',
+      'Zodiac inner boundary',
+    ]))
   })
 
   it('places the transit orbit control before the display mode options', () => {
@@ -225,11 +257,16 @@ describe('chart display modes', () => {
   it('keeps house labels visually secondary to planet positions', () => {
     const wrapper      = mountWheel()
     const houseNumbers = wrapper.get('[data-testid="house-numbers"]')
+    const backdrops    = houseNumbers.findAll('circle')
     const planetDegree = wrapper.get('[data-testid="planet-glyph-Moon"] .planet-degree-label')
 
     expect(houseNumbers.attributes('font-size')).toBe('7.5')
     expect(houseNumbers.attributes('opacity')).toBe('var(--chart-house-number-opacity)')
-    expect(houseNumbers.find('circle').exists()).toBe(false)
+    expect(backdrops).toHaveLength(12)
+    for (const backdrop of backdrops) {
+      expect(backdrop.attributes('r')).toBe('8')
+      expect(backdrop.attributes('fill')).toBe('transparent')
+    }
     expect(Number(planetDegree.attributes('font-size'))).toBeGreaterThan(Number(houseNumbers.attributes('font-size')))
   })
 

@@ -2,10 +2,12 @@
 import { computed } from 'vue'
 import CelestialGlyph from '../common/CelestialGlyph.vue'
 import { planetGlyphLayout } from './planetGlyphGeometry.js'
+import { isRadialAlignment, RADIAL_ALIGNMENT } from '../../lib/chart/radialSpacing.js'
 
 const props = defineProps({
-  chart:         { type: Object, required: true },
-  glyphRenderer: { type: String, default: null },
+  chart:           { type: Object, required: true },
+  glyphRenderer:   { type: String, default: null },
+  planetAlignment: { type: String, default: RADIAL_ALIGNMENT.OUTER, validator: isRadialAlignment },
 })
 
 const PLANET_GLYPH_SIZE     = 28
@@ -30,7 +32,7 @@ const planets = computed(() => {
     ...Object.values(props.chart.design || {}).map(item => ({ ...item, layer: 'design' })),
   ]
 
-  return planetGlyphLayout(rows).map((item) => {
+  return planetGlyphLayout(rows, { alignment: props.planetAlignment }).map((item) => {
     return {
       ...item,
       color: item.layer === 'personality' ? 'rgba(248,250,252,0.86)' : 'rgba(239,85,87,0.88)',

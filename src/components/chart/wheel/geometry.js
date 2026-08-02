@@ -1,5 +1,7 @@
 import { naturalAspects } from '../../../lib/astro/aspects.js'
+import { fortuneLongitude } from '../../../lib/astro/aspectarian.js'
 import { norm360 } from '../../../lib/astro/zodiac.js'
+import { evenlySpacedRadii, RADIAL_ALIGNMENT } from '../../../lib/chart/radialSpacing.js'
 
 export { norm360 }
 
@@ -14,6 +16,7 @@ export const WHEEL_RADII = {
   zodiacInner:  160,
   houseOuter:   156,
   houseInner:   70,
+  houseLabel:   80,
   aspect:       66,
   center:       70,
 }
@@ -96,13 +99,9 @@ export const PLANET_GLYPH_SCALE = {
 export const planetGlyphScale = planet => PLANET_GLYPH_SCALE[planet] || { x: 1, y: 1 }
 
 const PLANET_ORDER                = new Map(Object.keys(PLANET_SYMBOLS).map((name, index) => [name, index]))
-const PLANET_CLUSTER_GAP          = 4.2
+const PLANET_CLUSTER_GAP          = 11
 const PLANET_GLYPH_RADIUS_PADDING = 13
 const PLANET_NARROW_BAND_PADDING  = 5
-const PLANET_LANE_RATIOS          = {
-  4: [0.08, 0.36, 0.64, 0.92],
-  5: [0.04, 0.26, 0.48, 0.7, 0.92],
-}
 
 export const ZODIAC_SIGNS = [
   '♈︎',
@@ -226,7 +225,7 @@ export const mapsFromProps = ({ natal, overlay, charts }) => {
   if (natal) maps.push(chartToMap(natal, 0, {
     id:         'natal',
     planetBand: overlay
-      ? { inner: 78, outer: 150, tickRadius: WHEEL_RADII.houseOuter - 4 }
+      ? { inner: WHEEL_RADII.houseLabel + 8, outer: WHEEL_RADII.houseOuter, tickRadius: WHEEL_RADII.houseOuter - 4 }
       : null,
   }))
   if (overlay) {
@@ -244,6 +243,7 @@ export const mapsFromProps = ({ natal, overlay, charts }) => {
         defaultRadius: WHEEL_RADII.transitOuter - 18,
         tickRadius:   WHEEL_RADII.zodiacOuter + 8,
         glyphPadding: 8,
+        glyphSize:    20,
       },
     }))
   }
@@ -252,13 +252,19 @@ export const mapsFromProps = ({ natal, overlay, charts }) => {
 
 export const planetBandFor = (map, index, count) => {
   if (map.planetBand) return map.planetBand
-  if (count <= 1) return { inner: 78, outer: 150, tickRadius: WHEEL_RADII.houseOuter - 4 }
+  if (count <= 1) {
+    return {
+      inner:      WHEEL_RADII.houseLabel + 8,
+      outer:      WHEEL_RADII.houseOuter,
+      tickRadius: WHEEL_RADII.houseOuter - 4,
+    }
+  }
 
   const trackWidth = 13
   const gap        = 4
   const outer      = WHEEL_RADII.houseOuter - 4 - (index * (trackWidth + gap))
   const inner      = Math.max(WHEEL_RADII.houseInner + 2, outer - trackWidth)
-  return { inner, outer }
+  return { inner, outer, glyphSize: 20 }
 }
 
 export const clusteredPlanets = (positions, symbols = PLANET_SYMBOLS) => {
@@ -290,6 +296,24 @@ export const clusteredPlanets = (positions, symbols = PLANET_SYMBOLS) => {
   return clusters
 }
 
+const wheelPositions = (chart) => {
+  const positions = chart.positions || []
+  if (positions.some(position => position.name === 'Fortune')) return positions
+
+  const longitude = fortuneLongitude(chart)
+  if (longitude === null) return positions
+  return [...positions, {
+    name:        'Fortune',
+    longitude,
+    latitude:    0,
+    speed:       0,
+    motion:      'direct',
+    stationary:  false,
+    retrograde:  false,
+    synthetic:   true,
+  }]
+}
+
 const clamp = (value, min, max) =>
   Math.max(min, Math.min(max, value))
 
@@ -310,40 +334,22 @@ const safePlanetBand = (band) => {
   return { inner: midpoint, outer: midpoint }
 }
 
-const centeredRadii = (safeBand, count, gap, centerRatio = 0.56, preferredCenter = null) => {
-  const spread    = safeBand.outer - safeBand.inner
-  const usableGap = Math.min(gap, count > 1 ? spread / (count - 1) : 0)
-  const total     = usableGap * (count - 1)
-  const minCenter = safeBand.inner + (total / 2)
-  const maxCenter = safeBand.outer - (total / 2)
-  const center    = clamp(preferredCenter ?? safeBand.inner + (spread * centerRatio), minCenter, maxCenter)
-  const start     = center - (total / 2)
-  return Array.from({ length: count }, (_, index) => start + (usableGap * index))
-}
-
-const radiusRatioFor = (index, count) => {
-  const ratios = PLANET_LANE_RATIOS[count]
-  if (ratios) return ratios[index]
-
-  const start = 0.12
-  const end   = 0.94
-  return start + ((end - start) * index / (count - 1))
+const radiusForPlanetBand = (band) => {
+  const safeBand = safePlanetBand(band)
+  const spread   = safeBand.outer - safeBand.inner
+  return Number.isFinite(band.defaultRadius)
+    ? clamp(band.defaultRadius, safeBand.inner, safeBand.outer)
+    : safeBand.inner + (spread * 0.84)
 }
 
 const radiiForCluster = (count, band) => {
-  const safeBand = safePlanetBand(band)
-  const spread   = safeBand.outer - safeBand.inner
-  const defaultRadius = Number.isFinite(band.defaultRadius)
-    ? clamp(band.defaultRadius, safeBand.inner, safeBand.outer)
-    : null
-
-  if (count <= 1) return [defaultRadius ?? safeBand.inner + (spread * 0.84)]
-  if (count === 2) return centeredRadii(safeBand, count, 14, 0.58, defaultRadius)
-  if (count === 3) return centeredRadii(safeBand, count, 14, 0.56, defaultRadius)
-
-  return Array.from({ length: count }, (_, index) =>
-    clamp(safeBand.inner + (spread * radiusRatioFor(index, count)), safeBand.inner, safeBand.outer)
-  )
+  if (count <= 1) return [radiusForPlanetBand(band)]
+  return evenlySpacedRadii(count, {
+    inner:    band.inner,
+    outer:    band.outer,
+    itemSize: band.glyphSize ?? 22,
+    alignment: band.alignment ?? RADIAL_ALIGNMENT.CENTERED,
+  })
 }
 
 const labelPlacement = (glyphPoint) => {
@@ -363,7 +369,7 @@ const labelPlacement = (glyphPoint) => {
 
 export const planetPlacements = (chart, wheelShift, band, symbols = PLANET_SYMBOLS) => {
   const placements = []
-  for (const cluster of clusteredPlanets(chart.positions || [], symbols)) {
+  for (const cluster of clusteredPlanets(wheelPositions(chart), symbols)) {
     const radii = radiiForCluster(cluster.length, band)
     cluster.forEach((planet, index) => {
       const radius         = radii[index]

@@ -1,12 +1,15 @@
 <script setup>
 import { computed } from 'vue'
+import { wheelHighlight } from '../../../lib/chart/highlight.js'
 import { VIEWBOX_SIZE, WHEEL_RADII, longitudeLabel, norm360, polarPoint, radialTrianglePath } from './geometry.js'
 
 const props = defineProps({
-  chart:      { type: Object, required: true },
-  wheelShift: { type: Number, required: true },
-  baseRadius: { type: Number, default: WHEEL_RADII.zodiacOuter },
+  chart:            { type: Object, required: true },
+  wheelShift:       { type: Number, required: true },
+  baseRadius:       { type: Number, default: WHEEL_RADII.zodiacOuter },
+  highlightedWheel: { type: Object, default: null },
 })
+const emit = defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 
 const ANGLE_MARKERS = [
   { key: 'asc', source: 'asc', label: 'AS', name: 'Ascendant', offset: 0, accent: 'var(--chart-angle-asc, var(--chart-angle-accent))', primary: true },
@@ -43,6 +46,17 @@ const markerFromConfig = (marker, angleLongitudes) => {
     ...marker,
     longitude,
     title:      `${marker.label}: ${marker.name} ${longitudeLabel(baseLongitude + marker.offset)}`,
+    payload:    wheelHighlight('angle', marker.key, {
+      angle:     marker.key,
+      label:     marker.label,
+      name:      marker.name,
+      longitude: baseLongitude + marker.offset,
+      title:     `${marker.label} ${marker.name}`,
+      details:   [
+        { label: 'Longitude', value: longitudeLabel(baseLongitude + marker.offset) },
+        { label: 'Axis', value: marker.source === 'asc' ? 'Ascendant / Descendant' : 'Midheaven / Imum Coeli' },
+      ],
+    }),
     inner:      markerPoint(MARKER_OFFSET.tickInner, longitude),
     outer:      markerPoint(MARKER_OFFSET.tickOuter, longitude),
     arrowPath:  marker.primary ? outwardArrowPath(longitude) : '',
@@ -60,12 +74,37 @@ const markers = computed(() => {
     .map(marker => markerFromConfig(marker, angleLongitudes))
     .filter(Boolean)
 })
+
+const markerState = (marker) => {
+  if (props.highlightedWheel?.kind !== 'angle') return 'idle'
+  return props.highlightedWheel.id === marker.key ? 'active' : 'dimmed'
+}
+const sameWheel = payload =>
+  payload?.wheel?.kind === props.highlightedWheel?.kind && payload?.wheel?.id === props.highlightedWheel?.id
+const emitPayload = (event, payload) => emit(event, payload)
 </script>
 
 <template lang="pug">
 g(data-testid='angle-markers' font-family='"Inter", "Avenir Next", system-ui, sans-serif' font-size='9' font-weight='800' text-anchor='middle')
-  g(v-for='marker in markers' :key='marker.key')
-    title {{ marker.title }}
+  g(
+    v-for='marker in markers'
+    :key='marker.key'
+    :aria-label='marker.title'
+    :aria-pressed='sameWheel(marker.payload)'
+    :data-highlight='markerState(marker)'
+    :data-wheel-kind='marker.payload.wheel.kind'
+    :data-wheel-id='marker.payload.wheel.id'
+    role='button'
+    tabindex='0'
+    class='angle-marker'
+    @mouseenter='emitPayload("highlight", marker.payload)'
+    @mouseleave='$emit("clear-highlight")'
+    @focus='emitPayload("highlight", marker.payload)'
+    @blur='$emit("clear-highlight")'
+    @click.stop='emitPayload("toggle-highlight", marker.payload)'
+    @keydown.enter.prevent='emitPayload("toggle-highlight", marker.payload)'
+    @keydown.space.prevent='emitPayload("toggle-highlight", marker.payload)'
+  )
     line(
       :x1='marker.inner.x'
       :y1='marker.inner.y'
@@ -75,6 +114,7 @@ g(data-testid='angle-markers' font-family='"Inter", "Avenir Next", system-ui, sa
       stroke-width='10'
       stroke-linecap='round'
     )
+      title {{ marker.title }}
     line(
       :x1='marker.inner.x'
       :y1='marker.inner.y'
@@ -84,6 +124,7 @@ g(data-testid='angle-markers' font-family='"Inter", "Avenir Next", system-ui, sa
       :stroke-width='marker.primary ? 1.15 : 0.8'
       :stroke-opacity='marker.primary ? 0.58 : 0.32'
       stroke-linecap='round'
+      class='angle-marker__tick'
     )
     path(
       v-if='marker.primary'
@@ -95,6 +136,7 @@ g(data-testid='angle-markers' font-family='"Inter", "Avenir Next", system-ui, sa
       stroke-width='0.65'
       stroke-opacity='0.88'
       stroke-linejoin='round'
+      class='angle-marker__arrow'
     )
     text(
       v-if='marker.primary'
@@ -104,5 +146,43 @@ g(data-testid='angle-markers' font-family='"Inter", "Avenir Next", system-ui, sa
       :fill='marker.accent'
       fill-opacity='0.82'
       dominant-baseline='central'
+      class='angle-marker__label'
     ) {{ marker.label }}
 </template>
+
+<style scoped>
+.angle-marker {
+  cursor: pointer;
+  outline: none;
+}
+
+.angle-marker__tick,
+.angle-marker__arrow,
+.angle-marker__label {
+  transition: filter 140ms ease, opacity 140ms ease, stroke-width 140ms ease;
+}
+
+.angle-marker[data-highlight='active'] .angle-marker__tick,
+.angle-marker:hover .angle-marker__tick,
+.angle-marker:focus-visible .angle-marker__tick {
+  filter: drop-shadow(0 0 4px var(--chart-angle-accent));
+  stroke-opacity: 0.95;
+  stroke-width: 2.1;
+}
+
+.angle-marker[data-highlight='active'] .angle-marker__arrow,
+.angle-marker[data-highlight='active'] .angle-marker__label,
+.angle-marker:hover .angle-marker__arrow,
+.angle-marker:hover .angle-marker__label,
+.angle-marker:focus-visible .angle-marker__arrow,
+.angle-marker:focus-visible .angle-marker__label {
+  filter: drop-shadow(0 0 4px var(--chart-angle-accent));
+  opacity: 1;
+}
+
+.angle-marker[data-highlight='dimmed'] .angle-marker__tick,
+.angle-marker[data-highlight='dimmed'] .angle-marker__arrow,
+.angle-marker[data-highlight='dimmed'] .angle-marker__label {
+  opacity: 0.32;
+}
+</style>

@@ -12,6 +12,7 @@ const props = defineProps({
   strokeWidth:    { type: [Number, String], default: 0 },
   opacity:        { type: [Number, String], default: 1 },
   title:          { type: String, default: '' },
+  highlightState: { type: String, default: 'idle' },
 })
 
 const path = computed(() =>
@@ -26,6 +27,7 @@ path(
   :stroke='stroke'
   :stroke-width='strokeWidth'
   :opacity='opacity'
+  :data-highlight='highlightState'
   stroke-linejoin='round'
 )
   title(v-if='title') {{ title }}

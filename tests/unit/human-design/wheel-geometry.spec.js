@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { ichingLinesForGate } from '../../../src/components/human-design/ichingGeometry.js'
-import { planetGlyphLayout, planetGlyphRadii } from '../../../src/components/human-design/planetGlyphGeometry.js'
+import { planetGlyphBand, planetGlyphLayout } from '../../../src/components/human-design/planetGlyphGeometry.js'
 import { referenceBrauliWheelPositions } from '../../../src/components/human-design/referencePositions.js'
 import { gateSegmentLayout, zodiacSegmentLayout } from '../../../src/components/human-design/ringSegmentGeometry.js'
 import {
@@ -12,6 +12,7 @@ import {
 } from '../../../src/components/human-design/wheelCore.js'
 import { activationFromLongitude } from '../../../src/lib/human-design/activations.js'
 import { SKY_PLANETS, skyLongitudeForHumanDesignLongitude, skyLongitudeForPosition, skyRadiusForBounds } from '../../../src/lib/sky/scene.js'
+import { RADIAL_ALIGNMENT } from '../../../src/lib/chart/radialSpacing.js'
 
 const angularDistance = (a, b) => {
   const diff = Math.abs(a - b) % 360
@@ -94,7 +95,7 @@ describe('Human Design wheel geometry', () => {
     expect(ichingLinesForGate(28)).toEqual([true, false, false, false, false, true])
   })
 
-  it('stacks planet glyphs in predictable lanes close to the sign circle', () => {
+  it('spaces planet glyphs in predictable radial lanes close to the sign circle', () => {
     const layout = planetGlyphLayout([
       { layer: 'personality', planet: 'Mars', gate: 9, line: 1 },
       { layer: 'design', planet: 'Mercury', gate: 5, line: 4 },
@@ -104,15 +105,15 @@ describe('Human Design wheel geometry', () => {
     ])
 
     expect(layout.map(item => item.planet)).toEqual(['Mars', 'Mercury', 'Uranus', 'Saturn', 'Sun'])
-    expect(layout.every(item => planetGlyphRadii.includes(item.radius))).toBe(true)
+    expect(layout.every(item => item.radius >= planetGlyphBand.inner && item.radius <= planetGlyphBand.outer)).toBe(true)
     expect(layout.every(item => item.radius < wheelRingRadii.zodiacInner)).toBe(true)
-    expect(Math.max(...layout.map(item => item.radius))).toBe(planetGlyphRadii[0])
+    expect(Math.max(...layout.map(item => item.radius))).toBe(planetGlyphBand.outer)
     expect(layout.filter(item => item.gate === 5).map(item => item.lane).sort()).toEqual([0, 1])
     expect(layout.filter(item => item.gate === 9).map(item => item.lane).sort()).toEqual([0, 1])
     expect(layout.find(item => item.gate === 14).lane).toBe(0)
   })
 
-  it('keeps all planet glyphs for one gate on the sector midpoint angle', () => {
+  it('stacks planet glyphs for one gate inward from the outer orbit', () => {
     const layout = planetGlyphLayout([
       { layer: 'personality', planet: 'Sun', gate: 44, line: 1 },
       { layer: 'design', planet: 'Venus', gate: 44, line: 6 },
@@ -125,7 +126,18 @@ describe('Human Design wheel geometry', () => {
       mandalaAngleForGate(44),
     ])
     expect(new Set(layout.map(item => item.lane)).size).toBe(3)
+    expect(layout.map(item => item.radius)).toEqual([342, 304, 266])
     expect(new Set(layout.map(item => item.point.x)).size).toBe(3)
+  })
+
+  it('accepts the shared centered alignment when a wheel requests it', () => {
+    const layout = planetGlyphLayout([
+      { layer: 'personality', planet: 'Sun', gate: 44, line: 1 },
+      { layer: 'design', planet: 'Venus', gate: 44, line: 6 },
+      { layer: 'personality', planet: 'Moon', gate: 44, line: 3 },
+    ], { alignment: RADIAL_ALIGNMENT.CENTERED })
+
+    expect(layout.map(item => item.radius)).toEqual([191.5, 247, 302.5])
   })
 
   it('does not stack planets across neighboring gate sectors', () => {
@@ -135,7 +147,7 @@ describe('Human Design wheel geometry', () => {
     ])
 
     expect(layout.map(item => item.lane)).toEqual([0, 0])
-    expect(layout.map(item => item.radius)).toEqual([planetGlyphRadii[0], planetGlyphRadii[0]])
+    expect(layout.map(item => item.radius)).toEqual([planetGlyphBand.outer, planetGlyphBand.outer])
     expect(layout[0].angle).not.toBe(layout[1].angle)
   })
 })

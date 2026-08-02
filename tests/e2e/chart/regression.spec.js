@@ -12,13 +12,24 @@ const BRAULIO_LEGACY_TZ = {
   createdAt:       1234567890
 }
 
+const FRANCISCO_CHART = {
+  id:              'francisco-chart',
+  name:            'Francisco Siddhartha Lucena de Oliveira',
+  isoLocal:        '2014-08-16T15:33',
+  tzOffsetMinutes: -180,
+  lat:             -12.53,
+  lon:             -38.3,
+  placeLabel:      'Mata de São João, BA - Brasil',
+  createdAt:       1234567891,
+}
+
 test.describe('Chart regressions', () => {
   test('matches the VegaPlus reference for Bráulio with historical Brazil DST', async ({ page }) => {
     await seedSettings(page)
     await seedPeople(page, [BRAULIO_LEGACY_TZ])
     await seedSession(page, BRAULIO_LEGACY_TZ.id)
 
-    await page.goto('/#/natal')
+    await page.goto('/astrelio/map/astrology/data')
 
     await expect(page.getByTestId('asc-sign')).toContainText(/C[âa]ncer 27° 5[0-1]'/)
     await expect(page.getByTestId('mc-sign')).toContainText(/Touro 11° 3[6-8]'/)
@@ -42,6 +53,7 @@ test.describe('Chart regressions', () => {
     await page.getByTestId('btn-submit').click()
 
     await expect(page).toHaveURL(/\/natal/)
+    await page.getByTestId('natal-view-data').click()
     await expect(page.getByTestId('asc-sign')).toContainText(/C[âa]ncer 27°/)
 
     const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('astrelio_people')).list[0])
@@ -82,5 +94,37 @@ test.describe('Chart regressions', () => {
     })
 
     expect(reachesGlyph).toBe(true)
+  })
+
+  test('radially separates the reported crowded chart and renders the Part of Fortune', async ({ page }) => {
+    await seedSettings(page)
+    await seedPeople(page, [FRANCISCO_CHART])
+    await seedSession(page, FRANCISCO_CHART.id)
+
+    await page.goto('/#/map/astrology/chart')
+    await expect(page.getByTestId('planet-glyph-Fortune')).toBeVisible()
+
+    const radii = await page.evaluate(() => {
+      const radiusFor = (name) => {
+        const hit = document.querySelector(`[data-testid="planet-hit-${name}"]`)
+        return Math.hypot(Number(hit.getAttribute('cx')) - 260, Number(hit.getAttribute('cy')) - 260)
+      }
+      return Object.fromEntries([
+        'Uranus', 'SouthNode', 'Venus', 'Jupiter', 'Lilith', 'Sun', 'Mercury',
+        'NorthNode', 'Fortune', 'Mars', 'Saturn', 'Neptune', 'Chiron',
+      ].map(name => [name, radiusFor(name)]))
+    })
+    const groups = [
+      ['Uranus', 'SouthNode'],
+      ['Venus', 'Jupiter'],
+      ['Lilith', 'Sun', 'Mercury'],
+      ['NorthNode', 'Fortune'],
+      ['Mars', 'Saturn'],
+      ['Neptune', 'Chiron'],
+    ]
+
+    groups.forEach((names) => {
+      expect(new Set(names.map(name => Math.round(radii[name]))).size).toBe(names.length)
+    })
   })
 })

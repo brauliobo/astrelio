@@ -7,11 +7,13 @@ import WheelPlanets from './WheelPlanets.vue'
 import WheelRings from './WheelRings.vue'
 import { humanDesignPalette } from './visualTheme.js'
 import { broadcastChartHighlight, humanDesignHighlight } from '../../lib/chart/highlight.js'
+import { isRadialAlignment, RADIAL_ALIGNMENT } from '../../lib/chart/radialSpacing.js'
 
 const props = defineProps({
   chart:               { type: Object, required: true },
   visualTheme:         { type: String, default: 'dark' },
   planetGlyphRenderer: { type: String, default: null },
+  planetAlignment:     { type: String, default: RADIAL_ALIGNMENT.OUTER, validator: isRadialAlignment },
 })
 
 const hover = ref(null)
@@ -60,7 +62,11 @@ const selectItem = (selection) => {
           @select='selectItem'
           @leave='clearHover'
         )
-        WheelPlanets(:chart='chart' :glyph-renderer='planetGlyphRenderer')
+        WheelPlanets(
+          :chart='chart'
+          :glyph-renderer='planetGlyphRenderer'
+          :planet-alignment='planetAlignment'
+        )
         g(data-testid='bodygraph-chart' transform='translate(317 242) scale(0.78)' filter='url(#hd-wheel-shadow)')
           BodygraphCore(
             :chart='chart'

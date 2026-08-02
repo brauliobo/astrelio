@@ -16,6 +16,7 @@ describe('chart highlight contract', () => {
       aspectKey: '',
       aspect:    null,
       hd:        null,
+      wheel:     null,
     })
     expect(hasHighlight(normalizeHighlight())).toBe(false)
   })
@@ -36,6 +37,7 @@ describe('chart highlight contract', () => {
       aspectKey: 'Sun-Mars-sextile',
       aspect,
       hd:        null,
+      wheel:     null,
     })
     expect(hasHighlight(normalized)).toBe(true)
     expect(sameHighlight(normalized, {
@@ -62,6 +64,7 @@ describe('chart highlight contract', () => {
       aspectKey: '',
       aspect:    null,
       hd:        { type: 'gate', value: 49, line: 6, planet: 'Sun' },
+      wheel:     null,
     })
     expect(hasHighlight(gate)).toBe(true)
     expect(sameHighlight(gate, humanDesignHighlight('gate', 49, { line: 6, planet: 'Sun' }))).toBe(true)

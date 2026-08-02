@@ -9,11 +9,21 @@ import {
   polarPoint,
   ringSectorPath,
 } from '../../../src/components/chart/wheel/geometry.js'
+import { evenlySpacedRadii, RADIAL_ALIGNMENT } from '../../../src/lib/chart/radialSpacing.js'
 
 const mk         = (name, longitude, speed = 1) => ({ name, longitude, latitude: 0, speed, retrograde: false })
 const closePoint = (actual, expected) => {
   expect(actual.x).toBeCloseTo(expected.x, 6)
   expect(actual.y).toBeCloseTo(expected.y, 6)
+}
+const expectEqualVisualGaps = (radii, inner, outer, itemSize) => {
+  const sorted = [...radii].sort((a, b) => a - b)
+  const gaps   = [sorted[0] - (itemSize / 2) - inner]
+  for (let index = 1; index < sorted.length; index += 1) {
+    gaps.push(sorted[index] - sorted[index - 1] - itemSize)
+  }
+  gaps.push(outer - sorted.at(-1) - (itemSize / 2))
+  gaps.forEach(gap => expect(gap).toBeCloseTo(gaps[0], 6))
 }
 
 const placementSnapshot = (placements) =>
@@ -45,6 +55,13 @@ describe('chart wheel geometry', () => {
     expect(path.endsWith('Z')).toBe(true)
   })
 
+  it('shares centered and outer-anchored radial alignment modes', () => {
+    const options = { inner: 88, outer: 156, itemSize: 22 }
+
+    expect(evenlySpacedRadii(2, { ...options, alignment: RADIAL_ALIGNMENT.CENTERED })).toEqual([107, 137])
+    expect(evenlySpacedRadii(2, { ...options, alignment: RADIAL_ALIGNMENT.OUTER })).toEqual([156, 134])
+  })
+
   it('clusters planets across the zero-degree wraparound', () => {
     const clusters = clusteredPlanets([mk('Sun', 358), mk('Moon', 2), mk('Mars', 45)])
     expect(clusters[0].map(planet => planet.name).sort()).toEqual(['Moon', 'Sun'])
@@ -62,14 +79,12 @@ describe('chart wheel geometry', () => {
     expect(line.start.y).toBeCloseTo(sun.point.y, 6)
   })
 
-  it('stacks crowded stellium glyphs radially on their exact longitude rays', () => {
+  it('spaces crowded stellium glyphs evenly across the radial band on exact longitude rays', () => {
     const chart = {
       positions: [
         mk('Sun', 10),
         mk('Moon', 10.2),
         mk('Mercury', 10.4),
-        mk('Venus', 10.6),
-        mk('Mars', 10.8),
       ],
     }
     const placements = planetPlacements(chart, 15, planetBandFor({}, 0, 1))
@@ -79,19 +94,17 @@ describe('chart wheel geometry', () => {
     closePoint(sun.tick, polarPoint(152, 25))
     closePoint(sun.point, polarPoint(sun.radius, 25))
     expect(sun.glyphLongitude).toBeCloseTo(sun.longitude)
-    closePoint(sun.glyphPoint, sun.point)
     expect(placements.every(item => item.isCrowded)).toBe(true)
     expect(placements.every(item => item.showDegreeLabel)).toBe(true)
 
     expect(new Set(placements.map(item => item.radius)).size).toBe(placements.length)
-    expect(Math.min(...placements.map(item => item.radius))).toBeGreaterThan(78)
-    expect(Math.max(...placements.map(item => item.radius))).toBeLessThan(150)
-    expect(placements.map(item => Number(item.radius.toFixed(2)))).toEqual([92.84, 102.96, 113.08, 123.2, 133.32])
-    expect(placements.every(item => item.longitude >= 25 && item.longitude <= 25.8)).toBe(true)
+    expect(placements.map(item => item.radius)).toEqual([99.5, 122, 144.5])
+    expectEqualVisualGaps(placements.map(item => item.radius), 88, 156, 22)
+    expect(placements.every(item => item.longitude >= 25 && item.longitude <= 25.4)).toBe(true)
     expect(placements.every(item => item.glyphLongitude === item.longitude)).toBe(true)
   })
 
-  it('keeps two close planets on nearby predictable lanes', () => {
+  it('places two close planets at opposite radial edges without changing longitude', () => {
     const placements = planetPlacements({
       positions: [
         mk('Mars', 20),
@@ -100,19 +113,19 @@ describe('chart wheel geometry', () => {
     }, 0, planetBandFor({}, 0, 1))
 
     expect(placements.map(item => item.planet.name)).toEqual(['Mars', 'Saturn'])
-    expect(placements.map(item => Number(item.radius.toFixed(2)))).toEqual([110.68, 124.68])
-    expect(placements[1].radius - placements[0].radius).toBeGreaterThan(12)
-    expect(placements[1].radius - placements[0].radius).toBeLessThan(16)
+    expect(placements.map(item => item.radius)).toEqual([107, 137])
+    expectEqualVisualGaps(placements.map(item => item.radius), 88, 156, 22)
     expect(placements.every(item => item.glyphLongitude === item.longitude)).toBe(true)
   })
 
-  it('keeps non-overlapping transit overlay glyphs on one exterior lane', () => {
+  it('radially separates visually overlapping transit glyphs', () => {
     const band = {
       inner:         188,
       outer:         232,
       defaultRadius: 214,
       tickRadius:    196,
       glyphPadding:  8,
+      glyphSize:     20,
     }
     const placements = planetPlacements({
       positions: [
@@ -122,8 +135,9 @@ describe('chart wheel geometry', () => {
       ],
     }, 0, band)
 
-    expect(placements.map(item => item.radius)).toEqual([214, 214, 214])
-    expect(placements.every(item => !item.isCrowded)).toBe(true)
+    expect(placements.map(item => Number(item.radius.toFixed(6)))).toEqual([199.333333, 220.666667, 214])
+    expect(placements.slice(0, 2).every(item => item.isCrowded)).toBe(true)
+    expect(placements[2].isCrowded).toBe(false)
   })
 
   it('places every degree label at the bottom-right of its glyph', () => {
@@ -145,10 +159,51 @@ describe('chart wheel geometry', () => {
 
   it('keeps the default single-chart planet band away from ring borders', () => {
     expect(planetBandFor({}, 0, 1)).toEqual({
-      inner:      78,
-      outer:      150,
+      inner:      88,
+      outer:      156,
       tickRadius: 152,
     })
+  })
+
+  it('separates every crowded group in the reported 2014 chart and includes Fortune', () => {
+    const chart = {
+      ascendant: 297.73633148147826,
+      fortune:   198.75805650458474,
+      positions: [
+        mk('Sun', 143.81478426286938),
+        mk('Moon', 44.836509285975865),
+        mk('Mercury', 152.04422209199515),
+        mk('Venus', 125.46063161366371),
+        mk('Mars', 222.1672997119659),
+        mk('Jupiter', 126.92311406290419),
+        mk('Saturn', 227.22831241993856),
+        mk('Uranus', 16.24774262974616),
+        mk('Neptune', 336.53363263223116),
+        mk('Pluto', 281.325045982673),
+        mk('NorthNode', 201.01604549987283),
+        mk('SouthNode', 21.016045499872803),
+        mk('Lilith', 138.4835741904149),
+        mk('Chiron', 346.40656564240885),
+      ],
+    }
+    const placements = planetPlacements(chart, 62.26366851852174, planetBandFor({}, 0, 1))
+    const byName     = new Map(placements.map(item => [item.planet.name, item]))
+    const groups     = [
+      ['Uranus', 'SouthNode'],
+      ['Venus', 'Jupiter'],
+      ['Lilith', 'Sun', 'Mercury'],
+      ['NorthNode', 'Fortune'],
+      ['Mars', 'Saturn'],
+      ['Neptune', 'Chiron'],
+    ]
+
+    expect(byName.has('Fortune')).toBe(true)
+    groups.forEach((names) => {
+      const radii = names.map(name => byName.get(name).radius)
+      expect(new Set(radii).size).toBe(names.length)
+      expectEqualVisualGaps(radii, 88, 156, 22)
+    })
+    expect(placements.every(item => item.glyphLongitude === item.longitude)).toBe(true)
   })
 
   it('keeps degree labels consistent across single and crowded placements', () => {

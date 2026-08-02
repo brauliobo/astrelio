@@ -5,16 +5,19 @@ export const normalizeHighlight = (payload) => ({
   aspectKey: payload?.aspectKey || '',
   aspect:    payload?.aspect || null,
   hd:        payload?.hd || null,
+  wheel:     payload?.wheel || null,
 })
 
 export const hasHighlight = (highlight) =>
-  Boolean(highlight?.aspectKey || highlight?.bodies?.length || highlight?.hd)
+  Boolean(highlight?.aspectKey || highlight?.bodies?.length || highlight?.hd || highlight?.wheel)
 
 export const sameHighlight = (a = {}, b = {}) => {
   const left  = normalizeHighlight(a)
   const right = normalizeHighlight(b)
   return left.aspectKey === right.aspectKey &&
     JSON.stringify(left.hd || null) === JSON.stringify(right.hd || null) &&
+    (left.wheel?.kind || '') === (right.wheel?.kind || '') &&
+    (left.wheel?.id || '') === (right.wheel?.id || '') &&
     left.bodies.length === right.bodies.length &&
     left.bodies.every(body => right.bodies.includes(body))
 }
@@ -33,4 +36,10 @@ export const humanDesignHighlight = (type, value, detail = {}) => ({
   bodies:    [],
   aspectKey: '',
   hd:        { type, value, ...detail },
+})
+
+export const wheelHighlight = (kind, id, detail = {}) => ({
+  bodies:    [],
+  aspectKey: '',
+  wheel:     { kind, id, ...detail },
 })

@@ -11,6 +11,7 @@ import Frame from './wheel/Frame.vue'
 import ZodiacRing from './wheel/ZodiacRing.vue'
 import { CENTER, VIEWBOX_SIZE, WHEEL_RADII, mapsFromProps, norm360 } from './wheel/geometry.js'
 import { broadcastChartHighlight, CHART_HIGHLIGHT_EVENT, normalizeHighlight, sameHighlight } from '../../lib/chart/highlight.js'
+import { isRadialAlignment, RADIAL_ALIGNMENT } from '../../lib/chart/radialSpacing.js'
 
 const displayModes   = ['clean', 'aspects', 'detailed', 'print']
 const modeSettings = {
@@ -50,6 +51,7 @@ const props = defineProps({
   showModeControls:     { type: Boolean, default: true },
   zodiacSymbols:        { type: Array, default: null },
   planetGlyphRenderer:  { type: String, default: null },
+  planetAlignment:      { type: String, default: RADIAL_ALIGNMENT.CENTERED, validator: isRadialAlignment },
   showNakshatraRing:    { type: Boolean, default: false },
 })
 const emit = defineEmits(['highlight', 'clear-highlight', 'toggle-highlight', 'update:display-mode'])
@@ -117,6 +119,9 @@ const activeBodies = computed(() =>
 )
 const activeAspectKey = computed(() =>
   hasExternalHighlight.value ? props.highlightedAspectKey : localHighlight.value?.aspectKey || ''
+)
+const activeWheel = computed(() =>
+  hasExternalHighlight.value ? null : localHighlight.value?.wheel || null
 )
 
 const broadcastHighlight = (highlight, pinned = false) => {
@@ -205,7 +210,7 @@ onBeforeUnmount(() => {
     )
       .chart-orbit-controls.inline-flex.items-center.mr-1.border-r.pr-1(
         v-if='baseChart && hasExteriorOrbitOption'
-        aria-label='Chart orbit controls'
+        :aria-label='t("chart.wheel_accessibility.orbit_controls")'
       )
         button.chart-control-button.chart-transit-orbit-toggle(
           type='button'
@@ -220,7 +225,7 @@ onBeforeUnmount(() => {
     role='group'
     tabindex='0'
     data-testid='chart-wheel-stage'
-    aria-label='Chart wheel'
+    :aria-label='t("chart.wheel_accessibility.wheel")'
   )
     svg(
       class='block h-full w-full'
@@ -228,7 +233,12 @@ onBeforeUnmount(() => {
       role='img'
       data-testid='chart-wheel-svg'
     )
-      Frame
+      Frame(
+        :highlighted-wheel='activeWheel'
+        @highlight='setHoverHighlight'
+        @clear-highlight='clearHoverHighlight'
+        @toggle-highlight='togglePinnedHighlight'
+      )
       g(v-if='hasExteriorOrbit' data-testid='transit-orbit-frame' pointer-events='none')
         circle(
           :cx='CENTER'
@@ -248,7 +258,14 @@ onBeforeUnmount(() => {
           stroke-width='0.9'
           stroke-opacity='0.34'
         )
-      NakshatraRing(v-if='showNakshatraRing' :wheel-shift='wheelShift')
+      NakshatraRing(
+        v-if='showNakshatraRing'
+        :wheel-shift='wheelShift'
+        :highlighted-wheel='activeWheel'
+        @highlight='setHoverHighlight'
+        @clear-highlight='clearHoverHighlight'
+        @toggle-highlight='togglePinnedHighlight'
+      )
       ChartMap(
         v-for='(map, index) in displayMaps'
         :key='map.id'
@@ -258,25 +275,45 @@ onBeforeUnmount(() => {
         :wheel-shift='wheelShift'
         :highlighted-bodies='activeBodies'
         :highlighted-aspect-key='activeAspectKey'
+        :highlighted-wheel='activeWheel'
         :aspect-options='aspectOptions'
         :glyph-renderer='map.planetGlyphRenderer || planetGlyphRenderer'
+        :planet-alignment='planetAlignment'
         @highlight='setHoverHighlight'
         @clear-highlight='clearHoverHighlight'
         @toggle-highlight='togglePinnedHighlight'
       )
-      ZodiacRing(:wheel-shift='wheelShift' :symbols='zodiacSymbols || undefined')
-      TickRing(:wheel-shift='wheelShift')
+      ZodiacRing(
+        :wheel-shift='wheelShift'
+        :symbols='zodiacSymbols || undefined'
+        :highlighted-wheel='activeWheel'
+        @highlight='setHoverHighlight'
+        @clear-highlight='clearHoverHighlight'
+        @toggle-highlight='togglePinnedHighlight'
+      )
+      TickRing(
+        :wheel-shift='wheelShift'
+        :highlighted-wheel='activeWheel'
+        @highlight='setHoverHighlight'
+        @clear-highlight='clearHoverHighlight'
+        @toggle-highlight='togglePinnedHighlight'
+      )
       AngleMarkers(
         v-if='displayMaps[0]?.showAngles'
         :chart='baseChart'
         :wheel-shift='wheelShift'
         :base-radius='hasExteriorOrbit ? WHEEL_RADII.transitOuter : WHEEL_RADII.zodiacOuter'
+        :highlighted-wheel='activeWheel'
+        @highlight='setHoverHighlight'
+        @clear-highlight='clearHoverHighlight'
+        @toggle-highlight='togglePinnedHighlight'
       )
     SelectionSummary(
-      v-if='activeBodies.length || activeAspectKey'
+      v-if='activeBodies.length || activeAspectKey || activeWheel'
       :chart='baseChart'
       :bodies='activeBodies'
       :aspect-key='activeAspectKey'
+      :wheel='activeWheel'
     )
 </template>
 

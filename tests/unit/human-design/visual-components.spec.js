@@ -1,7 +1,8 @@
-import { mount } from '@vue/test-utils'
+import { mount, RouterLinkStub } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
 import { describe, expect, it } from 'vitest'
 import ModalityRouteSwitch from '../../../src/components/modalities/ModalityRouteSwitch.vue'
+import WorkspaceViewSwitch from '../../../src/components/modalities/WorkspaceViewSwitch.vue'
 import ActivationColumns from '../../../src/components/human-design/ActivationColumns.vue'
 import ActivationTable from '../../../src/components/human-design/ActivationTable.vue'
 import BodygraphGates from '../../../src/components/human-design/BodygraphGates.vue'
@@ -19,6 +20,24 @@ const i18n = locale => createI18n({
   legacy: false,
   locale,
   messages: { en, 'pt-BR': ptBR },
+})
+
+const workspaceI18n = createI18n({
+  legacy: false,
+  locale: 'en',
+  messages: {
+    en: {
+      ...en,
+      map: {
+        view_switch_aria: 'Map view',
+        views: {
+          chart:   'Chart',
+          reading: 'Reading',
+          data:    'Data',
+        },
+      },
+    },
+  },
 })
 
 const mountInSvg = (component, props = {}) => mount({
@@ -41,7 +60,61 @@ describe('Human Design visual components', () => {
     expect(wrapper.get('[data-testid="modality-astrology"]').text()).toBe('Tropical')
     expect(wrapper.get('[data-testid="modality-vedic"]').text()).toBe('Védica')
     expect(wrapper.get('[data-testid="modality-human-design"]').text()).toBe('Human Design')
+    expect(wrapper.find('[data-testid="modality-report"]').exists()).toBe(false)
     expect(ptBR.planets.Earth).toBe('Terra')
+  })
+
+  it('uses canonical map routes and retains the active workspace view', () => {
+    const wrapper = mount(ModalityRouteSwitch, {
+      props:  { active: 'astrology', view: 'reading' },
+      global: {
+        plugins: [i18n('en')],
+        stubs:   { RouterLink: RouterLinkStub },
+      },
+    })
+
+    expect(wrapper.getComponent('[data-testid="modality-vedic"]').props('to')).toEqual({
+      name:   'map',
+      params: { lens: 'vedic', view: 'reading' },
+    })
+    expect(wrapper.getComponent('[data-testid="modality-human-design"]').props('to')).toEqual({
+      name:   'map',
+      params: { lens: 'human-design', view: 'reading' },
+    })
+  })
+
+  it('renders translated chart, reading, and data links for one canonical lens', () => {
+    const wrapper = mount(WorkspaceViewSwitch, {
+      props:  { active: 'data', lens: 'human-design' },
+      global: {
+        plugins: [workspaceI18n],
+        stubs:   { RouterLink: RouterLinkStub },
+      },
+    })
+
+    expect(wrapper.get('[data-testid="workspace-view-switch"]').attributes('aria-label')).toBe('Map view')
+    expect(wrapper.get('[data-testid="workspace-view-chart"]').text()).toBe('Chart')
+    expect(wrapper.get('[data-testid="workspace-view-reading"]').text()).toBe('Reading')
+    expect(wrapper.get('[data-testid="workspace-view-data"]').attributes('aria-current')).toBe('page')
+    expect(wrapper.getComponent('[data-testid="workspace-view-chart"]').props('to')).toEqual({
+      name:   'map',
+      params: { lens: 'human-design', view: 'chart' },
+    })
+  })
+
+  it('suppresses legacy page switches beneath the Map workspace owner', async () => {
+    const wrapper = mount(ModalityRouteSwitch, {
+      global: {
+        plugins: [i18n('en')],
+        provide: { mapWorkspaceShell: true },
+        stubs:   { RouterLink: RouterLinkStub },
+      },
+    })
+
+    expect(wrapper.find('[data-testid="modality-switch"]').exists()).toBe(false)
+
+    await wrapper.setProps({ workspaceOwner: true })
+    expect(wrapper.find('[data-testid="modality-switch"]').exists()).toBe(true)
   })
 
   it('renders active backgrounds only for gate sectors that have planets', () => {

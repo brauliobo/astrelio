@@ -318,63 +318,64 @@ Teleport(to='body')
         )
           span(aria-hidden='true') x
 
-    dl.chart-inspector-drawer__meta(v-if='metaRows.length')
-      div(v-for='row in metaRows' :key='row.key')
-        dt {{ row.label }}
-        dd {{ row.value }}
-
-    section.chart-inspector-drawer__section(v-if='aspect')
-      h3 {{ t('chart.inspector.aspect') }}
-      .chart-inspector-drawer__aspect(data-testid='chart-inspector-aspect')
-        p.chart-inspector-drawer__aspect-title {{ title }}
-        dl.chart-inspector-drawer__placements(v-if='aspectRows.length')
-          div(v-for='row in aspectRows' :key='row.key')
-            dt {{ row.label }}
-            dd {{ row.value }}
-
-    section.chart-inspector-drawer__section(v-if='activeHumanDesign')
-      h3 {{ t('chart.inspector.human_design') }}
-      dl.chart-inspector-drawer__placements.chart-inspector-drawer__aspect(data-testid='chart-inspector-human-design')
-        div(v-for='row in humanDesignRows' :key='row.key')
+    .chart-inspector-drawer__content
+      dl.chart-inspector-drawer__meta(v-if='metaRows.length')
+        div(v-for='row in metaRows' :key='row.key')
           dt {{ row.label }}
           dd {{ row.value }}
 
-    section.chart-inspector-drawer__section(v-if='!activeHumanDesign')
-      h3 {{ t('chart.inspector.bodies') }}
-      .chart-inspector-drawer__body(
-        v-for='body in placementRows'
-        :key='body.name'
-        :data-testid='`chart-inspector-body-${body.name}`'
-      )
-        .chart-inspector-drawer__body-title {{ body.label }}
-        dl.chart-inspector-drawer__placements(v-if='body.rows.length')
-          div(v-for='row in body.rows' :key='row.key')
+      section.chart-inspector-drawer__section(v-if='aspect')
+        h3 {{ t('chart.inspector.aspect') }}
+        .chart-inspector-drawer__aspect(data-testid='chart-inspector-aspect')
+          p.chart-inspector-drawer__aspect-title {{ title }}
+          dl.chart-inspector-drawer__placements(v-if='aspectRows.length')
+            div(v-for='row in aspectRows' :key='row.key')
+              dt {{ row.label }}
+              dd {{ row.value }}
+
+      section.chart-inspector-drawer__section(v-if='activeHumanDesign')
+        h3 {{ t('chart.inspector.human_design') }}
+        dl.chart-inspector-drawer__placements.chart-inspector-drawer__aspect(data-testid='chart-inspector-human-design')
+          div(v-for='row in humanDesignRows' :key='row.key')
             dt {{ row.label }}
             dd {{ row.value }}
-        p.chart-inspector-drawer__empty(v-else) {{ t('chart.inspector.unavailable') }}
 
-    p.chart-inspector-drawer__empty(v-if='!activeHumanDesign && !hasPlacementData') {{ t('chart.inspector.context_hint') }}
+      section.chart-inspector-drawer__section(v-if='!activeHumanDesign')
+        h3 {{ t('chart.inspector.bodies') }}
+        .chart-inspector-drawer__body(
+          v-for='body in placementRows'
+          :key='body.name'
+          :data-testid='`chart-inspector-body-${body.name}`'
+        )
+          .chart-inspector-drawer__body-title {{ body.label }}
+          dl.chart-inspector-drawer__placements(v-if='body.rows.length')
+            div(v-for='row in body.rows' :key='row.key')
+              dt {{ row.label }}
+              dd {{ row.value }}
+          p.chart-inspector-drawer__empty(v-else) {{ t('chart.inspector.unavailable') }}
 
-    section.chart-inspector-drawer__section(v-if='inspector.pinnedCount')
-      .chart-inspector-drawer__section-heading
-        h3 {{ t('chart.inspector.pinned') }}
-        button.chart-inspector-drawer__link-action(
-          type='button'
-          data-testid='chart-inspector-clear-pins'
-          @click='inspector.clearPinnedHighlights()'
-        ) {{ t('chart.inspector.clear_pins') }}
-      .chart-inspector-drawer__pins(data-testid='chart-inspector-pins')
-        button.chart-inspector-drawer__pin(
-          v-for='(pin, index) in inspector.pinnedHighlights'
-          :key='`${pin.aspectKey || "selection"}-${pin.bodies?.join("-") || ""}-${pin.hd?.type || ""}-${pin.hd?.value || ""}`'
-          type='button'
-          :class='{ active: sameHighlight(pin, inspector.activeHighlight) }'
-          :tabindex='index === pinFocusIndex ? 0 : -1'
-          @click='selectPin(pin, index)'
-          @keydown='onPinKeydown($event, pin, index)'
-          data-testid='chart-inspector-pin'
-          ref='pinButtons'
-        ) {{ titleForHighlight(pin) }}
+      p.chart-inspector-drawer__empty(v-if='!activeHumanDesign && !hasPlacementData') {{ t('chart.inspector.context_hint') }}
+
+      section.chart-inspector-drawer__section(v-if='inspector.pinnedCount')
+        .chart-inspector-drawer__section-heading
+          h3 {{ t('chart.inspector.pinned') }}
+          button.chart-inspector-drawer__link-action(
+            type='button'
+            data-testid='chart-inspector-clear-pins'
+            @click='inspector.clearPinnedHighlights()'
+          ) {{ t('chart.inspector.clear_pins') }}
+        .chart-inspector-drawer__pins(data-testid='chart-inspector-pins')
+          button.chart-inspector-drawer__pin(
+            v-for='(pin, index) in inspector.pinnedHighlights'
+            :key='`${pin.aspectKey || "selection"}-${pin.bodies?.join("-") || ""}-${pin.hd?.type || ""}-${pin.hd?.value || ""}`'
+            type='button'
+            :class='{ active: sameHighlight(pin, inspector.activeHighlight) }'
+            :tabindex='index === pinFocusIndex ? 0 : -1'
+            @click='selectPin(pin, index)'
+            @keydown='onPinKeydown($event, pin, index)'
+            data-testid='chart-inspector-pin'
+            ref='pinButtons'
+          ) {{ titleForHighlight(pin) }}
 </template>
 
 <style scoped>
@@ -392,13 +393,22 @@ Teleport(to='body')
   color: var(--app-text-soft);
   display: grid;
   gap: 1rem;
+  grid-template-rows: auto minmax(0, 1fr);
   inset: 0 0 0 auto;
   max-width: min(28rem, calc(100vw - 1.5rem));
-  overflow-y: auto;
+  overflow: hidden;
   padding: 1.1rem;
   position: fixed;
   width: 100%;
   z-index: 40;
+}
+
+.chart-inspector-drawer__content {
+  align-content: start;
+  display: grid;
+  gap: 1rem;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .chart-inspector-drawer__header {

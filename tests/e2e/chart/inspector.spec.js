@@ -9,7 +9,7 @@ test.describe('Chart inspector', () => {
   })
 
   test('opens astrology and Human Design drawers from chart selections', async ({ page }) => {
-    await page.goto('/#/natal')
+    await page.goto('/astrelio/map/astrology/data')
     await page.locator('[data-aspect-row]').first().click()
     await expect(page.getByTestId('chart-inspector-drawer')).toBeVisible()
     await expect(page.getByTestId('chart-inspector-aspect')).toBeVisible()
@@ -18,7 +18,7 @@ test.describe('Chart inspector', () => {
     await page.getByTestId('chart-inspector-clear-pins').click()
     await expect(page.getByTestId('chart-inspector-drawer')).toBeHidden()
 
-    await page.goto('/#/human-design')
+    await page.goto('/astrelio/map/human-design/chart')
     await page.locator('[data-testid="mandala-gate"][data-active="true"]').first().click({ force: true })
     await expect(page.getByTestId('chart-inspector-drawer')).toBeVisible()
     await expect(page.getByTestId('chart-inspector-human-design')).toBeVisible()
@@ -26,7 +26,7 @@ test.describe('Chart inspector', () => {
   })
 
   test('closes with Escape and returns focus to the context trigger', async ({ page }) => {
-    await page.goto('/#/natal')
+    await page.goto('/astrelio/map/astrology/data')
     await page.locator('[data-aspect-row]').first().click()
     await expect(page.getByTestId('chart-inspector-close')).toBeFocused()
 
@@ -40,7 +40,7 @@ test.describe('Chart inspector', () => {
   })
 
   test('navigates pinned selections with the keyboard', async ({ page }) => {
-    await page.goto('/#/natal')
+    await page.goto('/astrelio/map/astrology/data')
     await page.locator('[data-aspect-row]').nth(0).click()
     await page.getByTestId('chart-inspector-close').click()
     await page.locator('[data-aspect-row]').nth(1).click()
@@ -55,7 +55,7 @@ test.describe('Chart inspector', () => {
   })
 
   test('persists pinned selections per active chart across reload', async ({ page }) => {
-    await page.goto('/#/natal')
+    await page.goto('/astrelio/map/astrology/data')
     await page.locator('[data-aspect-row]').first().click()
     await expect(page.getByTestId('chart-inspector-pin-count')).toContainText('1')
 
@@ -65,8 +65,8 @@ test.describe('Chart inspector', () => {
     await expect(page.getByTestId('chart-inspector-aspect')).toBeVisible()
 
     await page.getByTestId('chart-inspector-clear-pins').click()
-    await page.goto('/#/person/second-person')
-    await page.goto('/#/natal')
+    await page.goto('/astrelio/person/second-person')
+    await page.goto('/astrelio/map/astrology/data')
     await expect(page.getByTestId('context-open-inspector')).toBeHidden()
   })
 })

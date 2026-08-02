@@ -5,6 +5,7 @@ import HouseCusps from './HouseCusps.vue'
 import HouseNumbers from './HouseNumbers.vue'
 import PlanetLayer from './PlanetLayer.vue'
 import { planetBandFor, planetPlacements } from './geometry.js'
+import { isRadialAlignment, RADIAL_ALIGNMENT } from '../../../lib/chart/radialSpacing.js'
 
 const props = defineProps({
   map:                  { type: Object, required: true },
@@ -13,14 +14,21 @@ const props = defineProps({
   wheelShift:           { type: Number, required: true },
   highlightedBodies:    { type: Array, default: () => [] },
   highlightedAspectKey: { type: String, default: '' },
+  highlightedWheel:     { type: Object, default: null },
   aspectOptions:        { type: Object, default: () => ({}) },
   glyphRenderer:        { type: String, default: null },
+  planetAlignment:      { type: String, default: RADIAL_ALIGNMENT.CENTERED, validator: isRadialAlignment },
 })
 defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 
 const band       = computed(() => planetBandFor(props.map, props.index, props.count))
 const placements = computed(() =>
-  planetPlacements(props.map.chart, props.wheelShift, band.value, props.map.planetSymbols || undefined)
+  planetPlacements(
+    props.map.chart,
+    props.wheelShift,
+    { ...band.value, alignment: props.planetAlignment },
+    props.map.planetSymbols || undefined
+  )
 )
 </script>
 
@@ -30,6 +38,10 @@ g(:data-chart-map='map.id')
     v-if='map.showHouses'
     :cusps='map.chart.cusps'
     :wheel-shift='wheelShift'
+    :highlighted-wheel='highlightedWheel'
+    @highlight='$emit("highlight", $event)'
+    @clear-highlight='$emit("clear-highlight")'
+    @toggle-highlight='$emit("toggle-highlight", $event)'
   )
   AspectLayer(
     v-if='map.showAspects'
@@ -61,5 +73,9 @@ g(:data-chart-map='map.id')
     v-if='map.showHouseLabels && count === 1'
     :cusps='map.chart.cusps'
     :wheel-shift='wheelShift'
+    :highlighted-wheel='highlightedWheel'
+    @highlight='$emit("highlight", $event)'
+    @clear-highlight='$emit("clear-highlight")'
+    @toggle-highlight='$emit("toggle-highlight", $event)'
   )
 </template>

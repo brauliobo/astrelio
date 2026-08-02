@@ -26,6 +26,16 @@ const messages = {
       mc:           'MC',
       house_system: 'House',
       summary:      'Summary',
+      wheel_accessibility: {
+        chart_shadow:             'Chart shadow',
+        house_inner_boundary:     'House ring inner boundary',
+        house_outer_boundary:     'House ring outer boundary',
+        nakshatra_outer_boundary: 'Nakshatra outer boundary',
+        orbit_controls:           'Chart orbit controls',
+        wheel:                    'Chart wheel',
+        zodiac_inner_boundary:    'Zodiac inner boundary',
+        zodiac_outer_boundary:    'Zodiac outer boundary',
+      },
     },
     zodiac: {
       signs: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'],
@@ -74,6 +84,16 @@ const messages = {
       asc:           'ASC',
       mc:            'MC',
       transit_orbit: 'Trânsitos',
+      wheel_accessibility: {
+        chart_shadow:             'Sombra do mapa',
+        house_inner_boundary:     'Limite interno do anel de casas',
+        house_outer_boundary:     'Limite externo do anel de casas',
+        nakshatra_outer_boundary: 'Limite externo dos nakshatras',
+        orbit_controls:           'Controles das órbitas do mapa',
+        wheel:                    'Roda do mapa',
+        zodiac_inner_boundary:    'Limite interno do zodíaco',
+        zodiac_outer_boundary:    'Limite externo do zodíaco',
+      },
     },
     zodiac: {
       signs: ['Áries', 'Touro', 'Gêmeos', 'Câncer', 'Leão', 'Virgem', 'Libra', 'Escorpião', 'Sagitário', 'Capricórnio', 'Aquário', 'Peixes'],
@@ -182,6 +202,36 @@ describe('chart interactions', () => {
     const summary = wrapper.get('[data-testid="chart-selection-summary"]').text()
     expect(summary).toContain('Sol 23°49′ Aquário · Casa 7 · Parcerias')
     expect(summary).not.toContain('House 7')
+  })
+
+  it('highlights non-planet wheel elements with enriched summaries', async () => {
+    const wrapper = mount(Wheel, {
+      props:  { natal: chart },
+      global: {
+        plugins: [createI18n({ legacy: false, locale: 'en', messages })],
+      },
+    })
+
+    await wrapper.get('[data-wheel-id="sign-0"]').trigger('mouseenter')
+    await nextTick()
+
+    expect(wrapper.get('[data-wheel-id="sign-0"]').attributes('data-highlight')).toBe('active')
+    expect(wrapper.get('[data-testid="chart-selection-summary"]').attributes('data-selection-kind')).toBe('sign')
+    expect(wrapper.get('[data-testid="chart-selection-summary"]').text()).toContain('Aries')
+
+    await wrapper.get('[data-wheel-id="house-1"]').trigger('mouseenter')
+    await nextTick()
+
+    expect(wrapper.get('[data-wheel-id="house-1"]').attributes('data-highlight')).toBe('active')
+    expect(wrapper.get('[data-testid="chart-selection-summary"]').attributes('data-selection-kind')).toBe('house')
+    expect(wrapper.get('[data-testid="chart-selection-summary"]').text()).toContain('House 1 · Identity')
+
+    await wrapper.get('[data-wheel-id="asc"]').trigger('mouseenter')
+    await nextTick()
+
+    expect(wrapper.get('[data-wheel-id="asc"]').attributes('data-highlight')).toBe('active')
+    expect(wrapper.get('[data-testid="chart-selection-summary"]').attributes('data-selection-kind')).toBe('angle')
+    expect(wrapper.get('[data-testid="chart-selection-summary"]').text()).toContain('Ascendant')
   })
 
   it('pins and clears aspect highlight state from click', async () => {
