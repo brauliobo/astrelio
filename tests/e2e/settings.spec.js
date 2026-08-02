@@ -17,15 +17,16 @@ test.describe('Settings', () => {
     await page.goto('/#/settings')
     await expect(page.getByTestId('settings-page')).toBeVisible()
     await page.getByTestId('setting-locale').selectOption('en')
-    await expect(page.getByTestId('nav-home')).toHaveText('Home')
-    await expect(page.getByTestId('nav-natal')).toHaveText('Map')
+    await expect(page.getByTestId('nav-map')).toHaveText('Map')
+    await expect(page.getByTestId('nav-relationships')).toHaveText('Relationships')
+    await expect(page.getByTestId('chart-context-bar')).toBeHidden()
   })
 
   test('switches locale back to pt-BR', async ({ page }) => {
     await page.goto('/#/settings')
     await page.getByTestId('setting-locale').selectOption('pt-BR')
-    await expect(page.getByTestId('nav-home')).toHaveText('Início')
-    await expect(page.getByTestId('nav-natal')).toHaveText('Mapa')
+    await expect(page.getByTestId('nav-map')).toHaveText('Mapa')
+    await expect(page.getByTestId('nav-relationships')).toHaveText('Relações')
   })
 
   test('changing house system persists across reload', async ({ page }) => {
@@ -46,12 +47,14 @@ test.describe('Settings', () => {
     await page.goto('/#/settings')
 
     await expect.poll(() => page.evaluate(() => document.documentElement.dataset.theme)).toBe('dark')
+    await page.getByTestId('utility-menu-summary').click()
     await page.getByTestId('theme-toggle').click()
     await expect.poll(() => page.evaluate(() => document.documentElement.dataset.theme)).toBe('light')
 
     await page.reload()
     await expect.poll(() => page.evaluate(() => document.documentElement.dataset.theme)).toBe('light')
 
+    await page.getByTestId('utility-menu-summary').click()
     await page.getByTestId('theme-toggle').click()
     await expect.poll(async () =>
       page.evaluate(() => JSON.parse(localStorage.getItem('astrelio_settings')).theme)
@@ -124,7 +127,7 @@ test.describe('Settings', () => {
       }))
     })
 
-    await expect(page.getByTestId('nav-home')).toHaveText('Home')
+    await expect(page.getByTestId('nav-relationships')).toHaveText('Relationships')
     await expect(page.getByTestId('setting-houses')).toHaveValue('whole_sign')
     await expect(page.getByTestId('setting-aspect-set')).toHaveValue('major')
     await expect(page.getByTestId('setting-applying-only')).toBeChecked()

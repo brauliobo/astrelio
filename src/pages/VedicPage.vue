@@ -5,33 +5,51 @@ import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
 import { useSettingsStore } from '../stores/settings.js'
 import { buildVedicChart } from '../lib/vedic/chart.js'
-import { AYANAMSHA_KEYS, VEDIC_BODY_COLORS, VEDIC_BODY_LABELS, VEDIC_BODY_SYMBOLS, VEDIC_HOUSE_MODES } from '../lib/vedic/constants.js'
+import { buildVedicReadingDocument } from '../lib/vedic/reading.js'
+import { AYANAMSHA_KEYS, VEDIC_BODY_COLORS, VEDIC_BODY_SYMBOLS, VEDIC_HOUSE_MODES } from '../lib/vedic/constants.js'
 import { degInSign, signIndex } from '../lib/astro/zodiac.js'
 import Wheel from '../components/chart/Wheel.vue'
+import ReadingDocumentView from '../components/readings/ReadingDocumentView.vue'
 import ModalityRouteSwitch from '../components/modalities/ModalityRouteSwitch.vue'
+
+const props = defineProps({
+  workspace: {
+    type:    Boolean,
+    default: false,
+  },
+  workspaceView: {
+    type:    String,
+    default: 'chart',
+  },
+})
 
 const { t, tm } = useI18n()
 const people   = usePeopleStore()
 const session  = useSessionStore()
 const settings = useSettingsStore()
 
-const person  = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
-const chart   = ref(null)
-const loading = ref(false)
-const error   = ref('')
+const person          = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
+const chart           = ref(null)
+const loading         = ref(false)
+const diagnosticError = ref(null)
 let requestId = 0
 
 const signs            = computed(() => tm('zodiac.signs'))
 const ayanamshaOptions = AYANAMSHA_KEYS
 const houseModes       = VEDIC_HOUSE_MODES
 const nodeModes        = ['mean', 'true']
+const activeView       = computed(() => props.workspaceView)
+const readingDocument = computed(() => chart.value ? buildVedicReadingDocument(chart.value) : null)
+const bodyLabels       = computed(() => Object.fromEntries(
+  chart.value?.positions.map(position => [position.name, t(`planets.${position.name}`)]) || []
+))
 
 watch(
   () => [person.value, settings.vedic.ayanamsha, settings.vedic.houseMode, settings.vedic.nodeMode, settings.vedic.includeModernPlanets],
   async ([activePerson]) => {
-    const currentRequest = ++requestId
-    chart.value          = null
-    error.value          = ''
+    const currentRequest   = ++requestId
+    chart.value            = null
+    diagnosticError.value = null
     if (!activePerson) return
 
     loading.value = true
@@ -39,7 +57,7 @@ watch(
       const nextChart = await buildVedicChart(activePerson, settings.vedic)
       if (currentRequest === requestId) chart.value = nextChart
     } catch (err) {
-      if (currentRequest === requestId) error.value = err?.message || String(err)
+      if (currentRequest === requestId) diagnosticError.value = err
     } finally {
       if (currentRequest === requestId) loading.value = false
     }
@@ -56,6 +74,11 @@ const fmtDegree = (longitude) => {
 
 const jdDate = (jd) =>
   new Date((jd - 2440587.5) * 86_400_000).toLocaleDateString(settings.locale)
+
+const calculatedAt = computed(() => chart.value
+  ? new Date(chart.value.calculatedAt).toLocaleString(settings.locale)
+  : ''
+)
 
 const signLabel      = (longitude) => signs.value[signIndex(longitude)] || ''
 const nakshatraLabel = (nakshatra) =>
@@ -92,13 +115,13 @@ const vedicMaps = computed(() => chart.value ? [{
   showAspects:         false,
   planetSymbols:       VEDIC_BODY_SYMBOLS,
   planetColors:        VEDIC_BODY_COLORS,
-  planetLabels:        VEDIC_BODY_LABELS,
+  planetLabels:        bodyLabels.value,
   planetGlyphRenderer: 'text',
 }] : [])
 
 const placementRows = computed(() => chart.value?.positions.map(position => ({
   name:       position.name,
-  label:      VEDIC_BODY_LABELS[position.name] || position.name,
+  label:      bodyLabels.value[position.name],
   sign:       signLabel(position.longitude),
   degree:     fmtDegree(position.longitude),
   nakshatra:  nakshatraLabel(position.nakshatra),
@@ -108,17 +131,27 @@ const placementRows = computed(() => chart.value?.positions.map(position => ({
 
 const navamsaRows = computed(() => chart.value?.navamsa.map(position => ({
   name:    position.name,
-  label:   VEDIC_BODY_LABELS[position.name] || position.name,
+  label:   bodyLabels.value[position.name],
   rasi:    signs.value[position.rasiSignIndex],
   navamsa: signs.value[position.navamsaSignIndex],
 })) || [])
 
-const dashaRows = computed(() => chart.value?.dashas?.mahadashas.slice(0, 9).map(period => ({
+const dashaRows = computed(() => chart.value?.dashas?.mahadashas.map(period => ({
   lord:   dashaLord(period.lord),
   start:  jdDate(period.startJd),
   end:    jdDate(period.endJd),
   active: chart.value.dashas.active?.mahadasha === period.lord,
 })) || [])
+
+const technicalRows = computed(() => chart.value ? [
+  { label: t('vedic.data.julian_day'), value: chart.value.jdUt.toFixed(6) },
+  { label: t('vedic.data.ayanamsha_value'), value: `${chart.value.ayanamshaValue.toFixed(6)}°` },
+  { label: t('vedic.data.ascendant'), value: `${signLabel(chart.value.ascendant)} ${fmtDegree(chart.value.ascendant)}` },
+  { label: t('vedic.data.midheaven'), value: `${signLabel(chart.value.mc)} ${fmtDegree(chart.value.mc)}` },
+  { label: t('vedic.data.latitude'), value: chart.value.lat.toFixed(4) },
+  { label: t('vedic.data.longitude'), value: chart.value.lon.toFixed(4) },
+  { label: t('vedic.data.calculated_at'), value: calculatedAt.value },
+] : [])
 </script>
 
 <template lang="pug">
@@ -126,37 +159,19 @@ section.vedic-page(data-testid='vedic-page')
   div(v-if='!person' data-testid='no-person')
     p.text-slate-400 {{ t('chart.select_chart') }}
   div.grid.gap-6(v-else)
-    .flex.flex-wrap.items-start.justify-between.gap-3
+    .flex.flex-wrap.items-start.justify-between.gap-3(v-if='!workspace')
       div
         h1.text-2xl.font-semibold.text-slate-100 {{ t('vedic.title', { name: person.name }) }}
         p.text-xs.text-slate-400.mt-1 {{ person.isoLocal }} · {{ person.placeLabel }}
       ModalityRouteSwitch(active='vedic')
 
-    .ui-panel
-      .grid.gap-3(class='md:grid-cols-4')
-        div
-          label.block.text-xs.text-slate-400.mb-1 {{ t('vedic.ayanamsha') }}
-          select.ui-control.ui-control-sm.w-full(v-model='settings.vedic.ayanamsha' data-testid='vedic-ayanamsha')
-            option(v-for='key in ayanamshaOptions' :key='key' :value='key') {{ t(`vedic.ayanamshas.${key}`) }}
-        div
-          label.block.text-xs.text-slate-400.mb-1 {{ t('vedic.house_mode') }}
-          select.ui-control.ui-control-sm.w-full(v-model='settings.vedic.houseMode' data-testid='vedic-house-mode')
-            option(v-for='key in houseModes' :key='key' :value='key') {{ t(`vedic.house_modes.${key}`) }}
-        div
-          label.block.text-xs.text-slate-400.mb-1 {{ t('vedic.node_mode') }}
-          select.ui-control.ui-control-sm.w-full(v-model='settings.vedic.nodeMode' data-testid='vedic-node-mode')
-            option(v-for='key in nodeModes' :key='key' :value='key') {{ t(`vedic.node_modes.${key}`) }}
-        label.flex.items-center.gap-2.text-sm.text-slate-300.self-end
-          input(type='checkbox' v-model='settings.vedic.includeModernPlanets' data-testid='vedic-modern-planets')
-          | {{ t('settings.include_modern_planets') }}
-
     .ui-panel(v-if='loading' data-testid='vedic-loading')
       p.text-sm.text-slate-400 {{ t('vedic.loading') }}
-    .ui-panel(v-else-if='error' data-testid='vedic-error')
-      p.text-sm.text-rose-300 {{ error }}
+    .ui-panel(v-else-if='diagnosticError' data-testid='vedic-error')
+      p.text-sm.text-rose-300 {{ t('vedic.error') }}
     template(v-else-if='chart')
-      .grid.gap-6(class='xl:grid-cols-[minmax(0,1fr)_minmax(552px,552px)_minmax(0,1fr)] xl:items-start')
-        .grid.gap-3.order-2(class='sm:grid-cols-2 xl:order-1 xl:grid-cols-1')
+      template(v-if='activeView === "chart"')
+        .grid.gap-3(class='sm:grid-cols-2 xl:grid-cols-4' data-testid='vedic-summary')
           .rounded.border.p-3(
             v-for='row in summaryRows'
             :key='row.key'
@@ -167,7 +182,7 @@ section.vedic-page(data-testid='vedic-page')
             .mt-1.text-lg.font-semibold.text-slate-100 {{ row.value }}
             .text-xs.text-slate-400.mt-1 {{ row.meta }}
 
-        .ui-panel.order-1.flex.justify-center(class='xl:order-2' data-testid='vedic-chart-panel')
+        .ui-panel.flex.justify-center(data-testid='vedic-chart-panel')
           Wheel(
             :charts='vedicMaps'
             :show-mode-controls='false'
@@ -177,38 +192,85 @@ section.vedic-page(data-testid='vedic-page')
             v-if='vedicMaps.length'
           )
 
-        .grid.gap-6.order-3(class='xl:order-3')
-          .ui-panel
-            h2.text-sm.font-semibold.text-slate-100.mb-3 {{ t('vedic.rasi_positions') }}
-            .overflow-x-auto
-              table.w-full.text-xs(data-testid='vedic-position-table')
-                tbody
-                  tr.border-t(class='border-white/5' v-for='row in placementRows' :key='row.name')
-                    td.py-1.pr-2.text-slate-300 {{ row.label }}
-                    td.py-1.px-2.text-slate-100 {{ row.sign }}
-                    td.py-1.px-2.tabular-nums {{ row.degree }}
-                    td.py-1.px-2.text-slate-400 {{ row.nakshatra }} {{ row.pada }}
-                    td.py-1.pl-2.text-amber-300(v-if='row.retrograde') R
-                    td.py-1.pl-2(v-else)
-          .ui-panel
-            h2.text-sm.font-semibold.text-slate-100.mb-3 {{ t('vedic.navamsa') }}
-            .overflow-x-auto
-              table.w-full.text-xs(data-testid='vedic-navamsa-table')
-                tbody
-                  tr.border-t(class='border-white/5' v-for='row in navamsaRows' :key='row.name')
-                    td.py-1.pr-2.text-slate-300 {{ row.label }}
-                    td.py-1.px-2.text-slate-400 {{ row.rasi }}
-                    td.py-1.pl-2.text-slate-100 {{ row.navamsa }}
+      ReadingDocumentView(
+        v-else-if='activeView === "reading" && readingDocument'
+        :document='readingDocument'
+        data-testid='vedic-reading'
+      )
 
-      .ui-panel
-        h2.text-sm.font-semibold.text-slate-100.mb-3 {{ t('vedic.vimshottari') }}
-        .grid.gap-2(class='md:grid-cols-3' data-testid='vedic-dasha-table')
-          .rounded.border.p-3(
-            v-for='row in dashaRows'
-            :key='row.lord'
-            class='border-white/10 bg-white/5'
-            :class='row.active ? "ring-1 ring-amber-300/40" : ""'
-          )
-            .text-sm.font-semibold.text-slate-100 {{ row.lord }}
-            .text-xs.text-slate-400.mt-1 {{ row.start }} - {{ row.end }}
+      .grid.gap-4(v-else-if='activeView === "data"' data-testid='vedic-data')
+        details.ui-panel(open)
+          summary.cursor-pointer.text-sm.font-semibold.text-slate-100 {{ t('vedic.data.system_controls') }}
+          .grid.gap-3.mt-4(class='md:grid-cols-4')
+            div
+              label.block.text-xs.text-slate-400.mb-1 {{ t('vedic.ayanamsha') }}
+              select.ui-control.ui-control-sm.w-full(v-model='settings.vedic.ayanamsha' data-testid='vedic-ayanamsha')
+                option(v-for='key in ayanamshaOptions' :key='key' :value='key') {{ t(`vedic.ayanamshas.${key}`) }}
+            div
+              label.block.text-xs.text-slate-400.mb-1 {{ t('vedic.house_mode') }}
+              select.ui-control.ui-control-sm.w-full(v-model='settings.vedic.houseMode' data-testid='vedic-house-mode')
+                option(v-for='key in houseModes' :key='key' :value='key') {{ t(`vedic.house_modes.${key}`) }}
+            div
+              label.block.text-xs.text-slate-400.mb-1 {{ t('vedic.node_mode') }}
+              select.ui-control.ui-control-sm.w-full(v-model='settings.vedic.nodeMode' data-testid='vedic-node-mode')
+                option(v-for='key in nodeModes' :key='key' :value='key') {{ t(`vedic.node_modes.${key}`) }}
+            label.flex.items-center.gap-2.text-sm.text-slate-300.self-end
+              input(type='checkbox' v-model='settings.vedic.includeModernPlanets' data-testid='vedic-modern-planets')
+              | {{ t('settings.include_modern_planets') }}
+
+        details.ui-panel(open)
+          summary.cursor-pointer.text-sm.font-semibold.text-slate-100 {{ t('vedic.rasi_positions') }}
+          .overflow-x-auto.mt-4
+            table.w-full.text-xs(data-testid='vedic-position-table')
+              thead
+                tr.text-left.text-slate-400
+                  th.py-1.pr-2(scope='col') {{ t('vedic.data.body') }}
+                  th.py-1.px-2(scope='col') {{ t('vedic.data.sign') }}
+                  th.py-1.px-2(scope='col') {{ t('vedic.data.degree') }}
+                  th.py-1.px-2(scope='col') {{ t('vedic.data.nakshatra') }}
+                  th.py-1.px-2(scope='col') {{ t('vedic.data.pada') }}
+                  th.py-1.pl-2(scope='col') {{ t('vedic.data.motion') }}
+              tbody
+                tr.border-t(class='border-white/5' v-for='row in placementRows' :key='row.name')
+                  td.py-1.pr-2.text-slate-300 {{ row.label }}
+                  td.py-1.px-2.text-slate-100 {{ row.sign }}
+                  td.py-1.px-2.tabular-nums {{ row.degree }}
+                  td.py-1.px-2.text-slate-400 {{ row.nakshatra }}
+                  td.py-1.px-2.tabular-nums.text-slate-400 {{ row.pada }}
+                  td.py-1.pl-2(:class='row.retrograde ? "text-amber-300" : "text-slate-400"')
+                    | {{ t(row.retrograde ? 'vedic.data.retrograde' : 'vedic.data.direct') }}
+
+        details.ui-panel(open)
+          summary.cursor-pointer.text-sm.font-semibold.text-slate-100 {{ t('vedic.navamsa') }}
+          .overflow-x-auto.mt-4
+            table.w-full.text-xs(data-testid='vedic-navamsa-table')
+              thead
+                tr.text-left.text-slate-400
+                  th.py-1.pr-2(scope='col') {{ t('vedic.data.body') }}
+                  th.py-1.px-2(scope='col') {{ t('vedic.data.rasi') }}
+                  th.py-1.pl-2(scope='col') {{ t('vedic.navamsa') }}
+              tbody
+                tr.border-t(class='border-white/5' v-for='row in navamsaRows' :key='row.name')
+                  td.py-1.pr-2.text-slate-300 {{ row.label }}
+                  td.py-1.px-2.text-slate-400 {{ row.rasi }}
+                  td.py-1.pl-2.text-slate-100 {{ row.navamsa }}
+
+        details.ui-panel(open)
+          summary.cursor-pointer.text-sm.font-semibold.text-slate-100 {{ t('vedic.vimshottari') }}
+          .grid.gap-2.mt-4(class='md:grid-cols-3' data-testid='vedic-dasha-table')
+            .rounded.border.p-3(
+              v-for='row in dashaRows'
+              :key='row.lord'
+              class='border-white/10 bg-white/5'
+              :class='row.active ? "ring-1 ring-amber-300/40" : ""'
+            )
+              .text-sm.font-semibold.text-slate-100 {{ row.lord }}
+              .text-xs.text-slate-400.mt-1 {{ row.start }} - {{ row.end }}
+
+        details.ui-panel
+          summary.cursor-pointer.text-sm.font-semibold.text-slate-100 {{ t('vedic.data.technical_details') }}
+          dl.grid.gap-3.mt-4(class='sm:grid-cols-2 lg:grid-cols-3')
+            div(v-for='row in technicalRows' :key='row.label')
+              dt.text-xs.text-slate-400 {{ row.label }}
+              dd.mt-1.text-sm.text-slate-100.tabular-nums {{ row.value }}
 </template>

@@ -13,6 +13,7 @@ defineProps({
 const { t } = useI18n()
 const lineRoles = gate =>
   gate.lines.map(line => `${line.line}: ${lineRoleLabel(t, line.role)}`).join(', ') || '—'
+const planetLabel = planet => t(`planets.${planet}`)
 </script>
 
 <template lang="pug">
@@ -33,6 +34,6 @@ const lineRoles = gate =>
         td.py-2.px-3.text-slate-300 {{ lineRoles(gate) }}
         td.py-2.pl-3.text-slate-400
           span(v-for='activation in gate.activations' :key='`${gate.gate}-${activation.layer}-${activation.planet}`')
-            | {{ valueLabel(t, 'layer', activation.layer) }} {{ activation.planet }} {{ activation.code }} · {{ t('human_design.planet_activation_summary', { planet: activation.planet, layer: valueLabel(t, 'layer', activation.layer), gate: gate.gate }) }}
+            | {{ valueLabel(t, 'layer', activation.layer) }} {{ planetLabel(activation.planet) }} {{ activation.code }} · {{ t('human_design.planet_activation_summary', { planet: planetLabel(activation.planet), layer: valueLabel(t, 'layer', activation.layer), gate: gate.gate }) }}
             br
 </template>

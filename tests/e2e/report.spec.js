@@ -15,6 +15,7 @@ test.describe('Report', () => {
     await expect(page).toHaveURL(/\/report/)
     await expect(page.getByTestId('report-page')).toBeVisible()
     await expect(page.getByTestId('chart-insight')).toBeVisible()
+    await expect(page.getByTestId('reading-document-view')).toBeVisible()
     await expect(page.getByTestId('report-print')).toBeVisible()
   })
 
@@ -48,5 +49,33 @@ test.describe('Report', () => {
 
     await page.reload()
     await expect(page.getByTestId('report-interpretations-section')).toBeHidden()
+  })
+
+  test('resolves Tropical report aliases to the existing report builder', async ({ page }) => {
+    for (const alias of ['astrology', 'tropical']) {
+      await page.goto(`/#/report?modality=${alias}`)
+      await expect(page.locator('[data-modality="tropical"]')).toBeVisible()
+      await expect(page.getByTestId('report-builder')).toBeVisible()
+      await expect(page.getByTestId('reading-document-view')).toBeVisible()
+    }
+  })
+
+  test('renders the async Vedic visual and normalized reading for sidereal aliases', async ({ page }) => {
+    for (const alias of ['vedic', 'sidereal']) {
+      await page.goto(`/#/report?modality=${alias}`)
+      await expect(page.getByTestId('vedic-print-report')).toBeVisible()
+      await expect(page.getByTestId('chart-wheel-svg')).toBeVisible()
+      await expect(page.getByTestId('reading-document-view')).toBeVisible()
+      await expect(page.getByTestId('report-print')).toBeVisible()
+    }
+  })
+
+  test('renders the Human Design visual and normalized reading', async ({ page }) => {
+    await page.goto('/#/report?modality=human-design')
+
+    await expect(page.getByTestId('human-design-print-report')).toBeVisible()
+    await expect(page.getByTestId('bodygraph-svg')).toBeVisible()
+    await expect(page.getByTestId('reading-document-view')).toBeVisible()
+    await expect(page.getByTestId('report-print')).toBeVisible()
   })
 })

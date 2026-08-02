@@ -23,6 +23,7 @@ test.describe('Onboarding flow', () => {
     await expect(page).toHaveURL(/\/natal/)
     await expect(page.getByTestId('natal-page')).toBeVisible()
     await expect(page.getByTestId('chart-wheel')).toBeVisible()
+    await page.getByTestId('natal-view-data').click()
     await expect(page.getByTestId('planet-list')).toBeVisible()
   })
 

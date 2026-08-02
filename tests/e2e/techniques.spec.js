@@ -15,4 +15,17 @@ test.describe('Timing techniques', () => {
     await expect(page.getByTestId('solar-arc-date')).toHaveValue('2032-04-05')
     await expect(page.getByTestId('timing-context-chips')).toContainText('2032-04-05')
   })
+
+  test('owns Human Design transits and correlations behind the modality switch', async ({ page }) => {
+    await page.goto('/#/transits')
+    await expect(page.getByTestId('timing-technique-transits')).toBeVisible()
+    await expect(page.getByTestId('human-design-timing-tools')).toHaveCount(0)
+
+    await page.getByTestId('timing-modality-human-design').click()
+
+    await expect(page.getByTestId('human-design-timing-tools')).toBeVisible()
+    await expect(page.getByTestId('hd-transit-date')).toBeVisible()
+    await expect(page.getByTestId('hd-transit-panel')).toBeVisible()
+    await expect(page.getByTestId('hd-correlations-panel')).toBeVisible()
+  })
 })

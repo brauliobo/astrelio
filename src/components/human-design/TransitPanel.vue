@@ -2,7 +2,10 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { activationCode } from '../../lib/human-design/activations.js'
-import { humanDesignGateLabel as gateLabel } from '../../lib/human-design/labels.js'
+import {
+  humanDesignChannelLabel as channelLabel,
+  humanDesignGateLabel as gateLabel,
+} from '../../lib/human-design/labels.js'
 import DetailTables from './DetailTables.vue'
 
 const props = defineProps({
@@ -12,12 +15,14 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:dateInput', 'now'])
-const { t } = useI18n()
+const { locale, t } = useI18n()
 const activationRows       = computed(() => props.connection?.activationWatch || [])
 const completedChannels    = computed(() => props.connection?.completedChannels || [])
 const activatedNatalGates  = computed(() => props.connection?.activatedNatalGates || [])
-const formatChange         = change => new Date(change.dateMs).toLocaleString()
+const formatChange         = change => new Date(change.dateMs).toLocaleString(locale.value)
 const changeActivationCode = activation => activation ? activationCode(activation) : '—'
+const planetLabel          = planet => t(`planets.${planet}`)
+const completedChannelLabel = channel => `${channel} · ${channelLabel(t, channel)}`
 </script>
 
 <template lang="pug">
@@ -50,7 +55,7 @@ const changeActivationCode = activation => activation ? activationCode(activatio
               th.py-2.pl-3.text-left {{ t('human_design.base') }}
           tbody.divide-y(class='divide-white/10')
             tr(v-for='activation in activationRows' :key='activation.planet')
-              td.py-2.pr-3.text-slate-100 {{ activation.planet }}
+              td.py-2.pr-3.text-slate-100 {{ planetLabel(activation.planet) }}
               td.py-2.px-3.text-amber-200 {{ activationCode(activation) }}
               td.py-2.px-3.text-slate-400 {{ activation.gate }} · {{ gateLabel(t, activation.gate, activation.name) }}
               td.py-2.px-3.text-slate-400 {{ activation.color || '—' }}
@@ -66,7 +71,7 @@ const changeActivationCode = activation => activation ? activationCode(activatio
               v-for='channel in completedChannels'
               :key='channel'
               class='bg-amber-300/10 text-amber-100'
-            ) {{ channel }}
+            ) {{ completedChannelLabel(channel) }}
             span.text-xs.text-slate-500(v-if='!completedChannels.length') —
         .rounded.border.p-3(class='border-white/10 bg-white/5')
           .text-xs.uppercase.text-slate-500 {{ t('human_design.activated_natal_gates') }}
@@ -85,7 +90,7 @@ const changeActivationCode = activation => activation ? activationCode(activatio
           class='border-white/10 bg-white/5'
         )
           .flex.items-center.justify-between.gap-2
-            span.text-slate-200 {{ change.planet }}
+            span.text-slate-200 {{ planetLabel(change.planet) }}
             span.text-slate-500 {{ formatChange(change) }}
           .mt-1.text-slate-400
             | {{ change.fromCode || changeActivationCode(change.from) }} → {{ change.toCode || changeActivationCode(change.to) }}

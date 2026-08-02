@@ -1,26 +1,32 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
-  active: { type: String, default: '' },
-  items:  { type: Array, default: null },
+  active:         { type: String, default: '' },
+  view:           { type: String, default: '' },
+  workspaceOwner: { type: Boolean, default: false },
 })
 
 const { t } = useI18n()
+const workspaceShell = inject('mapWorkspaceShell', false)
 
-const switchItems = computed(() => props.items || [
-  { id: 'astrology',   label: t('modalities.astrology'),    to: { name: 'natal' },        testId: 'modality-astrology' },
-  { id: 'vedic',       label: t('modalities.vedic'),        to: { name: 'vedic' },        testId: 'modality-vedic' },
-  { id: 'humanDesign', label: t('modalities.human_design'), to: { name: 'human-design' }, testId: 'modality-human-design' },
-  { id: 'report',      label: t('report.open'),             to: { name: 'report' },       testId: 'modality-report' },
-])
+const activeView = computed(() => props.view || 'chart')
+const switchItems = computed(() => [
+  { id: 'astrology',   lens: 'astrology',    label: t('modalities.astrology'),    testId: 'modality-astrology' },
+  { id: 'vedic',       lens: 'vedic',        label: t('modalities.vedic'),        testId: 'modality-vedic' },
+  { id: 'humanDesign', lens: 'human-design', label: t('modalities.human_design'), testId: 'modality-human-design' },
+].map(item => ({
+  ...item,
+  to: { name: 'map', params: { lens: item.lens, view: activeView.value } },
+})))
 const activeModality = computed(() => props.active || 'astrology')
+const visible        = computed(() => props.workspaceOwner || !workspaceShell)
 </script>
 
 <template lang="pug">
-nav.modality-switch(:aria-label='t("modalities.switch_aria")' data-testid='modality-switch')
+nav.modality-switch(v-if='visible' :aria-label='t("modalities.switch_aria")' data-testid='modality-switch')
   RouterLink.modality-switch__item(
     v-for='item in switchItems'
     :key='item.id'

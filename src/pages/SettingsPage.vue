@@ -1,5 +1,4 @@
 <script setup>
-import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { SETTING_PRESET_KEYS, useSettingsStore } from '../stores/settings.js'
 import { usePeopleStore } from '../stores/people.js'
@@ -23,49 +22,12 @@ const orbScales  = [
   { value: 1.25, key: 'wide' },
 ]
 
-const labels = {
-  en: {
-    preset:        'Preset',
-    custom:        'Custom',
-    simple:        'Simple',
-    traditional:   'Traditional',
-    modern:        'Modern',
-    technical:     'Technical',
-    print:         'Print',
-    advanced:      'Advanced settings',
-    backup:        'Backup and reset',
-    open:          'Open',
-    glyphRenderer: 'Planet glyphs',
-    glyphSvg:      'SVG symbols',
-    glyphUtf8:     'Unicode symbols',
-    glyphText:     'Text labels',
-  },
-  pt: {
-    preset:        'Predefinição',
-    custom:        'Personalizado',
-    simple:        'Simples',
-    traditional:   'Tradicional',
-    modern:        'Moderno',
-    technical:     'Técnico',
-    print:         'Impressão',
-    advanced:      'Configurações avançadas',
-    backup:        'Backup e redefinição',
-    open:          'Abrir',
-    glyphRenderer: 'Símbolos planetários',
-    glyphSvg:      'Símbolos SVG',
-    glyphUtf8:     'Símbolos Unicode',
-    glyphText:     'Rótulos de texto',
-  },
-}
-
-const copy = computed(() => labels[locale.value === 'pt-BR' ? 'pt' : 'en'])
-
 const onPreset = (e) => {
   settings.applyPreset(e.target.value)
 }
 
 const reset = () => {
-  if (confirm(t('settings.reset') + '?')) {
+  if (confirm(t('settings.reset_confirm'))) {
     people.clear()
     settings.reset()
     locale.value = 'pt-BR'
@@ -85,23 +47,22 @@ section.settings.max-w-lg(data-testid='settings-page')
           @change='onLocale'
           data-testid='setting-locale'
         )
-          option(value='pt-BR') Português (Brasil)
-          option(value='en') English
+          option(value='pt-BR') {{ t('settings.languages.pt_BR') }}
+          option(value='en') {{ t('settings.languages.en') }}
       div
-        label.block.text-xs.text-slate-400.mb-1 {{ copy.preset }}
+        label.block.text-xs.text-slate-400.mb-1 {{ t('settings.preset') }}
         select.ui-control.ui-control-md.w-full(
           :value='settings.activePreset'
           @change='onPreset'
           data-testid='setting-preset'
         )
-          option(value='custom' disabled) {{ copy.custom }}
-          option(v-for='preset in SETTING_PRESET_KEYS' :key='preset' :value='preset') {{ copy[preset] }}
+          option(value='custom' disabled) {{ t('settings.presets.custom') }}
+          option(v-for='preset in SETTING_PRESET_KEYS' :key='preset' :value='preset') {{ t(`settings.presets.${preset}`) }}
     details.rounded-xl.border.p-4(class='border-white/10 bg-night/40')
       summary.flex.cursor-pointer.items-center.justify-between.gap-3.text-sm.font-semibold.text-slate-100(
         data-testid='settings-advanced-summary'
       )
-        span {{ copy.advanced }}
-        span.text-xs.font-normal.text-slate-500 {{ copy.open }}
+        span {{ t('settings.advanced_settings') }}
       .mt-4.grid.gap-4
         div
           label.block.text-xs.text-slate-400.mb-1 {{ t('settings.house_system') }}
@@ -126,14 +87,14 @@ section.settings.max-w-lg(data-testid='settings-page')
           )
             option(v-for='mode in nodeModes' :key='mode' :value='mode') {{ t(`settings.node_modes.${mode}`) }}
         div
-          label.block.text-xs.text-slate-400.mb-1 {{ copy.glyphRenderer }}
+          label.block.text-xs.text-slate-400.mb-1 {{ t('settings.planet_glyphs') }}
           select.ui-control.ui-control-md.w-full(
             v-model='settings.planetGlyphRenderer'
             data-testid='setting-planet-glyph-renderer'
           )
-            option(value='svg') {{ copy.glyphSvg }}
-            option(value='utf8') {{ copy.glyphUtf8 }}
-            option(value='text') {{ copy.glyphText }}
+            option(value='svg') {{ t('settings.glyph_renderers.svg') }}
+            option(value='utf8') {{ t('settings.glyph_renderers.utf8') }}
+            option(value='text') {{ t('settings.glyph_renderers.text') }}
         .grid.gap-3
           h2.text-sm.font-semibold.text-slate-100 {{ t('settings.aspect_options') }}
           div
@@ -157,8 +118,7 @@ section.settings.max-w-lg(data-testid='settings-page')
       summary.flex.cursor-pointer.items-center.justify-between.gap-3.text-sm.font-semibold.text-slate-100(
         data-testid='settings-backup-summary'
       )
-        span {{ copy.backup }}
-        span.text-xs.font-normal.text-slate-500 {{ copy.open }}
+        span {{ t('export.backup.title') }}
       .mt-4.grid.gap-4
         BackupPanel
         button.text-sm.text-rose-300.text-left(

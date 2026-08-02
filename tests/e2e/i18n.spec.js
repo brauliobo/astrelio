@@ -7,7 +7,8 @@ test.describe('i18n', () => {
     const page    = await context.newPage()
 
     await page.goto(baseURL)
-    await expect(page.getByTestId('nav-home')).toHaveText('Home')
+    await expect(page.getByTestId('nav-map')).toHaveText('Map')
+    await page.getByTestId('utility-menu-summary').click()
     await expect(page.getByTestId('locale-select')).toHaveValue('en')
 
     await context.close()
@@ -16,16 +17,16 @@ test.describe('i18n', () => {
   test('en locale loads English nav', async ({ page }) => {
     await seedSettings(page, 'en')
     await page.goto('/')
-    await expect(page.getByTestId('nav-home')).toHaveText('Home')
-    await expect(page.getByTestId('nav-natal')).toHaveText('Map')
+    await expect(page.getByTestId('nav-map')).toHaveText('Map')
+    await expect(page.getByTestId('nav-relationships')).toHaveText('Relationships')
     await expect(page.getByTestId('nav-timing')).toHaveText('Timing')
   })
 
   test('pt-BR locale loads Portuguese nav', async ({ page }) => {
     await seedSettings(page, 'pt-BR')
     await page.goto('/')
-    await expect(page.getByTestId('nav-home')).toHaveText('Início')
-    await expect(page.getByTestId('nav-natal')).toHaveText('Mapa')
+    await expect(page.getByTestId('nav-map')).toHaveText('Mapa')
+    await expect(page.getByTestId('nav-relationships')).toHaveText('Relações')
     await expect(page.getByTestId('nav-timing')).toHaveText('Tempo')
   })
 
@@ -33,9 +34,10 @@ test.describe('i18n', () => {
     await seedPeople(page, [REF_PERSON])
     await seedSession(page, REF_PERSON.id)
     await seedSettings(page, 'pt-BR')
-    await page.goto('/#/natal')
+    await page.goto('/astrelio/map/astrology/data')
     await expect(page.getByTestId('planet-Sun')).toContainText('Sol')
 
+    await page.getByTestId('utility-menu-summary').click()
     await page.getByTestId('locale-select').selectOption('en')
     await expect(page.getByTestId('planet-Sun')).toContainText('Sun')
   })
@@ -44,14 +46,16 @@ test.describe('i18n', () => {
     await seedSettings(page, 'pt-BR')
     await page.goto('/')
 
+    await page.getByTestId('utility-menu-summary').click()
     await page.getByTestId('locale-select').selectOption('en')
-    await expect(page.getByTestId('nav-home')).toHaveText('Home')
+    await expect(page.getByTestId('nav-map')).toHaveText('Map')
     await expect.poll(async () =>
       page.evaluate(() => JSON.parse(localStorage.getItem('astrelio_settings')).locale)
     ).toBe('en')
 
     await page.reload()
+    await page.getByTestId('utility-menu-summary').click()
     await expect(page.getByTestId('locale-select')).toHaveValue('en')
-    await expect(page.getByTestId('nav-natal')).toHaveText('Map')
+    await expect(page.getByTestId('nav-map')).toHaveText('Map')
   })
 })

@@ -18,15 +18,28 @@ test.describe('Mobile workspace surfaces', () => {
   })
 
   test('keeps command palette and inspector within the viewport', async ({ page }) => {
-    await page.goto('/#/natal')
+    await page.setViewportSize({ width: 320, height: 720 })
+    await page.goto('/astrelio/map/astrology/chart')
+    await expectWithinViewport(page, page.getByTestId('shell-utilities'))
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
     await page.getByTestId('command-palette-trigger').click()
     await expect(page.getByTestId('command-palette')).toBeVisible()
     await expectWithinViewport(page, page.getByTestId('command-palette'))
     await page.keyboard.press('Escape')
 
+    await page.getByTestId('utility-menu-summary').click()
+    await expectWithinViewport(page, page.getByTestId('utility-menu'))
+    await expectWithinViewport(page, page.getByTestId('utility-settings'))
+    await page.getByTestId('utility-menu-summary').click()
+
+    await page.getByTestId('workspace-view-data').click()
     await page.locator('[data-aspect-row]').first().click()
     await expect(page.getByTestId('chart-inspector-drawer')).toBeVisible()
     await expectWithinViewport(page, page.getByTestId('chart-inspector-drawer'))
+    await page.getByTestId('chart-inspector-close').click()
+    await page.getByTestId('context-open-inspector').click()
+    await page.getByTestId('chart-inspector-clear').click()
+    await expect(page.getByTestId('chart-inspector-drawer')).toBeHidden()
   })
 
   test('renders map lenses, timing chips, and report controls on narrow screens', async ({ page }) => {

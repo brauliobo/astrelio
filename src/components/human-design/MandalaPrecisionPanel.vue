@@ -9,6 +9,7 @@ const props = defineProps({
 })
 
 const { t } = useI18n()
+const planetLabel = planet => t(`planets.${planet}`)
 
 const rows = computed(() =>
   (props.chart.details?.activations || []).map(activation => {
@@ -43,7 +44,7 @@ const rows = computed(() =>
           th.py-2.pl-3.text-left {{ t('human_design.mandala_progress') }}
       tbody.divide-y(class='divide-white/10')
         tr(v-for='row in rows' :key='`${row.layer}-${row.planet}`')
-          td.py-2.pr-3.text-slate-100 {{ row.planet }}
+          td.py-2.pr-3.text-slate-100 {{ planetLabel(row.planet) }}
           td.py-2.px-3.text-slate-300 {{ humanDesignValueLabel(t, 'layer', row.layer) }}
           td.py-2.px-3.text-amber-200 {{ row.code }}
           td.py-2.px-3.text-slate-400 {{ humanDesignValueLabel(t, 'center', row.center) || '—' }}

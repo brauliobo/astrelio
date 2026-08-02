@@ -5,12 +5,16 @@ import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
 import { useSettingsStore } from '../stores/settings.js'
 import { modalityChart, modalityConnection } from '../lib/modalities/index.js'
-import { humanDesignListLabel } from '../lib/human-design/labels.js'
+import {
+  humanDesignChannelLabel,
+  humanDesignListLabel,
+} from '../lib/human-design/labels.js'
 import Biwheel from '../components/chart/Biwheel.vue'
 import AspectTable from '../components/chart/AspectTable.vue'
 import ComparisonInsightPanel from '../components/chart/ComparisonInsightPanel.vue'
 import BodygraphChart from '../components/human-design/BodygraphChart.vue'
 import InsightPanel from '../components/human-design/InsightPanel.vue'
+import HumanDesignTeamDisclosure from '../components/relationships/HumanDesignTeamDisclosure.vue'
 
 const { t }    = useI18n()
 const people   = usePeopleStore()
@@ -33,6 +37,8 @@ const sharedCenterLabel = computed(() =>
 const openCenterLabel = computed(() =>
   hdConnection.value?.openCenters?.length ? humanDesignListLabel(t, 'center', hdConnection.value.openCenters) : '—'
 )
+const channelLabel = channel => `${channel} · ${humanDesignChannelLabel(t, channel)}`
+const channelListLabel = channels => channels?.length ? channels.map(channelLabel).join(', ') : '—'
 
 const compareWith          = ref(session.comparePersonId)
 const relationshipModality = computed({
@@ -120,9 +126,9 @@ section.synastry-page(data-testid='synastry-page')
           p.text-xs.text-slate-400 {{ t('human_design.shared_centers') }}: {{ sharedCenterLabel }}
           p.text-xs.text-slate-400 {{ t('human_design.open_centers') }}: {{ openCenterLabel }}
           p.text-xs.text-slate-400(data-testid='human-design-connection-theme') {{ t('human_design.connection_theme') }}: {{ hdConnection.connectionTheme }}
-          p.text-xs.text-slate-400 {{ t('human_design.electromagnetic') }}: {{ hdConnection.electromagnetic.join(', ') || '—' }}
-          p.text-xs.text-slate-400 {{ t('human_design.companionship') }}: {{ hdConnection.companionship.join(', ') || '—' }}
-          p.text-xs.text-slate-400 {{ t('human_design.compromise') }}: {{ hdConnection.compromise.map(item => item.channel).join(', ') || '—' }}
+          p.text-xs.text-slate-400 {{ t('human_design.electromagnetic') }}: {{ channelListLabel(hdConnection.electromagnetic) }}
+          p.text-xs.text-slate-400 {{ t('human_design.companionship') }}: {{ channelListLabel(hdConnection.companionship) }}
+          p.text-xs.text-slate-400 {{ t('human_design.compromise') }}: {{ channelListLabel(hdConnection.compromise.map(item => item.channel)) }}
       .ui-panel.mt-6(v-if='hdConnection')
         h2.text-sm.font-semibold.text-slate-100.mb-3 {{ t('human_design.composite_channels') }}
         .grid.gap-2(class='md:grid-cols-2')
@@ -131,6 +137,7 @@ section.synastry-page(data-testid='synastry-page')
             :key='channel.channel'
             class='border-white/10 bg-white/5'
           )
-            .text-slate-100 {{ channel.channel }} · {{ channel.name }}
-            .text-slate-400 {{ channel.centers.join(' / ') }}
+            .text-slate-100 {{ channelLabel(channel.channel) }}
+            .text-slate-400 {{ humanDesignListLabel(t, 'center', channel.centers).replaceAll(', ', ' / ') }}
+      HumanDesignTeamDisclosure(:people='people.sorted')
 </template>

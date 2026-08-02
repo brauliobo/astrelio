@@ -21,6 +21,7 @@ import AspectMatrix from '../components/chart/AspectMatrix.vue'
 import Comparison from '../components/chart/Comparison.vue'
 import Insight from '../components/chart/Insight.vue'
 import ComparisonInsightPanel from '../components/chart/ComparisonInsightPanel.vue'
+import HumanDesignTimingTools from '../components/timing/HumanDesignTimingTools.vue'
 import TimingContextChips from '../components/timing/TimingContextChips.vue'
 
 const props = defineProps({
@@ -45,6 +46,7 @@ const techniqueOptions = [
 
 const knownTechniqueIds = new Set(techniqueOptions.map(option => option.id))
 const localTechnique    = ref('transits')
+const timingModality    = ref('astrology')
 
 const normalizeTechnique = (value) => {
   const normalized = String(value || '')
@@ -257,8 +259,39 @@ section.timing-page(data-testid='timing-page')
   .flex.flex-wrap.items-center.justify-between.gap-3.mb-5
     div
       h1.text-xl.font-semibold.text-slate-100 {{ t('techniques.workspace.title') }}
-      p.text-sm.text-slate-400(v-if='person') {{ t('techniques.workspace.subtitle') }} · {{ person.name }}
-    .inline-flex.flex-wrap.gap-1.rounded-lg.border.p-1(class='border-white/10 bg-white/5' role='tablist' aria-label='Timing techniques')
+      p.text-sm.text-slate-400(v-if='person && timingModality === "astrology"') {{ t('techniques.workspace.subtitle') }} · {{ person.name }}
+      p.text-sm.text-slate-400(v-else-if='person') {{ t('human_design.transits') }} · {{ person.name }}
+    .inline-flex.flex-wrap.gap-1.rounded-lg.border.p-1(
+      class='border-white/10 bg-white/5'
+      role='tablist'
+      :aria-label='t("modalities.switch_aria")'
+      data-testid='timing-modality-switch'
+    )
+      button.rounded-md.px-3.text-xs.font-medium.transition(
+        class='py-1.5'
+        type='button'
+        role='tab'
+        :aria-selected='timingModality === "astrology"'
+        :class='timingModality === "astrology" ? "bg-amber-300 text-slate-950" : "text-slate-300 hover:bg-white/10 hover:text-slate-100"'
+        @click='timingModality = "astrology"'
+        data-testid='timing-modality-astrology'
+      ) {{ t('modalities.astrology') }}
+      button.rounded-md.px-3.text-xs.font-medium.transition(
+        class='py-1.5'
+        type='button'
+        role='tab'
+        :aria-selected='timingModality === "humanDesign"'
+        :class='timingModality === "humanDesign" ? "bg-amber-300 text-slate-950" : "text-slate-300 hover:bg-white/10 hover:text-slate-100"'
+        @click='timingModality = "humanDesign"'
+        data-testid='timing-modality-human-design'
+      ) {{ t('modalities.human_design') }}
+
+  .inline-flex.flex-wrap.gap-1.rounded-lg.border.p-1.mb-5(
+    v-if='timingModality === "astrology"'
+    class='border-white/10 bg-white/5'
+    role='tablist'
+    :aria-label='t("techniques.workspace.tabs_aria")'
+  )
       button.rounded-md.px-3.text-xs.font-medium.transition(
         v-for='option in techniqueOptions'
         :key='option.id'
@@ -271,7 +304,7 @@ section.timing-page(data-testid='timing-page')
       ) {{ option.label() }}
 
   TimingContextChips(
-    v-if='person'
+    v-if='person && timingModality === "astrology"'
     :date-label='activeTimingLabel'
     :contact-count='activeAspectCount'
     :date-text='t("techniques.workspace.active_date")'
@@ -282,7 +315,7 @@ section.timing-page(data-testid='timing-page')
     p.text-slate-400 {{ t('chart.select_chart') }}
 
   template(v-else)
-    section.transits-page(v-if='activeTechnique === "transits"' data-testid='transits-page')
+    section.transits-page(v-if='timingModality === "astrology" && activeTechnique === "transits"' data-testid='transits-page')
       .transit-toolbar
         .transit-toolbar__title
           h2 {{ t('nav.transits') }}
@@ -326,7 +359,7 @@ section.timing-page(data-testid='timing-page')
           :planet-glyph-renderer='settings.planetGlyphRenderer'
         )
 
-    section.progressions-page(v-else-if='activeTechnique === "progressions"' data-testid='progressions-page')
+    section.progressions-page(v-else-if='timingModality === "astrology" && activeTechnique === "progressions"' data-testid='progressions-page')
       .flex.items-center.gap-3.mb-4
         label.text-xs.text-slate-400 {{ t('chart.progression_date') }}
         input.ui-control.ui-control-sm(
@@ -352,7 +385,7 @@ section.timing-page(data-testid='timing-page')
         :planet-glyph-renderer='settings.planetGlyphRenderer'
       )
 
-    section.solar-return(v-else-if='activeTechnique === "solar-return"' data-testid='solar-return-page')
+    section.solar-return(v-else-if='timingModality === "astrology" && activeTechnique === "solar-return"' data-testid='solar-return-page')
       .flex.flex-wrap.items-center.gap-3.mb-4
         label.text-xs.text-slate-400 {{ t('chart.solar_return_year') }}
         input.ui-control.ui-control-sm.w-24(
@@ -373,7 +406,7 @@ section.timing-page(data-testid='timing-page')
         :planet-glyph-renderer='settings.planetGlyphRenderer'
       )
 
-    section.profections-page(v-else-if='activeTechnique === "profections"' data-testid='profections-page')
+    section.profections-page(v-else-if='timingModality === "astrology" && activeTechnique === "profections"' data-testid='profections-page')
       .flex.flex-wrap.items-center.gap-3.mb-4
         label.text-xs.text-slate-400 {{ t('techniques.profections.date') }}
         input.ui-control.ui-control-sm(
@@ -407,7 +440,7 @@ section.timing-page(data-testid='timing-page')
         p.mt-4.text-xs.text-slate-400(data-testid='profection-cycle')
           | {{ t('techniques.profections.cycle', { cycle: profection.cycle }) }}
 
-    section.solar-arc-page(v-else-if='activeTechnique === "solar-arc"' data-testid='solar-arc-page')
+    section.solar-arc-page(v-else-if='timingModality === "astrology" && activeTechnique === "solar-arc"' data-testid='solar-arc-page')
       .flex.flex-wrap.items-center.gap-3.mb-4
         label.text-xs.text-slate-400 {{ t('techniques.solar_arc.date') }}
         input.ui-control.ui-control-sm(
@@ -434,7 +467,7 @@ section.timing-page(data-testid='timing-page')
         :planet-glyph-renderer='settings.planetGlyphRenderer'
       )
 
-    section.lunar-return-page(v-else-if='activeTechnique === "lunar-return"' data-testid='lunar-return-page')
+    section.lunar-return-page(v-else-if='timingModality === "astrology" && activeTechnique === "lunar-return"' data-testid='lunar-return-page')
       .flex.flex-wrap.items-center.gap-3.mb-4
         label.text-xs.text-slate-400 {{ t('techniques.lunar_return.date') }}
         input.ui-control.ui-control-sm(
@@ -461,6 +494,8 @@ section.timing-page(data-testid='timing-page')
         :aspect-options='settings.aspectOptions'
         :planet-glyph-renderer='settings.planetGlyphRenderer'
       )
+
+    HumanDesignTimingTools(v-else-if='timingModality === "humanDesign"' :person='person')
 </template>
 
 <style scoped>

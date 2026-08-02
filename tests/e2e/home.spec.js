@@ -7,20 +7,26 @@ test.describe('Home', () => {
   test('renders brand and nav links', async ({ page }) => {
     await page.goto('/')
     await expect(page.getByTestId('brand')).toHaveText('Astrelio')
-    await expect(page.getByTestId('nav-natal')).toBeVisible()
+    await expect(page.getByTestId('nav-charts')).toBeVisible()
+    await expect(page.getByTestId('nav-map')).toHaveAttribute('href', /\/map\/astrology\/chart$/)
     await expect(page.getByTestId('nav-timing')).toBeVisible()
-    await expect(page.getByTestId('nav-synastry')).toBeVisible()
-    await expect(page.getByTestId('nav-library')).toBeVisible()
-    await expect(page.getByTestId('nav-settings')).toBeVisible()
-    await expect(page.getByTestId('chart-context-bar')).toBeVisible()
+    await expect(page.getByTestId('nav-relationships')).toBeVisible()
+    await expect(page.locator('[data-testid^="nav-"]')).toHaveCount(4)
+    await expect(page.getByTestId('command-palette-trigger')).toBeVisible()
+    await expect(page.getByTestId('utility-settings')).toBeHidden()
+    await page.getByTestId('utility-menu-summary').click()
+    await expect(page.getByTestId('utility-settings')).toBeVisible()
+    await expect(page.getByTestId('chart-context-bar')).toBeHidden()
   })
 
   test('shows timezone in the active chart header context', async ({ page }) => {
     await seedPeople(page, [REF_PERSON])
-    await page.goto('/natal')
+    await page.goto('/astrelio/map/astrology/chart')
 
+    await expect(page.getByTestId('chart-context-bar')).toBeVisible()
     await expect(page.getByTestId('context-birth')).toContainText('America/Sao_Paulo')
     await expect(page.getByTestId('context-birth')).toContainText('UTC-02:00')
+    await expect(page.getByTestId('context-preset')).toContainText('Predefinição')
   })
 
   test('shows empty state when no person saved', async ({ page }) => {

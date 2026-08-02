@@ -8,20 +8,29 @@ test.describe('Natal chart', () => {
     await seedSession(page, REF_PERSON.id)
   })
 
-  test('renders chart wheel and planet table for the reference person', async ({ page }) => {
+  test('separates the direct natal route into chart, reading, and data views', async ({ page }) => {
     await page.goto('/#/natal')
     await expect(page.getByTestId('natal-page')).toBeVisible()
     await expect(page.getByTestId('chart-wheel')).toBeVisible()
-    await expect(page.getByTestId('planet-list')).toBeVisible()
+    await expect(page.getByTestId('natal-view-switch')).toBeVisible()
     await expect(page.locator('[data-testid="chart-insight"][data-panel="left"]')).toBeVisible()
-    await expect(page.locator('[data-testid="chart-insight"][data-panel="right"]')).toBeVisible()
+    await expect(page.locator('[data-testid="chart-insight"][data-panel="right"]')).toHaveCount(0)
 
     // SVG produced by @astrodraw/astrochart
     await expect(page.locator('[data-testid="chart-wheel"] svg')).toBeVisible()
+
+    await page.getByTestId('natal-view-reading').click()
+    await expect(page.getByTestId('reading-document-view')).toBeVisible()
+    await expect(page.getByTestId('chart-wheel')).toHaveCount(0)
+
+    await page.getByTestId('natal-view-data').click()
+    await expect(page.getByTestId('natal-data')).toBeVisible()
+    await expect(page.getByTestId('planet-list')).toBeVisible()
   })
 
   test('displays Aquarius for Sun (1986-02-12 reference)', async ({ page }) => {
     await page.goto('/#/natal')
+    await page.getByTestId('natal-view-data').click()
     const sun = page.getByTestId('planet-Sun')
     await expect(sun).toBeVisible()
     await expect(sun).toContainText(/Aqu[áa]rio|Aquarius/)
@@ -29,17 +38,31 @@ test.describe('Natal chart', () => {
 
   test('displays Cancer for Ascendant', async ({ page }) => {
     await page.goto('/#/natal')
+    await page.getByTestId('natal-view-data').click()
     await expect(page.getByTestId('asc-sign')).toContainText(/C[âa]ncer|Cancer/)
   })
 
   test('displays Taurus for Midheaven', async ({ page }) => {
     await page.goto('/#/natal')
+    await page.getByTestId('natal-view-data').click()
     await expect(page.getByTestId('mc-sign')).toContainText(/Touro|Taurus/)
   })
 
   test('shows moon phase label', async ({ page }) => {
     await page.goto('/#/natal')
+    await page.getByTestId('natal-view-data').click()
     await expect(page.getByTestId('moon-phase')).toBeVisible()
+  })
+
+  test('uses Map-owned workspace controls without duplicating the modality switch', async ({ page }) => {
+    await page.goto('/#/map/astrology/reading')
+
+    await expect(page.getByTestId('map-page')).toHaveAttribute('data-workspace-view', 'reading')
+    await expect(page.getByTestId('reading-document-view')).toBeVisible()
+    await expect(page.getByTestId('modality-switch')).toHaveCount(1)
+    await expect(page.getByTestId('natal-view-switch')).toHaveCount(0)
+    await expect(page.getByTestId('open-report')).toHaveCount(0)
+    await expect(page.getByTestId('natal-page').locator('h1')).toHaveCount(0)
   })
 
   test('reactively updates chart wheel colors when theme changes', async ({ page }) => {
@@ -50,6 +73,7 @@ test.describe('Natal chart', () => {
     const modality   = page.getByTestId('modality-astrology')
     const darkFill   = await sign.evaluate(el => getComputedStyle(el).fill)
 
+    await page.getByTestId('utility-menu-summary').click()
     await page.getByTestId('theme-toggle').click()
     await expect.poll(() => page.evaluate(() => document.documentElement.dataset.theme)).toBe('light')
 

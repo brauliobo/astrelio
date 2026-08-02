@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
   { path: '/',             component: () => import('./pages/HomePage.vue'),         name: 'home',         meta: { workspace: 'library' } },
   { path: '/person/:id',   component: () => import('./pages/PersonPage.vue'),       name: 'person',       meta: { workspace: 'library' } },
-  { path: '/map/:lens?',   component: () => import('./pages/MapPage.vue'),          name: 'map',          meta: { workspace: 'map' } },
+  { path: '/map/:lens?/:view?', component: () => import('./pages/MapPage.vue'),      name: 'map',          meta: { workspace: 'map' } },
   { path: '/natal',        component: () => import('./pages/NatalPage.vue'),        name: 'natal',        meta: { workspace: 'map', modality: 'astrology' } },
   { path: '/vedic',        component: () => import('./pages/VedicPage.vue'),        name: 'vedic',        meta: { workspace: 'map', modality: 'vedic' } },
   { path: '/human-design', component: () => import('./pages/HumanDesignPage.vue'),  name: 'human-design', meta: { workspace: 'map', modality: 'humanDesign' } },

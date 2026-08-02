@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { activationCode } from '../../lib/human-design/activations.js'
 import {
+  humanDesignChannelLabel,
   humanDesignLineKeynoteLabel,
   humanDesignLineRoleLabel,
   humanDesignStreamLabel,
@@ -19,12 +20,12 @@ const query        = ref('')
 const selectedGate = ref(null)
 
 const fallbackLineThemes = [
-  { line: 1, role: 'Foundation', keynote: 'Inquiry', summary: 'Investigates the base pattern before trusting expression.' },
-  { line: 2, role: 'Naturalness', keynote: 'Recognition', summary: 'Works best when an innate gift is recognized without pressure.' },
-  { line: 3, role: 'Adaptation', keynote: 'Feedback', summary: 'Learns through contact, correction, and practical feedback.' },
-  { line: 4, role: 'Influence', keynote: 'Network', summary: 'Carries the gate through trust, repetition, and exchange.' },
-  { line: 5, role: 'Projection', keynote: 'Solution', summary: 'Meets expectations and needs clear boundaries around fixes.' },
-  { line: 6, role: 'Perspective', keynote: 'Modeling', summary: 'Steps back over time to model the mature expression of the gate.' },
+  { line: 1, roleKey: 'foundation', keynoteKey: 'inquiry' },
+  { line: 2, roleKey: 'naturalness', keynoteKey: 'recognition' },
+  { line: 3, roleKey: 'adaptation', keynoteKey: 'feedback' },
+  { line: 4, roleKey: 'influence', keynoteKey: 'network' },
+  { line: 5, roleKey: 'projection', keynoteKey: 'solution' },
+  { line: 6, roleKey: 'perspective', keynoteKey: 'modeling' },
 ]
 
 const gates         = computed(() => props.chart.details?.gates || [])
@@ -45,9 +46,8 @@ const activeGate = computed(() =>
 const activeActivations = computed(() =>
   (activeGate.value?.activations || []).map(activation => ({
     ...activation,
-    code:          activation.code || activationCode(activation),
-    lineDetail:    activation.lineDetail || fallbackLineThemes.find(line => line.line === activation.line) || null,
-    planetMeaning: activation.planetMeaning || `${activation.planet} applies this gate through the ${activation.layer} layer.`,
+    code:       activation.code || activationCode(activation),
+    lineDetail: activation.lineDetail || fallbackLineThemes.find(line => line.line === activation.line) || null,
   }))
 )
 const lineRows = computed(() => {
@@ -60,18 +60,27 @@ const lineRows = computed(() => {
 const harmonicsLabel = computed(() => {
   if (!activeGate.value) return '—'
   if (activeGate.value.harmonicSuggestions?.length) {
-    return activeGate.value.harmonicSuggestions.map(item => `${item.gate} (${item.channel})`).join(', ')
+    return activeGate.value.harmonicSuggestions
+      .map(item => `${item.gate} (${item.channel} · ${humanDesignChannelLabel(t, item.channel)})`)
+      .join(', ')
   }
   return activeGate.value.hangingHarmonics?.join(', ') || activeGate.value.harmonicGates?.join(', ') || '—'
 })
 const streamsLabel = computed(() =>
   (activeGate.value?.library?.streams || []).map(stream => humanDesignStreamLabel(t, stream)).join(', ') || '—'
 )
+const lineRoleLabel = line => line?.roleKey
+  ? t(`human_design.line_roles.${line.roleKey}`)
+  : humanDesignLineRoleLabel(t, line?.role)
+const lineKeynoteLabel = line => line?.keynoteKey
+  ? t(`human_design.line_keynotes.${line.keynoteKey}`)
+  : humanDesignLineKeynoteLabel(t, line?.keynote)
+const planetLabel = planet => t(`planets.${planet}`)
 const activationLineSummary = activation =>
   t('human_design.line_activation_summary', {
     line:    activation.lineDetail?.line || activation.line || '-',
-    role:    humanDesignLineRoleLabel(t, activation.lineDetail?.role),
-    keynote: humanDesignLineKeynoteLabel(t, activation.lineDetail?.keynote),
+    role:    lineRoleLabel(activation.lineDetail),
+    keynote: lineKeynoteLabel(activation.lineDetail),
   })
 
 watch(gates, value => {
@@ -134,11 +143,11 @@ watch(gates, value => {
               th.py-2.pl-3.text-left {{ t('human_design.mandala_precision') }}
           tbody.divide-y(class='divide-white/10')
             tr(v-for='activation in activeActivations' :key='`${activation.layer}-${activation.planet}`')
-              td.py-2.pr-3.text-slate-100 {{ humanDesignValueLabel(t, 'layer', activation.layer) }} {{ activation.planet }} · {{ activation.code }}
+              td.py-2.pr-3.text-slate-100 {{ humanDesignValueLabel(t, 'layer', activation.layer) }} {{ planetLabel(activation.planet) }} · {{ activation.code }}
               td.py-2.px-3.text-slate-300
-                .font-medium.text-slate-200 {{ humanDesignLineRoleLabel(t, activation.lineDetail?.role, t('human_design.line_detail')) }} · {{ humanDesignLineKeynoteLabel(t, activation.lineDetail?.keynote, activation.line) }}
+                .font-medium.text-slate-200 {{ lineRoleLabel(activation.lineDetail) }} · {{ lineKeynoteLabel(activation.lineDetail) }}
                 .text-xs.text-slate-500 {{ activationLineSummary(activation) }}
-              td.py-2.px-3.text-slate-400 {{ t('human_design.planet_activation_summary', { planet: activation.planet, layer: humanDesignValueLabel(t, 'layer', activation.layer), gate: activeGate.gate }) }}
+              td.py-2.px-3.text-slate-400 {{ t('human_design.planet_activation_summary', { planet: planetLabel(activation.planet), layer: humanDesignValueLabel(t, 'layer', activation.layer), gate: activeGate.gate }) }}
               td.py-2.pl-3.text-slate-400
                 template(v-if='activation.mandala')
                   | {{ t('human_design.gate') }} {{ activation.mandala.gateDegrees }}° · {{ t('human_design.line') }} {{ activation.mandala.lineDegrees }}°
@@ -149,5 +158,5 @@ watch(gates, value => {
         .grid.gap-2.mt-3.text-xs.text-slate-400
           p(v-for='line in lineRows' :key='line.line')
             span.text-slate-200 {{ t('human_design.line') }} {{ line.line }}:
-            |  {{ t('human_design.line_lens_summary', { line: line.line, role: humanDesignLineRoleLabel(t, line.role), keynote: humanDesignLineKeynoteLabel(t, line.keynote) }) }} / {{ t('human_design.metadata_pending') }}
+            |  {{ t('human_design.line_lens_summary', { line: line.line, role: lineRoleLabel(line), keynote: lineKeynoteLabel(line) }) }} / {{ t('human_design.metadata_pending') }}
 </template>

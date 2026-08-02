@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { activationCode } from '../../lib/human-design/activations.js'
 import {
+  humanDesignChannelLabel,
   humanDesignCrossTitleLabel,
   humanDesignListLabel,
   humanDesignStreamLabel,
@@ -17,15 +18,11 @@ const props = defineProps({
 
 const { t } = useI18n()
 const variableLabel = variable => {
-  const key        = `human_design.variable_labels.${variable.id}.label`
-  const translated = t(key)
-  return translated === key ? variable.label : translated
+  return t(`human_design.variable_labels.${variable.id}.label`)
 }
-const orientationLabel = orientation => {
-  const key        = `human_design.orientations.${orientation || 'unknown'}`
-  const translated = t(key)
-  return translated === key ? orientation || '-' : translated
-}
+const orientationLabel = orientation => t(`human_design.orientations.${orientation || 'unknown'}`)
+const planetLabel      = planet => t(`planets.${planet}`)
+const channelLabel     = channel => `${channel} · ${humanDesignChannelLabel(t, channel)}`
 
 const planetWeights = {
   Sun:       6,
@@ -74,17 +71,27 @@ const listFromExternal = key => {
   return null
 }
 
-const describeItem = item => {
-  if (typeof item === 'string') return item
-  if (!item) return ''
-  return item.label || item.summary || item.title || item.name || item.text || item.description || String(item.gate || item.channel || '')
+const messageToken = item => {
+  if (!item || typeof item !== 'object') return null
+  if (item.message?.key) return item.message
+  if (item.messageKey) return { key: item.messageKey, params: item.messageParams || item.params || {} }
+  if (item.i18nKey) return { key: item.i18nKey, params: item.params || {} }
+  if (String(item.key || '').startsWith('human_design.')) return item
+  return null
 }
+
+const translatedExternalItems = key => (listFromExternal(key) || [])
+  .map(messageToken)
+  .filter(Boolean)
+  .map(token => t(token.key, token.params || {}))
+
+const describeItem = item => String(item || '')
 
 const topItems = (items, count = 5) => items.filter(Boolean).slice(0, count)
 
 const linePatternItems = computed(() => {
-  const supplied = listFromExternal('linePattern')
-  if (supplied) return topItems(supplied, 6)
+  const supplied = translatedExternalItems('linePattern')
+  if (supplied.length) return topItems(supplied, 6)
 
   const counts = new Map()
   for (const activation of activations.value) {
@@ -104,8 +111,8 @@ const linePatternItems = computed(() => {
 })
 
 const planetWeightItems = computed(() => {
-  const supplied = listFromExternal('planetWeighting')
-  if (supplied) return topItems(supplied)
+  const supplied = translatedExternalItems('planetWeighting')
+  if (supplied.length) return topItems(supplied)
 
   return activations.value
     .map(activation => ({
@@ -115,7 +122,7 @@ const planetWeightItems = computed(() => {
     .sort((left, right) => right.weight - left.weight || String(left.planet).localeCompare(String(right.planet)))
     .slice(0, 7)
     .map(activation => t('human_design.correlations.planet_weight_item', {
-      planet: activation.planet,
+      planet: planetLabel(activation.planet),
       gate:   activation.gate,
       line:   activation.line || '-',
       weight: activation.weight,
@@ -123,25 +130,25 @@ const planetWeightItems = computed(() => {
 })
 
 const harmonicItems = computed(() => {
-  const supplied = listFromExternal('harmonicCompletion')
-  if (supplied) return topItems(supplied)
+  const supplied = translatedExternalItems('harmonicCompletion')
+  if (supplied.length) return topItems(supplied)
 
   const transitCompletions = (props.transitConnection?.completedChannels || [])
-    .map(channel => t('human_design.correlations.transit_completion_item', { channel }))
+    .map(channel => t('human_design.correlations.transit_completion_item', { channel: channelLabel(channel) }))
   const hanging = gates.value
     .flatMap(gate => (gate.harmonicSuggestions || []).map(harmonic =>
       t('human_design.correlations.harmonic_item', {
         gate:     gate.gate,
         harmonic: harmonic.gate,
-        channel:  harmonic.channel,
+        channel:  channelLabel(harmonic.channel),
       })
     ))
   return topItems([...transitCompletions, ...hanging])
 })
 
 const circuitItems = computed(() => {
-  const supplied = listFromExternal('circuitBalance')
-  if (supplied) return topItems(supplied)
+  const supplied = translatedExternalItems('circuitBalance')
+  if (supplied.length) return topItems(supplied)
 
   const groups = new Map()
   for (const channel of channels.value) {
@@ -161,8 +168,8 @@ const circuitItems = computed(() => {
 })
 
 const crossItems = computed(() => {
-  const supplied = listFromExternal('crossResonance')
-  if (supplied) return topItems(supplied)
+  const supplied = translatedExternalItems('crossResonance')
+  if (supplied.length) return topItems(supplied)
 
   const crossGates      = props.chart.incarnationCross?.gates || []
   const transitGates    = new Set(props.transitChart?.gates || [])
@@ -179,8 +186,8 @@ const crossItems = computed(() => {
 })
 
 const variableItems = computed(() => {
-  const supplied = listFromExternal('variableConsistency')
-  if (supplied) return topItems(supplied)
+  const supplied = translatedExternalItems('variableConsistency')
+  if (supplied.length) return topItems(supplied)
 
   const variables = props.chart.variables || []
   const left      = variables.filter(variable => variable.orientation === 'left').length
@@ -198,8 +205,8 @@ const variableItems = computed(() => {
 })
 
 const relationshipItems = computed(() => {
-  const supplied = listFromExternal('relationshipOverlays')
-  if (supplied) return topItems(supplied)
+  const supplied = translatedExternalItems('relationshipOverlays')
+  if (supplied.length) return topItems(supplied)
 
   const openCenters = centers.value.filter(center => !center.defined).map(center => center.center)
   const hanging     = gates.value.filter(gate => gate.isHanging).map(gate => gate.gate)
@@ -211,8 +218,8 @@ const relationshipItems = computed(() => {
 })
 
 const transitClusterItems = computed(() => {
-  const supplied = listFromExternal('transitThemeClustering')
-  if (supplied) return topItems(supplied)
+  const supplied = translatedExternalItems('transitThemeClustering')
+  if (supplied.length) return topItems(supplied)
 
   const rows     = props.transitConnection?.activationWatch || props.transitChart?.details?.activations || []
   const byCenter = new Map()
@@ -229,22 +236,22 @@ const transitClusterItems = computed(() => {
 })
 
 const astrologyBridgeItems = computed(() => {
-  const supplied = listFromExternal('astrologyBridge')
-  if (supplied) return topItems(supplied)
+  const supplied = translatedExternalItems('astrologyBridge')
+  if (supplied.length) return topItems(supplied)
 
   const rows = props.transitConnection?.activationWatch?.length
     ? props.transitConnection.activationWatch
     : activations.value
   return rows.slice(0, 7).map(row => t('human_design.correlations.astrology_bridge_item', {
-    planet: row.planet,
+    planet: planetLabel(row.planet),
     code:   row.code || activationCode(row),
     gate:   row.gate,
   }))
 })
 
 const diaryItems = computed(() => {
-  const supplied = listFromExternal('diaryCorrelations')
-  if (supplied) return topItems(supplied)
+  const supplied = translatedExternalItems('diaryCorrelations')
+  if (supplied.length) return topItems(supplied)
 
   const centerGroups = new Map()
   for (const gate of gates.value) {
