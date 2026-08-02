@@ -5,6 +5,8 @@ import { describe, expect, it, vi } from 'vitest'
 import AspectTable from '../../../src/components/chart/AspectTable.vue'
 import Wheel from '../../../src/components/chart/Wheel.vue'
 import PlanetList from '../../../src/components/chart/PlanetList.vue'
+import en from '../../../src/i18n/en.json'
+import ptBR from '../../../src/i18n/pt-BR.json'
 
 vi.mock('../../../src/components/chart/DisplayMode.vue', () => ({
   default: {
@@ -17,16 +19,19 @@ vi.mock('../../../src/components/chart/DisplayMode.vue', () => ({
 
 const messages = {
   en: {
+    ...en,
     analysis: {
       house_n: 'House {house}',
     },
     common: { all: 'All' },
     chart:  {
+      ...en.chart,
       asc:          'ASC',
       mc:           'MC',
       house_system: 'House',
       summary:      'Summary',
       wheel_accessibility: {
+        ...en.chart.wheel_accessibility,
         chart_shadow:             'Chart shadow',
         house_inner_boundary:     'House ring inner boundary',
         house_outer_boundary:     'House ring outer boundary',
@@ -77,14 +82,17 @@ const messages = {
     },
   },
   'pt-BR': {
+    ...ptBR,
     analysis: {
       house_n: 'Casa {house}',
     },
     chart: {
+      ...ptBR.chart,
       asc:           'ASC',
       mc:            'MC',
       transit_orbit: 'Trânsitos',
       wheel_accessibility: {
+        ...ptBR.chart.wheel_accessibility,
         chart_shadow:             'Sombra do mapa',
         house_inner_boundary:     'Limite interno do anel de casas',
         house_outer_boundary:     'Limite externo do anel de casas',

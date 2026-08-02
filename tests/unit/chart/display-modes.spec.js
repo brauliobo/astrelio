@@ -4,16 +4,20 @@ import { createI18n } from 'vue-i18n'
 import { describe, expect, it, vi } from 'vitest'
 import Wheel from '../../../src/components/chart/Wheel.vue'
 import { CENTER, WHEEL_RADII } from '../../../src/components/chart/wheel/geometry.js'
+import en from '../../../src/i18n/en.json'
 
 const messages = {
   en: {
+    ...en,
     chart: {
+      ...en.chart,
       display_mode:            'Display',
       planetarium_aria:        '3D planetarium with the Sun centered inside the chart wheel',
       planetarium_unavailable: '3D planetarium unavailable',
       transit_orbit:           'Transits',
       view_mode:               'Chart view',
       wheel_accessibility: {
+        ...en.chart.wheel_accessibility,
         chart_shadow:             'Chart shadow',
         house_inner_boundary:     'House ring inner boundary',
         house_outer_boundary:     'House ring outer boundary',

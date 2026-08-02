@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { wheelHighlight } from '../../../lib/chart/highlight.js'
 import { WHEEL_RADII, longitudeLabel, norm360, polarPoint } from './geometry.js'
 
@@ -8,6 +9,8 @@ const props = defineProps({
   highlightedWheel: { type: Object, default: null },
 })
 const emit = defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
+const { t, tm } = useI18n()
+const localizedLongitude = longitude => longitudeLabel(longitude, tm('zodiac.signs'))
 
 const ticks = computed(() =>
   Array.from({ length: 360 }, (_, degree) => {
@@ -24,14 +27,14 @@ const ticks = computed(() =>
       stroke:  isSign ? 'var(--chart-cusp-angle)' : 'var(--chart-ink-muted)',
       width:   isSign ? 1.35 : isDecan ? 0.8 : isFive ? 0.55 : 0.35,
       opacity: isSign ? 0.9 : isDecan ? 0.5 : isFive ? 0.34 : 0.18,
-      title:   `${degree}° wheel tick: ${longitudeLabel(degree)}`,
+      title:   t('chart.wheel_details.titles.tick_position', { degree, longitude: localizedLongitude(degree) }),
       focusable: isSign || isDecan || isFive,
       payload: wheelHighlight('tick', `tick-${degree}`, {
         degree,
-        title:   `${degree}° tick`,
+        title:   t('chart.wheel_details.titles.tick', { degree }),
         details: [
-          { label: 'Longitude', value: longitudeLabel(degree) },
-          { label: 'Scale', value: isSign ? 'Sign boundary' : isDecan ? 'Decan marker' : isFive ? 'Five-degree marker' : 'Degree marker' },
+          { label: t('chart.wheel_details.labels.longitude'), value: localizedLongitude(degree) },
+          { label: t('chart.wheel_details.labels.scale'), value: t(`chart.wheel_details.values.${isSign ? 'sign_boundary' : isDecan ? 'decan_marker' : isFive ? 'five_degree_marker' : 'degree_marker'}`) },
         ],
       }),
     }

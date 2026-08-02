@@ -30,6 +30,11 @@ const sectors = computed(() =>
     const start = norm360(index * (360 / 27) + props.wheelShift)
     const end   = norm360((index + 1) * (360 / 27) + props.wheelShift)
     const label = polarPoint((WHEEL_RADII.zodiacOuter + 210) / 2, index * (360 / 27) + (360 / 54) + props.wheelShift)
+    const title = t(`vedic.nakshatras.${key}`)
+    const span  = t('chart.wheel_details.span_value', {
+      start: `${(index * (360 / 27)).toFixed(2)}°`,
+      end:   `${((index + 1) * (360 / 27)).toFixed(2)}°`,
+    })
     return {
       key,
       index,
@@ -39,13 +44,13 @@ const sectors = computed(() =>
       symbol:   labelFor(key),
       fill:     fills[index % fills.length],
       fontSize: 6.7,
-      title:    key.replaceAll('_', ' '),
+      title,
       payload:  wheelHighlight('nakshatra', `nakshatra-${index}`, {
         index,
-        title:   key.replaceAll('_', ' '),
+        title,
         details: [
-          { label: 'Span', value: `${(index * (360 / 27)).toFixed(2)}° to ${((index + 1) * (360 / 27)).toFixed(2)}°` },
-          { label: 'Mode', value: 'Vedic lunar mansion' },
+          { label: t('chart.wheel_details.labels.span'), value: span },
+          { label: t('chart.wheel_details.labels.mode'), value: t('chart.wheel_details.values.vedic_lunar_mansion') },
         ],
       }),
     }

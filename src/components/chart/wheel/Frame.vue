@@ -17,8 +17,8 @@ const rings = computed(() => [
     fill:    'var(--chart-zodiac-fill-b)',
     stroke:  'var(--chart-frame-stroke)',
     width:   2.2,
-    title:   'Zodiac ring',
-    details: [{ label: 'Layer', value: 'Signs and degree ruler' }],
+    title:   t('chart.wheel_details.titles.zodiac_ring'),
+    details: [{ label: t('chart.wheel_details.labels.layer'), value: t('chart.wheel_details.values.signs_degree_ruler') }],
   },
   {
     id:      'inner-zodiac-bg',
@@ -27,7 +27,7 @@ const rings = computed(() => [
     stroke:  'var(--chart-ink-muted)',
     width:   1.25,
     title:   t('chart.wheel_accessibility.zodiac_inner_boundary'),
-    details: [{ label: 'Layer', value: 'Zodiac to houses' }],
+    details: [{ label: t('chart.wheel_details.labels.layer'), value: t('chart.wheel_details.values.zodiac_to_houses') }],
   },
   {
     id:      'house-ring-bg',
@@ -35,8 +35,8 @@ const rings = computed(() => [
     fill:    'var(--chart-house-fill-a)',
     stroke:  'var(--chart-ink-muted)',
     width:   1,
-    title:   'House ring',
-    details: [{ label: 'Layer', value: 'House sectors and cusps' }],
+    title:   t('chart.wheel_details.titles.house_ring'),
+    details: [{ label: t('chart.wheel_details.labels.layer'), value: t('chart.wheel_details.values.house_sectors_cusps') }],
   },
   {
     id:      'aspect-center-bg',
@@ -44,8 +44,8 @@ const rings = computed(() => [
     fill:    'var(--chart-house-center)',
     stroke:  'var(--chart-frame-stroke)',
     width:   1.8,
-    title:   'Aspect center',
-    details: [{ label: 'Layer', value: 'Aspect geometry and chart center' }],
+    title:   t('chart.wheel_details.titles.aspect_center'),
+    details: [{ label: t('chart.wheel_details.labels.layer'), value: t('chart.wheel_details.values.aspect_geometry_center') }],
   },
 ])
 

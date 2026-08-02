@@ -133,14 +133,14 @@ export const ZODIAC_SIGN_NAMES = [
   'Pisces',
 ]
 
-export const longitudeLabel = (longitude) => {
+export const longitudeLabel = (longitude, signNames = ZODIAC_SIGN_NAMES) => {
   const normalized = norm360(longitude)
   const signIndex  = Math.floor(normalized / 30)
   const rawDegree  = normalized % 30
   const degree     = Math.floor(rawDegree)
   const minute     = Math.floor((rawDegree - degree) * 60)
 
-  return `${degree}°${minute.toString().padStart(2, '0')} ${ZODIAC_SIGN_NAMES[signIndex]}`
+  return `${degree}°${minute.toString().padStart(2, '0')} ${signNames[signIndex]}`
 }
 
 export const polarPoint = (radius, longitude, cx = CENTER, cy = CENTER) => {

@@ -11,7 +11,8 @@ const props = defineProps({
   highlightedWheel: { type: Object, default: null },
 })
 const emit = defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
-const { t } = useI18n()
+const { t, tm } = useI18n()
+const localizedLongitude = longitude => longitudeLabel(longitude, tm('zodiac.signs'))
 
 const ANGLE_AXIS_STROKES = {
   0: 'var(--chart-angle-asc, var(--chart-angle-accent))',
@@ -31,14 +32,14 @@ const cusps = computed(() =>
       outer:   polarPoint(WHEEL_RADII.zodiacInner, longitude),
       stroke:  angleStroke || 'var(--chart-cusp-line)',
       opacity: isAngle ? 0.74 : 0.46,
-      title:   `House ${index + 1} cusp: ${longitudeLabel(cusp)}`,
+      title:   t('chart.wheel_details.titles.house_cusp_position', { house: index + 1, longitude: localizedLongitude(cusp) }),
       payload: wheelHighlight('cusp', `cusp-${index + 1}`, {
         house:     index + 1,
         longitude: cusp,
-        title:     `House ${index + 1} cusp`,
+        title:     t('chart.wheel_details.titles.house_cusp', { house: index + 1 }),
         details:   [
-          { label: 'Longitude', value: longitudeLabel(cusp) },
-          { label: 'Boundary', value: `Starts house ${index + 1}` },
+          { label: t('chart.wheel_details.labels.longitude'), value: localizedLongitude(cusp) },
+          { label: t('chart.wheel_details.labels.boundary'), value: t('chart.wheel_details.values.starts_house', { house: index + 1 }) },
         ],
       }),
       width:   isAngle ? 1.75 : 0.75,
@@ -53,17 +54,21 @@ const sectors = computed(() =>
     end:      norm360(props.cusps[(index + 1) % 12] + props.wheelShift),
     midpoint: midpointLongitude(cusp, props.cusps[(index + 1) % 12]),
     fill:     index % 2 === 0 ? 'var(--chart-house-fill-a)' : 'var(--chart-house-fill-b)',
-    title:    `House ${index + 1}: ${longitudeLabel(cusp)} to ${longitudeLabel(props.cusps[(index + 1) % 12])}`,
+    title:    t('chart.wheel_details.titles.house_span', {
+      house: index + 1,
+      start: localizedLongitude(cusp),
+      end:   localizedLongitude(props.cusps[(index + 1) % 12]),
+    }),
     payload:  wheelHighlight('house', `house-${index + 1}`, {
       house:     index + 1,
       start:     cusp,
       end:       props.cusps[(index + 1) % 12],
       midpoint:  midpointLongitude(cusp, props.cusps[(index + 1) % 12]),
-      title:     `House ${index + 1}`,
+      title:     t('chart.wheel_details.titles.house', { house: index + 1 }),
       details:   [
-        { label: 'Cusp', value: longitudeLabel(cusp) },
-        { label: 'Next cusp', value: longitudeLabel(props.cusps[(index + 1) % 12]) },
-        { label: 'Midpoint', value: longitudeLabel(midpointLongitude(cusp, props.cusps[(index + 1) % 12])) },
+        { label: t('chart.wheel_details.labels.cusp'), value: localizedLongitude(cusp) },
+        { label: t('chart.wheel_details.labels.next_cusp'), value: localizedLongitude(props.cusps[(index + 1) % 12]) },
+        { label: t('chart.wheel_details.labels.midpoint'), value: localizedLongitude(midpointLongitude(cusp, props.cusps[(index + 1) % 12])) },
       ],
     }),
   }))

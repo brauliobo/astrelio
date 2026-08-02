@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { wheelHighlight } from '../../../lib/chart/highlight.js'
 import { WHEEL_RADII, longitudeLabel, midpointLongitude, norm360, polarPoint } from './geometry.js'
 
@@ -9,6 +10,8 @@ const props = defineProps({
   highlightedWheel: { type: Object, default: null },
 })
 const emit = defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
+const { t, tm } = useI18n()
+const localizedLongitude = longitude => longitudeLabel(longitude, tm('zodiac.signs'))
 
 const labels = computed(() =>
   props.cusps.map((cusp, index) => {
@@ -19,14 +22,14 @@ const labels = computed(() =>
       index,
       point,
       label,
-      title:   `House ${label}: midpoint ${longitudeLabel(longitude)}`,
+      title:   t('chart.wheel_details.titles.house_midpoint', { house: label, longitude: localizedLongitude(longitude) }),
       payload: wheelHighlight('house', `house-${label}`, {
         house:    index + 1,
         midpoint: longitude,
-        title:    `House ${label}`,
+        title:    t('chart.wheel_details.titles.house', { house: label }),
         details:  [
-          { label: 'Midpoint', value: longitudeLabel(longitude) },
-          { label: 'Action', value: 'House label and sector' },
+          { label: t('chart.wheel_details.labels.midpoint'), value: localizedLongitude(longitude) },
+          { label: t('chart.wheel_details.labels.action'), value: t('chart.wheel_details.values.house_label_sector') },
         ],
       }),
     }

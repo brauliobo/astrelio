@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import SegmentRing from './SegmentRing.vue'
 import { wheelHighlight } from '../../../lib/chart/highlight.js'
-import { CENTER, WHEEL_RADII, ZODIAC_SIGN_NAMES, ZODIAC_SIGNS, polarPoint, norm360 } from './geometry.js'
+import { CENTER, WHEEL_RADII, ZODIAC_SIGNS, polarPoint, norm360 } from './geometry.js'
 
 const props = defineProps({
   wheelShift:       { type: Number, required: true },
@@ -24,6 +24,8 @@ const sectors = computed(() =>
     const start = norm360(index * 30 + props.wheelShift)
     const end   = norm360((index + 1) * 30 + props.wheelShift)
     const label = polarPoint((WHEEL_RADII.zodiacInner + WHEEL_RADII.zodiacOuter) / 2, index * 30 + 15 + props.wheelShift)
+    const name  = t(`zodiac.signs.${index}`)
+    const span  = t('chart.wheel_details.span_value', { start: `${index * 30}°`, end: `${(index + 1) * 30}°` })
     return {
       symbol,
       index,
@@ -31,14 +33,14 @@ const sectors = computed(() =>
       end,
       label,
       fill:  sectorFills[index % sectorFills.length],
-      title: `${ZODIAC_SIGN_NAMES[index]} (${symbol})`,
+      title: `${name} (${symbol})`,
       payload: wheelHighlight('sign', `sign-${index}`, {
         signIndex: index,
         symbol,
-        title:     `${ZODIAC_SIGN_NAMES[index]} ${symbol}`,
+        title:     `${name} ${symbol}`,
         details:   [
-          { label: 'Span', value: `${index * 30}° to ${(index + 1) * 30}°` },
-          { label: 'Mode', value: 'Zodiac sign sector' },
+          { label: t('chart.wheel_details.labels.span'), value: span },
+          { label: t('chart.wheel_details.labels.mode'), value: t('chart.wheel_details.values.zodiac_sign_sector') },
         ],
       }),
     }

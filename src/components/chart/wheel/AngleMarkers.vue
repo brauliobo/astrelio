@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { wheelHighlight } from '../../../lib/chart/highlight.js'
 import { VIEWBOX_SIZE, WHEEL_RADII, longitudeLabel, norm360, polarPoint, radialTrianglePath } from './geometry.js'
 
@@ -10,12 +11,14 @@ const props = defineProps({
   highlightedWheel: { type: Object, default: null },
 })
 const emit = defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
+const { t, tm } = useI18n()
+const localizedLongitude = longitude => longitudeLabel(longitude, tm('zodiac.signs'))
 
 const ANGLE_MARKERS = [
-  { key: 'asc', source: 'asc', label: 'AS', name: 'Ascendant', offset: 0, accent: 'var(--chart-angle-asc, var(--chart-angle-accent))', primary: true },
-  { key: 'desc', source: 'asc', label: 'DS', name: 'Descendant', offset: 180, accent: 'var(--chart-ink-muted)', primary: false },
-  { key: 'mc', source: 'mc', label: 'MC', name: 'Midheaven', offset: 0, accent: 'var(--chart-angle-mc, var(--chart-angle-accent))', primary: true },
-  { key: 'ic', source: 'mc', label: 'IC', name: 'Imum Coeli', offset: 180, accent: 'var(--chart-ink-muted)', primary: false },
+  { key: 'asc', source: 'asc', label: 'AS', offset: 0, accent: 'var(--chart-angle-asc, var(--chart-angle-accent))', primary: true },
+  { key: 'desc', source: 'asc', label: 'DS', offset: 180, accent: 'var(--chart-ink-muted)', primary: false },
+  { key: 'mc', source: 'mc', label: 'MC', offset: 0, accent: 'var(--chart-angle-mc, var(--chart-angle-accent))', primary: true },
+  { key: 'ic', source: 'mc', label: 'IC', offset: 180, accent: 'var(--chart-ink-muted)', primary: false },
 ]
 const MARKER_OFFSET = {
   tickInner:      -7,
@@ -45,16 +48,20 @@ const markerFromConfig = (marker, angleLongitudes) => {
   return {
     ...marker,
     longitude,
-    title:      `${marker.label}: ${marker.name} ${longitudeLabel(baseLongitude + marker.offset)}`,
+    title:      t('chart.wheel_details.titles.angle_position', {
+      label: marker.label,
+      name:  t(`chart.wheel_details.angles.${marker.key}`),
+      longitude: localizedLongitude(baseLongitude + marker.offset),
+    }),
     payload:    wheelHighlight('angle', marker.key, {
       angle:     marker.key,
       label:     marker.label,
-      name:      marker.name,
+      name:      t(`chart.wheel_details.angles.${marker.key}`),
       longitude: baseLongitude + marker.offset,
-      title:     `${marker.label} ${marker.name}`,
+      title:     `${marker.label} ${t(`chart.wheel_details.angles.${marker.key}`)}`,
       details:   [
-        { label: 'Longitude', value: longitudeLabel(baseLongitude + marker.offset) },
-        { label: 'Axis', value: marker.source === 'asc' ? 'Ascendant / Descendant' : 'Midheaven / Imum Coeli' },
+        { label: t('chart.wheel_details.labels.longitude'), value: localizedLongitude(baseLongitude + marker.offset) },
+        { label: t('chart.wheel_details.labels.axis'), value: t(`chart.wheel_details.values.${marker.source}_axis`) },
       ],
     }),
     inner:      markerPoint(MARKER_OFFSET.tickInner, longitude),
