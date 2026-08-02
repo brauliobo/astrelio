@@ -157,7 +157,7 @@ describe('Vedic workspace page', () => {
     expect(wrapper.get('[data-testid="vedic-rasi-panel"] [data-testid="workspace-reference-chart"]').exists()).toBe(true)
     expect(wrapper.getComponent(Wheel).props()).toMatchObject({
       displayMode:               'clean',
-      selectionSummaryPlacement: 'below',
+      selectionSummaryPlacement: 'floating',
       showModeControls:          false,
       showNakshatraRing:         false,
       showSelectionSummary:      true,

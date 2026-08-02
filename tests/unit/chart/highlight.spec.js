@@ -7,6 +7,7 @@ import {
   humanDesignHighlight,
   normalizeHighlight,
   sameHighlight,
+  viewportRect,
 } from '../../../src/lib/chart/highlight.js'
 
 describe('chart highlight contract', () => {
@@ -87,6 +88,28 @@ describe('chart highlight contract', () => {
         chart,
         pinned: true,
         highlight,
+      })
+    } finally {
+      window.removeEventListener(CHART_HIGHLIGHT_EVENT, listener)
+    }
+  })
+
+  it('keeps viewport anchors outside normalized highlight identity', () => {
+    const highlight = { bodies: ['Sun'], anchor: { left: 1 } }
+    const anchor    = viewportRect({ left: 10, top: 20, right: 30, bottom: 40, width: 20, height: 20 })
+
+    expect(normalizeHighlight(highlight)).not.toHaveProperty('anchor')
+    expect(sameHighlight(highlight, { bodies: ['Sun'], anchor: { left: 999 } })).toBe(true)
+
+    const listener = vi.fn()
+    window.addEventListener(CHART_HIGHLIGHT_EVENT, listener)
+    try {
+      broadcastChartHighlight({ highlight, anchor })
+      expect(listener.mock.calls[0][0].detail).toEqual({
+        highlight,
+        anchor,
+        pinned: false,
+        chart:  null,
       })
     } finally {
       window.removeEventListener(CHART_HIGHLIGHT_EVENT, listener)

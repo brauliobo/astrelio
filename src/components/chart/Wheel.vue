@@ -55,7 +55,7 @@ const props = defineProps({
   selectionSummaryPlacement: {
     type:      String,
     default:   'overlay',
-    validator: value => ['overlay', 'below', 'hidden'].includes(value),
+    validator: value => ['overlay', 'floating', 'below', 'hidden'].includes(value),
   },
   zodiacSymbols:        { type: Array, default: null },
   planetGlyphRenderer:  { type: String, default: null },
@@ -69,6 +69,9 @@ const hoverHighlight        = ref(null)
 const pinnedHighlight       = ref(null)
 const sharedHoverHighlight  = ref(null)
 const sharedPinnedHighlight = ref(null)
+const sharedHoverAnchor     = ref(null)
+const sharedPinnedAnchor    = ref(null)
+const stage                 = ref(null)
 const localDisplayMode      = ref('')
 const isSmallScreen         = ref(false)
 const showExteriorOrbit     = ref(false)
@@ -123,6 +126,12 @@ const hasExternalHighlight = computed(() =>
 const localHighlight = computed(() =>
   hoverHighlight.value || pinnedHighlight.value || sharedHoverHighlight.value || sharedPinnedHighlight.value
 )
+const activeAnchor = computed(() => {
+  if (hoverHighlight.value || pinnedHighlight.value) return null
+  if (sharedHoverHighlight.value) return sharedHoverAnchor.value
+  if (sharedPinnedHighlight.value) return sharedPinnedAnchor.value
+  return null
+})
 const activeBodies = computed(() =>
   hasExternalHighlight.value ? props.highlightedBodies : localHighlight.value?.bodies || []
 )
@@ -159,11 +168,16 @@ const onSharedHighlight = (event) => {
   const highlight = event.detail?.highlight ? normalizeHighlight(event.detail.highlight) : null
   if (event.detail?.pinned) {
     sharedPinnedHighlight.value = highlight
+    sharedPinnedAnchor.value    = highlight ? event.detail?.anchor || null : null
     sharedHoverHighlight.value  = null
+    sharedHoverAnchor.value     = null
   } else {
     sharedHoverHighlight.value = highlight
+    sharedHoverAnchor.value    = highlight ? event.detail?.anchor || null : null
   }
 }
+
+const stageRect = () => stage.value?.getBoundingClientRect() || null
 
 const setHoverHighlight = (payload) => {
   const highlight      = normalizeHighlight(payload)
@@ -180,7 +194,8 @@ const clearHoverHighlight = () => {
 
 const togglePinnedHighlight = (payload) => {
   const highlight       = normalizeHighlight(payload)
-  pinnedHighlight.value = pinnedHighlight.value && sameHighlight(pinnedHighlight.value, highlight) ? null : highlight
+  const clearing        = pinnedHighlight.value && sameHighlight(pinnedHighlight.value, highlight)
+  pinnedHighlight.value = clearing ? null : highlight
   hoverHighlight.value  = null
   emit('toggle-highlight', highlight)
   broadcastHighlight(pinnedHighlight.value, true)
@@ -248,6 +263,7 @@ onBeforeUnmount(() => {
           @click='toggleExteriorOrbit'
         ) {{ t('chart.transit_orbit') }}
   .chart-wheel-stage.relative.aspect-square.overflow-hidden.rounded-md(
+    ref='stage'
     v-if='baseChart'
     role='group'
     tabindex='0'
@@ -359,6 +375,19 @@ onBeforeUnmount(() => {
     :aspect='activeAspect'
     :wheel='activeWheel'
     placement='below'
+  )
+  SelectionSummary(
+    v-if='activeSummaryPlacement === "floating" && hasActiveSummary'
+    :chart='baseChart'
+    :bodies='activeBodies'
+    :aspect-key='activeAspectKey'
+    :aspect='activeAspect'
+    :wheel='activeWheel'
+    :anchor='activeAnchor || stageRect()'
+    :anchor-element='activeAnchor ? null : stage'
+    :avoid='stageRect()'
+    :avoid-element='stage'
+    placement='floating'
   )
 </template>
 

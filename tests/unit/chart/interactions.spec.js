@@ -6,6 +6,7 @@ import AspectTable from '../../../src/components/chart/AspectTable.vue'
 import Wheel from '../../../src/components/chart/Wheel.vue'
 import PlanetList from '../../../src/components/chart/PlanetList.vue'
 import { WHEEL_RADII, polarPoint } from '../../../src/components/chart/wheel/geometry.js'
+import { CHART_HIGHLIGHT_EVENT } from '../../../src/lib/chart/highlight.js'
 import en from '../../../src/i18n/en.json'
 import ptBR from '../../../src/i18n/pt-BR.json'
 
@@ -265,6 +266,50 @@ describe('chart interactions', () => {
     await sun.trigger('click')
     await nextTick()
     expect(wrapper.find('[data-testid="chart-selection-summary"]').exists()).toBe(false)
+  })
+
+  it('receives an anchored shared highlight in a teleported floating summary', async () => {
+    const wrapper = mount(Wheel, {
+      attachTo: document.body,
+      props: {
+        natal:                     chart,
+        selectionSummaryPlacement: 'floating',
+      },
+      global: {
+        plugins: [createI18n({ legacy: false, locale: 'en', messages })],
+      },
+    })
+    const anchor = { left: 80, top: 120, right: 120, bottom: 140, width: 40, height: 20 }
+
+    window.dispatchEvent(new CustomEvent(CHART_HIGHLIGHT_EVENT, {
+      detail: { highlight: { bodies: ['Sun'] }, pinned: false, anchor },
+    }))
+    await vi.waitFor(() => {
+      expect(document.body.querySelector('[data-testid="chart-selection-summary"]')).not.toBeNull()
+      expect(document.body.querySelector('[data-testid="chart-selection-summary"]').style.visibility).toBe('visible')
+    })
+
+    const summary = document.body.querySelector('[data-testid="chart-selection-summary"]')
+    expect(summary.dataset.selectionSummaryPlacement).toBe('floating')
+    expect(summary.dataset.selectionSummarySide).toBe('right')
+    expect(summary.style.position || window.getComputedStyle(summary).position).toBe('fixed')
+    expect(wrapper.find('[data-testid="chart-selection-summary"]').exists()).toBe(false)
+
+    window.dispatchEvent(new CustomEvent(CHART_HIGHLIGHT_EVENT, {
+      detail: { highlight: { bodies: ['Sun'] }, pinned: true, anchor },
+    }))
+    window.dispatchEvent(new CustomEvent(CHART_HIGHLIGHT_EVENT, {
+      detail: { highlight: null, pinned: false },
+    }))
+    await nextTick()
+    expect(document.body.querySelector('[data-testid="chart-selection-summary"]')).not.toBeNull()
+
+    window.dispatchEvent(new CustomEvent(CHART_HIGHLIGHT_EVENT, {
+      detail: { highlight: null, pinned: true },
+    }))
+    await nextTick()
+    expect(document.body.querySelector('[data-testid="chart-selection-summary"]')).toBeNull()
+    wrapper.unmount()
   })
 
   it('shares planet hover state with glyphs and related aspect rows and lines', async () => {

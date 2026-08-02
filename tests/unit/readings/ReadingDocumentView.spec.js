@@ -142,6 +142,8 @@ describe('ReadingDocumentView', () => {
     try {
       const body = wrapper.get('[data-reading-keyword-id="body:Sun"]')
       const sign = wrapper.get('[data-reading-keyword-id="sign:0"]')
+      const anchor = { left: 80, top: 120, right: 120, bottom: 140, width: 40, height: 20 }
+      body.element.getBoundingClientRect = () => anchor
 
       expect(body.attributes('data-reading-keyword-kind')).toBe('body')
       expect(body.element.closest('p')).not.toBeNull()
@@ -150,7 +152,7 @@ describe('ReadingDocumentView', () => {
 
       await body.trigger('mouseenter')
       expect(listener).toHaveBeenLastCalledWith(expect.objectContaining({
-        detail: { highlight: bodyHighlight(), pinned: false, chart },
+        detail: { highlight: bodyHighlight(), pinned: false, chart, anchor },
       }))
       expect(body.attributes('data-reading-keyword-highlight')).toBe('active')
       expect(sign.attributes('data-reading-keyword-highlight')).toBe('dimmed')
@@ -164,7 +166,7 @@ describe('ReadingDocumentView', () => {
       expect(listener.mock.calls.at(-1)[0].detail.highlight).toBeNull()
 
       await body.trigger('click')
-      expect(listener.mock.calls.at(-1)[0].detail).toEqual({ highlight: bodyHighlight(), pinned: true, chart })
+      expect(listener.mock.calls.at(-1)[0].detail).toEqual({ highlight: bodyHighlight(), pinned: true, chart, anchor })
       expect(body.attributes('data-reading-keyword-pinned')).toBe('true')
       expect(body.attributes('aria-pressed')).toBe('true')
 

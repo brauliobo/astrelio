@@ -139,7 +139,7 @@ section.natal-page(data-testid='natal-page')
               v-if='chart'
               :natal='chart'
               :show-mode-controls='false'
-              selection-summary-placement='below'
+              selection-summary-placement='floating'
               :planet-glyph-renderer='settings.planetGlyphRenderer'
               display-mode='clean'
             )
@@ -165,7 +165,7 @@ section.natal-page(data-testid='natal-page')
             Wheel(
               :natal='chart'
               :show-mode-controls='false'
-              selection-summary-placement='below'
+              selection-summary-placement='floating'
               :planet-glyph-renderer='settings.planetGlyphRenderer'
               display-mode='clean'
             )

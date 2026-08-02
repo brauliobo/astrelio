@@ -215,7 +215,7 @@ section.vedic-page(data-testid='vedic-page')
               v-if='vedicMaps.length'
               :charts='vedicMaps'
               :show-mode-controls='false'
-              selection-summary-placement='below'
+              selection-summary-placement='floating'
               :show-nakshatra-ring='false'
               display-mode='clean'
             )
@@ -285,7 +285,7 @@ section.vedic-page(data-testid='vedic-page')
                 v-if='vedicMaps.length'
                 :charts='vedicMaps'
                 :show-mode-controls='false'
-                selection-summary-placement='below'
+                selection-summary-placement='floating'
                 :show-nakshatra-ring='false'
                 display-mode='clean'
               )

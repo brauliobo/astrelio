@@ -1,22 +1,30 @@
 import { test, expect } from '@playwright/test'
 import { REF_PERSON, seedPeople, seedSession, seedSettings } from './support/fixtures.js'
 
-const expectBelowStage = async (page, summary) => {
-  const geometry = await summary.evaluate((element) => {
-    const wheel = element.closest('[data-testid="chart-wheel"]')
-    const stage = wheel.querySelector('[data-testid="chart-wheel-stage"]')
+const expectFloatingSummary = async (page, summary, anchor, avoided, before) => {
+  const geometry = await summary.evaluate((element, selectors) => {
+    const anchorRect  = document.querySelector(selectors.anchor).getBoundingClientRect()
+    const avoidedRect = document.querySelector(selectors.avoided).getBoundingClientRect()
     const summaryRect = element.getBoundingClientRect()
-    const stageRect   = stage.getBoundingClientRect()
+    const overlaps = (left, right) =>
+      left.left < right.right && left.right > right.left && left.top < right.bottom && left.bottom > right.top
     return {
-      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-      position: getComputedStyle(element).position,
-      summaryTop: summaryRect.top,
-      stageBottom: stageRect.bottom,
+      position:       getComputedStyle(element).position,
+      pointerEvents:  getComputedStyle(element).pointerEvents,
+      insideViewport: summaryRect.left >= 8 && summaryRect.top >= 8 && summaryRect.right <= window.innerWidth - 8 && summaryRect.bottom <= window.innerHeight - 8,
+      anchorOverlap:  overlaps(summaryRect, anchorRect),
+      avoidedOverlap: overlaps(summaryRect, avoidedRect),
+      documentWidth:  document.documentElement.scrollWidth,
+      documentHeight: document.documentElement.scrollHeight,
     }
-  })
-  expect(geometry.position).toBe('static')
-  expect(geometry.summaryTop).toBeGreaterThanOrEqual(geometry.stageBottom)
-  expect(geometry.overflow).toBeLessThanOrEqual(0)
+  }, { anchor, avoided })
+  expect(geometry.position).toBe('fixed')
+  expect(geometry.pointerEvents).toBe('none')
+  expect(geometry.insideViewport).toBe(true)
+  expect(geometry.anchorOverlap).toBe(false)
+  expect(geometry.avoidedOverlap).toBe(false)
+  expect(Math.abs(geometry.documentWidth - before.documentWidth)).toBeLessThanOrEqual(2)
+  expect(Math.abs(geometry.documentHeight - before.documentHeight)).toBeLessThanOrEqual(2)
 }
 
 test.describe('Natal chart', () => {
@@ -44,23 +52,50 @@ test.describe('Natal chart', () => {
     await expect(page.getByTestId('workspace-reference-panel')).toHaveCount(0)
     await expect(page.locator('[data-testid="workspace-reference-chart"] .chart-wheel-toolbar')).toHaveCount(0)
     await expect(page.locator('[data-testid="workspace-reference-chart"] [data-testid="aspect-layer"]')).toHaveCount(0)
-    await page.locator('[data-reading-keyword-id="body:Sun"]').first().hover()
+    const readingTerm = page.locator('[data-reading-keyword-id="body:Sun"]').first()
+    const reference   = page.getByTestId('reading-reference-chart')
+    const readingBefore = await reference.evaluate(element => ({
+      cardHeight:     element.getBoundingClientRect().height,
+      documentWidth:  document.documentElement.scrollWidth,
+      documentHeight: document.documentElement.scrollHeight,
+    }))
+    await readingTerm.hover()
     await expect(page.locator('[data-testid="workspace-reference-chart"] [data-testid="planet-glyph-Sun"]')).toHaveAttribute('data-highlight', 'active')
-    const readingSummary = page.locator('[data-testid="workspace-reference-chart"] [data-testid="chart-selection-summary"]')
-    await expect(readingSummary).toHaveAttribute('data-selection-summary-placement', 'below')
+    const readingSummary = page.getByTestId('chart-selection-summary')
+    await expect(readingSummary).toHaveAttribute('data-selection-summary-placement', 'floating')
     await expect(readingSummary).toContainText(/Sun|Sol/)
     await expect(readingSummary).toContainText(/Aquarius|Aquário/)
-    await expectBelowStage(page, readingSummary)
+    await expectFloatingSummary(
+      page,
+      readingSummary,
+      '[data-reading-keyword-id="body:Sun"]',
+      '[data-testid="workspace-reference-chart"] [data-testid="chart-wheel-stage"]',
+      readingBefore,
+    )
+    expect(Math.abs(await reference.evaluate(element => element.getBoundingClientRect().height) - readingBefore.cardHeight)).toBeLessThanOrEqual(2)
 
     await page.getByTestId('natal-view-data').click()
     await expect(page.getByTestId('natal-data')).toBeVisible()
     await expect(page.getByTestId('planet-list')).toBeVisible()
     await expect(page.locator('[data-testid="natal-aspect-matrix-panel"] [data-testid="workspace-reference-chart"]')).toBeVisible()
     await expect(page.getByTestId('workspace-reference-panel')).toHaveCount(0)
+    const dataReference = page.locator('[data-testid="natal-aspect-matrix-panel"] [data-testid="workspace-reference-chart"]')
+    const dataBefore = await dataReference.evaluate(element => ({
+      cardHeight:     element.getBoundingClientRect().height,
+      documentWidth:  document.documentElement.scrollWidth,
+      documentHeight: document.documentElement.scrollHeight,
+    }))
     await page.locator('[data-testid="natal-aspect-matrix-panel"] [data-testid="planet-glyph-Sun"]').dispatchEvent('mouseenter')
-    const dataSummary = page.locator('[data-testid="natal-aspect-matrix-panel"] [data-testid="chart-selection-summary"]')
-    await expect(dataSummary).toHaveAttribute('data-selection-summary-placement', 'below')
-    await expectBelowStage(page, dataSummary)
+    const dataSummary = page.getByTestId('chart-selection-summary')
+    await expect(dataSummary).toHaveAttribute('data-selection-summary-placement', 'floating')
+    await expectFloatingSummary(
+      page,
+      dataSummary,
+      '[data-testid="natal-aspect-matrix-panel"] [data-testid="chart-wheel-stage"]',
+      '[data-testid="natal-aspect-matrix-panel"] [data-testid="chart-wheel-stage"]',
+      dataBefore,
+    )
+    expect(Math.abs(await dataReference.evaluate(element => element.getBoundingClientRect().height) - dataBefore.cardHeight)).toBeLessThanOrEqual(2)
   })
 
   test('displays Aquarius for Sun (1986-02-12 reference)', async ({ page }) => {

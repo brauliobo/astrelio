@@ -6,6 +6,7 @@ import {
   CHART_HIGHLIGHT_EVENT,
   normalizeHighlight,
   sameHighlight,
+  viewportRect,
 } from '../../lib/chart/highlight.js'
 import { normalizeReadingDocument } from '../../lib/readings/presentation.js'
 import ReadingText from './ReadingText.vue'
@@ -20,6 +21,7 @@ const slots = useSlots()
 const reading = computed(() => normalizeReadingDocument(props.document, t))
 const hoverHighlight  = ref(null)
 const pinnedHighlight = ref(null)
+const pinnedAnchor    = ref(null)
 let broadcasting      = false
 
 const guidanceSections = computed(() => reading.value ? [
@@ -37,10 +39,10 @@ const referencePlacement = computed(() => {
   return null
 })
 
-const broadcastHighlight = (highlight, pinned = false) => {
+const broadcastHighlight = (highlight, pinned = false, anchor = null) => {
   broadcasting = true
   try {
-    broadcastChartHighlight({ highlight, pinned, chart: props.chart })
+    broadcastChartHighlight({ highlight, pinned, chart: props.chart, anchor })
   } finally {
     broadcasting = false
   }
@@ -51,15 +53,19 @@ const onSharedHighlight = (event) => {
   const highlight = event.detail?.highlight ? normalizeHighlight(event.detail.highlight) : null
   if (event.detail?.pinned) {
     pinnedHighlight.value = highlight
+    pinnedAnchor.value    = highlight ? event.detail?.anchor || null : null
     hoverHighlight.value  = null
   } else {
     hoverHighlight.value = highlight
   }
 }
 
-const setHoverKeyword = (item) => {
+const eventAnchor = event => viewportRect(event?.currentTarget?.getBoundingClientRect())
+
+const setHoverKeyword = (item, event) => {
+  const anchor         = eventAnchor(event)
   hoverHighlight.value = item.highlight
-  broadcastHighlight(item.highlight)
+  broadcastHighlight(item.highlight, false, anchor)
 }
 
 const clearHoverKeyword = () => {
@@ -67,12 +73,12 @@ const clearHoverKeyword = () => {
   broadcastHighlight(null)
 }
 
-const togglePinnedKeyword = (item) => {
-  pinnedHighlight.value = pinnedHighlight.value && sameHighlight(pinnedHighlight.value, item.highlight)
-    ? null
-    : item.highlight
-  hoverHighlight.value = null
-  broadcastHighlight(pinnedHighlight.value, true)
+const togglePinnedKeyword = (item, event) => {
+  const clearing        = pinnedHighlight.value && sameHighlight(pinnedHighlight.value, item.highlight)
+  pinnedHighlight.value = clearing ? null : item.highlight
+  pinnedAnchor.value    = clearing ? null : eventAnchor(event)
+  hoverHighlight.value  = null
+  broadcastHighlight(pinnedHighlight.value, true, pinnedAnchor.value)
 }
 
 onMounted(() => window.addEventListener(CHART_HIGHLIGHT_EVENT, onSharedHighlight))

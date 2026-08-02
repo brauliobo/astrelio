@@ -25,10 +25,21 @@ export const sameHighlight = (a = {}, b = {}) => {
 export const aspectKey = (aspect) =>
   aspect ? `${aspect.a}-${aspect.b}-${aspect.type}` : ''
 
-export const broadcastChartHighlight = ({ highlight = null, pinned = false, chart = null } = {}) => {
+export const viewportRect = (rect) => rect ? {
+  left:   Number(rect.left),
+  top:    Number(rect.top),
+  right:  Number(rect.right),
+  bottom: Number(rect.bottom),
+  width:  Number(rect.width),
+  height: Number(rect.height),
+} : null
+
+export const broadcastChartHighlight = ({ highlight = null, pinned = false, chart = null, anchor } = {}) => {
   if (typeof window === 'undefined') return
+  const detail = { highlight, pinned, chart }
+  if (anchor) detail.anchor = viewportRect(anchor)
   window.dispatchEvent(new CustomEvent(CHART_HIGHLIGHT_EVENT, {
-    detail: { highlight, pinned, chart },
+    detail,
   }))
 }
 

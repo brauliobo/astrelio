@@ -1,19 +1,17 @@
 import { expect, test } from '@playwright/test'
 import { REF_PERSON, SECOND_PERSON, seedPeople, seedSession, seedSettings } from './support/fixtures.js'
 
-const expectBelowStage = async (summary) => {
+const expectFloating = async (summary) => {
   const geometry = await summary.evaluate((element) => {
-    const wheel = element.closest('[data-testid="chart-wheel"]')
-    const stage = wheel.querySelector('[data-testid="chart-wheel-stage"]')
+    const rect = element.getBoundingClientRect()
     return {
-      overflow:      document.documentElement.scrollWidth - document.documentElement.clientWidth,
-      position:      getComputedStyle(element).position,
-      stageBottom:   stage.getBoundingClientRect().bottom,
-      summaryTop:    element.getBoundingClientRect().top,
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      position: getComputedStyle(element).position,
+      within:   rect.left >= 8 && rect.top >= 8 && rect.right <= window.innerWidth - 8 && rect.bottom <= window.innerHeight - 8,
     }
   })
-  expect(geometry.position).toBe('static')
-  expect(geometry.summaryTop).toBeGreaterThanOrEqual(geometry.stageBottom)
+  expect(geometry.position).toBe('fixed')
+  expect(geometry.within).toBe(true)
   expect(geometry.overflow).toBeLessThanOrEqual(0)
 }
 
@@ -41,9 +39,9 @@ test.describe('Workspace consolidation', () => {
     await expect(page.locator('[data-testid="workspace-reference-chart"] [data-testid="nakshatra-ring"]')).toHaveCount(0)
     await page.locator('[data-reading-keyword-id="body:Sun"]').first().hover()
     await expect(page.locator('[data-testid="workspace-reference-chart"] [data-testid="planet-glyph-Sun"]')).toHaveAttribute('data-highlight', 'active')
-    const readingSummary = page.locator('[data-testid="workspace-reference-chart"] [data-testid="chart-selection-summary"]')
-    await expect(readingSummary).toHaveAttribute('data-selection-summary-placement', 'below')
-    await expectBelowStage(readingSummary)
+    const readingSummary = page.getByTestId('chart-selection-summary')
+    await expect(readingSummary).toHaveAttribute('data-selection-summary-placement', 'floating')
+    await expectFloating(readingSummary)
 
     await page.getByTestId('workspace-view-data').click()
     await expect(page).toHaveURL(/\/map\/vedic\/data$/)
@@ -51,9 +49,9 @@ test.describe('Workspace consolidation', () => {
     await expect(page.locator('[data-testid="vedic-rasi-panel"] [data-testid="workspace-reference-chart"]')).toBeVisible()
     await page.getByTestId('vedic-position-Sun').hover()
     await expect(page.locator('[data-testid="vedic-rasi-panel"] [data-testid="planet-glyph-Sun"]')).toHaveAttribute('data-highlight', 'active')
-    const dataSummary = page.locator('[data-testid="vedic-rasi-panel"] [data-testid="chart-selection-summary"]')
-    await expect(dataSummary).toHaveAttribute('data-selection-summary-placement', 'below')
-    await expectBelowStage(dataSummary)
+    const dataSummary = page.getByTestId('chart-selection-summary')
+    await expect(dataSummary).toHaveAttribute('data-selection-summary-placement', 'floating')
+    await expectFloating(dataSummary)
   })
 
   test('supports Human Design aliases and keeps report separate from modalities', async ({ page }) => {

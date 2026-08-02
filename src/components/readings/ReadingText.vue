@@ -31,13 +31,13 @@ p.reading-text
       :data-reading-keyword-pinned='pinnedState(segment.keyword)'
       :aria-pressed='pinnedState(segment.keyword)'
       v-text='segment.text'
-      @mouseenter='$emit("hover", segment.keyword)'
+      @mouseenter='$emit("hover", segment.keyword, $event)'
       @mouseleave='$emit("clear-hover")'
-      @focus='$emit("hover", segment.keyword)'
+      @focus='$emit("hover", segment.keyword, $event)'
       @blur='$emit("clear-hover")'
-      @click='$emit("toggle-pin", segment.keyword)'
-      @keydown.enter.prevent='$emit("toggle-pin", segment.keyword)'
-      @keydown.space.prevent='$emit("toggle-pin", segment.keyword)'
+      @click='$emit("toggle-pin", segment.keyword, $event)'
+      @keydown.enter.prevent='$emit("toggle-pin", segment.keyword, $event)'
+      @keydown.space.prevent='$emit("toggle-pin", segment.keyword, $event)'
     )
     span(v-else v-text='segment.text')
 </template>

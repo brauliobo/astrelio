@@ -1,18 +1,23 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { houseOf } from '../../lib/astro/houses.js'
 import { motionStateForSpeed } from '../../lib/astro/motion.js'
 import { signAxisFor } from '../../lib/astro/sign-axes.js'
 import { degInSign, signIndex } from '../../lib/astro/zodiac.js'
+import { positionSelectionSummary } from '../../lib/chart/selectionSummaryPosition.js'
 
 const props = defineProps({
-  chart:     { type: Object, required: true },
-  bodies:    { type: Array, default: () => [] },
-  aspectKey: { type: String, default: '' },
-  aspect:    { type: Object, default: null },
-  wheel:     { type: Object, default: null },
-  placement: { type: String, default: 'overlay', validator: value => ['overlay', 'below'].includes(value) },
+  chart:         { type: Object, required: true },
+  bodies:        { type: Array, default: () => [] },
+  aspectKey:     { type: String, default: '' },
+  aspect:        { type: Object, default: null },
+  wheel:         { type: Object, default: null },
+  anchor:        { type: Object, default: null },
+  avoid:         { type: Object, default: null },
+  anchorElement: { type: Object, default: null },
+  avoidElement:  { type: Object, default: null },
+  placement:     { type: String, default: 'overlay', validator: value => ['overlay', 'floating', 'below'].includes(value) },
 })
 
 const { t, tm, te } = useI18n()
@@ -179,55 +184,134 @@ const hasSummary = computed(() =>
 const selectionKind = computed(() =>
   props.wheel?.kind || (aspectSelection.value ? 'aspect' : 'planet')
 )
+
+const summary       = ref(null)
+const floatingStyle = ref({ position: 'fixed', visibility: 'hidden' })
+const floatingSide  = ref('')
+let anchorSnapshot  = null
+let avoidSnapshot   = null
+let frame           = 0
+
+const snapshotAnchor = () => {
+  anchorSnapshot = props.anchor ? {
+    rect:    { ...props.anchor },
+    scrollX: window.scrollX,
+    scrollY: window.scrollY,
+  } : null
+  avoidSnapshot = props.avoid ? {
+    rect:    { ...props.avoid },
+    scrollX: window.scrollX,
+    scrollY: window.scrollY,
+  } : null
+}
+
+const currentRect = snapshot => snapshot ? {
+  ...snapshot.rect,
+  left:   snapshot.rect.left - (window.scrollX - snapshot.scrollX),
+  right:  snapshot.rect.right - (window.scrollX - snapshot.scrollX),
+  top:    snapshot.rect.top - (window.scrollY - snapshot.scrollY),
+  bottom: snapshot.rect.bottom - (window.scrollY - snapshot.scrollY),
+} : null
+
+const positionFloating = async () => {
+  if (props.placement !== 'floating' || !anchorSnapshot) return
+  await nextTick()
+  if (!summary.value) return
+
+  const bounds   = summary.value.getBoundingClientRect()
+  const position = positionSelectionSummary({
+    anchor:   props.anchorElement?.getBoundingClientRect() || currentRect(anchorSnapshot),
+    avoid:    props.avoidElement?.getBoundingClientRect() || currentRect(avoidSnapshot),
+    tooltip:  { width: bounds.width, height: bounds.height },
+    viewport: { width: window.innerWidth, height: window.innerHeight },
+  })
+  floatingSide.value  = position.side
+  floatingStyle.value = {
+    left:       `${position.left}px`,
+    maxWidth:   'calc(100vw - 20px)',
+    position:   'fixed',
+    top:        `${position.top}px`,
+    visibility: 'visible',
+  }
+}
+
+const schedulePosition = () => {
+  cancelAnimationFrame(frame)
+  frame = requestAnimationFrame(positionFloating)
+}
+
+watch(() => [props.anchor, props.avoid], () => {
+  snapshotAnchor()
+  schedulePosition()
+}, { deep: true })
+watch([placements, wheelDetails, aspectRows], schedulePosition, { deep: true })
+
+onMounted(() => {
+  snapshotAnchor()
+  schedulePosition()
+  window.addEventListener('resize', schedulePosition)
+  window.addEventListener('scroll', schedulePosition, true)
+})
+
+onBeforeUnmount(() => {
+  cancelAnimationFrame(frame)
+  window.removeEventListener('resize', schedulePosition)
+  window.removeEventListener('scroll', schedulePosition, true)
+})
 </script>
 
 <template lang="pug">
-.chart-selection-summary.rounded-md.border.px-3.py-2.shadow-lg.backdrop-blur-sm(
-  v-if='hasSummary'
-  :class='placement === "overlay" ? "chart-selection-summary--overlay chart-selection-summary--responsive pointer-events-none absolute z-10" : "chart-selection-summary--below"'
-  data-testid='chart-selection-summary'
-  :data-responsive-placement='placement === "overlay" ? "desktop-side-mobile-bottom" : "below-stage"'
-  :data-selection-summary-placement='placement'
-  :data-selection-kind='selectionKind'
-)
-  .chart-selection-summary__title.text-xs.font-semibold.leading-snug {{ title }}
-  .mt-1.grid(
-    v-if='wheelDetails.length'
-    class='gap-0.5'
+Teleport(to='body' :disabled='placement !== "floating"')
+  .chart-selection-summary.rounded-md.border.px-3.py-2.shadow-lg.backdrop-blur-sm(
+    v-if='hasSummary'
+    ref='summary'
+    role='status'
+    :class='placement === "overlay" ? "chart-selection-summary--overlay chart-selection-summary--responsive pointer-events-none absolute z-10" : `chart-selection-summary--${placement}`'
+    data-testid='chart-selection-summary'
+    :data-responsive-placement='placement === "overlay" ? "desktop-side-mobile-bottom" : placement === "below" ? "below-stage" : floatingSide'
+    :data-selection-summary-placement='placement'
+    :data-selection-summary-side='placement === "floating" ? floatingSide : undefined'
+    :data-selection-kind='selectionKind'
+    :style='placement === "floating" ? floatingStyle : undefined'
   )
-    .chart-selection-summary__line.text-xs.leading-snug(
-      v-for='detail in wheelDetails'
-      :key='detail.key || detail.label || detail'
+    .chart-selection-summary__title.text-xs.font-semibold.leading-snug {{ title }}
+    .mt-1.grid(
+      v-if='wheelDetails.length'
+      class='gap-0.5'
     )
-      span.chart-selection-summary__label.font-medium(v-if='detail.label') {{ detail.label }}
-      template(v-if='detail.label && detail.value') {{ ' ' }}
-      template(v-if='detail.value') {{ detail.value }}
-      template(v-else-if='typeof detail === "string"') {{ detail }}
-  .mt-1.grid(v-if='aspectRows.length' class='gap-0.5')
-    .chart-selection-summary__line.text-xs.leading-snug(
-      v-for='row in aspectRows'
-      :key='row.key'
-      :data-selection-fact='row.key'
-    )
-      span.chart-selection-summary__label.font-medium {{ row.label }}
-      | {{ ' ' }}{{ row.value }}
-  .mt-1.grid(
-    v-if='placements.length && !wheel'
-    class='gap-0.5'
-  )
-    .chart-selection-summary__body(
-      v-for='placement in placements'
-      :key='placement.name'
-      :data-selection-body='placement.name'
-    )
-      .chart-selection-summary__body-title.text-xs.font-medium(v-if='aspectSelection') {{ placement.label }}
       .chart-selection-summary__line.text-xs.leading-snug(
-        v-for='row in placement.rows'
+        v-for='detail in wheelDetails'
+        :key='detail.key || detail.label || detail'
+      )
+        span.chart-selection-summary__label.font-medium(v-if='detail.label') {{ detail.label }}
+        template(v-if='detail.label && detail.value') {{ ' ' }}
+        template(v-if='detail.value') {{ detail.value }}
+        template(v-else-if='typeof detail === "string"') {{ detail }}
+    .mt-1.grid(v-if='aspectRows.length' class='gap-0.5')
+      .chart-selection-summary__line.text-xs.leading-snug(
+        v-for='row in aspectRows'
         :key='row.key'
         :data-selection-fact='row.key'
       )
         span.chart-selection-summary__label.font-medium {{ row.label }}
         | {{ ' ' }}{{ row.value }}
+    .mt-1.grid(
+      v-if='placements.length && !wheel'
+      class='gap-0.5'
+    )
+      .chart-selection-summary__body(
+        v-for='placement in placements'
+        :key='placement.name'
+        :data-selection-body='placement.name'
+      )
+        .chart-selection-summary__body-title.text-xs.font-medium(v-if='aspectSelection') {{ placement.label }}
+        .chart-selection-summary__line.text-xs.leading-snug(
+          v-for='row in placement.rows'
+          :key='row.key'
+          :data-selection-fact='row.key'
+        )
+          span.chart-selection-summary__label.font-medium {{ row.label }}
+          | {{ ' ' }}{{ row.value }}
 </template>
 
 <style scoped>
@@ -257,6 +341,16 @@ const selectionKind = computed(() =>
   position: static;
   transform: none;
   width: 100%;
+}
+
+.chart-selection-summary--floating {
+  max-height: calc(100vh - 20px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  pointer-events: none;
+  position: fixed;
+  width: min(17rem, calc(100vw - 20px));
+  z-index: 60;
 }
 
 .chart-selection-summary__title {
