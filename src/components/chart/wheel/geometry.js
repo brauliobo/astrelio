@@ -360,10 +360,6 @@ const labelPlacement = (glyphPoint) => {
       x: glyphPoint.x + 7,
       y: glyphPoint.y + 8,
     },
-    retrogradePoint: {
-      x: glyphPoint.x + 7,
-      y: glyphPoint.y + 16,
-    },
   }
 }
 

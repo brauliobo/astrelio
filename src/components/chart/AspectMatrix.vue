@@ -93,6 +93,7 @@ const activeAspectKey = computed(() => localHighlight.value?.aspectKey || '')
 const pointLabel      = (name) => t(`planets.${name}`)
 const pointSymbol     = (name) => PLANET_SYMBOLS[name] || name.slice(0, 2)
 const pointMotion     = (point) => motionMarker(point)
+const motionClass     = (marker) => `aspect-retro--${marker === 'R' ? 'retrograde' : 'stationary'}`
 const aspectSymbol    = (aspect) => ASPECT_SYMBOLS[aspect?.type] || ''
 const pointKey        = (point, prefix) => `${prefix}-${point.name}`
 const pointName       = (point) => t(`planets.${point.name}`)
@@ -254,7 +255,7 @@ onBeforeUnmount(() => {
         span.tabular-nums {{ formatPosition(point.longitude).degrees }}
         span.aspect-sign {{ formatPosition(point.longitude).sign }}
         span.tabular-nums {{ formatPosition(point.longitude).minutes }}
-        span.aspect-retro(v-if='pointMotion(point)') {{ pointMotion(point) }}
+        span.aspect-retro(v-if='pointMotion(point)' :class='motionClass(pointMotion(point))') {{ pointMotion(point) }}
     .aspect-matrix-stage
       .aspect-matrix-grid(:style='gridStyle' role='grid' :aria-label='title')
         .aspect-matrix-corner
@@ -348,7 +349,7 @@ onBeforeUnmount(() => {
         span.tabular-nums {{ formatPosition(point.longitude).degrees }}
         span.aspect-sign {{ formatPosition(point.longitude).sign }}
         span.tabular-nums {{ formatPosition(point.longitude).minutes }}
-        span.aspect-retro(v-if='pointMotion(point)') {{ pointMotion(point) }}
+        span.aspect-retro(v-if='pointMotion(point)' :class='motionClass(pointMotion(point))') {{ pointMotion(point) }}
   .aspect-legend
     .aspect-legend-group
       span.aspect-legend-title {{ t('chart.aspect_legend') }}
@@ -356,8 +357,8 @@ onBeforeUnmount(() => {
         | {{ ASPECT_SYMBOLS[type] }} {{ t(`aspects.${type}`) }}
     .aspect-legend-group
       span.aspect-legend-title {{ t('chart.motion_legend') }}
-      span.aspect-retro R {{ t('chart.motion_markers.retrograde') }}
-      span.aspect-retro E {{ t('chart.motion_markers.stationary') }}
+      span.aspect-retro.aspect-retro--retrograde R {{ t('chart.motion_markers.retrograde') }}
+      span.aspect-retro.aspect-retro--stationary E {{ t('chart.motion_markers.stationary') }}
 </template>
 
 <style scoped>
@@ -549,8 +550,15 @@ onBeforeUnmount(() => {
 }
 
 .aspect-retro {
-  color: rgb(251 191 36);
   font-size: 0.6rem;
+}
+
+.aspect-retro--retrograde {
+  color: var(--chart-retrograde-text);
+}
+
+.aspect-retro--stationary {
+  color: var(--chart-stationary-text);
 }
 
 .aspect-legend {

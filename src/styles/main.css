@@ -63,7 +63,8 @@
   --chart-house-number-opacity: 0.62;
   --chart-hit-target-fill: rgb(255 255 255 / 0.01);
   --chart-sun-stroke: #facc15;
-  --chart-retrograde-text: #fde68a;
+  --chart-retrograde-text: #f87171;
+  --chart-stationary-text: #fde68a;
   --chart-angle-accent: #f59e0b;
   --chart-angle-asc: #f87171;
   --chart-angle-mc: #93c5fd;
@@ -172,7 +173,8 @@ html[data-theme="light"] {
   --chart-house-number-opacity: 0.68;
   --chart-hit-target-fill: rgb(15 23 42 / 0.01);
   --chart-sun-stroke: #facc15;
-  --chart-retrograde-text: #92400e;
+  --chart-retrograde-text: #dc2626;
+  --chart-stationary-text: #92400e;
   --chart-angle-accent: #b45309;
   --chart-angle-asc: #dc2626;
   --chart-angle-mc: #2563eb;

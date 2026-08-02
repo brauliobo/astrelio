@@ -270,6 +270,29 @@ describe('chart display modes', () => {
     expect(Number(planetDegree.attributes('font-size'))).toBeGreaterThan(Number(houseNumbers.attributes('font-size')))
   })
 
+  it('renders retrograde and stationary markers inline with planet degrees', () => {
+    const wrapper = mountWheel({
+      natal: {
+        ...chart,
+        positions: [
+          { ...position('Mercury', 42), retrograde: true },
+          { ...position('Saturn', 95, 0), motion: 'stationary', stationary: true },
+        ],
+      },
+    })
+
+    const retrograde = wrapper.get('[data-testid="planet-glyph-Mercury"] .planet-degree-label')
+    const stationary = wrapper.get('[data-testid="planet-glyph-Saturn"] .planet-degree-label')
+
+    expect(retrograde.text()).toBe('12R')
+    expect(stationary.text()).toBe('5E')
+    expect(retrograde.get('.planet-motion-marker').attributes()).not.toHaveProperty('y')
+    expect(retrograde.get('.planet-motion-marker').attributes()).not.toHaveProperty('font-size')
+    expect(retrograde.get('.planet-motion-marker').classes()).toContain('planet-motion-marker--retrograde')
+    expect(stationary.get('.planet-motion-marker').classes()).toContain('planet-motion-marker--stationary')
+    expect(wrapper.find('.planet-retrograde-label').exists()).toBe(false)
+  })
+
   it('renders ascendant and midheaven as compact arrow markers', () => {
     const wrapper = mountWheel()
     const markers = wrapper.get('[data-testid="angle-markers"]')

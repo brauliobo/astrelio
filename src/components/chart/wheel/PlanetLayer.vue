@@ -23,7 +23,6 @@ const glyphs = computed(() =>
   props.placements.map((item) => {
     const glyph      = item.glyphPoint || item.point
     const label      = item.labelPoint || { x: glyph.x + 10, y: glyph.y - 9 }
-    const retrograde = item.retrogradePoint || { x: glyph.x + 10, y: glyph.y + 7 }
     const symbols    = props.symbols || PLANET_SYMBOLS
     const colors     = props.colors || PLANET_COLORS
     const color      = props.mapIndex === 0 ? colors[item.planet.name] || props.color : props.color
@@ -35,7 +34,6 @@ const glyphs = computed(() =>
       ...item,
       glyph,
       label,
-      retrograde,
       color,
       labelColor,
       labelAnchor: item.labelAnchor || 'middle',
@@ -112,17 +110,13 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
       :data-visible='item.showDegreeLabel || glyphHighlightState(item.planet.name) === "active"'
       class='planet-degree-label'
       dominant-baseline='central'
-    ) {{ item.degree }}
-    text(
-      v-if='item.motion'
-      :x='item.retrograde.x'
-      :y='item.retrograde.y'
-      :fill='item.labelColor'
-      :font-size='mapIndex === 0 ? 6.4 : 5.8'
-      :text-anchor='item.labelAnchor'
-      class='planet-retrograde-label'
-      dominant-baseline='central'
-    ) {{ item.motion }}
+    )
+      | {{ item.degree }}
+      tspan.planet-motion-marker(
+        v-if='item.motion'
+        :class='`planet-motion-marker--${item.motion === "R" ? "retrograde" : "stationary"}`'
+        dx='2'
+      ) {{ item.motion }}
 </template>
 
 <style scoped>
@@ -143,8 +137,16 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
   opacity: 1;
 }
 
-.planet-retrograde-label {
-  pointer-events: none;
+.planet-motion-marker {
+  font-size: 0.85em;
+}
+
+.planet-motion-marker--retrograde {
+  fill: var(--chart-retrograde-text);
+}
+
+.planet-motion-marker--stationary {
+  fill: var(--chart-stationary-text);
 }
 
 .planet-hit-target {

@@ -142,5 +142,18 @@ onBeforeUnmount(() => {
         td.py-1.px-2.text-slate-100 {{ r.sign }}
         td.py-1.px-2.tabular-nums {{ r.deg }}
         td.py-1.px-2.text-slate-400 {{ t('chart.house_system') ? '' : '' }} {{ r.house }}
-        td.py-1.pl-2.text-amber-300(v-if='r.motion') {{ r.motion }}
+        td.py-1.pl-2(
+          v-if='r.motion'
+          :class='r.motion === "R" ? "planet-motion--retrograde" : "planet-motion--stationary"'
+        ) {{ r.motion }}
 </template>
+
+<style scoped>
+.planet-motion--retrograde {
+  color: var(--chart-retrograde-text);
+}
+
+.planet-motion--stationary {
+  color: var(--chart-stationary-text);
+}
+</style>
