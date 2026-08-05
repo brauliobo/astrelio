@@ -1,23 +1,40 @@
 import { houseOf } from './houses.js'
+import {
+  ELEMENT_KEYS,
+  SIGN_ELEMENTS,
+  elementForSign,
+  relatedElementsFor,
+  signIndicesForElement,
+} from './elements.js'
 import { analyzeSignAxes, PLANET_WEIGHTS } from './sign-axes.js'
 import { norm180, norm360, signIndex } from './zodiac.js'
 
 export { analyzeSignAxes, PLANET_WEIGHTS } from './sign-axes.js'
+export {
+  ELEMENT_KEYS,
+  ELEMENT_SIGN_INDICES,
+  RELATED_ELEMENTS,
+  SAME_ELEMENT_SIGN_INDICES,
+  SIGN_ELEMENTS,
+  elementForSign,
+  normalizeSignIndex,
+  relatedElementsFor,
+  signIndicesForElement,
+} from './elements.js'
 
-export const SIGN_TRAITS = [
-  { element: 'fire',  modality: 'cardinal', polarity: 'yang' },
-  { element: 'earth', modality: 'fixed',    polarity: 'yin' },
-  { element: 'air',   modality: 'mutable',  polarity: 'yang' },
-  { element: 'water', modality: 'cardinal', polarity: 'yin' },
-  { element: 'fire',  modality: 'fixed',    polarity: 'yang' },
-  { element: 'earth', modality: 'mutable',  polarity: 'yin' },
-  { element: 'air',   modality: 'cardinal', polarity: 'yang' },
-  { element: 'water', modality: 'fixed',    polarity: 'yin' },
-  { element: 'fire',  modality: 'mutable',  polarity: 'yang' },
-  { element: 'earth', modality: 'cardinal', polarity: 'yin' },
-  { element: 'air',   modality: 'fixed',    polarity: 'yang' },
-  { element: 'water', modality: 'mutable',  polarity: 'yin' },
+const SIGN_MODALITIES = [
+  'cardinal', 'fixed', 'mutable',
+  'cardinal', 'fixed', 'mutable',
+  'cardinal', 'fixed', 'mutable',
+  'cardinal', 'fixed', 'mutable',
 ]
+const SIGN_POLARITIES = ['yang', 'yin', 'yang', 'yin', 'yang', 'yin', 'yang', 'yin', 'yang', 'yin', 'yang', 'yin']
+
+export const SIGN_TRAITS = SIGN_ELEMENTS.map((element, index) => ({
+  element,
+  modality: SIGN_MODALITIES[index],
+  polarity: SIGN_POLARITIES[index],
+}))
 
 export const TROPICAL_SIGN_RULERS = [
   'Mars',
@@ -217,7 +234,7 @@ const hemisphereEmphasis = (hemispheres) => {
 }
 
 export const chartSignature = (chart) => {
-  const elements    = countKeys(['fire', 'earth', 'air', 'water'])
+  const elements    = countKeys(ELEMENT_KEYS)
   const modalities  = countKeys(['cardinal', 'fixed', 'mutable'])
   const polarities  = countKeys(['yang', 'yin'])
   const hemispheres = countKeys(['east', 'west', 'north', 'south'])
@@ -226,10 +243,11 @@ export const chartSignature = (chart) => {
 
   for (const planet of chart.positions || []) {
     const weight = PLANET_WEIGHTS[planet.name] || 1
-    const traits = SIGN_TRAITS[signIndex(planet.longitude)]
+    const sign   = signIndex(planet.longitude)
+    const traits = SIGN_TRAITS[sign]
     const house  = houseOf(planet.longitude, chart.cusps)
 
-    elements[traits.element] += weight
+    elements[elementForSign(sign)] += weight
     modalities[traits.modality] += weight
     polarities[traits.polarity] += weight
     houses[house - 1].value += weight
@@ -256,7 +274,11 @@ export const chartSignature = (chart) => {
     }))
 
   return {
-    elements:           shareRows(elements),
+    elements:           shareRows(elements).map(row => ({
+      ...row,
+      signIndices:     signIndicesForElement(row.key),
+      relatedElements: relatedElementsFor(row.key),
+    })),
     modalities:         shareRows(modalities),
     polarities:         shareRows(polarities),
     houseModes:         shareRows(houseModes),

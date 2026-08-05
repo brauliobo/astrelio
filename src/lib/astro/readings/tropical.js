@@ -1,4 +1,5 @@
 import { PLANET_WEIGHTS, SIGN_TRAITS, TROPICAL_SIGN_RULERS, isTropicalChart } from '../analysis.js'
+import { ELEMENT_KEYS, elementForSign } from '../elements.js'
 import { houseOf } from '../houses.js'
 import { analyzeSignAxes } from '../sign-axes.js'
 import { norm360, signIndex } from '../zodiac.js'
@@ -89,18 +90,22 @@ const orderedBodies = chart => [...(chart?.positions || [])]
   .filter(position => BODY_ORDER.has(position.name) && Number.isFinite(position.longitude))
   .sort(bodySort)
 
-const placementFacts = (position, chart) => ({
-  body:       position.name,
-  bodyRole:   position.name,
-  longitude: norm360(position.longitude),
-  signIndex: signIndex(position.longitude),
-  signStyle: signIndex(position.longitude),
-  house:     validCusps(chart) ? houseOf(position.longitude, chart.cusps) : null,
-  houseArea: validCusps(chart) ? houseOf(position.longitude, chart.cusps) : null,
-  motionNote: position.stationary || position.motion === 'stationary'
-    ? 'stationary'
-    : position.retrograde ? 'retrograde' : position.motion === undefined && position.retrograde === undefined ? 'unknown' : 'direct',
-})
+const placementFacts = (position, chart) => {
+  const sign = signIndex(position.longitude)
+  return {
+    body:       position.name,
+    bodyRole:   position.name,
+    longitude:  norm360(position.longitude),
+    signIndex:  sign,
+    element:    elementForSign(sign),
+    signStyle:  sign,
+    house:      validCusps(chart) ? houseOf(position.longitude, chart.cusps) : null,
+    houseArea:  validCusps(chart) ? houseOf(position.longitude, chart.cusps) : null,
+    motionNote: position.stationary || position.motion === 'stationary'
+      ? 'stationary'
+      : position.retrograde ? 'retrograde' : position.motion === undefined && position.retrograde === undefined ? 'unknown' : 'direct',
+  }
+}
 
 const aspectIdBase = aspect => {
   const bodies = [aspect.a, aspect.b].sort((a, b) => a.localeCompare(b))
@@ -143,14 +148,15 @@ const distributionRows = (bodies, chart) => {
   if (!bodies.length) return []
 
   const scores = {
-    element:  Object.fromEntries(['fire', 'earth', 'air', 'water'].map(key => [key, 0])),
+    element:  Object.fromEntries(ELEMENT_KEYS.map(key => [key, 0])),
     modality: Object.fromEntries(['cardinal', 'fixed', 'mutable'].map(key => [key, 0])),
   }
 
   for (const body of bodies) {
-    const traits = SIGN_TRAITS[signIndex(body.longitude)]
+    const sign   = signIndex(body.longitude)
+    const traits = SIGN_TRAITS[sign]
     const weight = PLANET_WEIGHTS[body.name] || 1
-    scores.element[traits.element]     += weight
+    scores.element[elementForSign(sign)] += weight
     scores.modality[traits.modality]   += weight
   }
 

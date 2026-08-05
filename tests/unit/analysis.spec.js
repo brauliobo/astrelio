@@ -26,6 +26,10 @@ describe('chart analysis', () => {
   it('weights sign traits and angular planets', () => {
     const signature = chartSignature(chart)
     expect(signature.elements[0].key).toBe('fire')
+    expect(signature.elements[0]).toMatchObject({
+      signIndices:     [0, 4, 8],
+      relatedElements: ['air'],
+    })
     expect(signature.angularPlanets.map(item => item.name)).toContain('Sun')
     expect(signature.retrogrades).toEqual(['Mercury'])
   })

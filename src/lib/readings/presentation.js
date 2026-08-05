@@ -1,4 +1,5 @@
 import { oppositeSignIndex, signAxisFor } from '../astro/sign-axes.js'
+import { elementForSign, relatedElementsFor } from '../astro/elements.js'
 import {
   aspectKey,
   humanDesignHighlight,
@@ -195,8 +196,11 @@ const tropicalSignHighlight = (index, t) => {
   const oppositeName   = t(`zodiac.signs.${oppositeIndex}`)
   const oppositeSymbol = ZODIAC_SYMBOLS[oppositeIndex]
   const axis           = signAxisFor(index)
+  const element        = elementForSign(index)
   return wheelHighlight('sign', `sign-${index}`, {
     signIndex: index,
+    element,
+    relatedElements: relatedElementsFor(element),
     symbol,
     title:     `${name} ${symbol}`,
     details:   [

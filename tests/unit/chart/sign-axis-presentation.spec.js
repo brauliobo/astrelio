@@ -82,6 +82,22 @@ describe('sign-axis presentation', () => {
     expect(wrapper.text()).not.toContain(locale === 'en' ? 'Opposite sign' : 'Signo oposto')
   })
 
+  it('does not render tropical axis or element details for a sidereal chart', () => {
+    const wrapper = mount(SelectionSummary, {
+      props: {
+        chart: { ...chart, zodiac: 'sidereal' },
+        wheel: { ...signWheel, element: 'fire', relatedElements: ['air'] },
+      },
+      global: { plugins: [i18n('en')] },
+    })
+
+    expect(wrapper.get('[data-testid="chart-selection-summary"]').attributes('data-element')).toBeUndefined()
+    expect(wrapper.find('[data-selection-fact="axis"]').exists()).toBe(false)
+    expect(wrapper.find('[data-selection-fact="element"]').exists()).toBe(false)
+    expect(wrapper.find('[data-selection-fact="related-element"]').exists()).toBe(false)
+    expect(wrapper.text()).not.toContain('Initiative and reciprocity')
+  })
+
   it('shows up to three materially represented Tropical axes with factual side weights', () => {
     const wrapper = mount(Insight, {
       props:  { chart, panel: 'right' },

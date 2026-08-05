@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { anglePlacements, chartSignature, placementFor, topAspects } from '../../lib/astro/analysis.js'
+import { ELEMENT_KEYS, elementForSign, relatedElementsFor, signIndicesForElement } from '../../lib/astro/elements.js'
 import { combinedHouseCorrelations } from '../../lib/astro/house-correlations.js'
 import { degInSign } from '../../lib/astro/zodiac.js'
 import HouseCorrelationPanel from './HouseCorrelationPanel.vue'
@@ -19,11 +20,12 @@ const props = defineProps({
   houseCorrelations:   { type: Object, default: null },
 })
 
-const { t, tm } = useI18n()
+const { t, tm, te } = useI18n()
 const signs           = computed(() => tm('zodiac.signs'))
 const signature       = computed(() => chartSignature(props.chart))
 const angles          = computed(() => anglePlacements(props.chart))
 const tropical        = computed(() => signature.value.tropical)
+const isTropical      = computed(() => Boolean(tropical.value))
 const activeDetailTab = ref('patterns')
 
 const fmtDegree = (lon) => {
@@ -32,6 +34,37 @@ const fmtDegree = (lon) => {
   const mm = Math.floor((d - dd) * 60)
   return `${dd}°${mm.toString().padStart(2, '0')}'`
 }
+
+const pct                  = share => `${Math.round(share * 100)}%`
+const translated           = (key, params) => te(key) ? t(key, params) : ''
+const elementLabel         = element => t(`analysis.elements.${element}`)
+const elementColor         = element => `var(--chart-element-${element})`
+const elementFill          = element => `var(--chart-element-${element}-fill)`
+const elementSigns         = row => row.signIndices.map(index => signs.value[index]).join(', ')
+const relatedElementLabels = row => row.relatedElements.map(elementLabel).join(', ')
+const elementMarkerStyle = element => ({
+  backgroundColor: elementFill(element),
+  borderColor:     elementColor(element),
+})
+const elementBarStyle = (element, share) => ({
+  width:           pct(share),
+  backgroundColor: elementColor(element),
+})
+const elementBarAria = row => translated('analysis.element_bar_aria', {
+  element: elementLabel(row.key),
+  share:   pct(row.share),
+})
+const elementSignsLabel = row => translated('analysis.element_signs', { signs: elementSigns(row) })
+const relatedElementLabel = row => translated('analysis.related_element', { element: relatedElementLabels(row) })
+const placementElement = sign => isTropical.value ? elementForSign(sign) : null
+
+const elementRows = computed(() => signature.value.elements
+  .filter(row => ELEMENT_KEYS.includes(row.key))
+  .map(row => ({
+    ...row,
+    signIndices:     signIndicesForElement(row.key),
+    relatedElements: relatedElementsFor(row.key),
+  })))
 
 const placementRows = computed(() => {
   const sun  = placementFor(props.chart, 'Sun')
@@ -43,6 +76,7 @@ const placementRows = computed(() => {
       value:  signs.value[sun.signIndex],
       meta:   t('analysis.house_n', { house: sun.house }),
       degree: fmtDegree(sun.longitude),
+      element: placementElement(sun.signIndex),
     },
     moon && {
       key:    'moon',
@@ -50,6 +84,7 @@ const placementRows = computed(() => {
       value:  signs.value[moon.signIndex],
       meta:   props.phaseLabel || t('analysis.house_n', { house: moon.house }),
       degree: fmtDegree(moon.longitude),
+      element: placementElement(moon.signIndex),
     },
     {
       key:    'ascendant',
@@ -57,6 +92,7 @@ const placementRows = computed(() => {
       value:  signs.value[angles.value.ascendant.signIndex],
       meta:   t('analysis.horizon'),
       degree: fmtDegree(angles.value.ascendant.longitude),
+      element: placementElement(angles.value.ascendant.signIndex),
     },
     {
       key:    'mc',
@@ -64,6 +100,7 @@ const placementRows = computed(() => {
       value:  signs.value[angles.value.mc.signIndex],
       meta:   t('analysis.meridian'),
       degree: fmtDegree(angles.value.mc.longitude),
+      element: placementElement(angles.value.mc.signIndex),
     },
   ].filter(Boolean)
 })
@@ -110,7 +147,6 @@ const balanceGridClass   = computed(() => props.panel === 'full' ? 'lg:grid-cols
 const detailGridClass    = computed(() => props.panel === 'full' ? 'lg:grid-cols-3' : '')
 const aspectGridClass    = computed(() => props.panel === 'full' ? 'sm:grid-cols-2' : '')
 
-const pct           = (share) => `${Math.round(share * 100)}%`
 const showDetailTab = tab => !useDetailTabs.value || activeDetailTab.value === tab
 
 const axisSide = (axis, sign) => axis.sides?.find(side => side.signIndex === sign) || { bodies: [], weight: 0 }
@@ -128,20 +164,52 @@ const axisShare = (axis, side) => axis.totalWeight > 0 ? pct((side.weight || 0) 
       p.text-xs.text-slate-400 {{ t('analysis.subtitle') }}
     .text-xs.text-slate-400.tabular-nums {{ t(`zodiac.${chart.zodiac}`) || chart.zodiac }}
   .grid.gap-4(v-if='showPrimary' :class='placementGridClass')
-    .min-w-0(v-for='row in placementRows' :key='row.key' :data-testid='`insight-${row.key}`')
+    .min-w-0(
+      v-for='row in placementRows'
+      :key='row.key'
+      :data-testid='`insight-${row.key}`'
+      :data-element='row.element || undefined'
+    )
       .text-xs.uppercase.tracking-wide.text-slate-500 {{ row.label }}
       .mt-1.flex.items-baseline.gap-2
         .text-lg.font-semibold.text-slate-100.truncate {{ row.value }}
         .text-xs.text-slate-400.tabular-nums {{ row.degree }}
       .text-xs.text-slate-400.truncate {{ row.meta }}
+      .flex.items-center.gap-1.text-xs.text-slate-500(v-if='row.element')
+        span.chart-insight__element-marker(
+          aria-hidden='true'
+          :style='elementMarkerStyle(row.element)'
+        )
+        span {{ translated('analysis.placement_element', { element: elementLabel(row.element) }) }}
   .grid.gap-5.mt-5(v-if='showPrimary' :class='balanceGridClass')
-    section
+    section(
+      v-if='isTropical'
+      data-testid='insight-element-balance'
+      data-element-presentation='tropical'
+      :aria-label='translated("analysis.element_balance_aria")'
+    )
       h3.text-xs.font-semibold.text-slate-300.mb-3 {{ t('analysis.element_balance') }}
       .grid.gap-2
-        .grid.items-center.gap-3(class='grid-cols-[5rem_1fr_3rem]' v-for='row in signature.elements' :key='row.key')
-          .text-xs.text-slate-400 {{ t(`analysis.elements.${row.key}`) }}
-          .h-2.rounded-full(class='bg-white/10')
-            .h-2.rounded-full.bg-amber-300(:style='{ width: pct(row.share) }')
+        .grid.items-start.gap-3(
+          class='grid-cols-[5rem_1fr_3rem]'
+          v-for='row in elementRows'
+          :key='row.key'
+          :data-element='row.key'
+          :data-sign-indices='row.signIndices.join(",")'
+          :data-related-elements='row.relatedElements.join(",")'
+        )
+          .flex.min-w-0.items-center.gap-1
+            span.chart-insight__element-marker(
+              aria-hidden='true'
+              :style='elementMarkerStyle(row.key)'
+            )
+            .text-xs.text-slate-400.truncate {{ elementLabel(row.key) }}
+          div.min-w-0
+            .h-2.rounded-full(class='bg-white/10' role='img' :aria-label='elementBarAria(row)')
+              .h-2.rounded-full.chart-insight__element-bar(:style='elementBarStyle(row.key, row.share)')
+            .mt-1.flex.flex-wrap.gap-x-2.text-xs.text-slate-500
+              span {{ elementSignsLabel(row) }}
+              span(v-if='row.relatedElements.length') {{ relatedElementLabel(row) }}
           .text-xs.text-right.text-slate-400.tabular-nums {{ pct(row.share) }}
     section
       h3.text-xs.font-semibold.text-slate-300.mb-3 {{ t('analysis.modality_balance') }}
@@ -299,6 +367,15 @@ const axisShare = (axis, side) => axis.totalWeight > 0 ? pct((side.weight || 0) 
   background: rgb(252 211 77);
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.28);
   color: rgb(15 23 42);
+}
+
+.chart-insight__element-marker {
+  border: 1px solid;
+  border-radius: 999px;
+  display: inline-block;
+  flex: 0 0 auto;
+  height: 0.5rem;
+  width: 0.5rem;
 }
 
 .insight-retrograde-chip {

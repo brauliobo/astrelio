@@ -1,3 +1,5 @@
+import { elementForSign, normalizeSignIndex } from './elements.js'
+
 export const PLANET_WEIGHTS = {
   Sun:       5,
   Moon:      5,
@@ -16,34 +18,32 @@ export const PLANET_WEIGHTS = {
 }
 
 const SIGN_AXES = [
-  { id: 'aries_libra',       modality: 'cardinal', polarity: 'yang', elements: ['fire', 'air'] },
-  { id: 'taurus_scorpio',    modality: 'fixed',    polarity: 'yin',  elements: ['earth', 'water'] },
-  { id: 'gemini_sagittarius', modality: 'mutable', polarity: 'yang', elements: ['air', 'fire'] },
-  { id: 'cancer_capricorn',   modality: 'cardinal', polarity: 'yin', elements: ['water', 'earth'] },
-  { id: 'leo_aquarius',       modality: 'fixed',    polarity: 'yang', elements: ['fire', 'air'] },
-  { id: 'virgo_pisces',       modality: 'mutable', polarity: 'yin',  elements: ['earth', 'water'] },
+  { id: 'aries_libra',       modality: 'cardinal', polarity: 'yang' },
+  { id: 'taurus_scorpio',    modality: 'fixed',    polarity: 'yin' },
+  { id: 'gemini_sagittarius', modality: 'mutable', polarity: 'yang' },
+  { id: 'cancer_capricorn',   modality: 'cardinal', polarity: 'yin' },
+  { id: 'leo_aquarius',       modality: 'fixed',    polarity: 'yang' },
+  { id: 'virgo_pisces',       modality: 'mutable', polarity: 'yin' },
 ].map((axis, primarySignIndex) => ({
   ...axis,
   primarySignIndex,
   oppositeSignIndex: primarySignIndex + 6,
   signIndices:       [primarySignIndex, primarySignIndex + 6],
+  elements:          [elementForSign(primarySignIndex), elementForSign(primarySignIndex + 6)],
 }))
-
-const normalizedSignIndex = index => {
-  const integer = Math.trunc(index)
-  return ((integer % 12) + 12) % 12
-}
 
 const signIndexForLongitude = longitude => {
   const normalized = ((longitude % 360) + 360) % 360
   return Math.floor(normalized / 30)
 }
 
-export const oppositeSignIndex = index =>
-  (normalizedSignIndex(index) + 6) % 12
+export const oppositeSignIndex = index => {
+  const normalized = normalizeSignIndex(index)
+  return (normalized + 6) % 12
+}
 
 export const signAxisFor = index => {
-  const normalized = normalizedSignIndex(index)
+  const normalized = normalizeSignIndex(index)
   return SIGN_AXES[normalized < 6 ? normalized : normalized - 6]
 }
 

@@ -312,6 +312,54 @@ describe('chart interactions', () => {
     wrapper.unmount()
   })
 
+  it('clears shared tropical sign anchors across a sidereal round trip', async () => {
+    const wrapper = mount(Wheel, {
+      attachTo: document.body,
+      props: {
+        natal:                     chart,
+        selectionSummaryPlacement: 'floating',
+      },
+      global: {
+        plugins: [createI18n({ legacy: false, locale: 'en', messages })],
+      },
+    })
+    const anchor = { left: 80, top: 120, right: 120, bottom: 140, width: 40, height: 20 }
+    const highlight = {
+      bodies:    [],
+      aspectKey: '',
+      wheel:     {
+        kind:               'sign',
+        id:                 'sign-0',
+        signIndex:          0,
+        oppositeSignIndex: 6,
+        axisId:             'aries_libra',
+        element:            'fire',
+        relatedElements:    ['air'],
+      },
+    }
+
+    window.dispatchEvent(new CustomEvent(CHART_HIGHLIGHT_EVENT, {
+      detail: { highlight, pinned: false, anchor },
+    }))
+    await vi.waitFor(() => {
+      expect(document.body.querySelector('[data-testid="chart-selection-summary"]')).not.toBeNull()
+    })
+    expect(wrapper.get('[data-wheel-id="sign-0"]').attributes('data-highlight')).toBe('active')
+
+    await wrapper.setProps({ natal: { ...chart, zodiac: 'sidereal' } })
+    await nextTick()
+
+    expect(wrapper.get('[data-wheel-id="sign-0"]').attributes('data-highlight')).toBe('idle')
+    expect(document.body.querySelector('[data-testid="chart-selection-summary"]')).toBeNull()
+
+    await wrapper.setProps({ natal: chart })
+    await nextTick()
+
+    expect(wrapper.get('[data-wheel-id="sign-0"]').attributes('data-highlight')).toBe('idle')
+    expect(document.body.querySelector('[data-testid="chart-selection-summary"]')).toBeNull()
+    wrapper.unmount()
+  })
+
   it('shares planet hover state with glyphs and related aspect rows and lines', async () => {
     const wrapper = mountChartTools()
 

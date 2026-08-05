@@ -1397,7 +1397,12 @@
       "zodiac_inner_boundary": "Zodiac ring inner boundary",
       "house_outer_boundary": "House ring outer boundary",
       "house_inner_boundary": "House ring inner boundary",
-      "nakshatra_outer_boundary": "Nakshatra ring outer boundary"
+      "nakshatra_outer_boundary": "Nakshatra ring outer boundary",
+      "zodiac_element": "{sign}: {element} element"
+    },
+    "element_legend": {
+      "title": "Element legend",
+      "description": "Tropical zodiac signs grouped by element"
     },
     "wheel_details": {
       "labels": {
@@ -1463,7 +1468,9 @@
       "house": "House",
       "motion": "Motion",
       "allowed_orb": "Allowed orb",
-      "strength": "Strength"
+      "strength": "Strength",
+      "element": "Element",
+      "related_elements": "Related elements"
     },
     "sign_axis": {
       "selected_title": "{selected} ↔ {opposite}",
@@ -1497,6 +1504,12 @@
     "horizon": "Horizon signature",
     "meridian": "Public direction",
     "house_n": "House {house}",
+    "element_balance_aria": "Weighted element balance",
+    "element_signs": "Signs: {signs}",
+    "related_element": "Related element: {element}",
+    "element_bar_aria": "{element}: {share} of weighted placements",
+    "element_marker_aria": "{element} element marker",
+    "placement_element": "{element} element",
     "detail_tabs": {
       "label": "Insight sections",
       "patterns": "Patterns",

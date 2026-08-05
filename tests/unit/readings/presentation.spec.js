@@ -174,6 +174,8 @@ describe('reading presentation adapter', () => {
       signIndex:         0,
       oppositeSignIndex: 6,
       axisId:            'aries_libra',
+      element:           'fire',
+      relatedElements:   ['air'],
       relatedIds:        ['sign-6'],
       axis:              { signIndices: [0, 6] },
     })

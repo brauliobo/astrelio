@@ -1,6 +1,7 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { isTropicalChart } from '../../lib/astro/analysis.js'
 import { houseOf } from '../../lib/astro/houses.js'
 import { motionStateForSpeed } from '../../lib/astro/motion.js'
 import { signAxisFor } from '../../lib/astro/sign-axes.js'
@@ -26,11 +27,20 @@ const houseNames = computed(() => {
   const names = tm('houses.names')
   return Array.isArray(names) ? names : []
 })
+const chartIsTropical = computed(() => isTropicalChart(props.chart))
+const tropicalSign      = computed(() => chartIsTropical.value && props.wheel?.kind === 'sign')
 
 const label = (scope, key) => {
   const path = `${scope}.${key}`
   return te(path) ? t(path) : key
 }
+
+const selectionFactLabel = (key, fallback) => {
+  const path = `chart.selection_details.${key}`
+  return te(path) ? t(path) : fallback
+}
+
+const elementLabel = element => label('analysis', `elements.${element}`)
 
 const houseLabel = (house) => {
   const base = te('analysis.house_n') ? t('analysis.house_n', { house }) : `House ${house}`
@@ -121,7 +131,7 @@ const wheelTitle = computed(() => {
   if (!props.wheel) return ''
   if (props.wheel.kind === 'sign') {
     const selected = signs.value[props.wheel.signIndex] || ''
-    if (!props.wheel.axisId) return [selected, props.wheel.symbol].filter(Boolean).join(' ')
+    if (!tropicalSign.value || !props.wheel.axisId) return [selected, props.wheel.symbol].filter(Boolean).join(' ')
 
     const axis          = signAxisFor(props.wheel.signIndex)
     const oppositeIndex = props.wheel.oppositeSignIndex ?? axis?.signIndices.find(index => index !== props.wheel.signIndex)
@@ -133,6 +143,31 @@ const wheelTitle = computed(() => {
   return props.wheel.title || props.wheel.label || ''
 })
 
+const selectedElement = computed(() =>
+  tropicalSign.value ? props.wheel.element || '' : ''
+)
+const selectedRelatedElements = computed(() =>
+  tropicalSign.value && Array.isArray(props.wheel?.relatedElements)
+    ? [...new Set(props.wheel.relatedElements.filter(Boolean))]
+    : []
+)
+const elementDetails = computed(() => {
+  if (!selectedElement.value) return []
+
+  return [
+    {
+      key:   'element',
+      label: selectionFactLabel('element', 'Element'),
+      value: elementLabel(selectedElement.value),
+    },
+    {
+      key:   'related-element',
+      label: selectionFactLabel('related_elements', 'Related elements'),
+      value: selectedRelatedElements.value.map(elementLabel).join(' · '),
+    },
+  ].filter(row => row.value)
+})
+
 const title = computed(() => {
   if (props.wheel) return wheelTitle.value
   if (!aspectSelection.value) return placements.value[0]?.label || ''
@@ -140,7 +175,9 @@ const title = computed(() => {
 })
 
 const wheelDetails = computed(() => {
-  if (props.wheel?.kind !== 'sign' || !props.wheel.axisId) return (props.wheel?.details || []).filter(Boolean)
+  if (!tropicalSign.value || !props.wheel.axisId) {
+    return [...(props.wheel?.details || []).filter(Boolean), ...elementDetails.value]
+  }
 
   const axis = signAxisFor(props.wheel.signIndex)
   if (!axis) return []
@@ -162,6 +199,7 @@ const wheelDetails = computed(() => {
       label: t('chart.sign_axis.opposite'),
       value: signs.value[oppositeIndex] || '',
     },
+    ...elementDetails.value,
   ]
 })
 
@@ -272,6 +310,8 @@ Teleport(to='body' :disabled='placement !== "floating"')
     :data-selection-summary-placement='placement'
     :data-selection-summary-side='placement === "floating" ? floatingSide : undefined'
     :data-selection-kind='selectionKind'
+    :data-element='selectedElement || undefined'
+    :data-related-elements='selectedRelatedElements.length ? selectedRelatedElements.join(",") : undefined'
     :style='placement === "floating" ? floatingStyle : undefined'
   )
     .chart-selection-summary__title.text-xs.font-semibold.leading-snug {{ title }}
@@ -282,6 +322,7 @@ Teleport(to='body' :disabled='placement !== "floating"')
       .chart-selection-summary__line.text-xs.leading-snug(
         v-for='detail in wheelDetails'
         :key='detail.key || detail.label || detail'
+        :data-selection-fact='detail.key || undefined'
       )
         span.chart-selection-summary__label.font-medium(v-if='detail.label') {{ detail.label }}
         template(v-if='detail.label && detail.value') {{ ' ' }}

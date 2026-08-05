@@ -1397,7 +1397,12 @@
       "zodiac_inner_boundary": "Limite interno do anel zodiacal",
       "house_outer_boundary": "Limite externo do anel das casas",
       "house_inner_boundary": "Limite interno do anel das casas",
-      "nakshatra_outer_boundary": "Limite externo do anel de nakshatras"
+      "nakshatra_outer_boundary": "Limite externo do anel de nakshatras",
+      "zodiac_element": "{sign}: elemento {element}"
+    },
+    "element_legend": {
+      "title": "Legenda dos elementos",
+      "description": "Signos do zodíaco tropical agrupados por elemento"
     },
     "wheel_details": {
       "labels": {
@@ -1463,7 +1468,9 @@
       "house": "Casa",
       "motion": "Movimento",
       "allowed_orb": "Orbe permitido",
-      "strength": "Força"
+      "strength": "Força",
+      "element": "Elemento",
+      "related_elements": "Elementos relacionados"
     },
     "sign_axis": {
       "selected_title": "{selected} ↔ {opposite}",
@@ -1497,6 +1504,12 @@
     "horizon": "Assinatura do horizonte",
     "meridian": "Direção pública",
     "house_n": "Casa {house}",
+    "element_balance_aria": "Equilíbrio ponderado por elemento",
+    "element_signs": "Signos: {signs}",
+    "related_element": "Elemento relacionado: {element}",
+    "element_bar_aria": "{element}: {share} das posições ponderadas",
+    "element_marker_aria": "Marcador do elemento {element}",
+    "placement_element": "Elemento {element}",
     "detail_tabs": {
       "label": "Seções da análise",
       "patterns": "Padrões",

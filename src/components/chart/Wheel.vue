@@ -10,8 +10,10 @@ import TickRing from './wheel/TickRing.vue'
 import Frame from './wheel/Frame.vue'
 import SignAxisLayer from './wheel/SignAxisLayer.vue'
 import ZodiacRing from './wheel/ZodiacRing.vue'
+import ElementLegend from './wheel/ElementLegend.vue'
 import { CENTER, VIEWBOX_SIZE, WHEEL_RADII, mapsFromProps, norm360 } from './wheel/geometry.js'
 import { isTropicalChart } from '../../lib/astro/analysis.js'
+import { ELEMENT_KEYS, relatedElementsFor, signIndicesForElement } from '../../lib/astro/elements.js'
 import { broadcastChartHighlight, CHART_HIGHLIGHT_EVENT, normalizeHighlight, sameHighlight } from '../../lib/chart/highlight.js'
 import { isRadialAlignment, RADIAL_ALIGNMENT } from '../../lib/chart/radialSpacing.js'
 
@@ -81,6 +83,15 @@ const updateSmallScreen = () => {
   isSmallScreen.value = Boolean(smallScreenQuery?.matches)
 }
 
+const clearHighlightState = () => {
+  hoverHighlight.value        = null
+  pinnedHighlight.value       = null
+  sharedHoverHighlight.value  = null
+  sharedPinnedHighlight.value = null
+  sharedHoverAnchor.value     = null
+  sharedPinnedAnchor.value    = null
+}
+
 const maps                   = computed(() => mapsFromProps(props))
 const hasExteriorOrbitOption = computed(() => maps.value.some(map => map.exteriorOrbit))
 const visibleMaps            = computed(() =>
@@ -88,6 +99,13 @@ const visibleMaps            = computed(() =>
 )
 const baseChart            = computed(() => maps.value[0]?.chart || null)
 const tropicalChart        = computed(() => isTropicalChart(baseChart.value))
+const elementLegendItems   = computed(() => ELEMENT_KEYS.map(key => ({
+  key:             key,
+  color:           `var(--chart-element-${key})`,
+  fill:            `var(--chart-element-${key}-fill)`,
+  signIndices:     signIndicesForElement(key),
+  relatedElements: relatedElementsFor(key),
+})))
 const isSimpleChart        = computed(() => visibleMaps.value.length === 1)
 const hasExteriorOrbit     = computed(() => visibleMaps.value.some(map => map.exteriorOrbit))
 const automaticDisplayMode = computed(() =>
@@ -141,11 +159,15 @@ const activeAspectKey = computed(() =>
 const activeAspect = computed(() =>
   hasExternalHighlight.value ? null : localHighlight.value?.aspect || null
 )
-const activeWheel = computed(() =>
-  hasExternalHighlight.value ? null : localHighlight.value?.wheel || null
-)
+const isTropicalSignWheel = wheel =>
+  wheel?.kind === 'sign' && Boolean(wheel.axisId || wheel.element || wheel.relatedElements?.length)
+const activeWheel = computed(() => {
+  if (hasExternalHighlight.value) return null
+  const wheel = localHighlight.value?.wheel || null
+  return !tropicalChart.value && isTropicalSignWheel(wheel) ? null : wheel
+})
 const activeSignAxis = computed(() =>
-  tropicalChart.value && activeWheel.value?.kind === 'sign'
+  tropicalChart.value && activeWheel.value?.kind === 'sign' && activeWheel.value?.axisId
     ? {
         axisId:            activeWheel.value.axisId,
         signIndex:         activeWheel.value.signIndex,
@@ -215,6 +237,13 @@ const toggleExteriorOrbit = () => {
 watch(() => props.displayMode, () => {
   localDisplayMode.value = ''
 })
+
+watch(
+  () => [baseChart.value, baseChart.value?.zodiac],
+  (current, previous) => {
+    if (!previous || current[0] !== previous[0] || current[1] !== previous[1]) clearHighlightState()
+  },
+)
 
 onMounted(() => {
   window.addEventListener(CHART_HIGHLIGHT_EVENT, onSharedHighlight)
@@ -336,6 +365,7 @@ onBeforeUnmount(() => {
         :wheel-shift='wheelShift'
         :symbols='zodiacSymbols || undefined'
         :highlighted-wheel='activeWheel'
+        :tropical='tropicalChart'
         :complementary-sign-axis='tropicalChart'
         @highlight='setHoverHighlight'
         @clear-highlight='clearHoverHighlight'
@@ -367,6 +397,10 @@ onBeforeUnmount(() => {
       :wheel='activeWheel'
       placement='overlay'
     )
+  ElementLegend(
+    v-if='baseChart && tropicalChart'
+    :elements='elementLegendItems'
+  )
   SelectionSummary(
     v-if='activeSummaryPlacement === "below" && hasActiveSummary'
     :chart='baseChart'

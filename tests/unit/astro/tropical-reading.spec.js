@@ -4,6 +4,7 @@ import {
   TROPICAL_READING_SCHEMA_VERSION,
   tropicalReadingDocument,
 } from '../../../src/lib/astro/interpretations.js'
+import { elementForSign } from '../../../src/lib/astro/elements.js'
 
 const mk = (name, longitude, options = {}) => ({
   name,
@@ -274,6 +275,7 @@ describe('Tropical psychological reading document', () => {
 
     expect(sun.facts).toMatchObject({
       bodyRole:  'Sun',
+      element:   'fire',
       signStyle: 0,
       houseArea: 1,
       motionNote: 'direct',
@@ -285,6 +287,19 @@ describe('Tropical psychological reading document', () => {
     expect(document.prominence).toHaveLength(3)
     expect(document.strengths.length).toBeLessThanOrEqual(3)
     expect(document.challenges.length).toBeLessThanOrEqual(3)
+  })
+
+  it('uses canonical elements for placement and distribution facts', () => {
+    const document       = tropicalReadingDocument(chart, [])
+    const placementRows  = document.evidence.filter(row => row.kind === 'placement')
+    const elementRow     = document.evidence.find(row => row.id === 'distribution:element')
+
+    expect(placementRows.every(row => row.facts.element === elementForSign(row.facts.signIndex))).toBe(true)
+    expect(elementRow.facts).toMatchObject({
+      category:  'element',
+      dominant:  'fire',
+      values:    { fire: 13, air: 8, water: 6, earth: 3 },
+    })
   })
 
   it('merges matching sign and house stelliums into one configuration', () => {
