@@ -18,6 +18,8 @@ const BODIES = [
   { name: 'Pluto',   body: SWISS_BODY.Pluto }
 ]
 
+const OPTIONAL_POINTS = new Set(['NorthNode', 'SouthNode', 'Lilith', 'Chiron'])
+
 const ORBIT_PERIOD_DAYS = {
   Moon:    27.3217,
   Mercury: 87.969,
@@ -80,6 +82,15 @@ const swissPoint = (name, body, jd, mode, opts = {}) => {
   return point
 }
 
+const optionalSwissPoint = (name, body, jd, mode, unavailableBodies) => {
+  try {
+    return swissPoint(name, body, jd, mode)
+  } catch {
+    if (OPTIONAL_POINTS.has(name)) unavailableBodies.push(name)
+    return null
+  }
+}
+
 const siderealCusps = (houses, jd, mode, system) => {
   const ascendant = sidereal(houses.ascendant, jd, mode)
   if (mode === 'sidereal' && system === 'whole_sign') {
@@ -108,22 +119,30 @@ export const computeChart = (
 ) => {
   const options   = { zodiac: 'tropical', houseSystem: 'placidus', nodeMode: 'mean', ...opts }
   const positions = BODIES.map(({ name, body }) => swissPoint(name, body, jdUt, options.zodiac, { orbit: true }))
-  const northNode = swissPoint(
+  const unavailableBodies = []
+  const northNode = optionalSwissPoint(
     'NorthNode',
     options.nodeMode === 'true' ? SWISS_BODY.NorthNodeTrue : SWISS_BODY.NorthNodeMean,
     jdUt,
-    options.zodiac
+    options.zodiac,
+    unavailableBodies
   )
-  positions.push(northNode)
-  positions.push({
-    ...northNode,
-    name:      'SouthNode',
-    longitude: norm360(northNode.longitude + 180),
-  })
+  if (northNode) {
+    positions.push(northNode)
+    positions.push({
+      ...northNode,
+      name:      'SouthNode',
+      longitude: norm360(northNode.longitude + 180),
+    })
+  } else {
+    unavailableBodies.push('SouthNode')
+  }
   // VegaPlus uses Swiss Ephemeris mean lunar apogee for Lilith; the old local
   // formula tracked the perigee/opposite point, placing Lilith about 180° off.
-  positions.push(swissPoint('Lilith', SWISS_BODY.Lilith, jdUt, options.zodiac))
-  positions.push(swissPoint('Chiron', SWISS_BODY.Chiron, jdUt, options.zodiac))
+  const lilith = optionalSwissPoint('Lilith', SWISS_BODY.Lilith, jdUt, options.zodiac, unavailableBodies)
+  const chiron = optionalSwissPoint('Chiron', SWISS_BODY.Chiron, jdUt, options.zodiac, unavailableBodies)
+  if (lilith) positions.push(lilith)
+  if (chiron) positions.push(chiron)
 
   const houses      = calcHouses(options.houseSystem, jdUt, lat, lon)
   const ascendant   = sidereal(houses.ascendant, jdUt, options.zodiac)
@@ -145,7 +164,8 @@ export const computeChart = (
     spirit:    sun && moon ? lotLongitude(ascendant, sun, moon) : null,
     vertex:    chartPoints.vertex,
     eastPoint: chartPoints.eastPoint,
-    positions
+    positions,
+    unavailableBodies,
   }
 }
 

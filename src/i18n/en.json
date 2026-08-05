@@ -1352,6 +1352,8 @@
     "moon_phase": "Moon phase",
     "house_system": "House system",
     "select_chart": "Select a chart",
+    "calculation_error": "This chart could not be calculated with the current birth data and settings.",
+    "unavailable_points": "Some chart points are unavailable for this date: {bodies}.",
     "compare_with": "Compare with",
     "transit_date": "Transit date",
     "progression_date": "Progression date",

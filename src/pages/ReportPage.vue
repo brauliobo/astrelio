@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
 import { REPORT_PRESET_KEYS, useSettingsStore } from '../stores/settings.js'
-import { useNatalChart } from '../composables/useChart.js'
+import { useNatalChartState } from '../composables/useChart.js'
 import { naturalAspects } from '../lib/astro/aspects.js'
 import { transitsFor } from '../lib/astro/transits.js'
 import { moonPhaseLabel } from '../lib/astro/ephemeris.js'
@@ -40,7 +40,7 @@ const modality        = computed(() => normalizeReportModality(route.query.modal
 const modalitySlug    = computed(() => reportModalitySlug(modality.value))
 const isTropical      = computed(() => modality.value === 'astrology')
 const natalRoute      = computed(() => natalRouteForPerson(person.value))
-const tropicalChart   = useNatalChart(person, settings)
+const { chart: tropicalChart, error: tropicalError } = useNatalChartState(person, settings)
 const vedicChart      = ref(null)
 const vedicLoading    = ref(false)
 const diagnosticError = ref(null)
@@ -245,7 +245,7 @@ section.report-page(ref='reportRoot' data-testid='report-page')
           span {{ section.label }}
     .ui-panel(v-if='vedicLoading' data-testid='report-loading')
       p.text-sm.text-slate-400 {{ t('vedic.loading') }}
-    .ui-panel(v-else-if='diagnosticError' data-testid='report-error')
+    .ui-panel(v-else-if='diagnosticError || (isTropical && tropicalError)' data-testid='report-error')
       p.text-sm.text-rose-300 {{ t('report.calculation_error') }}
     .report-print-surface(v-else-if='activeChart' :data-testid='`${modalitySlug}-print-report`')
       header.report-print-header

@@ -38,7 +38,10 @@ const mocks = vi.hoisted(() => {
 
 vi.mock('../../../src/composables/useChart.js', async () => {
   const { shallowRef } = await import('vue')
-  return { useNatalChart: () => shallowRef(mocks.tropicalChart) }
+  return {
+    useNatalChart:      () => shallowRef(mocks.tropicalChart),
+    useNatalChartState: () => ({ chart: shallowRef(mocks.tropicalChart), error: shallowRef(null) }),
+  }
 })
 
 vi.mock('../../../src/lib/astro/aspects.js', () => ({

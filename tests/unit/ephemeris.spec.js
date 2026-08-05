@@ -20,6 +20,15 @@ describe('ephemeris', () => {
     expect(c.ascendant).toBeLessThan(360)
   })
 
+  it('keeps the chart usable when an optional point is outside its ephemeris range', () => {
+    const c = computeChart(1721426, 0, 0)
+
+    expect(c.positions).toHaveLength(13)
+    expect(c.positions.some(position => position.name === 'Chiron')).toBe(false)
+    expect(c.unavailableBodies).toEqual(['Chiron'])
+    expect(c.positions.find(position => position.name === 'Sun').longitude).toBeGreaterThanOrEqual(0)
+  })
+
   it('Sun in Aquarius for 1986-02-12 (Vega Plus reference)', () => {
     const jd  = localToJdUt(REF.isoLocal, REF.tzOffsetMinutes)
     const c   = computeChart(jd, REF.lat, REF.lon)

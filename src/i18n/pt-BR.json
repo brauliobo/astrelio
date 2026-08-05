@@ -1352,6 +1352,8 @@
     "moon_phase": "Fase da Lua",
     "house_system": "Sistema de casas",
     "select_chart": "Selecione um mapa",
+    "calculation_error": "Não foi possível calcular este mapa com os dados de nascimento e as configurações atuais.",
+    "unavailable_points": "Alguns pontos do mapa não estão disponíveis para esta data: {bodies}.",
     "compare_with": "Comparar com",
     "transit_date": "Data dos trânsitos",
     "progression_date": "Data da progressão",

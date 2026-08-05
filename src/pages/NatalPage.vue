@@ -5,7 +5,7 @@ import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
 import { useSettingsStore } from '../stores/settings.js'
-import { useNatalChart } from '../composables/useChart.js'
+import { useNatalChartState } from '../composables/useChart.js'
 import { naturalAspects } from '../lib/astro/aspects.js'
 import { transitsFor } from '../lib/astro/transits.js'
 import { moonPhaseLabel } from '../lib/astro/ephemeris.js'
@@ -44,7 +44,7 @@ const savedPerson    = computed(() => people.byId(session.activePersonId) || peo
 const hasRoutePerson = computed(() => hasPersonRouteQuery(route.query))
 const routePerson    = computed(() => hasRoutePerson.value ? personFromRouteQuery(route.query) : null)
 const person         = computed(() => hasRoutePerson.value ? routePerson.value : savedPerson.value)
-const chart          = useNatalChart(person, settings)
+const { chart, error: chartError } = useNatalChartState(person, settings)
 const transit        = computed(() => person.value
   ? transitsFor(session.transitDateMs || Date.now(), person.value.lat, person.value.lon, {
     zodiac:      settings.zodiac,
@@ -114,7 +114,10 @@ section.natal-page(data-testid='natal-page')
         @click='directView = view.id'
       ) {{ view.label }}
 
-    template(v-if='activeView === "chart"')
+    .ui-panel(v-if='chartError' data-testid='natal-error')
+      p.text-sm.text-rose-300 {{ t('chart.calculation_error') }}
+
+    template(v-else-if='activeView === "chart"')
       .ui-panel.mx-auto.w-full(data-testid='natal-chart-panel')
         Wheel(
           :natal='chart'
@@ -131,7 +134,10 @@ section.natal-page(data-testid='natal-page')
         v-if='chart'
       )
 
-    div(v-else-if='activeView === "reading" && reading' data-testid='natal-reading')
+    .ui-panel(v-if='chart && chart.unavailableBodies?.length' data-testid='chart-warning')
+      p.text-sm.text-amber-200 {{ t('chart.unavailable_points', { bodies: chart.unavailableBodies.map(name => t(`planets.${name}`)).join(', ') }) }}
+
+    div(v-if='!chartError && activeView === "reading" && reading' data-testid='natal-reading')
       ReadingDocumentView(:document='reading' :chart='chart')
         template(#reference)
           .workspace-reference-chart(data-testid='workspace-reference-chart')
@@ -143,10 +149,10 @@ section.natal-page(data-testid='natal-page')
               :planet-glyph-renderer='settings.planetGlyphRenderer'
               display-mode='clean'
             )
-    .ui-panel(v-else-if='activeView === "reading"')
+    .ui-panel(v-else-if='!chartError && activeView === "reading"')
       p.text-sm.text-slate-400 {{ t('readings.document.unavailable') }}
 
-    .grid.gap-6(v-else-if='activeView === "data"' data-testid='natal-data')
+    .grid.gap-6(v-else-if='!chartError && activeView === "data"' data-testid='natal-data')
       .ui-panel(v-if='chart && transit' data-testid='natal-aspect-matrix-panel')
         .natal-data-aspect-grid
           .min-w-0

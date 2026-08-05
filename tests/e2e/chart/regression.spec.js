@@ -23,6 +23,17 @@ const FRANCISCO_CHART = {
   createdAt:       1234567891,
 }
 
+const HISTORICAL_CHART = {
+  id:              'historical-chart',
+  name:            'Historical Chart',
+  isoLocal:        '0001-01-01T12:00',
+  tzOffsetMinutes: 0,
+  lat:             0,
+  lon:             0,
+  placeLabel:      'Historical Place',
+  createdAt:       1234567892,
+}
+
 test.describe('Chart regressions', () => {
   test('matches the VegaPlus reference for Bráulio with historical Brazil DST', async ({ page }) => {
     await seedSettings(page)
@@ -126,5 +137,17 @@ test.describe('Chart regressions', () => {
     groups.forEach((names) => {
       expect(new Set(names.map(name => Math.round(radii[name]))).size).toBe(names.length)
     })
+  })
+
+  test('renders a chart warning instead of crashing when Chiron is out of range', async ({ page }) => {
+    await seedSettings(page)
+    await seedPeople(page, [HISTORICAL_CHART])
+    await seedSession(page, HISTORICAL_CHART.id)
+
+    await page.goto('/#/natal')
+
+    await expect(page.getByTestId('natal-chart-panel')).toBeVisible()
+    await expect(page.getByTestId('chart-warning')).toContainText('Quíron')
+    await expect(page.getByTestId('natal-error')).toHaveCount(0)
   })
 })
