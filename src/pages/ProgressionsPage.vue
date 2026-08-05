@@ -11,6 +11,7 @@ import { localToJdUt, localToUtcMs, offsetMinutesForPerson } from '../lib/astro/
 import { crossAspects } from '../lib/astro/aspects.js'
 import Comparison from '../components/chart/Comparison.vue'
 import ComparisonInsightPanel from '../components/chart/ComparisonInsightPanel.vue'
+import ProgressionAnimator from '../components/timing/ProgressionAnimator.vue'
 
 const { t }    = useI18n()
 const people   = usePeopleStore()
@@ -26,12 +27,17 @@ const dateInput = computed({
   set: (v) => { dateMs.value = DateTime.fromISO(v).toMillis(); session.setProgressionDate(dateMs.value) }
 })
 
+const progressionBirthMs = computed(() => person.value
+  ? localToUtcMs(person.value.isoLocal, offsetMinutesForPerson(person.value))
+  : null
+)
+
 const progressed = computed(() => {
   if (!person.value) return null
   const tzOffsetMinutes = offsetMinutesForPerson(person.value)
-  const birthMs         = localToUtcMs(person.value.isoLocal, tzOffsetMinutes)
-  const natalJdUt       = localToJdUt(person.value.isoLocal, tzOffsetMinutes)
-  return secondaryProgression(natalJdUt, dateMs.value, birthMs, person.value.lat, person.value.lon, settings.chartOptions)
+  const birthTimestamp = progressionBirthMs.value
+  const natalJdUt      = localToJdUt(person.value.isoLocal, tzOffsetMinutes)
+  return secondaryProgression(natalJdUt, dateMs.value, birthTimestamp, person.value.lat, person.value.lon, settings.chartOptions)
 })
 
 const aspects = computed(() => natal.value && progressed.value ? crossAspects(natal.value, progressed.value, settings.aspectOptions) : [])
@@ -42,18 +48,17 @@ section.progressions-page(data-testid='progressions-page')
   div(v-if='!person')
     p.text-slate-400 {{ t('chart.select_chart') }}
   div(v-else)
-    .flex.items-center.gap-3.mb-4
-      label.text-xs.text-slate-400 {{ t('chart.progression_date') }}
-      input.ui-control.ui-control-sm(
-        type='date'
-        v-model='dateInput'
-        data-testid='prog-date'
-      )
-      button.text-xs.text-amber-300(
-        class='hover:text-amber-200'
-        @click='dateInput = new Date().toISOString().slice(0,10)'
-        data-testid='btn-today'
-      ) {{ t('common.today') }}
+    ProgressionAnimator(
+      :person='person'
+      :natal='natal'
+      :progressed='progressed'
+      :aspects='aspects'
+      :date-ms='dateMs'
+      :date-input='dateInput'
+      :birth-ms='progressionBirthMs'
+      :planet-glyph-renderer='settings.planetGlyphRenderer'
+      @update:date-input='dateInput = $event'
+    )
     ComparisonInsightPanel.mb-6(:aspects='aspects' :base='natal' :comparison='progressed' mode='progression')
     Comparison(
       v-if='natal && progressed'

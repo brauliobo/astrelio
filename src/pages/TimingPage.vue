@@ -23,6 +23,7 @@ import Insight from '../components/chart/Insight.vue'
 import ComparisonInsightPanel from '../components/chart/ComparisonInsightPanel.vue'
 import HumanDesignTimingTools from '../components/timing/HumanDesignTimingTools.vue'
 import TimingContextChips from '../components/timing/TimingContextChips.vue'
+import ProgressionAnimator from '../components/timing/ProgressionAnimator.vue'
 
 const props = defineProps({
   technique: { type: String, default: '' },
@@ -107,6 +108,11 @@ const progressionDateInput = computed({
   },
 })
 
+const progressionBirthMs = computed(() => person.value
+  ? localToUtcMs(person.value.isoLocal, offsetMinutesForPerson(person.value))
+  : null
+)
+
 const solarReturnYear = computed({
   get: () => session.solarReturnYear || new Date().getFullYear(),
   set: (value) => {
@@ -157,7 +163,7 @@ const transitAspects = computed(() =>
 const progressed = computed(() => {
   if (!person.value) return null
   const tzOffsetMinutes = offsetMinutesForPerson(person.value)
-  const birthMs         = localToUtcMs(person.value.isoLocal, tzOffsetMinutes)
+  const birthMs         = progressionBirthMs.value
   const natalJdUt       = localToJdUt(person.value.isoLocal, tzOffsetMinutes)
   return secondaryProgression(natalJdUt, progressionDateMs.value, birthMs, person.value.lat, person.value.lon, {
     zodiac:      settings.zodiac,
@@ -360,19 +366,17 @@ section.timing-page(data-testid='timing-page')
         )
 
     section.progressions-page(v-else-if='timingModality === "astrology" && activeTechnique === "progressions"' data-testid='progressions-page')
-      .flex.items-center.gap-3.mb-4
-        label.text-xs.text-slate-400 {{ t('chart.progression_date') }}
-        input.ui-control.ui-control-sm(
-          type='date'
-          v-model='progressionDateInput'
-          data-testid='prog-date'
-        )
-        button.text-xs.text-amber-300(
-          class='hover:text-amber-200'
-          type='button'
-          @click='progressionDateInput = new Date().toISOString().slice(0,10)'
-          data-testid='btn-today'
-        ) {{ t('common.today') }}
+      ProgressionAnimator(
+        :person='person'
+        :natal='natal'
+        :progressed='progressed'
+        :aspects='progressionAspects'
+        :date-ms='progressionDateMs'
+        :date-input='progressionDateInput'
+        :birth-ms='progressionBirthMs'
+        :planet-glyph-renderer='settings.planetGlyphRenderer'
+        @update:date-input='progressionDateInput = $event'
+      )
       ComparisonInsightPanel.mb-6(:aspects='progressionAspects' :base='natal' :comparison='progressed' mode='progression')
       Comparison(
         v-if='natal && progressed'
