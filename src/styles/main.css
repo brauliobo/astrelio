@@ -59,8 +59,6 @@
   --chart-element-air-fill: rgb(250 204 21 / 0.2);
   --chart-element-water: #38BDF8;
   --chart-element-water-fill: rgb(56 189 248 / 0.2);
-  --chart-element-legend-bg: rgb(15 23 42 / 0.52);
-  --chart-element-legend-border: rgb(255 255 255 / 0.1);
   --chart-frame-stroke: #d7e1ee;
   --chart-house-fill-a: #18243a;
   --chart-house-fill-b: #21304a;
@@ -179,8 +177,6 @@ html[data-theme="light"] {
   --chart-element-air-fill: rgb(161 98 7 / 0.14);
   --chart-element-water: #0369A1;
   --chart-element-water-fill: rgb(3 105 161 / 0.14);
-  --chart-element-legend-bg: rgb(255 255 255 / 0.74);
-  --chart-element-legend-border: rgb(15 23 42 / 0.12);
   --chart-frame-stroke: #0f172a;
   --chart-house-fill-a: #fcfdff;
   --chart-house-fill-b: #f3f6fa;

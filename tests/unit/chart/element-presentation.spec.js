@@ -70,13 +70,9 @@ describe('element-aware insight presentation', () => {
     expect(wrapper.text()).toContain('Modality rhythm')
   })
 
-  it('renders the tropical legend outside the clipped wheel stage', () => {
+  it('does not render a standalone tropical element legend', () => {
     const tropical = mountWheel(chart)
-    const stage    = tropical.get('[data-testid="chart-wheel-stage"]')
-    const legend   = tropical.get('[data-testid="element-legend"]')
-
-    expect(legend.element.parentElement).not.toBe(stage.element)
-    expect(legend.findAll('[data-element]')).toHaveLength(4)
+    expect(tropical.find('[data-testid="element-legend"]').exists()).toBe(false)
 
     const sidereal = mountWheel({ ...chart, zodiac: 'sidereal' })
     expect(sidereal.find('[data-testid="element-legend"]').exists()).toBe(false)

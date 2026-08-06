@@ -10,10 +10,8 @@ import TickRing from './wheel/TickRing.vue'
 import Frame from './wheel/Frame.vue'
 import SignAxisLayer from './wheel/SignAxisLayer.vue'
 import ZodiacRing from './wheel/ZodiacRing.vue'
-import ElementLegend from './wheel/ElementLegend.vue'
 import { CENTER, VIEWBOX_SIZE, WHEEL_RADII, mapsFromProps, norm360 } from './wheel/geometry.js'
 import { isTropicalChart } from '../../lib/astro/analysis.js'
-import { ELEMENT_KEYS, relatedElementsFor, signIndicesForElement } from '../../lib/astro/elements.js'
 import { broadcastChartHighlight, CHART_HIGHLIGHT_EVENT, normalizeHighlight, sameHighlight } from '../../lib/chart/highlight.js'
 import { isRadialAlignment, RADIAL_ALIGNMENT } from '../../lib/chart/radialSpacing.js'
 
@@ -99,13 +97,6 @@ const visibleMaps            = computed(() =>
 )
 const baseChart            = computed(() => maps.value[0]?.chart || null)
 const tropicalChart        = computed(() => isTropicalChart(baseChart.value))
-const elementLegendItems   = computed(() => ELEMENT_KEYS.map(key => ({
-  key:             key,
-  color:           `var(--chart-element-${key})`,
-  fill:            `var(--chart-element-${key}-fill)`,
-  signIndices:     signIndicesForElement(key),
-  relatedElements: relatedElementsFor(key),
-})))
 const isSimpleChart        = computed(() => visibleMaps.value.length === 1)
 const hasExteriorOrbit     = computed(() => visibleMaps.value.some(map => map.exteriorOrbit))
 const automaticDisplayMode = computed(() =>
@@ -397,10 +388,6 @@ onBeforeUnmount(() => {
       :wheel='activeWheel'
       placement='overlay'
     )
-  ElementLegend(
-    v-if='baseChart && tropicalChart'
-    :elements='elementLegendItems'
-  )
   SelectionSummary(
     v-if='activeSummaryPlacement === "below" && hasActiveSummary'
     :chart='baseChart'

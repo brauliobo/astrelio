@@ -1402,10 +1402,6 @@
       "nakshatra_outer_boundary": "Limite externo do anel de nakshatras",
       "zodiac_element": "{sign}: elemento {element}"
     },
-    "element_legend": {
-      "title": "Legenda dos elementos",
-      "description": "Signos do zodíaco tropical agrupados por elemento"
-    },
     "wheel_details": {
       "labels": {
         "layer": "Camada",

@@ -1402,10 +1402,6 @@
       "nakshatra_outer_boundary": "Nakshatra ring outer boundary",
       "zodiac_element": "{sign}: {element} element"
     },
-    "element_legend": {
-      "title": "Element legend",
-      "description": "Tropical zodiac signs grouped by element"
-    },
     "wheel_details": {
       "labels": {
         "layer": "Layer",
