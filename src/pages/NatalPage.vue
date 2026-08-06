@@ -192,6 +192,25 @@ section.natal-page(data-testid='natal-page')
   grid-template-columns: minmax(0, 1fr);
 }
 
+.natal-page,
+.natal-page > .grid,
+.natal-page > .grid > *,
+.natal-page [data-testid='natal-data'],
+.natal-page [data-testid='natal-data'] > *,
+.natal-data-aspect-grid,
+.natal-data-aspect-grid > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.natal-page [data-testid='natal-data'] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.natal-page [data-testid='natal-data'] > .grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .natal-page [data-testid='natal-chart-panel'],
 .natal-page :deep(.chart-insight) {
   max-width: 64rem;

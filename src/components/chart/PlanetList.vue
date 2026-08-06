@@ -149,6 +149,12 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.planet-list {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
+
 .planet-motion--retrograde {
   color: var(--chart-retrograde-text);
 }

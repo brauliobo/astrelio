@@ -105,26 +105,24 @@ const rows = computed(() => interpretedAspects.value.map((item, index) => {
   data-testid='comparison-insight-panel'
   :data-flow='mode'
 )
-  .flex.flex-wrap.items-start.justify-between.gap-3.mb-4
-    div
+  .comparison-insight-panel__header.flex.flex-wrap.items-start.justify-between.gap-3.mb-4
+    .comparison-insight-panel__heading
       h2.text-sm.font-semibold.text-slate-100 {{ t(`comparison_insights.titles.${mode}`) }}
       p.text-xs.text-slate-400 {{ t(`comparison_insights.subtitles.${mode}`) }}
-    .flex.flex-wrap.gap-2.text-xs(v-if='dominantAspect')
+    .comparison-insight-panel__summary.flex.flex-wrap.gap-2.text-xs(v-if='dominantAspect')
       span.rounded-full.px-2.py-1.text-slate-300(class='bg-white/5')
         | {{ t('comparison_insights.dominant', { aspect: t(`aspects.${dominantAspect.type}`), count: dominantAspect.count }) }}
       span.rounded-full.px-2.py-1.text-slate-300(class='bg-white/5')
         | {{ t('comparison_insights.applying_count', { count: applyingCount }) }}
 
-  .grid(
+  .comparison-insight-panel__rows(
     v-if='rows.length'
-    class='gap-4 divide-white/10 md:grid-cols-3 md:divide-x'
   )
-    section.min-w-0(
+    section.comparison-insight-panel__row(
       v-for='row in rows'
       :key='row.key'
       :data-insight-kind='row.kind'
       data-testid='comparison-insight-row'
-      class='md:pr-4 last:pr-0'
     )
       .text-xs.uppercase.tracking-wide.text-slate-500 {{ row.eyebrow }}
       h3.mt-1.text-sm.font-semibold.text-slate-100 {{ row.title }}
@@ -138,3 +136,55 @@ const rows = computed(() => interpretedAspects.value.map((item, index) => {
     :correlations='houseCorrelations'
   )
 </template>
+
+<style scoped>
+.comparison-insight-panel {
+  container-type: inline-size;
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+}
+
+.comparison-insight-panel__header,
+.comparison-insight-panel__heading,
+.comparison-insight-panel__summary,
+.comparison-insight-panel__row {
+  min-width: 0;
+}
+
+.comparison-insight-panel__heading {
+  flex: 1 1 14rem;
+}
+
+.comparison-insight-panel__summary {
+  flex: 0 1 auto;
+  justify-content: flex-end;
+}
+
+.comparison-insight-panel__rows {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.comparison-insight-panel__row h3,
+.comparison-insight-panel__row p {
+  overflow-wrap: anywhere;
+}
+
+@container (min-width: 42rem) {
+  .comparison-insight-panel__rows {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .comparison-insight-panel__row {
+    border-right: 1px solid rgb(255 255 255 / 0.1);
+    padding-right: 1rem;
+  }
+
+  .comparison-insight-panel__row:last-child {
+    border-right: 0;
+    padding-right: 0;
+  }
+}
+</style>

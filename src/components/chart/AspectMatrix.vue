@@ -256,7 +256,7 @@ onBeforeUnmount(() => {
         span.aspect-sign {{ formatPosition(point.longitude).sign }}
         span.tabular-nums {{ formatPosition(point.longitude).minutes }}
         span.aspect-retro(v-if='pointMotion(point)' :class='motionClass(pointMotion(point))') {{ pointMotion(point) }}
-    .aspect-matrix-stage
+    .aspect-matrix-stage(data-testid='aspect-matrix-stage')
       .aspect-matrix-grid(:style='gridStyle' role='grid' :aria-label='title')
         .aspect-matrix-corner
         .aspect-matrix-header(
@@ -365,9 +365,9 @@ onBeforeUnmount(() => {
 .aspect-matrix-grid {
   display: grid;
   gap: 1px;
-  justify-content: center;
-  max-width: 100%;
-  width: 100%;
+  justify-content: start;
+  min-width: 100%;
+  width: max-content;
 }
 
 .aspect-matrix-head {
@@ -398,7 +398,12 @@ onBeforeUnmount(() => {
   flex: 0 1 auto;
   max-width: 100%;
   min-width: 0;
-  overflow: hidden;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.aspect-filter-group::-webkit-scrollbar {
+  display: none;
 }
 
 .aspect-filter-button {
@@ -407,7 +412,7 @@ onBeforeUnmount(() => {
   border-left: 1px solid rgb(255 255 255 / 0.08);
   color: rgb(148 163 184);
   cursor: pointer;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   font-size: 0.69rem;
   font-weight: 700;
   line-height: 1;
@@ -445,8 +450,12 @@ onBeforeUnmount(() => {
 }
 
 .aspect-matrix-stage {
+  max-width: 100%;
   min-width: 0;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
   width: 100%;
 }
 

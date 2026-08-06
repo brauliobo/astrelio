@@ -1,14 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { REF_PERSON, SECOND_PERSON, seedPeople, seedSession, seedSettings } from './support/fixtures.js'
-
-const expectWithinViewport = async (page, locator) => {
-  const box      = await locator.boundingBox()
-  const viewport = page.viewportSize()
-
-  expect(box).not.toBeNull()
-  expect(box.width).toBeLessThanOrEqual(viewport.width)
-  expect(box.x).toBeGreaterThanOrEqual(0)
-}
+import { expectWithinViewport } from './support/layout.js'
 
 test.describe('Mobile workspace surfaces', () => {
   test.beforeEach(async ({ page }) => {

@@ -44,6 +44,10 @@ const selectMode = (mode) => {
   white-space: nowrap;
 }
 
+.chart-display-mode {
+  min-width: 0;
+}
+
 .chart-display-mode__button:hover,
 .chart-display-mode__button:focus-visible {
   background: rgb(255 255 255 / 0.1);
@@ -57,8 +61,10 @@ const selectMode = (mode) => {
 }
 
 .chart-display-mode > div {
+  flex: 1 1 auto;
   flex-wrap: nowrap;
   max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
   scrollbar-width: none;
 }

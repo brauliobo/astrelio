@@ -262,7 +262,7 @@ const activeTimingLabel = computed(() => ({
 
 <template lang="pug">
 section.timing-page(data-testid='timing-page')
-  .flex.flex-wrap.items-center.justify-between.gap-3.mb-5
+  .timing-page__heading.flex.flex-wrap.items-center.justify-between.gap-3.mb-5
     div
       h1.text-xl.font-semibold.text-slate-100 {{ t('techniques.workspace.title') }}
       p.text-sm.text-slate-400(v-if='person && timingModality === "astrology"') {{ t('techniques.workspace.subtitle') }} · {{ person.name }}
@@ -503,6 +503,24 @@ section.timing-page(data-testid='timing-page')
 </template>
 
 <style scoped>
+.timing-page,
+.timing-page__heading,
+.timing-page__heading > div,
+.transit-toolbar,
+.transit-toolbar__title,
+.transit-toolbar__controls,
+.transit-side-panel,
+.transit-matrix-panel {
+  min-width: 0;
+}
+
+.timing-page__heading h1,
+.timing-page__heading p,
+.transit-toolbar__title h2,
+.transit-toolbar__title p {
+  overflow-wrap: anywhere;
+}
+
 .transit-toolbar {
   align-items: center;
   background: color-mix(in srgb, var(--app-panel-strong) 84%, transparent);
@@ -548,6 +566,7 @@ section.timing-page(data-testid='timing-page')
 }
 
 .transit-date-control input {
+  max-width: 100%;
   min-width: 12.5rem;
 }
 
@@ -617,6 +636,7 @@ section.timing-page(data-testid='timing-page')
   align-content: start;
   display: grid;
   gap: 1rem;
+  grid-template-columns: minmax(0, 1fr);
   min-width: 0;
   padding: 0.9rem;
 }
@@ -625,7 +645,11 @@ section.timing-page(data-testid='timing-page')
   background: transparent;
   border: 0;
   box-shadow: none;
+  justify-self: stretch;
+  max-width: 100%;
+  min-width: 0;
   padding: 0;
+  width: auto;
 }
 
 .transit-aspects-panel {
@@ -635,7 +659,6 @@ section.timing-page(data-testid='timing-page')
 
 .transit-matrix-panel {
   margin-top: 1rem;
-  overflow: hidden;
   padding: 0.9rem;
 }
 

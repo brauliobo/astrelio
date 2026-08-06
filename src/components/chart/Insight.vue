@@ -333,6 +333,21 @@ const axisShare = (axis, side) => axis.totalWeight > 0 ? pct((side.weight || 0) 
 </template>
 
 <style scoped>
+.chart-insight {
+  min-width: 0;
+}
+
+.chart-insight section,
+.chart-insight__tabs,
+.chart-insight__tabs + * {
+  min-width: 0;
+}
+
+.chart-insight p,
+.chart-insight span {
+  overflow-wrap: anywhere;
+}
+
 .chart-insight__tabs {
   background: color-mix(in srgb, var(--app-panel-muted, #ffffff) 8%, transparent);
   border: 1px solid var(--app-border);

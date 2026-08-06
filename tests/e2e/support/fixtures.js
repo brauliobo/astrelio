@@ -21,6 +21,17 @@ export const SECOND_PERSON = {
   createdAt:       1234567891
 }
 
+export const LONG_PERSON = {
+  id:              'long-person',
+  name:            'Francisco Siddhartha Lucena de Oliveira',
+  isoLocal:        '2014-08-16T15:33',
+  tzOffsetMinutes: -180,
+  lat:             -12.53,
+  lon:             -38.30,
+  placeLabel:      'Mata de São João, BA — Brasil',
+  createdAt:       1234567892
+}
+
 // Seed only if missing — reloading the page reruns addInitScript and would otherwise overwrite test-induced state changes.
 export const seedPeople = async (page, list = [REF_PERSON]) => {
   await page.addInitScript((value) => {

@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { REF_PERSON, SECOND_PERSON, seedPeople, seedSession, seedSettings } from './support/fixtures.js'
+import { expectNoUnexpectedHorizontalOverflow } from './support/layout.js'
 
 const expectFloating = async (summary) => {
   const geometry = await summary.evaluate((element) => {
@@ -109,23 +110,26 @@ test.describe('Workspace consolidation', () => {
     await expect(page.getByTestId('workspace-reference-panel')).toHaveCount(0)
 
     await page.goto('/#/map/astrology/data')
+    await expect(page.getByTestId('aspect-matrix-stage')).toBeVisible({ timeout: 15000 })
     const tropical = await measure('natal-aspect-matrix-panel', 'aspect-matrix')
+    await expectNoUnexpectedHorizontalOverflow(page)
     await expect(page.getByTestId('workspace-reference-panel')).toHaveCount(0)
 
     await page.goto('/#/map/vedic/data')
     const vedic = await measure('vedic-rasi-panel', 'vedic-position-table')
 
-    for (const metrics of [tropical, vedic]) {
-      expect(metrics.overflow).toBeLessThanOrEqual(0)
-      expect(metrics.chartWidth).toBeLessThanOrEqual(320)
-      expect(metrics.chartWidth).toBeLessThanOrEqual(metrics.parentWidth)
+    for (const [name, metrics] of [['tropical', tropical], ['vedic', vedic]]) {
+      const details = `${name}: ${JSON.stringify(metrics)}`
+      expect(metrics.overflow, details).toBeLessThanOrEqual(0)
+      expect(metrics.chartWidth, details).toBeLessThanOrEqual(320)
+      expect(metrics.chartWidth, details).toBeLessThanOrEqual(metrics.parentWidth)
       if (metrics.viewportWidth >= 1024) {
-        expect(metrics.chartWidth).toBeGreaterThanOrEqual(280)
-        expect(metrics.chartLeft).toBeGreaterThanOrEqual(metrics.peerRight)
-        expect(metrics.chartTop).toBeLessThan(metrics.peerBottom)
+        expect(metrics.chartWidth, details).toBeGreaterThanOrEqual(280)
+        expect(metrics.chartLeft, details).toBeGreaterThanOrEqual(metrics.peerRight)
+        expect(metrics.chartTop, details).toBeLessThan(metrics.peerBottom)
       } else {
-        expect(metrics.chartWidth).toBeGreaterThanOrEqual(240)
-        expect(metrics.chartTop).toBeGreaterThanOrEqual(metrics.peerBottom)
+        expect(metrics.chartWidth, details).toBeGreaterThanOrEqual(240)
+        expect(metrics.chartTop, details).toBeGreaterThanOrEqual(metrics.peerBottom)
       }
     }
   })

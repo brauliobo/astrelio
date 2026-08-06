@@ -68,9 +68,9 @@ section.synastry-page(data-testid='synastry-page')
   div(v-if='!personA')
     p.text-slate-400 {{ t('chart.select_chart') }}
   div(v-else)
-    .flex.items-center.gap-3.mb-4
+    .flex.flex-wrap.items-center.gap-3.mb-4
       label.text-xs.text-slate-400 {{ t('chart.compare_with') }}
-      select.ui-control.ui-control-sm(
+      select.ui-control.ui-control-sm.min-w-0.max-w-full(
         @change='onChange'
         :value='compareWith'
         data-testid='compare-select'

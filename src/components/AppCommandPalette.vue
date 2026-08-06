@@ -343,6 +343,7 @@ Teleport(to='body')
   background: transparent;
   color: var(--app-heading);
   flex: 1;
+  min-width: 0;
   font-size: 1rem;
   outline: none;
 }
@@ -361,7 +362,7 @@ Teleport(to='body')
 }
 
 .command-palette__item {
-  align-items: center;
+  align-items: flex-start;
   border-radius: 0.65rem;
   color: var(--app-text-soft);
   display: flex;
@@ -392,5 +393,21 @@ Teleport(to='body')
 .command-palette__empty {
   color: var(--app-text-muted);
   font-size: 0.75rem;
+}
+
+.command-palette__item span,
+.command-palette__item small,
+.command-palette__empty {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.command-palette__item span {
+  flex: 1 1 auto;
+}
+
+.command-palette__item small {
+  flex: 0 1 auto;
+  text-align: right;
 }
 </style>

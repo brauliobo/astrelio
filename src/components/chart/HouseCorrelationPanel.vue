@@ -55,11 +55,11 @@ const aspectList = rows =>
 
 <template lang="pug">
 section.house-correlation-panel(data-testid='house-correlation-panel')
-  .flex.flex-wrap.items-start.justify-between.gap-3.mb-3
-    div
+  .house-correlation-panel__header.flex.flex-wrap.items-start.justify-between.gap-3.mb-3
+    .house-correlation-panel__heading
       h3.text-xs.font-semibold.text-slate-300 {{ t('house_correlations.title') }}
       p.text-xs.text-slate-500.mt-1 {{ t('house_correlations.subtitle') }}
-    span.rounded-full.px-2.py-1.text-xs.text-slate-300(
+    span.house-correlation-panel__mode.rounded-full.px-2.py-1.text-xs.text-slate-300(
       v-if='correlations?.summary?.dominantMode'
       class='bg-white/5'
     ) {{ t(`house_correlations.modes.${correlations.summary.dominantMode}`) }}
@@ -71,13 +71,13 @@ section.house-correlation-panel(data-testid='house-correlation-panel')
       class='border-white/10 bg-white/5'
       data-testid='house-correlation-row'
     )
-      .flex.items-start.justify-between.gap-3
-        div.min-w-0
+      .house-correlation-panel__row-header.flex.items-start.justify-between.gap-3
+        div.house-correlation-panel__row-title.min-w-0
           h4.text-sm.font-semibold.text-slate-100 {{ houseLabel(row.house) }}
           p.text-xs.text-slate-500.mt-1 {{ t(row.topicsKey) }}
-        .text-xs.text-amber-200.tabular-nums {{ pct(row.share) }}
+        .house-correlation-panel__share.text-xs.text-amber-200.tabular-nums {{ pct(row.share) }}
       ul.mt-2.grid.gap-1
-        li.text-xs.leading-5.text-slate-400(
+        li.house-correlation-panel__reason.text-xs.leading-5.text-slate-400(
           v-for='(reason, index) in row.reasons.slice(0, 4)'
           :key='`${row.house}-${reason.type}-${index}`'
         ) {{ reasonText(reason) }}
@@ -92,21 +92,61 @@ section.house-correlation-panel(data-testid='house-correlation-panel')
         :key='`detail-${row.house}`'
         class='border-white/10 bg-white/5'
       )
-        .flex.flex-wrap.items-center.justify-between.gap-2
+        .house-correlation-panel__detail-header.flex.flex-wrap.items-center.justify-between.gap-2
           .text-xs.font-semibold.text-slate-200 {{ houseLabel(row.house) }}
           .text-xs.text-slate-400.tabular-nums {{ pct(row.share) }}
-        .mt-1.text-xs.leading-5.text-slate-500
-          span(v-if='row.occupants.length') {{ t('house_correlations.occupants') }}: {{ planetList(row.occupants) }}
-          span(v-if='row.occupants.length && row.ruler')  ·
-          span(v-if='row.ruler') {{ t('house_correlations.ruler') }}: {{ planetLabel(row.ruler) }}
-          span(v-if='row.rulerHouse')  {{ t('house_correlations.in_house', { house: row.rulerHouse }) }}
-          span(v-if='row.activators.length')  · {{ t('house_correlations.activators') }}: {{ planetList(row.activators) }}
-          span(v-if='row.aspects.length')  · {{ t('house_correlations.aspects') }}: {{ aspectList(row.aspects) }}
+        ul.house-correlation-panel__detail-list.mt-1.text-xs.leading-5.text-slate-500
+          li(v-if='row.occupants.length') {{ t('house_correlations.occupants') }}: {{ planetList(row.occupants) }}
+          li(v-if='row.ruler')
+            | {{ t('house_correlations.ruler') }}: {{ planetLabel(row.ruler) }}
+            span(v-if='row.rulerHouse')  · {{ t('house_correlations.in_house', { house: row.rulerHouse }) }}
+          li(v-if='row.activators.length') {{ t('house_correlations.activators') }}: {{ planetList(row.activators) }}
+          li(v-if='row.aspects.length') {{ t('house_correlations.aspects') }}: {{ aspectList(row.aspects) }}
 </template>
 
 <style scoped>
+.house-correlation-panel,
+.house-correlation-panel__heading,
+.house-correlation-panel__row-header,
+.house-correlation-panel__row-title,
+.house-correlation-panel__detail {
+  min-width: 0;
+}
+
+.house-correlation-panel__heading {
+  flex: 1 1 14rem;
+}
+
+.house-correlation-panel__mode {
+  flex: 0 1 auto;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 .house-correlation-panel__row,
 .house-correlation-panel__detail {
   min-width: 0;
+}
+
+.house-correlation-panel__row-title {
+  flex: 1 1 auto;
+}
+
+.house-correlation-panel__share {
+  flex: 0 0 auto;
+}
+
+.house-correlation-panel__row h4,
+.house-correlation-panel__row p,
+.house-correlation-panel__reason,
+.house-correlation-panel__detail-list {
+  overflow-wrap: anywhere;
+}
+
+.house-correlation-panel__detail-list {
+  display: grid;
+  gap: 0.2rem;
+  margin-bottom: 0;
+  margin-top: 0;
 }
 </style>
