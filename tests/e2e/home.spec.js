@@ -11,6 +11,12 @@ test.describe('Home', () => {
     await expect(page.getByTestId('nav-map')).toHaveAttribute('href', /\/map\/astrology\/chart$/)
     await expect(page.getByTestId('nav-timing')).toBeVisible()
     await expect(page.getByTestId('nav-relationships')).toBeVisible()
+    expect(await page.locator('[data-testid^="nav-"]').evaluateAll(links => links.map(link => link.dataset.testid))).toEqual([
+      'nav-relationships',
+      'nav-timing',
+      'nav-map',
+      'nav-charts',
+    ])
     await expect(page.locator('[data-testid^="nav-"]')).toHaveCount(4)
     await expect(page.getByTestId('command-palette-trigger')).toBeVisible()
     await expect(page.getByTestId('utility-settings')).toBeHidden()

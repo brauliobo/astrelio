@@ -99,10 +99,10 @@ onBeforeUnmount(() => {
 })
 
 const links = computed(() => [
-  { to: '/',                    label: t('nav.charts'),    id: 'charts',        workspace: 'library' },
-  { to: '/map/astrology/chart', label: t('nav.map'),       id: 'map',           workspace: 'map' },
-  { to: '/timing/transits',     label: t('nav.timing'),    id: 'timing',        workspace: 'timing' },
   { to: '/synastry',            label: t('nav.relations'), id: 'relationships', workspace: 'relations' },
+  { to: '/timing/transits',     label: t('nav.timing'),    id: 'timing',        workspace: 'timing' },
+  { to: '/map/astrology/chart', label: t('nav.map'),       id: 'map',           workspace: 'map' },
+  { to: '/',                    label: t('nav.charts'),    id: 'charts',        workspace: 'library' },
 ])
 
 const showChartContext = computed(() => !['home', 'settings'].includes(route.name))
@@ -207,6 +207,7 @@ const contextItems = computed(() => {
           :to='personPath'
           :aria-label='`${t("context.chart")}: ${activePerson.name}`'
         )
+          span.app-chart-context__eyebrow {{ t('context.chart') }}
           strong.app-chart-context__name(data-testid='context-person') {{ activePerson.name }}
           span.app-chart-context__birth(data-testid='context-birth') {{ activeBirthHeader }}
         .app-chart-context__meta
@@ -220,8 +221,8 @@ const contextItems = computed(() => {
           )
             span.app-chart-context__label {{ item.label }}
             span.app-chart-context__value {{ item.value }}
-  main.relative.z-10.flex-1
-    .mx-auto.max-w-6xl.px-4.py-6
+  main.app-main.relative.z-10.flex-1
+    .app-main__content.mx-auto.max-w-6xl.px-4.py-6
       RouterView
   footer.text-xs.text-slate-500.text-center.py-4.relative.z-0
     | Astrelio · MIT · {{ new Date().getFullYear() }} · 
@@ -235,14 +236,21 @@ const contextItems = computed(() => {
 
 <style scoped>
 .app-shell {
-  overflow-x: clip;
+  min-width: 0;
+}
+
+.app-main,
+.app-main__content {
+  min-width: 0;
 }
 
 .app-chart-context {
   align-items: center;
+  background: color-mix(in srgb, var(--app-panel) 42%, transparent);
   display: grid;
   gap: 0.65rem 1rem;
   grid-template-columns: minmax(0, 1fr) auto;
+  min-width: 0;
 }
 
 .app-chart-context__identity {
@@ -260,9 +268,17 @@ const contextItems = computed(() => {
 .app-chart-context__name,
 .app-chart-context__birth {
   display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.app-chart-context__eyebrow {
+  color: var(--app-accent-text);
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 0.9rem;
+  text-transform: uppercase;
 }
 
 .app-chart-context__name {
@@ -284,6 +300,7 @@ const contextItems = computed(() => {
   flex-wrap: wrap;
   gap: 0.4rem;
   justify-content: flex-end;
+  min-width: 0;
 }
 
 .app-chart-context__chip {
@@ -316,9 +333,9 @@ const contextItems = computed(() => {
 .app-chart-context__value {
   color: var(--app-text-soft);
   margin-left: 0.3rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .app-header__nav {
@@ -326,6 +343,7 @@ const contextItems = computed(() => {
   display: grid;
   gap: 0.75rem;
   grid-template-columns: auto minmax(0, 1fr) auto;
+  min-width: 0;
 }
 
 .app-primary-nav,
@@ -339,6 +357,11 @@ const contextItems = computed(() => {
 .app-primary-nav {
   justify-content: center;
   overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.app-primary-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .app-utilities {
