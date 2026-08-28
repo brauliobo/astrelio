@@ -80,9 +80,22 @@ export default defineConfig(({ mode }) => ({
         globPatterns:          ['**/*.{js,css,svg,png,woff2,json,jpg,webp,wasm}'],
         globIgnores:           [
           '**/data/cities.generated.json',
+          // Planetarium textures are several megabytes and only needed on that route.
+          'planets/maps/**',
+          'sky/starmap-*.jpg',
           'index.html',
           'registerSW.js',
           'manifest.webmanifest',
+        ],
+        runtimeCaching: [
+          {
+            urlPattern: /\/(planets\/maps|sky)\/.*\.(?:jpg|png)$/,
+            handler:    'CacheFirst',
+            options:    {
+              cacheName:  'astrelio-textures',
+              expiration: { maxEntries: 40, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
         ],
       }
     })
