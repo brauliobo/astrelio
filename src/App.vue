@@ -26,7 +26,7 @@ const activePerson = computed(() =>
   route.name === 'natal' && hasPersonRouteQuery(route.query) ? routePerson.value : storedActivePerson.value
 )
 const Background      = defineAsyncComponent(() => import('./components/sky/Background.vue'))
-const PlanetariumView = defineAsyncComponent(() => import('./components/chart/wheel/PlanetariumView.vue'))
+const ChartBackdrop   = defineAsyncComponent(() => import('./components/planetarium/ChartBackdrop.vue'))
 const personPath      = computed(() => storedActivePerson.value ? `/person/${storedActivePerson.value.id}` : '/')
 const activeBirthHeader = computed(() => birthHeaderForPerson(activePerson.value))
 const mapLensModality = (lens) => {
@@ -132,7 +132,7 @@ const contextItems = computed(() => {
     v-if='showSkyView'
   )
   .app-planetarium-bg(v-else-if='showPlanetarium')
-    PlanetariumView.absolute.inset-0.h-full.w-full(
+    ChartBackdrop.absolute.inset-0.h-full.w-full(
       :chart='planetariumChart'
       :interactive='false'
       :center-offset='planetariumCenterOffset'

@@ -11,89 +11,75 @@ import {
   LineLoop,
   Group,
   Mesh,
-  MeshStandardMaterial,
   PerspectiveCamera,
   Raycaster,
   Scene,
-  ShaderMaterial,
   SphereGeometry,
   Sprite,
   SpriteMaterial,
   SRGBColorSpace,
-  TextureLoader,
-  TorusGeometry,
   Vector2,
   Vector3,
   WebGLRenderer,
 } from 'three'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { PLANET_SYMBOLS, norm360 } from './geometry.js'
+import { PLANET_SYMBOLS, norm360 } from '../chart/wheel/geometry.js'
+import { BODY_BY_NAME } from '../../lib/planetarium/constants.js'
+import { emissiveMaterial, ringGeometry, ringMaterial, surfaceMaterial } from '../../lib/planetarium/materials.js'
 
-const publicAssetUrl = path => `${import.meta.env.BASE_URL}${String(path).replace(/^\//, '')}`
-const planetTexture  = name => publicAssetUrl(`planets/${name.toLowerCase()}.jpg`)
-const DEG_TO_RAD     = Math.PI / 180
-const MIN_CAMERA     = 340
-const MAX_CAMERA     = 760
-const ZODIAC_SIGNS   = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
+const DEG_TO_RAD   = Math.PI / 180
+const MIN_CAMERA   = 340
+const MAX_CAMERA   = 760
+const ZODIAC_SIGNS = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
 
 const BODY_STYLE = {
   Sun: {
-    texture: planetTexture('sun'),
     radius:  18,
     orbit:   0,
     color:   '#ffd166',
   },
   Moon: {
-    texture: planetTexture('moon'),
     radius:  5.4,
     orbit:   64,
     color:   '#dbeafe',
   },
   Mercury: {
-    texture: planetTexture('mercury'),
     radius:  4.5,
     orbit:   84,
     color:   '#94a3b8',
   },
   Venus: {
-    texture: planetTexture('venus'),
     radius:  6.2,
     orbit:   105,
     color:   '#f6c453',
   },
   Mars: {
-    texture: planetTexture('mars'),
     radius:  5.5,
     orbit:   127,
     color:   '#f97316',
   },
   Jupiter: {
-    texture: planetTexture('jupiter'),
     radius:  10.5,
     orbit:   154,
     color:   '#fbbf24',
   },
   Saturn: {
-    texture: planetTexture('saturn'),
     radius:  9.4,
     orbit:   180,
     color:   '#fde68a',
   },
   Uranus: {
-    texture: planetTexture('uranus'),
     radius:  7,
     orbit:   204,
     color:   '#67e8f9',
   },
   Neptune: {
-    texture: planetTexture('neptune'),
     radius:  7,
     orbit:   226,
     color:   '#38bdf8',
   },
   Pluto: {
-    texture: planetTexture('pluto'),
     radius:  4.4,
     orbit:   248,
     color:   '#c084fc',
@@ -141,7 +127,6 @@ let resizeObserver = null
 let renderer       = null
 let scene          = null
 let sceneRoot      = null
-let textureLoader  = null
 
 const meshes = new Map()
 const labels = new Map()
@@ -274,62 +259,16 @@ const radialLine = (longitude, inner, outer, material) => {
   return line
 }
 
-const makeSaturnRing = () => {
-  const ring = new Mesh(
-    new TorusGeometry(14.2, 0.45, 10, 96),
-    new MeshStandardMaterial({
-      color:       '#fde68a',
-      opacity:     0.78,
-      roughness:   0.9,
-      transparent: true,
-    })
-  )
+const makeSaturnRing = (radius) => {
+  const saturn = BODY_BY_NAME.get('Saturn')
+  const scale  = radius / saturn.radiusKm
+  const ring   = new Mesh(ringGeometry(saturn.rings.innerKm * scale, saturn.rings.outerKm * scale, 128), ringMaterial())
   ring.rotation.x = Math.PI / 2.6
   ring.rotation.z = Math.PI / 10
   return ring
 }
 
-const bodyMaterial = (body) => {
-  const texture       = textureLoader.load(body.style.texture)
-  texture.colorSpace  = SRGBColorSpace
-  texture.wrapS       = ClampToEdgeWrapping
-  texture.wrapT       = ClampToEdgeWrapping
-  const isSun         = body.name === 'Sun'
-
-  return new ShaderMaterial({
-    uniforms: {
-      planetMap: { value: texture },
-      lightDir:  { value: new Vector3(-0.38, 0.52, 0.76).normalize() },
-      ambient:   { value: isSun ? 1 : 0.72 },
-      diffuse:   { value: isSun ? 0.08 : 0.36 },
-    },
-    vertexShader: `
-      varying vec3 vObjectNormal;
-      varying vec3 vWorldNormal;
-
-      void main() {
-        vObjectNormal = normalize(normal);
-        vWorldNormal = normalize(mat3(modelMatrix) * normal);
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-      }
-    `,
-    fragmentShader: `
-      uniform sampler2D planetMap;
-      uniform vec3 lightDir;
-      uniform float ambient;
-      uniform float diffuse;
-      varying vec3 vObjectNormal;
-      varying vec3 vWorldNormal;
-
-      void main() {
-        vec2 photoUv = vObjectNormal.xz * 0.5 + 0.5;
-        vec4 photo = texture2D(planetMap, photoUv);
-        float light = ambient + max(dot(normalize(vWorldNormal), lightDir), 0.0) * diffuse;
-        gl_FragColor = vec4(photo.rgb * light, 1.0);
-      }
-    `,
-  })
-}
+const bodyMaterial = body => (body.name === 'Sun' ? emissiveMaterial('Sun') : surfaceMaterial(body.name))
 
 const createBodies = () => {
   for (const body of bodies.value) {
@@ -339,7 +278,7 @@ const createBodies = () => {
     )
     mesh.userData.bodyName = body.name
     mesh.userData.baseScale = 1
-    if (body.name === 'Saturn') mesh.add(makeSaturnRing())
+    if (body.name === 'Saturn') mesh.add(makeSaturnRing(body.style.radius))
 
     sceneRoot.add(mesh)
     meshes.set(body.name, mesh)
@@ -457,7 +396,6 @@ const initScene = async () => {
     scene            = new Scene()
     scene.background = new Color('#020617')
     sceneRoot        = new Group()
-    textureLoader    = new TextureLoader()
     camera           = new PerspectiveCamera(45, 1, 0.1, 1400)
     renderer         = new WebGLRenderer({
       alpha:                 false,
