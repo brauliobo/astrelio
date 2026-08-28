@@ -15,7 +15,8 @@
     "progressions": "Progressões",
     "solar_return": "Rev. Solar",
     "synastry": "Sinastria",
-    "settings": "Configurações"
+    "settings": "Configurações",
+    "planetarium": "Planetário"
   },
   "shell": {
     "utilities": "Utilitários do aplicativo"
@@ -1194,13 +1195,27 @@
         "title": "Leitura psicológica tropical"
       },
       "chapters": {
-        "core_identity": { "title": "Identidade central e orientação" },
-        "emotional_world": { "title": "Mundo emocional e pertencimento" },
-        "mind_communication": { "title": "Mente, linguagem e comunicação" },
-        "relationships_desire": { "title": "Relacionamentos, desejo e agência" },
-        "growth_direction": { "title": "Crescimento, responsabilidade e direção" },
-        "depth_transformation": { "title": "Profundidade, mudança e transformação" },
-        "integration": { "title": "Integração do mapa inteiro" }
+        "core_identity": {
+          "title": "Identidade central e orientação"
+        },
+        "emotional_world": {
+          "title": "Mundo emocional e pertencimento"
+        },
+        "mind_communication": {
+          "title": "Mente, linguagem e comunicação"
+        },
+        "relationships_desire": {
+          "title": "Relacionamentos, desejo e agência"
+        },
+        "growth_direction": {
+          "title": "Crescimento, responsabilidade e direção"
+        },
+        "depth_transformation": {
+          "title": "Profundidade, mudança e transformação"
+        },
+        "integration": {
+          "title": "Integração do mapa inteiro"
+        }
       },
       "items": {
         "placement": "{body} em {signIndex}, casa {house}: {bodyRole}. Tende a agir {signStyle}, com maior atenção em {houseArea}. {motionNote}",
@@ -2043,5 +2058,252 @@
     "loading": "Carregando…",
     "yes": "Sim",
     "no": "Não"
+  },
+  "planetarium": {
+    "canvas_aria": "Sistema solar 3D interativo",
+    "webgl_unavailable": "O 3D não está disponível neste dispositivo.",
+    "views_aria": "Vistas do planetário",
+    "panel_aria": "Painéis do planetário",
+    "options": "Opções de exibição",
+    "options_true_scale": "Escala real",
+    "options_orbits": "Órbitas",
+    "options_labels": "Rótulos",
+    "options_shadows": "Sombras",
+    "options_stars": "Mapa estelar",
+    "options_size": "Tamanho dos corpos",
+    "options_trail": "Rastro",
+    "views": {
+      "orrery": {
+        "label": "Orrery",
+        "glyph": "☉",
+        "hint": "Sistema solar heliocêntrico",
+        "lede": "Todo o sistema solar visto de cima da eclíptica, com órbitas elípticas reais. Use a escala real para sentir as distâncias verdadeiras."
+      },
+      "moon": {
+        "label": "Sol · Terra · Lua",
+        "glyph": "☾",
+        "hint": "Fases, luz e sombra",
+        "lede": "Por que a Lua tem fases: sua metade iluminada sempre aponta para o Sol. O detalhe mostra o mesmo instante visto da Terra."
+      },
+      "eclipses": {
+        "label": "Eclipses",
+        "glyph": "◍",
+        "hint": "Eclipses passados e futuros",
+        "lede": "Cones de umbra e penumbra em escala. Eclipses só ocorrem quando a sizígia cai perto de um nodo lunar."
+      },
+      "retrograde": {
+        "label": "Retrogradação",
+        "glyph": "℞",
+        "hint": "Movimento aparente visto da Terra",
+        "lede": "O caminho real do planeta no céu visto da Terra. O detalhe mostra a Terra ultrapassando por dentro, o que cria o laço."
+      }
+    },
+    "tabs": {
+      "events": "Eventos",
+      "event": "Selecionado",
+      "body": "Corpo"
+    },
+    "timeline": {
+      "scrub": "Percorrer o tempo",
+      "filters": "Filtros de eventos",
+      "loading": "Buscando eventos…"
+    },
+    "time": {
+      "play": "Reproduzir",
+      "pause": "Pausar",
+      "reverse": "Inverter direção",
+      "step_back": "Um dia atrás",
+      "step_forward": "Um dia à frente",
+      "now": "Agora",
+      "rate": "Velocidade",
+      "instant": "Data e hora (UTC)",
+      "utc": "UTC",
+      "rates": {
+        "realtime": "Tempo real",
+        "minute": "1 min/s",
+        "hour": "1 hora/s",
+        "day": "1 dia/s",
+        "week": "1 semana/s",
+        "month": "1 mês/s",
+        "year": "1 ano/s"
+      }
+    },
+    "events": {
+      "solar_eclipse": "Eclipse solar",
+      "lunar_eclipse": "Eclipse lunar",
+      "moon_quarter": "Fase da Lua",
+      "supermoon": "Superlua",
+      "moon_node": "Nodo lunar",
+      "season": "Estação",
+      "apsis": "Ápside",
+      "elongation": "Elongação máxima",
+      "peak_magnitude": "Brilho máximo",
+      "opposition": "Oposição",
+      "conjunction": "Conjunção",
+      "station": "Estação (℞)",
+      "transit": "Trânsito solar",
+      "pair_conjunction": "Aproximação",
+      "occultation": "Ocultação"
+    },
+    "eclipse_kinds": {
+      "total": "Total",
+      "annular": "Anular",
+      "partial": "Parcial",
+      "hybrid": "Híbrido",
+      "penumbral": "Penumbral"
+    },
+    "phases": {
+      "new_moon": "Lua nova",
+      "first_quarter": "Quarto crescente",
+      "full_moon": "Lua cheia",
+      "last_quarter": "Quarto minguante"
+    },
+    "supermoon": {
+      "super": "Superlua",
+      "micro": "Microlua"
+    },
+    "seasons": {
+      "march_equinox": "Equinócio de março",
+      "june_solstice": "Solstício de junho",
+      "september_equinox": "Equinócio de setembro",
+      "december_solstice": "Solstício de dezembro"
+    },
+    "apsides": {
+      "perigee": "Perigeu",
+      "apogee": "Apogeu",
+      "perihelion": "Periélio",
+      "aphelion": "Afélio"
+    },
+    "nodes": {
+      "ascending": "Nodo ascendente",
+      "descending": "Nodo descendente"
+    },
+    "stations": {
+      "retrograde": "Retrógrado",
+      "direct": "Direto"
+    },
+    "aspects": {
+      "opposition": "Oposição",
+      "superior_conjunction": "Conjunção superior",
+      "inferior_conjunction": "Conjunção inferior"
+    },
+    "details": {
+      "close": "Fechar",
+      "view_in_3d": "Ver em 3D",
+      "kind": "Tipo",
+      "obscuration": "Obscurecimento",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "distanceKm": "Distância",
+      "distanceAu": "Distância",
+      "penumbraMinutes": "Semiduração penumbral",
+      "partialMinutes": "Semiduração parcial",
+      "totalMinutes": "Semiduração total",
+      "quarter": "Quarto",
+      "phase": "Fase",
+      "size": "Tamanho",
+      "apsis": "Ápside",
+      "node": "Nodo",
+      "season": "Estação",
+      "elongation": "Elongação",
+      "visibility": "Visibilidade",
+      "magnitude": "Magnitude",
+      "aspect": "Aspecto",
+      "direction": "Direção",
+      "separation": "Separação",
+      "separationArcmin": "Separação",
+      "lunarRadius": "Raio lunar",
+      "startMs": "Início",
+      "finishMs": "Fim",
+      "local": "Local",
+      "altitude": "Altitude",
+      "partialBeginMs": "Início parcial",
+      "partialEndMs": "Fim parcial",
+      "offsetHours": "Defasagem"
+    },
+    "values": {
+      "evening": "Céu do anoitecer",
+      "morning": "Céu do amanhecer"
+    },
+    "why": {
+      "solar_eclipse": "A umbra da Lua alcança a Terra: dentro desse cone estreito o Sol fica totalmente coberto; na penumbra, apenas em parte.",
+      "lunar_eclipse": "A Lua atravessa a sombra da Terra. Só acontece na lua cheia perto de um nodo, por isso não é mensal.",
+      "moon_quarter": "A fase é apenas quanto da metade iluminada aponta para nós: a Lua está sempre meio iluminada pelo Sol.",
+      "supermoon": "Sizígia perto do perigeu ou do apogeu, deixando a Lua visivelmente maior ou menor que o normal.",
+      "moon_node": "Onde a órbita inclinada da Lua cruza a eclíptica. Os eclipses se agrupam nesses cruzamentos.",
+      "season": "O Sol cruza um equinócio ou atinge um solstício: a inclinação de 23,4° da Terra, e não a distância, comanda as estações.",
+      "apsis": "O ponto mais próximo ou mais distante da órbita, consequência direta da elipse.",
+      "elongation": "O maior ângulo em relação ao Sol, quando um planeta interior fica mais fácil de ver ao anoitecer ou ao amanhecer.",
+      "peak_magnitude": "O momento mais brilhante, equilibrando distância e quanto da face iluminada vemos.",
+      "opposition": "A Terra passa entre o Sol e o planeta: ele fica mais próximo, mais brilhante e visível a noite toda.",
+      "conjunction": "O planeta se alinha com o Sol visto da Terra e some no brilho solar.",
+      "station": "O instante em que o movimento aparente se inverte, quando a Terra ultrapassa o planeta ou é ultrapassada por ele.",
+      "transit": "O planeta cruza o disco do Sol: uma conjunção que calha de cair perto de um nodo.",
+      "pair_conjunction": "Dois corpos passam próximos no céu, embora continuem distantes no espaço.",
+      "occultation": "A Lua passa diretamente à frente do corpo, escondendo-o por alguns minutos."
+    },
+    "body": {
+      "sun_distance": "Do Sol",
+      "earth_distance": "Da Terra",
+      "light_minutes": "min-luz",
+      "magnitude": "Magnitude",
+      "illumination": "Iluminado",
+      "ecliptic": "Long./lat. eclíptica",
+      "constellation": "Constelação",
+      "motion": "Movimento aparente",
+      "per_day": "dia",
+      "direct": "Direto",
+      "libration": "Libração long./lat.",
+      "radius": "Raio",
+      "au": "ua",
+      "km": "km",
+      "orbits": "Orbita",
+      "orbital_radius": "Raio orbital",
+      "period": "Período",
+      "days": "dias",
+      "inclination": "Inclinação",
+      "approximate_orbit": "Posição modelada a partir de elementos orbitais médios, então a fase ao longo da órbita é aproximada; tamanho, distância, período e sentido são reais."
+    },
+    "diagram": {
+      "lunar_aria": "Sombra da Terra com o caminho da Lua atravessando-a",
+      "solar_aria": "Faixa de sombra central sobre o globo",
+      "lunar_caption": "Umbra e penumbra da Terra à distância da Lua, com o caminho da Lua sobre elas.",
+      "solar_caption": "Faixa da sombra central sobre o globo, {start}–{end} UTC."
+    },
+    "inset": {
+      "from_earth": "Detalhe: o mesmo instante visto da Terra",
+      "helio": "Detalhe: o mesmo instante visto de cima da eclíptica"
+    },
+    "options_reframe": "Recentralizar",
+    "size": {
+      "aria": "Tamanho aparente comparado a uma lua cheia média",
+      "caption": "Diâmetro aparente {actual}° contra a média {mean}° — {percent}%."
+    },
+    "true_scale_note": "Na escala real, uma unidade é uma unidade astronômica: daqui os planetas são menores que um pixel. Clique em um corpo para se aproximar.",
+    "options_focus": "Foco",
+    "options_focus_none": "Livre",
+    "options_moons": "Luas"
+  },
+  "moons": {
+    "Phobos": "Fobos",
+    "Deimos": "Deimos",
+    "Io": "Io",
+    "Europa": "Europa",
+    "Ganymede": "Ganimedes",
+    "Callisto": "Calisto",
+    "Mimas": "Mimas",
+    "Enceladus": "Encélado",
+    "Tethys": "Tétis",
+    "Dione": "Dione",
+    "Rhea": "Reia",
+    "Titan": "Titã",
+    "Iapetus": "Jápeto",
+    "Miranda": "Miranda",
+    "Ariel": "Ariel",
+    "Umbriel": "Umbriel",
+    "Titania": "Titânia",
+    "Oberon": "Oberon",
+    "Triton": "Tritão",
+    "Charon": "Caronte"
   }
 }

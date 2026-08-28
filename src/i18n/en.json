@@ -15,7 +15,8 @@
     "progressions": "Progressions",
     "solar_return": "Solar Return",
     "synastry": "Synastry",
-    "settings": "Settings"
+    "settings": "Settings",
+    "planetarium": "Planetarium"
   },
   "shell": {
     "utilities": "Application utilities"
@@ -1194,13 +1195,27 @@
         "title": "Tropical psychological reading"
       },
       "chapters": {
-        "core_identity": { "title": "Core identity and orientation" },
-        "emotional_world": { "title": "Emotional world and belonging" },
-        "mind_communication": { "title": "Mind, language, and communication" },
-        "relationships_desire": { "title": "Relationships, desire, and agency" },
-        "growth_direction": { "title": "Growth, responsibility, and direction" },
-        "depth_transformation": { "title": "Depth, change, and transformation" },
-        "integration": { "title": "Whole-chart integration" }
+        "core_identity": {
+          "title": "Core identity and orientation"
+        },
+        "emotional_world": {
+          "title": "Emotional world and belonging"
+        },
+        "mind_communication": {
+          "title": "Mind, language, and communication"
+        },
+        "relationships_desire": {
+          "title": "Relationships, desire, and agency"
+        },
+        "growth_direction": {
+          "title": "Growth, responsibility, and direction"
+        },
+        "depth_transformation": {
+          "title": "Depth, change, and transformation"
+        },
+        "integration": {
+          "title": "Whole-chart integration"
+        }
       },
       "items": {
         "placement": "{body} in {signIndex}, house {house}: {bodyRole}. It tends to act {signStyle}, with most attention on {houseArea}. {motionNote}",
@@ -2043,5 +2058,252 @@
     "loading": "Loading…",
     "yes": "Yes",
     "no": "No"
+  },
+  "planetarium": {
+    "canvas_aria": "Interactive 3D solar system",
+    "webgl_unavailable": "3D is unavailable on this device.",
+    "views_aria": "Planetarium views",
+    "panel_aria": "Planetarium panels",
+    "options": "Display options",
+    "options_true_scale": "True scale",
+    "options_orbits": "Orbits",
+    "options_labels": "Labels",
+    "options_shadows": "Shadows",
+    "options_stars": "Star map",
+    "options_size": "Body size",
+    "options_trail": "Trail",
+    "views": {
+      "orrery": {
+        "label": "Orrery",
+        "glyph": "☉",
+        "hint": "Heliocentric solar system",
+        "lede": "The whole solar system from above the ecliptic, with real elliptical orbits. Switch to true scale to feel the actual distances."
+      },
+      "moon": {
+        "label": "Sun · Earth · Moon",
+        "glyph": "☾",
+        "hint": "Phases, light and shadow",
+        "lede": "Why the Moon shows phases: its lit half always faces the Sun. The inset shows the same instant as seen from Earth."
+      },
+      "eclipses": {
+        "label": "Eclipses",
+        "glyph": "◍",
+        "hint": "Past and upcoming eclipses",
+        "lede": "Umbra and penumbra cones drawn to scale. Eclipses only happen when a syzygy lands near a lunar node."
+      },
+      "retrograde": {
+        "label": "Retrograde",
+        "glyph": "℞",
+        "hint": "Apparent motion seen from Earth",
+        "lede": "The planet's real path across the sky as seen from Earth. The inset shows Earth overtaking on the inside lane, which is what makes the loop."
+      }
+    },
+    "tabs": {
+      "events": "Events",
+      "event": "Selected",
+      "body": "Body"
+    },
+    "timeline": {
+      "scrub": "Scrub through time",
+      "filters": "Event filters",
+      "loading": "Searching events…"
+    },
+    "time": {
+      "play": "Play",
+      "pause": "Pause",
+      "reverse": "Reverse direction",
+      "step_back": "Back one day",
+      "step_forward": "Forward one day",
+      "now": "Now",
+      "rate": "Speed",
+      "instant": "Date and time (UTC)",
+      "utc": "UTC",
+      "rates": {
+        "realtime": "Real time",
+        "minute": "1 min/s",
+        "hour": "1 hour/s",
+        "day": "1 day/s",
+        "week": "1 week/s",
+        "month": "1 month/s",
+        "year": "1 year/s"
+      }
+    },
+    "events": {
+      "solar_eclipse": "Solar eclipse",
+      "lunar_eclipse": "Lunar eclipse",
+      "moon_quarter": "Moon phase",
+      "supermoon": "Supermoon",
+      "moon_node": "Lunar node",
+      "season": "Season",
+      "apsis": "Apsis",
+      "elongation": "Greatest elongation",
+      "peak_magnitude": "Peak brightness",
+      "opposition": "Opposition",
+      "conjunction": "Conjunction",
+      "station": "Station",
+      "transit": "Solar transit",
+      "pair_conjunction": "Close pairing",
+      "occultation": "Occultation"
+    },
+    "eclipse_kinds": {
+      "total": "Total",
+      "annular": "Annular",
+      "partial": "Partial",
+      "hybrid": "Hybrid",
+      "penumbral": "Penumbral"
+    },
+    "phases": {
+      "new_moon": "New moon",
+      "first_quarter": "First quarter",
+      "full_moon": "Full moon",
+      "last_quarter": "Last quarter"
+    },
+    "supermoon": {
+      "super": "Supermoon",
+      "micro": "Micromoon"
+    },
+    "seasons": {
+      "march_equinox": "March equinox",
+      "june_solstice": "June solstice",
+      "september_equinox": "September equinox",
+      "december_solstice": "December solstice"
+    },
+    "apsides": {
+      "perigee": "Perigee",
+      "apogee": "Apogee",
+      "perihelion": "Perihelion",
+      "aphelion": "Aphelion"
+    },
+    "nodes": {
+      "ascending": "Ascending node",
+      "descending": "Descending node"
+    },
+    "stations": {
+      "retrograde": "Retrograde",
+      "direct": "Direct"
+    },
+    "aspects": {
+      "opposition": "Opposition",
+      "superior_conjunction": "Superior conjunction",
+      "inferior_conjunction": "Inferior conjunction"
+    },
+    "details": {
+      "close": "Close",
+      "view_in_3d": "View in 3D",
+      "kind": "Kind",
+      "obscuration": "Obscuration",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "distanceKm": "Distance",
+      "distanceAu": "Distance",
+      "penumbraMinutes": "Penumbral half-duration",
+      "partialMinutes": "Partial half-duration",
+      "totalMinutes": "Total half-duration",
+      "quarter": "Quarter",
+      "phase": "Phase",
+      "size": "Size",
+      "apsis": "Apsis",
+      "node": "Node",
+      "season": "Season",
+      "elongation": "Elongation",
+      "visibility": "Visibility",
+      "magnitude": "Magnitude",
+      "aspect": "Aspect",
+      "direction": "Direction",
+      "separation": "Separation",
+      "separationArcmin": "Separation",
+      "lunarRadius": "Lunar radius",
+      "startMs": "Start",
+      "finishMs": "End",
+      "local": "Local",
+      "altitude": "Altitude",
+      "partialBeginMs": "Partial begins",
+      "partialEndMs": "Partial ends",
+      "offsetHours": "Offset"
+    },
+    "values": {
+      "evening": "Evening sky",
+      "morning": "Morning sky"
+    },
+    "why": {
+      "solar_eclipse": "The Moon's umbra reaches Earth: inside that narrow cone the Sun is fully covered, inside the penumbra only partly.",
+      "lunar_eclipse": "The Moon crosses Earth's shadow. It only happens at full moon near a node, which is why it is not monthly.",
+      "moon_quarter": "The phase is just how much of the lit half faces us: the Moon is always half lit by the Sun.",
+      "supermoon": "A syzygy near perigee or apogee, so the Moon looks noticeably larger or smaller than usual.",
+      "moon_node": "Where the tilted lunar orbit crosses the ecliptic. Eclipses cluster around these crossings.",
+      "season": "The Sun crosses an equinox or reaches a solstice: Earth's 23.4° tilt, not its distance, drives the seasons.",
+      "apsis": "The closest or farthest point of an orbit, a direct consequence of its ellipse.",
+      "elongation": "The greatest angle from the Sun, when an inner planet is easiest to see after sunset or before sunrise.",
+      "peak_magnitude": "The brightest moment, balancing distance against how much of the lit face we see.",
+      "opposition": "Earth passes between the Sun and the planet: the planet is closest, brightest and visible all night.",
+      "conjunction": "The planet lines up with the Sun as seen from Earth, so it is lost in the glare.",
+      "station": "The moment the apparent motion reverses, as Earth overtakes the planet or is overtaken by it.",
+      "transit": "The planet crosses the face of the Sun: a conjunction that happens to land close to a node.",
+      "pair_conjunction": "Two bodies pass close together on the sky, though they stay far apart in space.",
+      "occultation": "The Moon passes directly in front of the body, hiding it for a few minutes."
+    },
+    "body": {
+      "sun_distance": "From the Sun",
+      "earth_distance": "From Earth",
+      "light_minutes": "light-min",
+      "magnitude": "Magnitude",
+      "illumination": "Illuminated",
+      "ecliptic": "Ecliptic lon/lat",
+      "constellation": "Constellation",
+      "motion": "Apparent motion",
+      "per_day": "day",
+      "direct": "Direct",
+      "libration": "Libration lon/lat",
+      "radius": "Radius",
+      "au": "au",
+      "km": "km",
+      "orbits": "Orbits",
+      "orbital_radius": "Orbital radius",
+      "period": "Period",
+      "days": "days",
+      "inclination": "Inclination",
+      "approximate_orbit": "Position modelled from mean orbital elements, so the phase along the orbit is approximate; size, distance, period and direction are real."
+    },
+    "diagram": {
+      "lunar_aria": "Earth's shadow with the Moon's path across it",
+      "solar_aria": "Ground track of the central shadow",
+      "lunar_caption": "Earth's umbra and penumbra at the Moon's distance, with the Moon's path across them.",
+      "solar_caption": "Central shadow track over the globe, {start}–{end} UTC."
+    },
+    "inset": {
+      "from_earth": "Inset: the same instant seen from Earth",
+      "helio": "Inset: the same instant seen from above the ecliptic"
+    },
+    "options_reframe": "Recenter",
+    "size": {
+      "aria": "Apparent size compared with an average full moon",
+      "caption": "Apparent diameter {actual}° against the mean {mean}° — {percent}%."
+    },
+    "true_scale_note": "At true scale one unit is one astronomical unit: the planets are smaller than a pixel from here. Click a body to fly to it.",
+    "options_focus": "Focus",
+    "options_focus_none": "Free",
+    "options_moons": "Moons"
+  },
+  "moons": {
+    "Phobos": "Phobos",
+    "Deimos": "Deimos",
+    "Io": "Io",
+    "Europa": "Europa",
+    "Ganymede": "Ganymede",
+    "Callisto": "Callisto",
+    "Mimas": "Mimas",
+    "Enceladus": "Enceladus",
+    "Tethys": "Tethys",
+    "Dione": "Dione",
+    "Rhea": "Rhea",
+    "Titan": "Titan",
+    "Iapetus": "Iapetus",
+    "Miranda": "Miranda",
+    "Ariel": "Ariel",
+    "Umbriel": "Umbriel",
+    "Titania": "Titania",
+    "Oberon": "Oberon",
+    "Triton": "Triton",
+    "Charon": "Charon"
   }
 }
