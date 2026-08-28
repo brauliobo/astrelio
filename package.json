@@ -19,6 +19,7 @@
     "e2e:ui": "playwright test --ui",
     "build:icons": "node scripts/build-icons.mjs",
     "build:cities": "node scripts/build-cities.mjs",
+    "build:planet-maps": "node scripts/build-planet-maps.mjs",
     "check:i18n": "node scripts/check-i18n.mjs"
   },
   "dependencies": {
