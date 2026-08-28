@@ -18,7 +18,7 @@ const globals = {
 }
 
 export default [
-  { ignores: ['.eslintrc.cjs', 'dist/**', 'docs/**', 'mybodygraph/**', 'node_modules/**', 'research/**', 'test-results/**'] },
+  { ignores: ['.eslintrc.cjs', 'dist/**', 'docs/**', 'mybodygraph/**', 'node_modules/**', 'research/**', 'test-results/**', 'tmp/**'] },
   js.configs.recommended,
   ...vue.configs['flat/recommended'],
   {
