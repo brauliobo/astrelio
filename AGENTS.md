@@ -13,6 +13,15 @@
 - Preserve exact astrology geometry for cusps, planet longitudes, and aspect endpoints; offset glyph labels only for readability.
 - Keep interaction centered on the wheel: zoom, selection, highlight, and summary should stay compact and stable inside the chart surface.
 
+## Planetarium
+
+- Keep planetarium math in `src/lib/planetarium/` free of Vue and three.js so it stays unit-testable.
+- Put per-view scene graphs in `src/components/planetarium/scenes/`; `SolarSystemScene.js` owns only the renderer, cameras, insets and picking.
+- Never fake ephemeris values: positions, orientations, shadows and events all come from `astronomy-engine`.
+- The one modelled exception is the moon catalogue in `src/lib/planetarium/moons.js`: only the Galilean moons have an ephemeris, so the rest use published mean elements. Keep them flagged by `isApproximate` and keep the UI saying so.
+- Diagram scaling is allowed where it teaches (the phase view enlarges bodies); anything about eclipse geometry stays true scale.
+- Regenerate body textures with `npm run build:planet-maps` and keep the provenance list in `public/planets/maps/README.md` current.
+
 ## Verification
 
 - Prefer targeted checks for focused UI changes. For chart or Human Design visual tweaks, run the affected unit specs and screenshot checks first.
