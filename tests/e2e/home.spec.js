@@ -15,9 +15,10 @@ test.describe('Home', () => {
       'nav-relationships',
       'nav-timing',
       'nav-map',
+      'nav-planetarium',
       'nav-charts',
     ])
-    await expect(page.locator('[data-testid^="nav-"]')).toHaveCount(4)
+    await expect(page.locator('[data-testid^="nav-"]')).toHaveCount(5)
     await expect(page.getByTestId('command-palette-trigger')).toBeVisible()
     await expect(page.getByTestId('utility-settings')).toBeHidden()
     await page.getByTestId('utility-menu-summary').click()

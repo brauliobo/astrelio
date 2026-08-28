@@ -22,7 +22,7 @@ test.describe('Responsive long-content layout', () => {
     const navOrder = await page.locator('[data-testid^="nav-"]').evaluateAll(links =>
       links.map(link => link.dataset.testid)
     )
-    expect(navOrder).toEqual(['nav-relationships', 'nav-timing', 'nav-map', 'nav-charts'])
+    expect(navOrder).toEqual(['nav-relationships', 'nav-timing', 'nav-map', 'nav-planetarium', 'nav-charts'])
   })
 
   test('stacks narrow transit insights and scrolls the fixed-width matrix', async ({ page }) => {

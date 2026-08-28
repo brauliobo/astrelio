@@ -45,8 +45,10 @@ const isVedicRoute    = computed(() => routeModality.value === 'vedic')
 const backgroundChart = useNatalChart(activePerson, settings)
 const planetariumChart = computed(() => backgroundChart.value || transitsFor(Date.now(), 0, 0, settings.chartOptions))
 const planetariumCenterOffset = ref({ x: 0, y: 0 })
-const showSkyView     = computed(() => settings.skyEnabled && settings.skyView === 'sky')
-const showPlanetarium = computed(() => settings.skyEnabled && settings.skyView === 'planetarium')
+const isPlanetarium   = computed(() => route.name === 'planetarium')
+const showSkyView     = computed(() => settings.skyEnabled && settings.skyView === 'sky' && !isPlanetarium.value)
+const showPlanetarium = computed(() => settings.skyEnabled && settings.skyView === 'planetarium' && !isPlanetarium.value)
+const mainContentClass = computed(() => route.meta?.fullBleed ? 'app-main__content--full' : 'mx-auto max-w-6xl px-4 py-6')
 const toggleThemeLabel = computed(() =>
   t(activeTheme.value === 'light' ? 'theme.switch_to_dark' : 'theme.switch_to_light')
 )
@@ -102,10 +104,11 @@ const links = computed(() => [
   { to: '/synastry',            label: t('nav.relations'), id: 'relationships', workspace: 'relations' },
   { to: '/timing/transits',     label: t('nav.timing'),    id: 'timing',        workspace: 'timing' },
   { to: '/map/astrology/chart', label: t('nav.map'),       id: 'map',           workspace: 'map' },
+  { to: '/planetarium',         label: t('nav.planetarium'), id: 'planetarium',  workspace: 'planetarium' },
   { to: '/',                    label: t('nav.charts'),    id: 'charts',        workspace: 'library' },
 ])
 
-const showChartContext = computed(() => !['home', 'settings'].includes(route.name))
+const showChartContext = computed(() => !['home', 'settings', 'planetarium'].includes(route.name))
 
 const contextItems = computed(() => {
   const presetKey = settings.activePreset || 'custom'
@@ -222,9 +225,9 @@ const contextItems = computed(() => {
             span.app-chart-context__label {{ item.label }}
             span.app-chart-context__value {{ item.value }}
   main.app-main.relative.z-10.flex-1
-    .app-main__content.mx-auto.max-w-6xl.px-4.py-6
+    .app-main__content(:class='mainContentClass')
       RouterView
-  footer.text-xs.text-slate-500.text-center.py-4.relative.z-0
+  footer.text-xs.text-slate-500.text-center.py-4.relative.z-0(v-if='!isPlanetarium')
     | Astrelio · MIT · {{ new Date().getFullYear() }} · 
     a.underline-offset-2(
       class='hover:text-slate-300 hover:underline'
@@ -242,6 +245,10 @@ const contextItems = computed(() => {
 .app-main,
 .app-main__content {
   min-width: 0;
+}
+
+.app-main__content--full {
+  height: 100%;
 }
 
 .app-chart-context {

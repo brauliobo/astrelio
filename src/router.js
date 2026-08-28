@@ -15,6 +15,7 @@ const routes = [
   { path: '/profections',  component: () => import('./pages/TimingPage.vue'),       name: 'profections',  meta: { workspace: 'timing', technique: 'profections' } },
   { path: '/solar-arc',    component: () => import('./pages/TimingPage.vue'),       name: 'solar-arc',    meta: { workspace: 'timing', technique: 'solar-arc' } },
   { path: '/lunar-return', component: () => import('./pages/TimingPage.vue'),       name: 'lunar-return', meta: { workspace: 'timing', technique: 'lunar-return' } },
+  { path: '/planetarium/:view?', component: () => import('./pages/PlanetariumPage.vue'), name: 'planetarium', meta: { workspace: 'planetarium', fullBleed: true } },
   { path: '/synastry',     component: () => import('./pages/SynastryPage.vue'),     name: 'synastry',     meta: { workspace: 'relations' } },
   { path: '/settings',     component: () => import('./pages/SettingsPage.vue'),     name: 'settings',     meta: { workspace: 'settings' } },
   { path: '/:pathMatch(.*)*', redirect: '/' }
