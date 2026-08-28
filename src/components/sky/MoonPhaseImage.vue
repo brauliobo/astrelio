@@ -1,6 +1,6 @@
 <script setup>
 import { computed, useId } from 'vue'
-import { moonPhaseLighting, moonPhaseLitPathData } from '../../lib/sky/moonPhase.js'
+import { moonPhaseLighting, moonPhaseLitPathData } from '../../lib/planetarium/moonPhase.js'
 
 const props = defineProps({
   phase: { type: Number, default: 0 },

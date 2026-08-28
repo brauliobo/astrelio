@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import MoonPhaseImage from '../../../src/components/sky/MoonPhaseImage.vue'
-import { moonPhaseLighting, moonPhaseLitPoints } from '../../../src/lib/sky/moonPhase.js'
+import { moonPhaseLighting, moonPhaseLitPoints } from '../../../src/lib/planetarium/moonPhase.js'
 
 const boundsForPhase = (phase) => {
   const xs = moonPhaseLitPoints(phase).map(point => point.x)
