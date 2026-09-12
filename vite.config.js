@@ -1,11 +1,11 @@
 import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
 import tailwind from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import { copyFileSync, mkdirSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
+import { vuePlugin, vueRuntimeAliases } from './vite.vue.js'
 
 const require = createRequire(import.meta.url)
 const swissEphDir = dirname(require.resolve('swisseph-wasm/package.json'))
@@ -53,7 +53,7 @@ const copySwissEphAssets = () => {
 export default defineConfig(({ mode }) => ({
   base: '/astrelio/',
   plugins: [
-    vue(),
+    vuePlugin(),
     tailwind(),
     copySwissEphAssets(),
     VitePWA({
@@ -100,11 +100,26 @@ export default defineConfig(({ mode }) => ({
       }
     })
   ],
-  resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
+  resolve: {
+    alias: [
+      { find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) },
+      ...vueRuntimeAliases,
+    ],
+  },
   server:  { port: 5173, host: '127.0.0.1' },
   preview: { port: 4173, host: '127.0.0.1' },
   assetsInclude: ['**/*.wasm', '**/*.data'],
-  optimizeDeps: { exclude: ['swisseph-wasm'] },
+  optimizeDeps: {
+    exclude: [
+      'swisseph-wasm',
+      'vue',
+      '@vue/runtime-vapor',
+      '@vue/runtime-dom',
+      '@vue/runtime-core',
+      '@vue/reactivity',
+      '@vue/shared',
+    ],
+  },
   worker:  { format: 'es' },
   build:   {
     outDir: mode === 'verify' ? 'tmp/local-build' : 'docs',
