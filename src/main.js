@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+import { createVaporApp, vaporInteropPlugin } from 'vue'
 import { createPinia } from 'pinia'
 import piniaPersist from 'pinia-plugin-persistedstate'
 import { registerSW } from 'virtual:pwa-register'
@@ -12,7 +12,8 @@ registerSW({ immediate: true })
 const pinia = createPinia()
 pinia.use(piniaPersist)
 
-createApp(App)
+createVaporApp(App)
+  .use(vaporInteropPlugin)
   .use(pinia)
   .use(router)
   .use(i18n)
