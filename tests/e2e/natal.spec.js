@@ -111,8 +111,11 @@ test.describe('Natal chart', () => {
 
     const selected = page.locator('[data-wheel-id="sign-0"]')
     const opposite = page.locator('[data-wheel-id="sign-6"]')
-    const stage    = page.getByTestId('chart-wheel-stage')
     const summary  = page.getByTestId('chart-selection-summary')
+    const before   = await page.evaluate(() => ({
+      documentWidth:  document.documentElement.scrollWidth,
+      documentHeight: document.documentElement.scrollHeight,
+    }))
 
     await selected.locator('path').hover()
     await expect(selected).toHaveAttribute('data-highlight', 'active')
@@ -121,14 +124,14 @@ test.describe('Natal chart', () => {
     await expect(summary).toContainText('Áries ↔ Libra')
     await expect(summary).toContainText('Eixo Iniciativa e reciprocidade')
     await expect(summary).toContainText('Signo oposto Libra')
-    await expect(summary).toHaveAttribute('data-selection-summary-placement', 'overlay')
-
-    const stageBox   = await stage.boundingBox()
-    const summaryBox = await summary.boundingBox()
-    if (page.viewportSize().width >= 640)
-      expect(summaryBox.x).toBeGreaterThan(stageBox.x + stageBox.width / 2)
-    else
-      expect(summaryBox.y).toBeGreaterThan(stageBox.y + stageBox.height / 2)
+    await expect(summary).toHaveAttribute('data-selection-summary-placement', 'floating')
+    await expectFloatingSummary(
+      page,
+      summary,
+      '[data-testid="chart-wheel-stage"]',
+      '[data-testid="chart-wheel-stage"]',
+      before,
+    )
 
     await selected.click()
     await expect(selected).toHaveAttribute('data-highlight', 'active')

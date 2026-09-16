@@ -54,7 +54,7 @@ const props = defineProps({
   showSelectionSummary: { type: Boolean, default: true },
   selectionSummaryPlacement: {
     type:      String,
-    default:   'overlay',
+    default:   'floating',
     validator: value => ['overlay', 'floating', 'below', 'hidden'].includes(value),
   },
   zodiacSymbols:        { type: Array, default: null },

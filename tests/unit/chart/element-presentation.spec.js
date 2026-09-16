@@ -1,11 +1,25 @@
 import { nextTick } from 'vue'
-import { mount } from '@vue/test-utils'
+import { DOMWrapper, enableAutoUnmount, mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import Insight from '../../../src/components/chart/Insight.vue'
 import Wheel from '../../../src/components/chart/Wheel.vue'
 import en from '../../../src/i18n/en.json'
 import ptBR from '../../../src/i18n/pt-BR.json'
+
+enableAutoUnmount(afterEach)
+
+const selectionSummary = (wrapper) => {
+  const local = wrapper.find('[data-testid="chart-selection-summary"]')
+  if (local.exists()) return local
+  const node = document.body.querySelector('[data-testid="chart-selection-summary"]')
+  expect(node).not.toBeNull()
+  return new DOMWrapper(node)
+}
+
+const hasSelectionSummary = wrapper =>
+  wrapper.find('[data-testid="chart-selection-summary"]').exists()
+  || Boolean(document.body.querySelector('[data-testid="chart-selection-summary"]'))
 
 const messages = { en, 'pt-BR': ptBR }
 const i18n = locale => createI18n({ legacy: false, locale, messages })
@@ -86,7 +100,7 @@ describe('element-aware insight presentation', () => {
     await sign.trigger('mouseleave')
     await nextTick()
 
-    const tropicalSummary = wrapper.get('[data-testid="chart-selection-summary"]')
+    const tropicalSummary = selectionSummary(wrapper)
     expect(tropicalSummary.attributes('data-element')).toBe('fire')
     expect(tropicalSummary.attributes('data-related-elements')).toBe('air')
     expect(tropicalSummary.get('[data-selection-fact="axis"]').exists()).toBe(true)
@@ -96,7 +110,7 @@ describe('element-aware insight presentation', () => {
 
     expect(wrapper.get('[data-wheel-id="sign-0"]').attributes('data-highlight')).toBe('idle')
     expect(wrapper.find('[data-testid="sign-axis-guide"]').exists()).toBe(false)
-    expect(wrapper.find('[data-testid="chart-selection-summary"]').exists()).toBe(false)
+    expect(hasSelectionSummary(wrapper)).toBe(false)
     expect(wrapper.get('[data-testid="zodiac-element-metadata"]').attributes('data-element-presentation')).toBe('neutral')
     expect(wrapper.get('[data-testid="zodiac-element-metadata"] [data-sign-index="0"]').attributes('data-element')).toBeUndefined()
 
@@ -106,7 +120,7 @@ describe('element-aware insight presentation', () => {
     const tropicalSector = wrapper.get('[data-testid="zodiac-ring"] [data-wheel-id="sign-0"]')
     expect(tropicalSector.attributes('data-highlight')).toBe('idle')
     expect(wrapper.find('[data-testid="sign-axis-guide"]').exists()).toBe(false)
-    expect(wrapper.find('[data-testid="chart-selection-summary"]').exists()).toBe(false)
+    expect(hasSelectionSummary(wrapper)).toBe(false)
     expect(tropicalSector.attributes('data-element')).toBe('fire')
     expect(tropicalSector.attributes('data-element-label')).toBe('Fire')
     expect(tropicalSector.attributes('data-related-elements')).toBe('air')

@@ -1,7 +1,7 @@
 import { h, nextTick } from 'vue'
-import { mount } from '@vue/test-utils'
+import { DOMWrapper, enableAutoUnmount, mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import AspectTable from '../../../src/components/chart/AspectTable.vue'
 import Wheel from '../../../src/components/chart/Wheel.vue'
 import PlanetList from '../../../src/components/chart/PlanetList.vue'
@@ -9,6 +9,20 @@ import { WHEEL_RADII, polarPoint } from '../../../src/components/chart/wheel/geo
 import { CHART_HIGHLIGHT_EVENT } from '../../../src/lib/chart/highlight.js'
 import en from '../../../src/i18n/en.json'
 import ptBR from '../../../src/i18n/pt-BR.json'
+
+enableAutoUnmount(afterEach)
+
+const selectionSummary = (wrapper) => {
+  const local = wrapper.find('[data-testid="chart-selection-summary"]')
+  if (local.exists()) return local
+  const node = document.body.querySelector('[data-testid="chart-selection-summary"]')
+  expect(node).not.toBeNull()
+  return new DOMWrapper(node)
+}
+
+const hasSelectionSummary = wrapper =>
+  wrapper.find('[data-testid="chart-selection-summary"]').exists()
+  || Boolean(document.body.querySelector('[data-testid="chart-selection-summary"]'))
 
 vi.mock('../../../src/components/chart/DisplayMode.vue', () => ({
   default: {
@@ -233,7 +247,7 @@ describe('chart interactions', () => {
     await nextTick()
 
     expect(wrapper.get('[data-testid="planet-glyph-Sun"]').attributes('data-highlight')).toBe('active')
-    expect(wrapper.find('[data-testid="chart-selection-summary"]').exists()).toBe(false)
+    expect(hasSelectionSummary(wrapper)).toBe(false)
   })
 
   it('renders a configured below summary outside the chart stage', async () => {
@@ -372,15 +386,14 @@ describe('chart interactions', () => {
     expect(wrapper.get('[data-aspect-row="Sun-Mars-sextile"]').attributes('data-highlight')).toBe('active')
     expect(wrapper.get('[data-aspect="Sun-Mars-sextile"]').attributes('data-highlight')).toBe('active')
     expect(wrapper.get('[data-testid="planet-glyph-Moon"]').attributes('data-highlight')).toBe('dimmed')
-    const summary = wrapper.get('[data-testid="chart-selection-summary"]')
+    const summary = selectionSummary(wrapper)
     expect(summary.get('[data-selection-fact="sign"]').text()).toBe('Sign Aquarius')
     expect(summary.get('[data-selection-fact="degree"]').text()).toBe('Degree 23°49′')
     expect(summary.get('[data-selection-fact="house"]').text()).toBe('House 7 · Partnerships')
     expect(summary.get('[data-selection-fact="motion"]').text()).toBe('Motion Direct')
-    expect(summary.attributes('data-responsive-placement')).toBe('desktop-side-mobile-bottom')
-    expect(summary.attributes('data-selection-summary-placement')).toBe('overlay')
-    expect(summary.classes()).toEqual(expect.arrayContaining(['pointer-events-none', 'chart-selection-summary--responsive']))
-    expect(wrapper.get('[data-testid="chart-wheel-stage"]').find('[data-testid="chart-selection-summary"]').exists()).toBe(true)
+    expect(summary.attributes('data-selection-summary-placement')).toBe('floating')
+    expect(summary.classes()).toContain('chart-selection-summary--floating')
+    expect(wrapper.get('[data-testid="chart-wheel-stage"]').find('[data-testid="chart-selection-summary"]').exists()).toBe(false)
   })
 
   it('localizes selected house labels with house names', async () => {
@@ -394,7 +407,7 @@ describe('chart interactions', () => {
     await wrapper.get('[data-testid="planet-glyph-Sun"]').trigger('mouseenter')
     await nextTick()
 
-    const summary = wrapper.get('[data-testid="chart-selection-summary"]')
+    const summary = selectionSummary(wrapper)
     expect(summary.get('[data-selection-fact="sign"]').text()).toBe('Signo Aquário')
     expect(summary.get('[data-selection-fact="degree"]').text()).toBe('Grau 23°49′')
     expect(summary.get('[data-selection-fact="house"]').text()).toBe('Casa 7 · Parcerias')
@@ -413,24 +426,24 @@ describe('chart interactions', () => {
     await nextTick()
 
     expect(wrapper.get('[data-wheel-id="sign-0"]').attributes('data-highlight')).toBe('active')
-    expect(wrapper.get('[data-testid="chart-selection-summary"]').attributes('data-selection-kind')).toBe('sign')
-    expect(wrapper.get('[data-testid="chart-selection-summary"]').text()).toContain('Aries ↔ Libra')
-    expect(wrapper.get('[data-testid="chart-selection-summary"]').text()).toContain('Axis Initiative and reciprocity')
-    expect(wrapper.get('[data-testid="chart-selection-summary"]').text()).toContain('Opposite sign Libra')
+    expect(selectionSummary(wrapper).attributes('data-selection-kind')).toBe('sign')
+    expect(selectionSummary(wrapper).text()).toContain('Aries ↔ Libra')
+    expect(selectionSummary(wrapper).text()).toContain('Axis Initiative and reciprocity')
+    expect(selectionSummary(wrapper).text()).toContain('Opposite sign Libra')
 
     await wrapper.get('[data-wheel-id="house-1"]').trigger('mouseenter')
     await nextTick()
 
     expect(wrapper.get('[data-wheel-id="house-1"]').attributes('data-highlight')).toBe('active')
-    expect(wrapper.get('[data-testid="chart-selection-summary"]').attributes('data-selection-kind')).toBe('house')
-    expect(wrapper.get('[data-testid="chart-selection-summary"]').text()).toContain('House 1 · Identity')
+    expect(selectionSummary(wrapper).attributes('data-selection-kind')).toBe('house')
+    expect(selectionSummary(wrapper).text()).toContain('House 1 · Identity')
 
     await wrapper.get('[data-wheel-id="asc"]').trigger('mouseenter')
     await nextTick()
 
     expect(wrapper.get('[data-wheel-id="asc"]').attributes('data-highlight')).toBe('active')
-    expect(wrapper.get('[data-testid="chart-selection-summary"]').attributes('data-selection-kind')).toBe('angle')
-    expect(wrapper.get('[data-testid="chart-selection-summary"]').text()).toContain('Ascendant')
+    expect(selectionSummary(wrapper).attributes('data-selection-kind')).toBe('angle')
+    expect(selectionSummary(wrapper).text()).toContain('Ascendant')
   })
 
   it('highlights the selected sign axis without activating aspects', async () => {
@@ -576,8 +589,8 @@ describe('chart interactions', () => {
     expect(aspectRow.attributes('data-highlight')).toBe('active')
     expect(wrapper.get('[data-testid="planet-glyph-Sun"]').attributes('data-highlight')).toBe('active')
     expect(wrapper.get('[data-testid="planet-glyph-Mars"]').attributes('data-highlight')).toBe('active')
-    expect(wrapper.get('[data-testid="chart-selection-summary"]').attributes('data-selection-kind')).toBe('aspect')
-    const summary = wrapper.get('[data-testid="chart-selection-summary"]')
+    expect(selectionSummary(wrapper).attributes('data-selection-kind')).toBe('aspect')
+    const summary = selectionSummary(wrapper)
     expect(summary.text()).toContain('Sun Sextile Mars')
     expect(summary.get('[data-selection-fact="orb"]').text()).toBe('Orb 0°12′')
     expect(summary.get('[data-selection-fact="allowed"]').text()).toBe('Allowed orb 5°00′')
@@ -590,7 +603,7 @@ describe('chart interactions', () => {
 
     expect(aspectRow.attributes('data-highlight')).toBe('idle')
     expect(wrapper.get('[data-testid="planet-glyph-Sun"]').attributes('data-highlight')).toBe('idle')
-    expect(wrapper.find('[data-testid="chart-selection-summary"]').exists()).toBe(false)
+    expect(hasSelectionSummary(wrapper)).toBe(false)
   })
 
   it('uses a predictable fixed wheel fit without zoom controls', async () => {

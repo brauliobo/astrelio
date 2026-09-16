@@ -79,7 +79,17 @@ test.describe('Chart selection hover', () => {
 
     await hoverPainted(page.getByTestId('planet-hit-Moon'))
     await expectSummary(page, 'planet', /Lua|Moon/)
+    await expect(page.getByTestId('chart-selection-summary')).toHaveAttribute('data-selection-summary-placement', 'floating')
     await expect.poll(() => page.getByTestId('chart-selection-summary').evaluate(el => getComputedStyle(el).pointerEvents)).toBe('none')
+    const moonGeometry = await page.getByTestId('chart-selection-summary').evaluate((element) => {
+      const stageRect   = document.querySelector('[data-testid="chart-wheel-stage"]').getBoundingClientRect()
+      const summaryRect = element.getBoundingClientRect()
+      const overlaps = summaryRect.left < stageRect.right && summaryRect.right > stageRect.left
+        && summaryRect.top < stageRect.bottom && summaryRect.bottom > stageRect.top
+      return { overlaps, position: getComputedStyle(element).position }
+    })
+    expect(moonGeometry.position).toBe('fixed')
+    expect(moonGeometry.overlaps).toBe(false)
 
     await hoverPainted(page.getByTestId('planet-hit-Sun'))
     await expectSummary(page, 'planet', /Sol|Sun/)
