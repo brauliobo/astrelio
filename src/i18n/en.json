@@ -2113,7 +2113,7 @@
         "label": "Eclipses",
         "glyph": "◍",
         "hint": "Past and upcoming eclipses",
-        "lede": "Umbra and penumbra cones drawn to scale. Eclipses only happen when a syzygy lands near a lunar node."
+        "lede": "Umbra and penumbra cones drawn to scale. They stay faint until they meet the other body; that stamp is an eclipse."
       },
       "retrograde": {
         "label": "Retrograde",
@@ -2297,6 +2297,20 @@
     "inset": {
       "from_earth": "Inset: the same instant seen from Earth",
       "helio": "Inset: the same instant seen from above the ecliptic"
+    },
+    "hover": {
+      "orbit": "Orbit of {name}",
+      "ecliptic": "Ecliptic",
+      "nodes": "Lunar nodes",
+      "trail": "Path of {name}",
+      "period": "{days} days",
+      "umbra": "Umbra of {name}",
+      "penumbra": "Penumbra of {name}",
+      "radius": "{km} km radius"
+    },
+    "shadow": {
+      "umbra": "Umbra",
+      "penumbra": "Penumbra"
     },
     "options_reframe": "Recenter",
     "size": {

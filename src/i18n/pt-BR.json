@@ -2113,7 +2113,7 @@
         "label": "Eclipses",
         "glyph": "◍",
         "hint": "Eclipses passados e futuros",
-        "lede": "Cones de umbra e penumbra em escala. Eclipses só ocorrem quando a sizígia cai perto de um nodo lunar."
+        "lede": "Cones de umbra e penumbra em escala. Ficam suaves até encontrarem o outro corpo; essa projeção é um eclipse."
       },
       "retrograde": {
         "label": "Retrogradação",
@@ -2297,6 +2297,20 @@
     "inset": {
       "from_earth": "Detalhe: o mesmo instante visto da Terra",
       "helio": "Detalhe: o mesmo instante visto de cima da eclíptica"
+    },
+    "hover": {
+      "orbit": "Órbita de {name}",
+      "ecliptic": "Eclíptica",
+      "nodes": "Nodos lunares",
+      "trail": "Caminho de {name}",
+      "period": "{days} dias",
+      "umbra": "Umbra de {name}",
+      "penumbra": "Penumbra de {name}",
+      "radius": "{km} km de raio"
+    },
+    "shadow": {
+      "umbra": "Umbra",
+      "penumbra": "Penumbra"
     },
     "options_reframe": "Recentralizar",
     "size": {

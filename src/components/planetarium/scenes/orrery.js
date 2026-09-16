@@ -1,38 +1,29 @@
-import {
-  AmbientLight,
-  BufferGeometry,
-  Group,
-  Line,
-  LineBasicMaterial,
-  Mesh,
-  MeshBasicMaterial,
-  PerspectiveCamera,
-  PointLight,
-  Scene,
-  SphereGeometry,
-  Vector3,
-} from 'three'
+import { AmbientLight, Group, PerspectiveCamera, Scene, Vector3 } from 'three'
 import { AU_KM, BODIES, BODY_BY_NAME } from '../../../lib/planetarium/constants.js'
-import { heliocentricPositions, orientationBasis } from '../../../lib/planetarium/ephemeris3d.js'
+import { heliocentricPositions, orientationBasis, sunwardOf } from '../../../lib/planetarium/ephemeris3d.js'
 import { orbitPath } from '../../../lib/planetarium/orbits.js'
-import { bodyRadiusUnits, scalePosition } from '../../../lib/planetarium/scale.js'
+import { bodyRadiusUnits, pickRadiusUnits, scalePosition } from '../../../lib/planetarium/scale.js'
 import {
-  UNIT_SPHERE,
   applyOrientation,
-  cloudMaterial,
   disposeObject,
-  earthMaterial,
-  emissiveMaterial,
-  moonMaterial,
-  ringGeometry,
-  ringMaterial,
+  namedMoon,
+  planetMesh,
+  setSunDirection,
   starSphere,
-  surfaceMaterial,
 } from '../../../lib/planetarium/materials.js'
-import { makeLabel } from '../../../lib/planetarium/labels.js'
 import { MOONS, MOON_BY_NAME, moonOrbitPath, moonOrientation, moonPosition } from '../../../lib/planetarium/moons.js'
+import {
+  LABEL_LAYER,
+  circlePoints,
+  fitLabelsToCamera,
+  layeredLabel,
+  pathLine,
+  setLinePoints,
+  toVector3,
+  visibleOf,
+} from '../../../lib/planetarium/sceneGraph.js'
 
-const NAMES        = BODIES.map(body => body.name)
+const NAMES = BODIES.map(body => body.name)
 // A planet's moons only make sense once you are looking at that planet; at system scale they sit
 // inside its exaggerated disc. Distances are scaled so the innermost moon clears the planet's
 // exaggerated disc, which keeps every ratio inside that moon system exact.
@@ -40,29 +31,31 @@ const INNER_MOON_RADII = 1.6
 // Sprite labels are sized in world units, so they are rescaled each frame to hold a steady size on
 // screen however far the camera is from them.
 const LABEL_SCREEN_SIZE = 0.045
-const STAR_RADIUS  = 4000
+const STAR_RADIUS      = 4000
 const MOON_ORBIT_UNITS = 2.6
-const LABEL_LAYER      = 2
+const GRID_AU          = [1, 5, 10, 20, 30]
 
-const vector3 = point => new Vector3(point.x, point.y, point.z)
-
-const orbitLine = (points, color, opacity) => new Line(
-  new BufferGeometry().setFromPoints(points.map(vector3)),
-  new LineBasicMaterial({ color, transparent: true, opacity })
-)
+const innerMoonRatio = new Map()
+for (const moon of MOONS) {
+  const ratio = moon.semiMajorKm / BODY_BY_NAME.get(moon.parent).radiusKm
+  innerMoonRatio.set(moon.parent, Math.min(innerMoonRatio.get(moon.parent) ?? Infinity, ratio))
+}
 
 const eclipticGrid = () => {
   const group = new Group()
-  for (const au of [1, 5, 10, 20, 30]) {
-    const points = Array.from({ length: 181 }, (_, index) => {
-      const angle = (index / 180) * Math.PI * 2
-      return { x: Math.cos(angle) * au, y: 0, z: Math.sin(angle) * au }
-    })
-    group.add(orbitLine(points, '#1e3a5f', 0.4))
+  for (const au of GRID_AU) {
+    group.add(pathLine(circlePoints(au), { color: '#1e3a5f', opacity: 0.4, kind: 'grid' }))
   }
-  group.userData.gridRadiiAu = [1, 5, 10, 20, 30]
+  group.userData.gridRadiiAu = GRID_AU
   return group
 }
+
+const taggedOrbit = (body, opacity, points = [{ x: 0, y: 0, z: 0 }]) => pathLine(points, {
+  color:      body.color,
+  opacity,
+  bodyName:   body.name,
+  periodDays: body.periodDays,
+})
 
 export const createOrreryScene = ({ labelFor = name => name } = {}) => {
   const scene  = new Scene()
@@ -71,110 +64,62 @@ export const createOrreryScene = ({ labelFor = name => name } = {}) => {
   camera.position.set(0, 34, 46)
   camera.layers.enable(LABEL_LAYER)
 
-  const bodies = new Map()
-  const labels = new Map()
-  const orbits = new Group()
-  const grid   = eclipticGrid()
-  const stars  = starSphere(STAR_RADIUS)
-
-  scene.add(new AmbientLight('#ffffff', 0.1))
-  const sunLight = new PointLight('#fff6e5', 3.2, 0, 0)
-  scene.add(sunLight, orbits, grid, stars)
-
-  for (const body of BODIES) {
-    const material = body.name === 'Sun'
-      ? emissiveMaterial('Sun')
-      : body.name === 'Earth' ? earthMaterial() : surfaceMaterial(body.name)
-    const mesh = new Mesh(UNIT_SPHERE, material)
-    mesh.userData.bodyName = body.name
-
-    if (body.name === 'Earth') {
-      const clouds = new Mesh(UNIT_SPHERE, cloudMaterial())
-      clouds.scale.setScalar(1.006)
-      clouds.userData.bodyName = 'Earth'
-      mesh.add(clouds)
-      mesh.userData.clouds = clouds
-    }
-    if (body.rings) {
-      const rings = new Mesh(
-        ringGeometry(body.rings.innerKm / body.radiusKm, body.rings.outerKm / body.radiusKm),
-        ringMaterial()
-      )
-      rings.rotation.x = Math.PI / 2
-      mesh.add(rings)
-      mesh.userData.rings = rings
-    }
-
-    scene.add(mesh)
-    bodies.set(body.name, mesh)
-
-    const label = makeLabel(labelFor(body.name), body.color, 2.6)
-    label.layers.set(LABEL_LAYER)
-    scene.add(label)
-    labels.set(body.name, label)
-
-    if (body.kind === 'planet' || body.kind === 'dwarf') {
-      const line = orbitLine(orbitPath(body.name, new Date()), body.color, 0.34)
-      line.userData.bodyName = body.name
-      orbits.add(line)
-    }
-  }
-
-  const sunMarker = new Mesh(new SphereGeometry(1, 32, 24), new MeshBasicMaterial({ color: '#ffd166', transparent: true, opacity: 0.12 }))
-  scene.add(sunMarker)
-
+  const bodies     = new Map()
+  const labels     = new Map()
   const moonMeshes = new Map()
   const moonLabels = new Map()
   const moonOrbits = new Map()
+  const orbits     = new Group()
+  const grid       = eclipticGrid()
+  const stars      = starSphere(STAR_RADIUS)
+
+  scene.add(new AmbientLight('#fff6e5', 0.02), orbits, grid, stars)
+
+  for (const body of BODIES) {
+    const mesh  = planetMesh(body)
+    const label = layeredLabel(labelFor(body.name), body.color, 2.6)
+    scene.add(mesh, label)
+    bodies.set(body.name, mesh)
+    labels.set(body.name, label)
+    if (body.kind === 'planet' || body.kind === 'dwarf') {
+      orbits.add(taggedOrbit(body, 0.34, orbitPath(body.name, new Date())))
+    }
+  }
 
   for (const moon of MOONS) {
-    const mesh = new Mesh(UNIT_SPHERE, moonMaterial(moon))
-    mesh.userData.bodyName = moon.name
-    mesh.visible = false
-    scene.add(mesh)
+    const mesh  = namedMoon(moon)
+    const label = layeredLabel(labelFor(moon.name), moon.color, 1.1)
+    const line  = taggedOrbit(moon, 0.4)
+    mesh.visible = label.visible = line.visible = false
+    scene.add(mesh, label, line)
     moonMeshes.set(moon.name, mesh)
-
-    const label = makeLabel(labelFor(moon.name), moon.color, 1.1)
-    label.layers.set(LABEL_LAYER)
-    label.visible = false
-    scene.add(label)
     moonLabels.set(moon.name, label)
-
-    const line = orbitLine([{ x: 0, y: 0, z: 0 }], moon.color, 0.4)
-    line.visible = false
-    scene.add(line)
     moonOrbits.set(moon.name, line)
   }
 
   // True scale means exactly that: 1 unit is 1 au and radii are untouched, so bodies are smaller
-  // than a pixel until you fly up to one. Otherwise the Sun is exaggerated on a gentler curve than
-  // the planets, or it swallows the inner system.
+  // than a pixel until you fly up to one. Compressed mode keeps the same exaggeration for the Sun
+  // as for the planets so the photosphere stays in real proportion; a camera-relative pick halo
+  // keeps that photosphere clickable when it is smaller than a pixel.
   const radiusUnits = (body, state) => {
     if (state.scaleMode === 'true') return bodyRadiusUnits(body.radiusKm)
     return bodyRadiusUnits(body.radiusKm, {
-      exaggeration: body.name === 'Sun' ? Math.pow(state.sizeExaggeration, 0.62) : state.sizeExaggeration,
-      minUnits:     0.2,
+      exaggeration: state.sizeExaggeration,
+      minUnits:     body.name === 'Sun' ? 0 : 0.2,
     })
   }
 
   const scaleOptions = state => ({ mode: state.scaleMode, unitsPerAu: 1 })
 
   const rebuildOrbits = (state) => {
+    const options = scaleOptions(state)
+    const when    = new Date(state.timeMs)
     for (const line of orbits.children) {
-      const points = orbitPath(line.userData.bodyName, new Date(state.timeMs))
-        .map(point => scalePosition(point, scaleOptions(state)))
-      line.geometry.dispose()
-      line.geometry = new BufferGeometry().setFromPoints(points.map(vector3))
+      setLinePoints(line, orbitPath(line.userData.bodyName, when).map(point => scalePosition(point, options)))
     }
-    for (let index = 0; index < grid.children.length; index += 1) {
-      const au     = grid.userData.gridRadiiAu[index]
-      const points = Array.from({ length: 181 }, (_, step) => {
-        const angle = (step / 180) * Math.PI * 2
-        return scalePosition({ x: Math.cos(angle) * au, y: 0, z: Math.sin(angle) * au }, scaleOptions(state))
-      })
-      grid.children[index].geometry.dispose()
-      grid.children[index].geometry = new BufferGeometry().setFromPoints(points.map(vector3))
-    }
+    grid.children.forEach((line, index) => {
+      setLinePoints(line, circlePoints(grid.userData.gridRadiiAu[index]).map(point => scalePosition(point, options)))
+    })
   }
 
   let lastScaleMode = ''
@@ -191,39 +136,45 @@ export const createOrreryScene = ({ labelFor = name => name } = {}) => {
       lastOrbitDay  = day
     }
 
-    orbits.visible = state.showOrbits
-    grid.visible   = state.showOrbits
+    orbits.visible = grid.visible = state.showOrbits
     stars.visible  = state.showStarMap
+
+    const sunRadius = radiusUnits(BODY_BY_NAME.get('Sun'), state)
 
     for (const body of BODIES) {
       const mesh   = bodies.get(body.name)
       const label  = labels.get(body.name)
-      const radius = radiusUnits(body, state)
+      const radius = body.name === 'Sun' ? sunRadius : radiusUnits(body, state)
       let position = scalePosition(positions.get(body.name), scaleOptions(state))
 
       if (body.parent) {
         const parent = scalePosition(positions.get(body.parent), scaleOptions(state))
-        const offset = new Vector3(position.x - parent.x, position.y - parent.y, position.z - parent.z)
-        const gap    = radiusUnits(BODY_BY_NAME.get(body.parent), state) * MOON_ORBIT_UNITS
-        offset.setLength(state.scaleMode === 'true' ? offset.length() : gap)
+        const offset = toVector3(position).sub(toVector3(parent))
+        offset.setLength(state.scaleMode === 'true' ? offset.length() : radiusUnits(BODY_BY_NAME.get(body.parent), state) * MOON_ORBIT_UNITS)
         position = { x: parent.x + offset.x, y: parent.y + offset.y, z: parent.z + offset.z }
       }
 
       mesh.scale.setScalar(radius)
       mesh.position.set(position.x, position.y, position.z)
       applyOrientation(mesh, orientationBasis(body.name, when))
+      if (body.name !== 'Sun') setSunDirection(mesh, sunwardOf(positions.get(body.name)))
 
-      const sunDirection = new Vector3(-position.x, -position.y, -position.z).normalize()
-      mesh.material.uniforms?.sunDirection?.value.copy(sunDirection)
-      mesh.userData.clouds?.material.uniforms.sunDirection.value.copy(sunDirection)
-
-      label.visible = state.showLabels
+      const distance  = Math.hypot(position.x, position.y, position.z)
+      const insideSun = body.name !== 'Sun' && distance < sunRadius
+      mesh.visible  = !insideSun
+      label.visible = state.showLabels && (body.name === 'Sun' || distance > sunRadius * 1.2)
       label.position.set(position.x, position.y + radius, position.z)
+
+      if (body.name === 'Sun') {
+        const halo     = mesh.userData.pickHalo
+        const pickSize = pickRadiusUnits(radius, camera.position.distanceTo(mesh.position))
+        halo.scale.setScalar(pickSize / radius)
+        halo.material.opacity = pickSize > radius * 1.2 ? 0.16 : 0
+      }
     }
 
-    sunMarker.scale.setScalar(radiusUnits(BODY_BY_NAME.get('Sun'), state) * 2.6)
     updateMoons(state, when, positions)
-    scaleLabels()
+    fitLabelsToCamera(camera, [...labels.values(), ...moonLabels.values()], LABEL_SCREEN_SIZE)
   }
 
   /**
@@ -232,8 +183,7 @@ export const createOrreryScene = ({ labelFor = name => name } = {}) => {
    * Galilean spacing (and Iapetus being far out) readable at any exaggeration.
    */
   const updateMoons = (state, when, positions) => {
-    const focused = state.focusBody
-    const parent  = MOON_BY_NAME.get(focused)?.parent || focused
+    const parent = MOON_BY_NAME.get(state.focusBody)?.parent || state.focusBody
 
     for (const moon of MOONS) {
       const mesh   = moonMeshes.get(moon.name)
@@ -259,40 +209,22 @@ export const createOrreryScene = ({ labelFor = name => name } = {}) => {
         parentPoint.z + offset.z * spread
       )
 
+      const offset = moonPosition(moon, when)
       mesh.scale.setScalar(Math.max(
-        state.scaleMode === 'true' ? 0 : parentRadius * 0.12,
+        state.scaleMode === 'true' ? 0 : parentRadius * 0.2,
         bodyRadiusUnits(moon.radiusKm, { exaggeration: state.scaleMode === 'true' ? 1 : state.sizeExaggeration })
       ))
-      mesh.position.copy(place(moonPosition(moon, when)))
+      mesh.position.copy(place(offset))
       applyOrientation(mesh, moonOrientation(moon, when))
+      const parentTrue = positions.get(moon.parent)
+      setSunDirection(mesh, sunwardOf({
+        x: parentTrue.x + offset.x,
+        y: parentTrue.y + offset.y,
+        z: parentTrue.z + offset.z,
+      }))
       label.position.copy(mesh.position).setY(mesh.position.y + mesh.scale.x)
-
-      line.geometry.dispose()
-      line.geometry = new BufferGeometry().setFromPoints(moonOrbitPath(moon, when).map(place))
+      setLinePoints(line, moonOrbitPath(moon, when).map(place))
     }
-  }
-
-  /** Keep every label at a steady on-screen size, whatever the camera distance. */
-  const scaleLabels = () => {
-    for (const label of [...labels.values(), ...moonLabels.values()]) {
-      if (!label.visible) continue
-      const size = camera.position.distanceTo(label.position) * LABEL_SCREEN_SIZE
-      const map  = label.material.map
-      label.scale.set(size * (map.image.width / map.image.height), size, 1)
-    }
-  }
-
-  const framing = state => (state.scaleMode === 'true' ? 90 : 150)
-
-  const dispose = () => {
-    disposeObject(scene)
-    scene.clear()
-  }
-
-  const innerMoonRatio = new Map()
-  for (const moon of MOONS) {
-    const ratio = moon.semiMajorKm / BODY_BY_NAME.get(moon.parent).radiusKm
-    innerMoonRatio.set(moon.parent, Math.min(innerMoonRatio.get(moon.parent) ?? Infinity, ratio))
   }
 
   /**
@@ -315,5 +247,15 @@ export const createOrreryScene = ({ labelFor = name => name } = {}) => {
 
   const bodyIndex = new Map([...bodies, ...moonMeshes])
 
-  return { scene, camera, update, dispose, framing, systemReach, pickables: [...bodyIndex.values()], bodies: bodyIndex }
+  return {
+    scene,
+    camera,
+    update,
+    dispose:     () => { disposeObject(scene); scene.clear() },
+    framing:     state => (state.scaleMode === 'true' ? 90 : 150),
+    systemReach,
+    pickables:   [...bodyIndex.values()],
+    bodies:      bodyIndex,
+    hoverables:  () => visibleOf(orbits.visible ? orbits.children : [], [...moonOrbits.values()]),
+  }
 }

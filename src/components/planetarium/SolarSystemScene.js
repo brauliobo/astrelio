@@ -1,5 +1,7 @@
 import { PerspectiveCamera, Raycaster, Vector2, Vector3, WebGLRenderer, ACESFilmicToneMapping } from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import { focusDistance } from '../../lib/planetarium/scale.js'
+import { bodyNameOf, equatorialSide, placeAlong, SHADOW_LAYER, terminatorApproach, UP } from '../../lib/planetarium/sceneGraph.js'
 import { createOrreryScene } from './scenes/orrery.js'
 import { createMoonLabScene } from './scenes/moonLab.js'
 import { createSkyScene } from './scenes/skyView.js'
@@ -11,7 +13,21 @@ export const CAMERA_PRESETS = {
   retrograde: ['sky', 'ecliptic'],
 }
 
-const sceneForView = view => (view === 'orrery' ? 'orrery' : view === 'retrograde' ? 'sky' : 'moonLab')
+const SCENE_KEY = { orrery: 'orrery', retrograde: 'sky' }
+const sceneForView = view => SCENE_KEY[view] || 'moonLab'
+
+const FRAME = {
+  orrery:     d => [0, d * 0.72, d * 0.86],
+  moon:       d => [0, d, 0.001],
+  eclipses:   d => [d * 0.5, d * 0.22, d * 0.5],
+  retrograde: d => [0, d * 0.35, d * 0.8],
+}
+
+const CONTROL_RANGE = {
+  orrery:  { min: 0.00002, max: 4000 },
+  moonLab: { min: 12,      max: 40000 },
+  sky:     { min: 0.02,    max: 900 },
+}
 
 export const supportsWebgl = () => {
   if (typeof document === 'undefined') return false
@@ -23,12 +39,12 @@ export const supportsWebgl = () => {
   }
 }
 
-export const createPlanetarium = ({ canvas, host, onPick, labelFor }) => {
+export const createPlanetarium = ({ canvas, host, onPick, labelFor, captionFor }) => {
   const renderer = new WebGLRenderer({ canvas, antialias: true, logarithmicDepthBuffer: true, powerPreference: 'high-performance' })
   renderer.toneMapping = ACESFilmicToneMapping
   renderer.setPixelRatio(Math.min(globalThis.devicePixelRatio || 1, 2))
 
-  const options = { labelFor }
+  const options = { labelFor, captionFor }
   const scenes  = {
     orrery:  createOrreryScene(options),
     moonLab: createMoonLabScene(options),
@@ -41,21 +57,38 @@ export const createPlanetarium = ({ canvas, host, onPick, labelFor }) => {
     control.enableDamping = true
     control.dampingFactor = 0.08
     // Small enough to fly right up to a planet when the orrery is at true scale (1 unit = 1 au).
-    control.minDistance   = key === 'moonLab' ? 12 : key === 'orrery' ? 0.00002 : 0.02
-    control.maxDistance   = key === 'moonLab' ? 40000 : key === 'sky' ? 900 : 4000
+    const range = CONTROL_RANGE[key]
+    control.minDistance = range.min
+    control.maxDistance = range.max
     controls.set(key, control)
   }
 
   // Second viewport used by the phase and retrograde views to show the same instant from another vantage.
   const insetCamera = new PerspectiveCamera(34, 1, 0.05, 60000)
   const raycaster   = new Raycaster()
+  raycaster.layers.enable(SHADOW_LAYER)
   const pointer     = new Vector2()
 
-  let activeView  = 'orrery'
-  let activeState = null
-  let insetMode   = 'none'
+  let activeView    = 'orrery'
+  let activeState   = null
+  let insetMode     = 'none'
+  let hoveredLine   = null
+  let pendingFocus  = null
+  let pendingShadow = null
 
   const active = () => scenes[sceneForView(activeView)]
+  const controlOf = (view = activeView) => controls.get(sceneForView(view))
+
+  const paintHover = (line) => {
+    if (hoveredLine === line) return
+    if (hoveredLine?.material && hoveredLine.userData.baseOpacity != null) {
+      hoveredLine.material.opacity = hoveredLine.userData.baseOpacity
+    }
+    hoveredLine = line || null
+    if (hoveredLine?.material) {
+      hoveredLine.material.opacity = Math.min(1, (hoveredLine.userData.baseOpacity ?? 0.4) + 0.45)
+    }
+  }
 
   const resize = () => {
     const rect   = host.getBoundingClientRect()
@@ -74,64 +107,63 @@ export const createPlanetarium = ({ canvas, host, onPick, labelFor }) => {
   const frameCamera = (view) => {
     const entry    = active()
     const distance = entry.framing(activeState || { scaleMode: 'compressed' })
-    const control  = controls.get(sceneForView(view))
+    const control  = controlOf(view)
     const pose     = entry.pose?.(activeState)
     control.target.set(0, 0, 0)
 
     if (pose) {
       control.target.copy(pose.target)
       entry.camera.position.copy(pose.position)
-      control.update()
-      return
+    } else if (FRAME[view]) {
+      entry.camera.position.set(...FRAME[view](distance))
     }
-
-    if (view === 'orrery') entry.camera.position.set(0, distance * 0.72, distance * 0.86)
-    if (view === 'moon') entry.camera.position.set(0, distance, 0.001)
-    if (view === 'eclipses') entry.camera.position.set(distance * 0.5, distance * 0.22, distance * 0.5)
-    if (view === 'retrograde') entry.camera.position.set(0, distance * 0.35, distance * 0.8)
     control.update()
   }
 
   const setView = (view) => {
     if (activeView === view) return
+    paintHover(null)
     activeView = view
     insetMode  = view === 'moon' || view === 'eclipses' ? 'fromEarth' : view === 'retrograde' ? 'helio' : 'none'
     frameCamera(view)
   }
 
-  /**
-   * Line the camera up across the Sun–Earth–Moon shadow axis. A solar eclipse reads on Earth, where
-   * the Moon's umbra lands; a lunar eclipse reads at the Moon, inside Earth's umbra.
-   */
-  const alignShadowAxis = (kind = 'solar') => {
-    const entry     = scenes.moonLab
-    const direction = entry.scene.userData.sunDirection || new Vector3(1, 0, 0)
-    const control   = controls.get('moonLab')
-    const side      = new Vector3(0, 1, 0).cross(direction).normalize()
-    const solar     = kind !== 'lunar'
-    const target    = solar ? new Vector3() : (entry.scene.userData.moonPosition || new Vector3())
-    const distance  = solar ? 34 : 150
+  const alignShadowAxis = (kind = 'solar') => { pendingShadow = kind }
 
+  const applyShadowAxis = (kind = 'solar') => {
+    const entry       = scenes.moonLab
+    const sun         = entry.scene.userData.sunDirection || new Vector3(1, 0, 0)
+    const moon        = entry.scene.userData.moonPosition || new Vector3()
+    const moonRadius  = entry.scene.userData.moonRadius || 1.7374
+    const earthRadius = entry.scene.userData.earthRadius || 6.371
+    const solar       = kind !== 'lunar'
+    const target      = solar ? new Vector3() : moon.clone()
+    const distance    = solar ? Math.max(34, earthRadius * 5.6) : Math.max(28, moonRadius * 16)
+    const side        = equatorialSide(sun)
+
+    const control = controlOf('eclipses')
     control.target.copy(target)
-    entry.camera.position.copy(target.clone()
-      .add(side.multiplyScalar(distance))
-      .add(direction.clone().multiplyScalar(distance * 0.35)))
+    // Stand on the sunward side, a little off-axis, so the stamp is a circle on the body not a line.
+    entry.camera.position.copy(placeAlong(target, [
+      [sun, distance],
+      [side, distance * 0.32],
+      [UP, distance * 0.18],
+    ]))
     control.update()
   }
 
   const updateInsetCamera = () => {
     const entry = active()
-    if (insetMode === 'fromEarth') {
-      const moon = entry.scene.userData.moonPosition || new Vector3(0, 0, 1)
-      const moonRadius = entry.scene.userData.moonRadius || 1.7374
-      insetCamera.position.copy(moon.clone().setLength((entry.scene.userData.earthRadius || 6.371) * 1.05))
-      insetCamera.up.set(0, 1, 0)
-      insetCamera.lookAt(moon)
-      // Frame the Moon at a few times its apparent size, whichever layout the scene is using.
-      insetCamera.fov = Math.max(1.2, (Math.atan(moonRadius / moon.length()) * 180) / Math.PI * 6)
-      insetCamera.layers.set(0)
-      insetCamera.updateProjectionMatrix()
-    }
+    if (insetMode !== 'fromEarth') return
+    const moon       = entry.scene.userData.moonPosition || new Vector3(0, 0, 1)
+    const moonRadius = entry.scene.userData.moonRadius || 1.7374
+    insetCamera.position.copy(moon.clone().setLength((entry.scene.userData.earthRadius || 6.371) * 1.05))
+    insetCamera.up.set(0, 1, 0)
+    insetCamera.lookAt(moon)
+    // Frame the Moon at a few times its apparent size, whichever layout the scene is using.
+    insetCamera.fov = Math.max(1.2, (Math.atan(moonRadius / moon.length()) * 180) / Math.PI * 6)
+    insetCamera.layers.set(0)
+    insetCamera.updateProjectionMatrix()
   }
 
   const renderInset = (size) => {
@@ -169,8 +201,12 @@ export const createPlanetarium = ({ canvas, host, onPick, labelFor }) => {
       applyFocus(pendingFocus)
       pendingFocus = null
     }
+    if (pendingShadow) {
+      applyShadowAxis(pendingShadow)
+      pendingShadow = null
+    }
     const entry = active()
-    controls.get(sceneForView(activeView)).update()
+    controlOf().update()
     renderer.setViewport(0, 0, size.width, size.height)
     renderer.render(entry.scene, entry.camera)
     renderInset(size)
@@ -178,18 +214,39 @@ export const createPlanetarium = ({ canvas, host, onPick, labelFor }) => {
 
   const onResize = () => { size = resize() }
 
-  const pick = (event) => {
+  const pointerFromEvent = (event) => {
     const rect = canvas.getBoundingClientRect()
     pointer.x  = ((event.clientX - rect.left) / rect.width) * 2 - 1
     pointer.y  = -((event.clientY - rect.top) / rect.height) * 2 + 1
+  }
+
+  const hitAt = (event, objects, recursive = true) => {
+    pointerFromEvent(event)
     raycaster.setFromCamera(pointer, active().camera)
-    const hit  = raycaster.intersectObjects(active().pickables, true)[0]
-    const name = hit?.object?.userData?.bodyName
+    return raycaster.intersectObjects(objects, recursive)[0]
+  }
+
+  const pick = (event) => {
+    const name = bodyNameOf(hitAt(event, active().pickables)?.object)
     if (name) onPick?.(name)
   }
 
-  // Applied from the render loop: a moon only takes its place once the frame's update has run.
-  let pendingFocus = null
+  const hover = (event) => {
+    const entry = active()
+    if (bodyNameOf(hitAt(event, entry.pickables)?.object)) {
+      paintHover(null)
+      return null
+    }
+
+    raycaster.params.Line.threshold = Math.max(0.012, Math.min(0.22, entry.camera.position.length() * 0.0022))
+    const hit = raycaster.intersectObjects(entry.hoverables?.() ?? [], false)[0]
+    paintHover(hit?.object || null)
+    if (!hit) return null
+    const { kind = 'orbit', bodyName = '', periodDays = 0, radiusKm = 0 } = hit.object.userData
+    return { kind, bodyName, periodDays, radiusKm }
+  }
+
+  const clearHover = () => paintHover(null)
 
   const focusBody = (name) => { pendingFocus = name }
 
@@ -197,23 +254,32 @@ export const createPlanetarium = ({ canvas, host, onPick, labelFor }) => {
     const entry = active()
     const mesh  = entry.bodies?.get(name)
     if (!mesh) return
-    const control = controls.get(sceneForView(activeView))
+    const control = controlOf()
     control.target.copy(mesh.position)
-    // Close enough to fill the frame with the body, wide enough to hold its moon system.
-    const reach    = entry.systemReach?.(name, activeState || {}) || 0
-    const distance = Math.max(0.05, mesh.scale.x * (activeState?.scaleMode === 'true' ? 6 : 8), reach * 3.2)
-    // Approach from the sunward side in the orrery, so the body arrives lit rather than in shadow.
-    const approach = sceneForView(activeView) === 'orrery' && mesh.position.length() > 0
-      ? mesh.position.clone().negate().normalize()
-      : new Vector3(1, 0, 1).normalize()
+    // True scale frames the disc itself. Compressed mode can pull back to hold the moon system,
+    // which is already laid out just outside the exaggerated planet.
+    const trueScale = activeState?.scaleMode === 'true'
+    const reach     = !trueScale && activeState?.showMoons
+      ? (entry.systemReach?.(name, activeState || {}) || 0)
+      : 0
+    const distance  = focusDistance(mesh.scale.x, {
+      fovDeg: entry.camera.fov,
+      trueScale,
+      moonReach: reach,
+    })
+    // Stand off the sun-body line, slightly above, so the terminator cuts across the disc
+    // instead of hiding on the limb of a fully lit face. In the moon lab the Sun is not at the
+    // origin, so the stored sunward vector is the one that matches the shader.
+    const sunward = sceneForView(activeView) === 'orrery'
+      ? (mesh.position.length() > 0 ? mesh.position.clone().negate().normalize() : new Vector3(1, 0, 0))
+      : (entry.scene.userData.sunDirection?.clone().normalize() || new Vector3(1, 0, 0))
 
-    entry.camera.position.copy(mesh.position.clone()
-      .add(approach.multiplyScalar(distance))
-      .add(new Vector3(0, distance * 0.35, 0)))
+    entry.camera.position.copy(mesh.position.clone().addScaledVector(terminatorApproach(sunward), distance))
     control.update()
   }
 
   const dispose = () => {
+    paintHover(null)
     for (const control of controls.values()) control.dispose()
     for (const entry of Object.values(scenes)) entry.dispose()
     renderer.dispose()
@@ -221,5 +287,5 @@ export const createPlanetarium = ({ canvas, host, onPick, labelFor }) => {
 
   frameCamera(activeView)
 
-  return { update, render, onResize, pick, focusBody, frameCamera, alignShadowAxis, dispose, renderer }
+  return { update, render, onResize, pick, hover, clearHover, focusBody, frameCamera, alignShadowAxis, dispose, renderer }
 }

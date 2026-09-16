@@ -101,6 +101,17 @@ test.describe('Planetarium', () => {
     await expect(page.getByTestId('planetarium-body-info')).toContainText(/6[.,]371 km/)
   })
 
+  test('picks the true-scale sun from the orrery', async ({ page }) => {
+    await openPlanetarium(page)
+    const canvas = page.getByTestId('planetarium-canvas-surface')
+    await expect(canvas).toBeVisible()
+    const box = await canvas.boundingBox()
+    await canvas.click({ position: { x: box.width / 2, y: box.height / 2 } })
+    await expect(page.getByTestId('planetarium-body-info')).toBeVisible()
+    await expect(page.getByTestId('planetarium-body-info')).toContainText(/Sol|Sun/)
+    await expect(page.getByTestId('planetarium-body-info')).toContainText(/695.?700/)
+  })
+
   test('plays and pauses the simulated clock', async ({ page }) => {
     await openPlanetarium(page)
     const play = page.getByTestId('planetarium-play')
