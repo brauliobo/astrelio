@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { compressRadius, expandRadius, bodyRadiusUnits, pickRadiusUnits, scalePosition, focusDistance } from '../../../src/lib/planetarium/scale.js'
+import { compressRadius, expandRadius, bodyRadiusUnits, compressedSunRadius, pickRadiusUnits, scalePosition, focusDistance, MERCURY_PERIHELION_AU } from '../../../src/lib/planetarium/scale.js'
 import { earthShadow, moonShadow, penumbraCone, shadowRadiiAt } from '../../../src/lib/planetarium/shadows.js'
 import { lunarOrbitPath, orbitExtremes, orbitPath, skyTrack } from '../../../src/lib/planetarium/orbits.js'
 import { EARTH_RADIUS_KM, MOON_RADIUS_KM, SUN_RADIUS_KM } from '../../../src/lib/planetarium/constants.js'
@@ -37,6 +37,14 @@ describe('distance scaling', () => {
     const sun     = bodyRadiusUnits(SUN_RADIUS_KM, { exaggeration: 4000 })
     const jupiter = bodyRadiusUnits(69911, { exaggeration: 4000 })
     expect(sun / jupiter).toBeCloseTo(SUN_RADIUS_KM / 69911, 5)
+  })
+
+  it('caps the compressed sun inside Mercury\'s perihelion so the inner planets stay in view', () => {
+    const sun     = compressedSunRadius(4000)
+    const jupiter = bodyRadiusUnits(69911, { exaggeration: 4000 })
+    expect(sun).toBeLessThan(compressRadius(MERCURY_PERIHELION_AU) * 0.55)
+    expect(sun).toBeGreaterThan(jupiter)
+    expect(compressedSunRadius(1)).toBeCloseTo(bodyRadiusUnits(SUN_RADIUS_KM), 8)
   })
 
   it('frames a true-scale planet by its disc, not a system-sized floor', () => {

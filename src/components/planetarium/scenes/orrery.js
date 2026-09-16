@@ -2,7 +2,7 @@ import { AmbientLight, Group, PerspectiveCamera, Scene, Vector3 } from 'three'
 import { AU_KM, BODIES, BODY_BY_NAME } from '../../../lib/planetarium/constants.js'
 import { heliocentricPositions, orientationBasis, sunwardOf } from '../../../lib/planetarium/ephemeris3d.js'
 import { orbitPath } from '../../../lib/planetarium/orbits.js'
-import { bodyRadiusUnits, pickRadiusUnits, scalePosition } from '../../../lib/planetarium/scale.js'
+import { bodyRadiusUnits, compressedSunRadius, pickRadiusUnits, scalePosition } from '../../../lib/planetarium/scale.js'
 import {
   applyOrientation,
   disposeObject,
@@ -98,14 +98,15 @@ export const createOrreryScene = ({ labelFor = name => name } = {}) => {
   }
 
   // True scale means exactly that: 1 unit is 1 au and radii are untouched, so bodies are smaller
-  // than a pixel until you fly up to one. Compressed mode keeps the same exaggeration for the Sun
-  // as for the planets so the photosphere stays in real proportion; a camera-relative pick halo
-  // keeps that photosphere clickable when it is smaller than a pixel.
+  // than a pixel until you fly up to one. Compressed mode exaggerates the planets so they read at
+  // system scale, but the Sun is capped inside Mercury's perihelion — the same exaggeration would
+  // swallow the inner system. A camera-relative pick halo keeps the true-scale photosphere clickable.
   const radiusUnits = (body, state) => {
     if (state.scaleMode === 'true') return bodyRadiusUnits(body.radiusKm)
+    if (body.name === 'Sun') return compressedSunRadius(state.sizeExaggeration)
     return bodyRadiusUnits(body.radiusKm, {
       exaggeration: state.sizeExaggeration,
-      minUnits:     body.name === 'Sun' ? 0 : 0.2,
+      minUnits:     0.2,
     })
   }
 

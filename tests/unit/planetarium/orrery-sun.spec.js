@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { Raycaster, Vector2 } from 'three'
 import { createOrreryScene } from '../../../src/components/planetarium/scenes/orrery.js'
 import { AU_KM, SUN_RADIUS_KM } from '../../../src/lib/planetarium/constants.js'
+import { compressedSunRadius } from '../../../src/lib/planetarium/scale.js'
 import { helioEcliptic, sunwardOf } from '../../../src/lib/planetarium/ephemeris3d.js'
 import { MOON_BY_NAME, moonPosition } from '../../../src/lib/planetarium/moons.js'
 import { bodyNameOf } from '../../../src/lib/planetarium/sceneGraph.js'
@@ -30,7 +31,7 @@ const state = {
 }
 
 describe('orrery sun', () => {
-  it('draws the sun in real proportion to the planets and still raycasts from the system view', () => {
+  it('keeps the compressed sun inside the inner system and still raycasts from the system view', () => {
     const orrery = createOrreryScene()
     orrery.camera.position.set(0, 108, 129)
     orrery.camera.lookAt(0, 0, 0)
@@ -38,8 +39,13 @@ describe('orrery sun', () => {
     orrery.update(state)
 
     const sun = orrery.bodies.get('Sun')
-    expect(sun.scale.x).toBeCloseTo((SUN_RADIUS_KM / AU_KM) * 4000, 6)
+    expect(sun.scale.x).toBeCloseTo(compressedSunRadius(4000), 6)
     expect(sun.userData.pickHalo.userData.bodyName).toBe('Sun')
+    for (const name of ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto']) {
+      const mesh = orrery.bodies.get(name)
+      expect(mesh.visible).toBe(true)
+      expect(mesh.position.length()).toBeGreaterThan(sun.scale.x * 1.15)
+    }
 
     const raycaster = new Raycaster()
     raycaster.setFromCamera(new Vector2(0, 0), orrery.camera)

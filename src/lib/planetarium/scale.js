@@ -1,4 +1,4 @@
-import { AU_KM } from './constants.js'
+import { AU_KM, SUN_RADIUS_KM } from './constants.js'
 
 // Scene units are AU in true scale. Compressed scale maps radial distance through a log curve so
 // Mercury and Neptune are legible in one frame, while keeping angles and orbit shapes untouched.
@@ -24,6 +24,19 @@ export const scalePosition = (vector, { mode = 'compressed', unitsPerAu = 1, ...
 
 export const bodyRadiusUnits = (radiusKm, { unitsPerAu = 1, exaggeration = 1, minUnits = 0 } = {}) =>
   Math.max(minUnits, (radiusKm / AU_KM) * unitsPerAu * Math.max(1, exaggeration))
+
+/** Mercury perihelion: the inner wall of the compressed orrery. */
+export const MERCURY_PERIHELION_AU = 0.3075
+
+/**
+ * Same exaggeration as the planets would make the photosphere swallow Mercury, because distances
+ * are compressed while radii are not. Cap the disc inside Mercury's perihelion so every planet
+ * stays in view; true scale still uses the real radius.
+ */
+export const compressedSunRadius = (exaggeration = 1) => {
+  const proportional = bodyRadiusUnits(SUN_RADIUS_KM, { exaggeration })
+  return Math.min(proportional, compressRadius(MERCURY_PERIHELION_AU) * 0.45)
+}
 
 /** World radius large enough to click from `cameraDistance` without enlarging the drawn body. */
 export const pickRadiusUnits = (trueRadius, cameraDistance, { apparent = 0.01 } = {}) =>
