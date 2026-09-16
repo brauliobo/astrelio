@@ -20,7 +20,7 @@ const props = defineProps({
   glyphRenderer:        { type: String, default: null },
   planetAlignment:      { type: String, default: RADIAL_ALIGNMENT.CENTERED, validator: isRadialAlignment },
 })
-defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
+const emit = defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 
 const band       = computed(() => planetBandFor(props.map, props.index, props.count))
 const placements = computed(() =>
@@ -40,9 +40,9 @@ g(:data-chart-map='map.id')
     :cusps='map.chart.cusps'
     :wheel-shift='wheelShift'
     :highlighted-wheel='highlightedWheel'
-    @highlight='$emit("highlight", $event)'
-    @clear-highlight='$emit("clear-highlight")'
-    @toggle-highlight='$emit("toggle-highlight", $event)'
+    @highlight='emit("highlight", $event)'
+    @clear-highlight='emit("clear-highlight")'
+    @toggle-highlight='emit("toggle-highlight", $event)'
   )
   AspectLayer(
     v-if='map.showAspects'
@@ -53,9 +53,9 @@ g(:data-chart-map='map.id')
     :highlighted-aspect-key='highlightedAspectKey'
     :aspect-options='aspectOptions'
     :placements='placements'
-    @highlight='$emit("highlight", $event)'
-    @clear-highlight='$emit("clear-highlight")'
-    @toggle-highlight='$emit("toggle-highlight", $event)'
+    @highlight='emit("highlight", $event)'
+    @clear-highlight='emit("clear-highlight")'
+    @toggle-highlight='emit("toggle-highlight", $event)'
   )
   PlanetLayer(
     :placements='placements'
@@ -67,17 +67,17 @@ g(:data-chart-map='map.id')
     :glyph-renderer='glyphRenderer'
     :highlighted-bodies='highlightedBodies'
     :sign-axis='signAxis'
-    @highlight='$emit("highlight", $event)'
-    @clear-highlight='$emit("clear-highlight")'
-    @toggle-highlight='$emit("toggle-highlight", $event)'
+    @highlight='emit("highlight", $event)'
+    @clear-highlight='emit("clear-highlight")'
+    @toggle-highlight='emit("toggle-highlight", $event)'
   )
   HouseNumbers(
     v-if='map.showHouseLabels && count === 1'
     :cusps='map.chart.cusps'
     :wheel-shift='wheelShift'
     :highlighted-wheel='highlightedWheel'
-    @highlight='$emit("highlight", $event)'
-    @clear-highlight='$emit("clear-highlight")'
-    @toggle-highlight='$emit("toggle-highlight", $event)'
+    @highlight='emit("highlight", $event)'
+    @clear-highlight='emit("clear-highlight")'
+    @toggle-highlight='emit("toggle-highlight", $event)'
   )
 </template>

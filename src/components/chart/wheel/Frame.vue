@@ -77,9 +77,9 @@ g(data-testid='wheel-frame')
     tabindex='0'
     class='wheel-frame-ring'
     @mouseenter='emitPayload("highlight", ring)'
-    @mouseleave='$emit("clear-highlight")'
+    @mouseleave='emit("clear-highlight")'
     @focus='emitPayload("highlight", ring)'
-    @blur='$emit("clear-highlight")'
+    @blur='emit("clear-highlight")'
     @click.stop='emitPayload("toggle-highlight", ring)'
     @keydown.enter.prevent='emitPayload("toggle-highlight", ring)'
     @keydown.space.prevent='emitPayload("toggle-highlight", ring)'
@@ -99,11 +99,11 @@ g(data-testid='wheel-frame')
 
 <style scoped>
 .wheel-frame-ring {
-  cursor: pointer;
   outline: none;
 }
 
 .wheel-frame-ring__shape {
+  cursor: pointer;
   transition: filter 140ms ease, stroke-width 140ms ease, opacity 140ms ease;
 }
 

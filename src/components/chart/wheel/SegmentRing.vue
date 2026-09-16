@@ -54,9 +54,9 @@ g(:data-testid='testId')
     :tabindex='isInteractive(sector) ? 0 : null'
     class='segment-ring-sector'
     @mouseenter='emitPayload("highlight", sector)'
-    @mouseleave='isInteractive(sector) && $emit("clear-highlight")'
+    @mouseleave='isInteractive(sector) && emit("clear-highlight")'
     @focus='emitPayload("highlight", sector)'
-    @blur='isInteractive(sector) && $emit("clear-highlight")'
+    @blur='isInteractive(sector) && emit("clear-highlight")'
     @click.stop='emitPayload("toggle-highlight", sector)'
     @keydown.enter.prevent='emitPayload("toggle-highlight", sector)'
     @keydown.space.prevent='emitPayload("toggle-highlight", sector)'
@@ -94,13 +94,16 @@ g(:data-testid='testId')
 
 <style scoped>
 .segment-ring-sector {
-  cursor: pointer;
   outline: none;
 }
 
 .segment-ring-sector__arc,
 .segment-ring-sector__label {
   transition: opacity 140ms ease, stroke-width 140ms ease, filter 140ms ease;
+}
+
+.segment-ring-sector__arc {
+  cursor: pointer;
 }
 
 .segment-ring-sector[data-highlight='active'] .segment-ring-sector__arc,

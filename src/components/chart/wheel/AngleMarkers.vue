@@ -105,9 +105,9 @@ g(data-testid='angle-markers' font-family='"Inter", "Avenir Next", system-ui, sa
     tabindex='0'
     class='angle-marker'
     @mouseenter='emitPayload("highlight", marker.payload)'
-    @mouseleave='$emit("clear-highlight")'
+    @mouseleave='emit("clear-highlight")'
     @focus='emitPayload("highlight", marker.payload)'
-    @blur='$emit("clear-highlight")'
+    @blur='emit("clear-highlight")'
     @click.stop='emitPayload("toggle-highlight", marker.payload)'
     @keydown.enter.prevent='emitPayload("toggle-highlight", marker.payload)'
     @keydown.space.prevent='emitPayload("toggle-highlight", marker.payload)'
@@ -159,13 +159,13 @@ g(data-testid='angle-markers' font-family='"Inter", "Avenir Next", system-ui, sa
 
 <style scoped>
 .angle-marker {
-  cursor: pointer;
   outline: none;
 }
 
 .angle-marker__tick,
 .angle-marker__arrow,
 .angle-marker__label {
+  cursor: pointer;
   transition: filter 140ms ease, opacity 140ms ease, stroke-width 140ms ease;
 }
 

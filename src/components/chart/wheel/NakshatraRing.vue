@@ -10,7 +10,7 @@ const props = defineProps({
   wheelShift:       { type: Number, required: true },
   highlightedWheel: { type: Object, default: null },
 })
-defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
+const emit = defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 const { t } = useI18n()
 
 const fills = [
@@ -73,9 +73,9 @@ g
     font-size='6.7'
     font-family='Inter, system-ui, sans-serif'
     font-weight='700'
-    @highlight='$emit("highlight", $event)'
-    @clear-highlight='$emit("clear-highlight")'
-    @toggle-highlight='$emit("toggle-highlight", $event)'
+    @highlight='emit("highlight", $event)'
+    @clear-highlight='emit("clear-highlight")'
+    @toggle-highlight='emit("toggle-highlight", $event)'
   )
   circle(:cx='CENTER' :cy='CENTER' r='210' fill='none' stroke='var(--chart-frame-stroke)' stroke-width='1')
     title {{ t('chart.wheel_accessibility.nakshatra_outer_boundary') }}

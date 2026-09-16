@@ -16,7 +16,7 @@ const props = defineProps({
   highlightedBodies: { type: Array, default: () => [] },
   signAxis:          { type: Object, default: null },
 })
-defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
+const emit = defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 
 const highlightedBodySet = computed(() => new Set(props.highlightedBodies))
 
@@ -75,14 +75,14 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
     :aria-pressed='highlightedBodySet.has(item.planet.name)'
     role='button'
     tabindex='0'
-    class='planet-glyph-group cursor-pointer transition-opacity'
-    @mouseenter='$emit("highlight", highlightPayload(item.planet.name))'
-    @mouseleave='$emit("clear-highlight")'
-    @focus='$emit("highlight", highlightPayload(item.planet.name))'
-    @blur='$emit("clear-highlight")'
-    @click.stop='$emit("toggle-highlight", highlightPayload(item.planet.name))'
-    @keydown.enter.prevent='$emit("toggle-highlight", highlightPayload(item.planet.name))'
-    @keydown.space.prevent='$emit("toggle-highlight", highlightPayload(item.planet.name))'
+    class='planet-glyph-group transition-opacity'
+    @mouseenter='emit("highlight", highlightPayload(item.planet.name))'
+    @mouseleave='emit("clear-highlight")'
+    @focus='emit("highlight", highlightPayload(item.planet.name))'
+    @blur='emit("clear-highlight")'
+    @click.stop='emit("toggle-highlight", highlightPayload(item.planet.name))'
+    @keydown.enter.prevent='emit("toggle-highlight", highlightPayload(item.planet.name))'
+    @keydown.space.prevent='emit("toggle-highlight", highlightPayload(item.planet.name))'
   )
     title {{ item.name }} {{ item.degree }}°
     circle.planet-hit-target(
@@ -91,6 +91,7 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
       r='15'
       fill='var(--chart-hit-target-fill)'
       pointer-events='all'
+      cursor='pointer'
       :data-testid='`planet-hit-${item.planet.name}`'
     )
     CelestialGlyph(
@@ -127,7 +128,6 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
 
 <style scoped>
 .planet-glyph-group {
-  pointer-events: bounding-box;
   transition: filter 140ms ease, opacity 140ms ease;
 }
 

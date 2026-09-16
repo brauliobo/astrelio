@@ -334,6 +334,16 @@ onBeforeUnmount(() => {
         :sign-axis='activeSignAxis'
         :wheel-shift='wheelShift'
       )
+      ZodiacRing(
+        :wheel-shift='wheelShift'
+        :symbols='zodiacSymbols || undefined'
+        :highlighted-wheel='activeWheel'
+        :tropical='tropicalChart'
+        :complementary-sign-axis='tropicalChart'
+        @highlight='setHoverHighlight'
+        @clear-highlight='clearHoverHighlight'
+        @toggle-highlight='togglePinnedHighlight'
+      )
       ChartMap(
         v-for='(map, index) in displayMaps'
         :key='map.id'
@@ -352,23 +362,7 @@ onBeforeUnmount(() => {
         @clear-highlight='clearHoverHighlight'
         @toggle-highlight='togglePinnedHighlight'
       )
-      ZodiacRing(
-        :wheel-shift='wheelShift'
-        :symbols='zodiacSymbols || undefined'
-        :highlighted-wheel='activeWheel'
-        :tropical='tropicalChart'
-        :complementary-sign-axis='tropicalChart'
-        @highlight='setHoverHighlight'
-        @clear-highlight='clearHoverHighlight'
-        @toggle-highlight='togglePinnedHighlight'
-      )
-      TickRing(
-        :wheel-shift='wheelShift'
-        :highlighted-wheel='activeWheel'
-        @highlight='setHoverHighlight'
-        @clear-highlight='clearHoverHighlight'
-        @toggle-highlight='togglePinnedHighlight'
-      )
+      TickRing(:wheel-shift='wheelShift')
       AngleMarkers(
         v-if='displayMaps[0]?.showAngles'
         :chart='baseChart'

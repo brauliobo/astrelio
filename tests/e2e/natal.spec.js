@@ -114,7 +114,7 @@ test.describe('Natal chart', () => {
     const stage    = page.getByTestId('chart-wheel-stage')
     const summary  = page.getByTestId('chart-selection-summary')
 
-    await selected.hover()
+    await selected.locator('path').hover()
     await expect(selected).toHaveAttribute('data-highlight', 'active')
     await expect(opposite).toHaveAttribute('data-highlight', 'related')
     await expect(page.getByTestId('sign-axis-guide')).toBeVisible()
@@ -194,7 +194,14 @@ test.describe('Natal chart', () => {
     expect(modalityStyles.color).toBe('rgb(146, 64, 14)')
     expect(modalityStyles.backgroundColor).toBe('rgba(254, 243, 199, 0.96)')
 
-    await page.getByTestId('planet-hit-Sun').hover({ force: true })
+    await page.evaluate(() => {
+      const header = document.querySelector('.app-header')
+      const stage  = document.querySelector('[data-testid="chart-wheel-stage"]')
+      const extra  = (header?.getBoundingClientRect().bottom ?? 0) - stage.getBoundingClientRect().top + 16
+      if (extra > 0) window.scrollBy(0, extra)
+    })
+    const sunBox = await page.getByTestId('planet-hit-Sun').boundingBox()
+    await page.mouse.move(sunBox.x + sunBox.width / 2, sunBox.y + sunBox.height / 2)
     const summary = page.getByTestId('chart-selection-summary')
     await expect(summary).toBeVisible()
     await expect.poll(() => summary.evaluate(el => getComputedStyle(el).backgroundColor))

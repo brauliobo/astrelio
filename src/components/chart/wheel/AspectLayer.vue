@@ -21,7 +21,7 @@ const props = defineProps({
   aspectOptions:        { type: Object, default: () => ({}) },
   placements:           { type: Array, default: () => [] },
 })
-defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
+const emit = defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 
 const defaultAspectColor = (type) => ASPECT_LINE_STYLES[type]?.color || ASPECT_COLORS[type]
 const aspectColor        = (type) => {
@@ -98,14 +98,11 @@ g(data-testid='aspect-lines')
     :data-highlight='line.highlightState'
     role='button'
     tabindex='0'
-    class='cursor-pointer'
-    @mouseenter='$emit("highlight", highlightPayload(line))'
-    @mouseleave='$emit("clear-highlight")'
-    @focus='$emit("highlight", highlightPayload(line))'
-    @blur='$emit("clear-highlight")'
-    @click.stop='$emit("toggle-highlight", highlightPayload(line))'
-    @keydown.enter.prevent='$emit("toggle-highlight", highlightPayload(line))'
-    @keydown.space.prevent='$emit("toggle-highlight", highlightPayload(line))'
+    pointer-events='none'
+    @focus='emit("highlight", highlightPayload(line))'
+    @blur='emit("clear-highlight")'
+    @keydown.enter.prevent='emit("toggle-highlight", highlightPayload(line))'
+    @keydown.space.prevent='emit("toggle-highlight", highlightPayload(line))'
   )
     title {{ line.aspect.a }} {{ line.aspect.type }} {{ line.aspect.b }}
     line(
@@ -130,6 +127,12 @@ g(data-testid='aspect-lines')
       stroke-width='10'
       stroke-linecap='round'
       pointer-events='stroke'
+      cursor='pointer'
+      :data-aspect='aspectKey(line.aspect)'
+      :data-highlight='line.highlightState'
+      @mouseenter='emit("highlight", highlightPayload(line))'
+      @mouseleave='emit("clear-highlight")'
+      @click.stop='emit("toggle-highlight", highlightPayload(line))'
     )
     line(
       :x1='line.start.x'
@@ -143,7 +146,5 @@ g(data-testid='aspect-lines')
       stroke-linecap='round'
       pointer-events='none'
       vector-effect='non-scaling-stroke'
-      :data-aspect='aspectKey(line.aspect)'
-      :data-highlight='line.highlightState'
     )
 </template>

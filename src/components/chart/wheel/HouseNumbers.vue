@@ -67,9 +67,9 @@ g(
     tabindex='0'
     class='house-number-group'
     @mouseenter='emitPayload("highlight", item.payload)'
-    @mouseleave='$emit("clear-highlight")'
+    @mouseleave='emit("clear-highlight")'
     @focus='emitPayload("highlight", item.payload)'
-    @blur='$emit("clear-highlight")'
+    @blur='emit("clear-highlight")'
     @click.stop='emitPayload("toggle-highlight", item.payload)'
     @keydown.enter.prevent='emitPayload("toggle-highlight", item.payload)'
     @keydown.space.prevent='emitPayload("toggle-highlight", item.payload)'
@@ -91,8 +91,12 @@ g(
 
 <style scoped>
 .house-number-group {
-  cursor: pointer;
   outline: none;
+}
+
+.house-number-group circle,
+.house-number-group text {
+  cursor: pointer;
 }
 
 .house-number-group text {

@@ -14,7 +14,7 @@ const props = defineProps({
   tropical:              { type: Boolean, default: true },
   complementarySignAxis: { type: Boolean, default: true },
 })
-defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
+const emit = defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 const { t, te } = useI18n()
 
 const sectorFills = [
@@ -115,9 +115,9 @@ g
     stroke='var(--chart-zodiac-stroke)'
     stroke-width='0.5'
     font-size='23'
-    @highlight='$emit("highlight", $event)'
-    @clear-highlight='$emit("clear-highlight")'
-    @toggle-highlight='$emit("toggle-highlight", $event)'
+    @highlight='emit("highlight", $event)'
+    @clear-highlight='emit("clear-highlight")'
+    @toggle-highlight='emit("toggle-highlight", $event)'
   )
   g.zodiac-element-metadata(
     data-testid='zodiac-element-metadata'

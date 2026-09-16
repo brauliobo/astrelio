@@ -104,9 +104,9 @@ g(data-testid='house-cusps')
     tabindex='0'
     class='house-sector'
     @mouseenter='emitPayload("highlight", sector.payload)'
-    @mouseleave='$emit("clear-highlight")'
+    @mouseleave='emit("clear-highlight")'
     @focus='emitPayload("highlight", sector.payload)'
-    @blur='$emit("clear-highlight")'
+    @blur='emit("clear-highlight")'
     @click.stop='emitPayload("toggle-highlight", sector.payload)'
     @keydown.enter.prevent='emitPayload("toggle-highlight", sector.payload)'
     @keydown.space.prevent='emitPayload("toggle-highlight", sector.payload)'
@@ -141,9 +141,9 @@ g(data-testid='house-cusps')
     tabindex='0'
     class='house-cusp-hit'
     @mouseenter='emitPayload("highlight", cusp.payload)'
-    @mouseleave='$emit("clear-highlight")'
+    @mouseleave='emit("clear-highlight")'
     @focus='emitPayload("highlight", cusp.payload)'
-    @blur='$emit("clear-highlight")'
+    @blur='emit("clear-highlight")'
     @click.stop='emitPayload("toggle-highlight", cusp.payload)'
     @keydown.enter.prevent='emitPayload("toggle-highlight", cusp.payload)'
     @keydown.space.prevent='emitPayload("toggle-highlight", cusp.payload)'
@@ -175,8 +175,12 @@ g(data-testid='house-cusps')
 <style scoped>
 .house-sector,
 .house-cusp-hit {
-  cursor: pointer;
   outline: none;
+}
+
+.house-sector__arc,
+.house-cusp-hit {
+  cursor: pointer;
 }
 
 .house-sector__arc,

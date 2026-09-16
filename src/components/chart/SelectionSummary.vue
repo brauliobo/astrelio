@@ -361,6 +361,7 @@ Teleport(to='body' :disabled='placement !== "floating"')
   border-color: var(--chart-selection-border);
   color: var(--chart-selection-text);
   overflow-wrap: anywhere;
+  pointer-events: none;
 }
 
 .chart-selection-summary--overlay {
