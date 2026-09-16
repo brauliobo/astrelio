@@ -24,3 +24,19 @@ export const scalePosition = (vector, { mode = 'compressed', unitsPerAu = 1, ...
 
 export const bodyRadiusUnits = (radiusKm, { unitsPerAu = 1, exaggeration = 1, minUnits = 0 } = {}) =>
   Math.max(minUnits, (radiusKm / AU_KM) * unitsPerAu * Math.max(1, exaggeration))
+
+/** World radius large enough to click from `cameraDistance` without enlarging the drawn body. */
+export const pickRadiusUnits = (trueRadius, cameraDistance, { apparent = 0.01 } = {}) =>
+  Math.max(trueRadius, Math.max(0, cameraDistance) * apparent)
+
+/**
+ * Camera distance that fills `fill` of the vertical FOV with a body of `radius`.
+ * Compressed moon systems sit just outside the exaggerated disc, so they can pull the camera back.
+ * True-scale moon systems are AU-wide and would shrink the planet to a speck.
+ */
+export const focusDistance = (radius, { fovDeg = 45, fill = 0.34, moonReach = 0, trueScale = false } = {}) => {
+  const half = ((fovDeg * Math.PI) / 180) * Math.min(0.85, Math.max(0.08, fill)) / 2
+  const body = Math.max(0, radius) / Math.max(Math.tan(half), 1e-6)
+  if (trueScale) return Math.max(body, radius * 3)
+  return Math.max(body, Math.max(0, moonReach) * 3.2)
+}

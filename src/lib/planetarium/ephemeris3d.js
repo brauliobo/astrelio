@@ -41,6 +41,13 @@ export const lengthAu = vector => Math.hypot(vector.x, vector.y, vector.z)
 
 export const distanceAu = (a, b) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z)
 
+/** Unit vector from a heliocentric scene position toward the Sun at the origin. */
+export const sunwardOf = (position) => {
+  const length = Math.hypot(position.x, position.y, position.z)
+  if (!length) return { x: 1, y: 0, z: 0 }
+  return { x: -position.x / length, y: -position.y / length, z: -position.z / length }
+}
+
 // Heliocentric position of every rendered body, Moon included, in one pass.
 export const heliocentricPositions = (names, date) => {
   const time = astroTime(date)

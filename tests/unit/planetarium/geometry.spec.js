@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { compressRadius, expandRadius, bodyRadiusUnits, scalePosition } from '../../../src/lib/planetarium/scale.js'
+import { compressRadius, expandRadius, bodyRadiusUnits, pickRadiusUnits, scalePosition, focusDistance } from '../../../src/lib/planetarium/scale.js'
 import { earthShadow, moonShadow, penumbraCone, shadowRadiiAt } from '../../../src/lib/planetarium/shadows.js'
 import { lunarOrbitPath, orbitExtremes, orbitPath, skyTrack } from '../../../src/lib/planetarium/orbits.js'
-import { EARTH_RADIUS_KM, MOON_RADIUS_KM } from '../../../src/lib/planetarium/constants.js'
+import { EARTH_RADIUS_KM, MOON_RADIUS_KM, SUN_RADIUS_KM } from '../../../src/lib/planetarium/constants.js'
 
 const length = point => Math.hypot(point.x, point.y, point.z)
 
@@ -26,6 +26,30 @@ describe('distance scaling', () => {
   it('exaggerates body radii without going below the floor', () => {
     expect(bodyRadiusUnits(EARTH_RADIUS_KM, { unitsPerAu: 1, exaggeration: 1000 })).toBeCloseTo(0.0426, 3)
     expect(bodyRadiusUnits(EARTH_RADIUS_KM, { minUnits: 0.1 })).toBe(0.1)
+  })
+
+  it('keeps a far-away true-scale body clickable without enlarging it', () => {
+    expect(pickRadiusUnits(0.00465, 150)).toBeCloseTo(1.5, 6)
+    expect(pickRadiusUnits(0.00465, 0.05)).toBeCloseTo(0.00465, 6)
+  })
+
+  it('keeps the sun and Jupiter in real radius proportion', () => {
+    const sun     = bodyRadiusUnits(SUN_RADIUS_KM, { exaggeration: 4000 })
+    const jupiter = bodyRadiusUnits(69911, { exaggeration: 4000 })
+    expect(sun / jupiter).toBeCloseTo(SUN_RADIUS_KM / 69911, 5)
+  })
+
+  it('frames a true-scale planet by its disc, not a system-sized floor', () => {
+    const earth = bodyRadiusUnits(EARTH_RADIUS_KM)
+    const distance = focusDistance(earth, { trueScale: true, moonReach: 0.00257, fovDeg: 45 })
+    expect(distance / earth).toBeGreaterThan(6)
+    expect(distance / earth).toBeLessThan(12)
+    expect(distance).toBeLessThan(0.01)
+  })
+
+  it('pulls back only in compressed mode so a moon system still fits', () => {
+    expect(focusDistance(1.8, { moonReach: 8 })).toBeCloseTo(25.6)
+    expect(focusDistance(1.8, { moonReach: 8, trueScale: true })).toBeLessThan(20)
   })
 })
 

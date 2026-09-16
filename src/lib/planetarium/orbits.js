@@ -1,6 +1,8 @@
 import { BODY_BY_NAME } from './constants.js'
 import { astroTime, geoEcliptic, helioEcliptic, lengthAu } from './ephemeris3d.js'
 
+const MOON_PERIOD_DAYS = BODY_BY_NAME.get('Moon').periodDays
+
 const DAY_MS = 86400000
 
 const sampleCount = (periodDays) => Math.min(720, Math.max(180, Math.round(periodDays / 4)))
@@ -61,7 +63,7 @@ export const skyTrack = (name, centerDate, { spanDays = 240, stepDays = 2 } = {}
 export const lunarOrbitPath = (date = new Date(), samples = 240) => {
   const startMs = astroTime(date).date.getTime()
   return Array.from({ length: samples }, (_, index) => {
-    const when  = new Date(startMs + (index / samples) * 27.3217 * DAY_MS)
+    const when  = new Date(startMs + (index / samples) * MOON_PERIOD_DAYS * DAY_MS)
     return geoEcliptic('Moon', when)
   })
 }

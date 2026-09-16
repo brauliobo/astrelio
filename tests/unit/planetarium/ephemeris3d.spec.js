@@ -6,6 +6,7 @@ import {
   lengthAu,
   librationOf,
   orientationBasis,
+  sunwardOf,
 } from '../../../src/lib/planetarium/ephemeris3d.js'
 
 const dot = (a, b) => a.x * b.x + a.y * b.y + a.z * b.z
@@ -46,6 +47,14 @@ describe('planetarium ephemeris', () => {
 
     expect((Math.atan2(dot(toEarth, basis.y), dot(toEarth, basis.x)) * 180) / Math.PI).toBeCloseTo(libration.longitudeDeg, 1)
     expect((Math.asin(dot(toEarth, basis.z)) * 180) / Math.PI).toBeCloseTo(libration.latitudeDeg, 1)
+  })
+
+  it('points sunward back at the origin from a heliocentric body', () => {
+    const earth   = helioEcliptic('Earth', new Date('2025-01-04T00:00:00Z'))
+    const sunward = sunwardOf(earth)
+    expect(sunward.x * earth.x + sunward.y * earth.y + sunward.z * earth.z).toBeCloseTo(-lengthAu(earth), 9)
+    expect(lengthAu(sunward)).toBeCloseTo(1, 9)
+    expect(sunwardOf({ x: 0, y: 0, z: 0 })).toEqual({ x: 1, y: 0, z: 0 })
   })
 
   it('reports the constellation a body stands in', () => {
