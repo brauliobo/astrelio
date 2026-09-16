@@ -35,7 +35,7 @@ const step = days => emit('update:time', props.timeMs + days * DAY_MS)
       :aria-pressed='playing'
       :title='t(playing ? "planetarium.time.pause" : "planetarium.time.play")'
       data-testid='planetarium-play'
-      @click='$emit("toggle-play")'
+      @click='emit("toggle-play")'
     )
       span(aria-hidden='true') {{ playing ? '❚❚' : '▶' }}
       span.sr-only {{ t(playing ? 'planetarium.time.pause' : 'planetarium.time.play') }}
@@ -47,7 +47,7 @@ const step = days => emit('update:time', props.timeMs + days * DAY_MS)
       :aria-pressed='direction < 0'
       :title='t("planetarium.time.reverse")'
       data-testid='planetarium-reverse'
-      @click='$emit("reverse")'
+      @click='emit("reverse")'
     )
       span(aria-hidden='true') {{ direction < 0 ? '↺' : '↻' }}
       span.sr-only {{ t('planetarium.time.reverse') }}
@@ -58,7 +58,7 @@ const step = days => emit('update:time', props.timeMs + days * DAY_MS)
       :value='rate'
       :aria-label='t("planetarium.time.rate")'
       data-testid='planetarium-rate'
-      @change='$emit("update:rate", $event.target.value)'
+      @change='emit("update:rate", $event.target.value)'
     )
       option(v-for='key in RATE_KEYS' :key='key' :value='key') {{ t(`planetarium.time.rates.${key}`) }}
 
@@ -72,7 +72,7 @@ const step = days => emit('update:time', props.timeMs + days * DAY_MS)
 
   span.planetarium-time__stamp(data-testid='planetarium-stamp') {{ stamp }} {{ t('planetarium.time.utc') }}
 
-  button.planetarium-time__button(type='button' data-testid='planetarium-now' @click='$emit("now")') {{ t('planetarium.time.now') }}
+  button.planetarium-time__button(type='button' data-testid='planetarium-now' @click='emit("now")') {{ t('planetarium.time.now') }}
 </template>
 
 <style scoped>

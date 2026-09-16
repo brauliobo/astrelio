@@ -8,7 +8,7 @@ import MoonSizeCompare from './MoonSizeCompare.vue'
 const props = defineProps({
   event: { type: Object, default: null },
 })
-defineEmits(['view', 'clear'])
+const emit = defineEmits(['view', 'clear'])
 const { t } = useI18n()
 
 const NUMERIC_LABELS = {
@@ -54,7 +54,7 @@ section.planetarium-details(v-if='event' data-testid='planetarium-event-details'
     div
       h2.planetarium-details__title {{ t(`planetarium.events.${event.type}`) }}
       p.planetarium-details__meta {{ stamp }} {{ t('planetarium.time.utc') }} · {{ bodyNames }}
-    button.planetarium-details__close(type='button' :aria-label='t("planetarium.details.close")' @click='$emit("clear")')
+    button.planetarium-details__close(type='button' :aria-label='t("planetarium.details.close")' @click='emit("clear")')
       span(aria-hidden='true') ×
   dl.planetarium-details__grid
     template(v-for='row in rows' :key='row.key')
@@ -63,7 +63,7 @@ section.planetarium-details(v-if='event' data-testid='planetarium-event-details'
   EclipseDiagram(v-if='event.type === "solar_eclipse" || event.type === "lunar_eclipse"' :event='event')
   MoonSizeCompare(v-else-if='event.type === "supermoon"' :distance-km='event.details.distanceKm')
   p.planetarium-details__why {{ t(`planetarium.why.${event.type}`) }}
-  button.planetarium-details__action(type='button' data-testid='planetarium-view-event' @click='$emit("view", event)') {{ t('planetarium.details.view_in_3d') }}
+  button.planetarium-details__action(type='button' data-testid='planetarium-view-event' @click='emit("view", event)') {{ t('planetarium.details.view_in_3d') }}
 </template>
 
 <style scoped>

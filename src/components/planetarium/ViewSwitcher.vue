@@ -3,7 +3,7 @@ import { useI18n } from 'vue-i18n'
 import { VIEW_MODES } from '../../lib/planetarium/constants.js'
 
 defineProps({ view: { type: String, required: true } })
-defineEmits(['select'])
+const emit = defineEmits(['select'])
 const { t } = useI18n()
 </script>
 
@@ -17,7 +17,7 @@ nav.planetarium-views(:aria-label='t("planetarium.views_aria")' data-testid='pla
     :aria-pressed='view === mode'
     :title='t(`planetarium.views.${mode}.hint`)'
     :data-testid='`planetarium-view-${mode}`'
-    @click='$emit("select", mode)'
+    @click='emit("select", mode)'
   )
     span.planetarium-views__glyph(aria-hidden='true') {{ t(`planetarium.views.${mode}.glyph`) }}
     span.planetarium-views__label {{ t(`planetarium.views.${mode}.label`) }}

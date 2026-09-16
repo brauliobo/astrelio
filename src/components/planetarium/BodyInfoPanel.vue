@@ -20,7 +20,7 @@ const props = defineProps({
   body:   { type: String, default: '' },
   timeMs: { type: Number, required: true },
 })
-defineEmits(['clear'])
+const emit = defineEmits(['clear'])
 const { t } = useI18n()
 
 const LIGHT_MINUTE_KM = 17987547.48
@@ -71,7 +71,7 @@ const info = computed(() => {
 section.planetarium-body(v-if='moon' data-testid='planetarium-body-info')
   header.planetarium-body__header
     h2.planetarium-body__title {{ t(`moons.${moon.name}`) }}
-    button.planetarium-body__close(type='button' :aria-label='t("planetarium.details.close")' @click='$emit("clear")')
+    button.planetarium-body__close(type='button' :aria-label='t("planetarium.details.close")' @click='emit("clear")')
       span(aria-hidden='true') ×
   dl.planetarium-body__grid
     dt {{ t('planetarium.body.orbits') }}
@@ -89,7 +89,7 @@ section.planetarium-body(v-if='moon' data-testid='planetarium-body-info')
 section.planetarium-body(v-else-if='info' data-testid='planetarium-body-info')
   header.planetarium-body__header
     h2.planetarium-body__title {{ t(`planets.${info.name}`) }}
-    button.planetarium-body__close(type='button' :aria-label='t("planetarium.details.close")' @click='$emit("clear")')
+    button.planetarium-body__close(type='button' :aria-label='t("planetarium.details.close")' @click='emit("clear")')
       span(aria-hidden='true') ×
   dl.planetarium-body__grid
     template(v-if='info.sunDistanceAu')

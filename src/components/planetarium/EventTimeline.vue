@@ -87,8 +87,8 @@ const onScrub = event => emit('seek', timeAtFraction(Number(event.target.value) 
       :data-testid='`planetarium-pin-${pin.type}`'
       role='button'
       tabindex='0'
-      @click='$emit("select", pin.id)'
-      @keydown.enter='$emit("select", pin.id)'
+      @click='emit("select", pin.id)'
+      @keydown.enter='emit("select", pin.id)'
     )
     .planetarium-timeline__cursor(:style='{ left: `${cursorPercent}%` }')
     input.planetarium-timeline__range(
@@ -111,7 +111,7 @@ const onScrub = event => emit('seek', timeAtFraction(Number(event.target.value) 
       :class='{ "is-active": activeTypes.includes(type) }'
       :style='{ "--pin-color": EVENT_COLORS[type] }'
       :data-testid='`planetarium-filter-${type}`'
-      @click='$emit("toggle-type", type)'
+      @click='emit("toggle-type", type)'
     ) {{ t(`planetarium.events.${type}`) }}
 
   p.planetarium-timeline__status(v-if='status === "loading"' data-testid='planetarium-events-loading') {{ t('planetarium.timeline.loading') }}
@@ -122,7 +122,7 @@ const onScrub = event => emit('seek', timeAtFraction(Number(event.target.value) 
         type='button'
         :class='{ "is-selected": event.id === selectedId }'
         :data-testid='`planetarium-event-${event.type}`'
-        @click='$emit("select", event.id)'
+        @click='emit("select", event.id)'
       )
         span.planetarium-timeline__dot(:style='{ background: EVENT_COLORS[event.type] }' aria-hidden='true')
         span.planetarium-timeline__entry-main
