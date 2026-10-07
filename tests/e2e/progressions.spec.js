@@ -9,7 +9,7 @@ test.describe('Progressions', () => {
   })
 
   test('renders progression biwheel', async ({ page }) => {
-    await page.goto('/#/progressions')
+    await page.goto('/#/timing/progressions')
     await expect(page.getByTestId('progressions-page')).toBeVisible()
     await expect(page.getByTestId('comparison-insight-panel')).toBeVisible()
     await expect(page.getByTestId('comparison-insight-row')).toHaveCount(3)
@@ -29,7 +29,7 @@ test.describe('Progressions', () => {
   })
 
   test('changing date updates progression', async ({ page }) => {
-    await page.goto('/#/progressions')
+    await page.goto('/#/timing/progressions')
     await page.getByTestId('prog-date').fill('2030-01-01')
     await page.waitForTimeout(200)
     await expect(page.getByTestId('chart-comparison')).toBeVisible()

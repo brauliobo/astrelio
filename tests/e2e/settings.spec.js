@@ -19,7 +19,7 @@ test.describe('Settings', () => {
     await page.getByTestId('setting-locale').selectOption('en')
     await expect(page.getByTestId('nav-map')).toHaveText('Map')
     await expect(page.getByTestId('nav-relationships')).toHaveText('Relationships')
-    await expect(page.getByTestId('chart-context-bar')).toBeHidden()
+    await expect(page.getByTestId('chart-context-bar')).toHaveCount(0)
   })
 
   test('switches locale back to pt-BR', async ({ page }) => {
@@ -59,6 +59,27 @@ test.describe('Settings', () => {
     await expect.poll(async () =>
       page.evaluate(() => JSON.parse(localStorage.getItem('astrelio_settings')).theme)
     ).toBe('dark')
+  })
+
+  test('switches the sky background from the preferences popover and persists it', async ({ page }) => {
+    await page.goto('/#/settings')
+    await page.getByTestId('utility-menu-summary').click()
+    await page.getByTestId('sky-view-planetarium').click()
+
+    await expect(page.getByTestId('sky-view-planetarium')).toHaveAttribute('aria-pressed', 'true')
+    await expect.poll(() =>
+      page.evaluate(() => JSON.parse(localStorage.getItem('astrelio_settings')).skyView)
+    ).toBe('planetarium')
+    await expect(page.locator('.app-shell')).toHaveAttribute('data-sky-view', 'planetarium')
+  })
+
+  test('opens the settings page from the preferences popover and closes it', async ({ page }) => {
+    await page.goto('/')
+    await page.getByTestId('utility-menu-summary').click()
+    await page.getByTestId('utility-settings').click()
+
+    await expect(page.getByTestId('settings-page')).toBeVisible()
+    await expect(page.getByTestId('utility-menu-panel')).toHaveCount(0)
   })
 
   test('persists aspect display options', async ({ page }) => {

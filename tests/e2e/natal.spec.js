@@ -110,6 +110,7 @@ test.describe('Natal chart', () => {
     await page.goto('/#/map/astrology/chart')
 
     const selected = page.locator('[data-wheel-id="sign-0"]')
+    await expect(selected).toBeVisible()
     const opposite = page.locator('[data-wheel-id="sign-6"]')
     const summary  = page.getByTestId('chart-selection-summary')
     const before   = await page.evaluate(() => ({

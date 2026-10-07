@@ -9,7 +9,7 @@ test.describe('Solar Return', () => {
   })
 
   test('renders solar-return chart for current year', async ({ page }) => {
-    await page.goto('/#/solar-return')
+    await page.goto('/#/timing/solar-return')
     await expect(page.getByTestId('solar-return-page')).toBeVisible()
     await expect(page.getByTestId('chart-wheel')).toBeVisible()
     await expect(page.getByTestId('comparison-positions').getByTestId('planet-list')).toBeVisible()
@@ -17,7 +17,7 @@ test.describe('Solar Return', () => {
   })
 
   test('changing year updates the chart', async ({ page }) => {
-    await page.goto('/#/solar-return')
+    await page.goto('/#/timing/solar-return')
     await page.getByTestId('sr-year').fill('2030')
     await page.waitForTimeout(200)
     await expect(page.getByTestId('chart-wheel')).toBeVisible()

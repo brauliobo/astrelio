@@ -16,13 +16,15 @@ test.describe('Responsive long-content layout', () => {
     await expect(page.getByTestId('transits-page')).toBeVisible()
     await expect(page.getByTestId('context-person')).toHaveText(LONG_PERSON.name)
     await expect(page.getByTestId('context-birth')).toContainText(LONG_PERSON.placeLabel)
-    await expectWithinViewport(page, page.getByTestId('chart-context-bar'))
+    await expectWithinViewport(page, page.getByTestId('person-switcher'))
+    await expectWithinViewport(page, page.getByTestId('shell-utilities'))
     await expectNoUnexpectedHorizontalOverflow(page)
 
     const navOrder = await page.locator('[data-testid^="nav-"]').evaluateAll(links =>
       links.map(link => link.dataset.testid)
     )
-    expect(navOrder).toEqual(['nav-relationships', 'nav-timing', 'nav-map', 'nav-planetarium', 'nav-charts'])
+    expect(navOrder).toEqual(['nav-charts', 'nav-map', 'nav-timing', 'nav-relationships', 'nav-planetarium'])
+    for (const id of navOrder) await expectWithinViewport(page, page.getByTestId(id))
   })
 
   test('stacks narrow transit insights and scrolls the fixed-width matrix', async ({ page }) => {
@@ -51,7 +53,7 @@ test.describe('Responsive long-content layout', () => {
     ]) {
       await page.goto(path)
       await expect(page.getByTestId(ready)).toBeVisible()
-      await expectWithinViewport(page, page.getByTestId('chart-context-bar'))
+      await expectWithinViewport(page, page.getByTestId('person-switcher'))
       await expectNoUnexpectedHorizontalOverflow(page)
     }
   })

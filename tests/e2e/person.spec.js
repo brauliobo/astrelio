@@ -9,7 +9,7 @@ test.describe('Person detail', () => {
 
   test('opens from home and audits birth data', async ({ page }) => {
     await page.goto('/')
-    await page.getByTestId(`open-${REF_PERSON.id}`).click()
+    await page.getByTestId(`details-${REF_PERSON.id}`).click()
 
     await expect(page).toHaveURL(new RegExp(`/person/${REF_PERSON.id}`))
     await expect(page.getByTestId('person-page')).toBeVisible()
@@ -35,7 +35,8 @@ test.describe('Person detail', () => {
     await expect(page.getByTestId('person-name')).toHaveText(/Cópia de Edited detail|Copy of Edited detail/)
 
     await page.getByTestId('person-open-natal').click()
-    await expect(page).toHaveURL(/\/natal/)
+    await expect(page).toHaveURL(/\/map\/astrology\/chart$/)
+    await expect(page.getByTestId('map-page')).toBeVisible()
     await expect(page.getByTestId('natal-page')).toBeVisible()
 
     await page.goto(`/#/person/${SECOND_PERSON.id}`)
@@ -49,5 +50,24 @@ test.describe('Person detail', () => {
     await page.getByTestId('person-delete').click()
     await expect(page).toHaveURL(/\/$/)
     await expect(page.getByTestId(`person-${SECOND_PERSON.id}`)).not.toBeVisible()
+  })
+
+  test('opens the human design map from the person page', async ({ page }) => {
+    await page.goto(`/#/person/${REF_PERSON.id}`)
+    await page.getByTestId('person-open-human-design').click()
+
+    await expect(page).toHaveURL(/human-design/)
+    await expect(page.getByTestId('human-design-page')).toBeVisible()
+  })
+
+  test('keeps the person page when switching the active chart from the top bar', async ({ page }) => {
+    await page.goto(`/#/person/${REF_PERSON.id}`)
+    await expect(page.getByTestId('person-name')).toHaveText(REF_PERSON.name)
+
+    await page.getByTestId('person-switcher').click()
+    await page.getByTestId(`person-switcher-option-${SECOND_PERSON.id}`).click()
+
+    await expect(page).toHaveURL(new RegExp(`/person/${SECOND_PERSON.id}`))
+    await expect(page.getByTestId('person-name')).toHaveText(SECOND_PERSON.name)
   })
 })

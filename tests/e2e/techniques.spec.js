@@ -9,7 +9,7 @@ test.describe('Timing techniques', () => {
   })
 
   test('persists solar arc dates and shows timing context chips', async ({ page }) => {
-    await page.goto('/#/solar-arc')
+    await page.goto('/#/timing/solar-arc')
     await page.getByTestId('solar-arc-date').fill('2032-04-05')
     await page.reload()
     await expect(page.getByTestId('solar-arc-date')).toHaveValue('2032-04-05')
@@ -17,7 +17,7 @@ test.describe('Timing techniques', () => {
   })
 
   test('owns Human Design transits and correlations behind the modality switch', async ({ page }) => {
-    await page.goto('/#/transits')
+    await page.goto('/#/timing/transits')
     await expect(page.getByTestId('timing-technique-transits')).toBeVisible()
     await expect(page.getByTestId('human-design-timing-tools')).toHaveCount(0)
 

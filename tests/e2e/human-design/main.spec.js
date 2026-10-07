@@ -91,7 +91,7 @@ test.describe('Human Design', () => {
   })
 
   test('renders Human Design correlations in Timing', async ({ page }) => {
-    await page.goto('/#/transits')
+    await page.goto('/#/timing/transits')
     await page.getByTestId('timing-modality-human-design').click()
     await expect(page.getByTestId('hd-correlations-panel')).toBeVisible()
     await expect(page.getByTestId('hd-correlation-event-diary')).toBeVisible()

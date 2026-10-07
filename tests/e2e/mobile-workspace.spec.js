@@ -21,7 +21,7 @@ test.describe('Mobile workspace surfaces', () => {
     await page.keyboard.press('Escape')
 
     await page.getByTestId('utility-menu-summary').click()
-    await expectWithinViewport(page, page.getByTestId('utility-menu'))
+    await expectWithinViewport(page, page.getByTestId('utility-menu-panel'))
     await expectWithinViewport(page, page.getByTestId('utility-settings'))
     await page.getByTestId('utility-menu-summary').click()
 
@@ -46,6 +46,7 @@ test.describe('Mobile workspace surfaces', () => {
     await expect(page.getByTestId('human-design-page')).toBeVisible()
 
     await page.goto('/#/solar-arc')
+    await expect(page).toHaveURL(/\/timing\/solar-arc/)
     await page.getByTestId('solar-arc-date').fill('2032-04-05')
     await page.reload()
     await expect(page.getByTestId('timing-context-chips')).toContainText('2032-04-05')

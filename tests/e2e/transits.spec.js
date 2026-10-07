@@ -9,7 +9,7 @@ test.describe('Transits', () => {
   })
 
   test('renders biwheel and aspect table', async ({ page }) => {
-    await page.goto('/#/transits')
+    await page.goto('/#/timing/transits')
     await expect(page.getByTestId('transits-page')).toBeVisible()
     await expect(page.getByTestId('comparison-insight-panel')).toBeVisible()
     await expect(page.getByTestId('comparison-insight-row')).toHaveCount(3)
@@ -17,7 +17,7 @@ test.describe('Transits', () => {
   })
 
   test('changing date updates the chart', async ({ page }) => {
-    await page.goto('/#/transits')
+    await page.goto('/#/timing/transits')
     const input = page.getByTestId('transit-date')
     await input.fill('2030-06-15T12:00')
     await page.waitForTimeout(200)
@@ -25,7 +25,7 @@ test.describe('Transits', () => {
   })
 
   test('"now" button resets to current time', async ({ page }) => {
-    await page.goto('/#/transits')
+    await page.goto('/#/timing/transits')
     await page.getByTestId('btn-now').click()
     const value = await page.getByTestId('transit-date').inputValue()
     expect(value).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/)

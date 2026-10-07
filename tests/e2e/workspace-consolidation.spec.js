@@ -61,7 +61,7 @@ test.describe('Workspace consolidation', () => {
     await expect(page.getByTestId('human-design-page')).toBeVisible()
     await expect(page.getByTestId('modality-switch').getByRole('link')).toHaveCount(3)
 
-    await page.getByTestId('map-report-action').click()
+    await page.getByTestId('workspace-view-report').click()
     await expect(page).toHaveURL(/\/report\?modality=human-design$/)
     await expect(page.getByTestId('human-design-print-report')).toBeVisible()
     await expect(page.getByTestId('report-page')).toBeVisible()
@@ -70,7 +70,7 @@ test.describe('Workspace consolidation', () => {
   test('opens the report for the canonical Vedic modality', async ({ page }) => {
     await page.goto('/#/map/sidereal/chart')
 
-    await page.getByTestId('map-report-action').click()
+    await page.getByTestId('workspace-view-report').click()
     await expect(page).toHaveURL(/\/report\?modality=vedic$/)
     await expect(page.getByTestId('vedic-print-report')).toBeVisible()
   })

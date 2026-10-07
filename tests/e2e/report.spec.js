@@ -9,8 +9,8 @@ test.describe('Report', () => {
   })
 
   test('opens printable natal report from the natal chart', async ({ page }) => {
-    await page.goto('/#/natal')
-    await page.getByTestId('open-report').click()
+    await page.goto('/#/map/astrology/chart')
+    await page.getByTestId('workspace-view-report').click()
 
     await expect(page).toHaveURL(/\/report/)
     await expect(page.getByTestId('report-page')).toBeVisible()

@@ -63,8 +63,8 @@ test.describe('Chart regressions', () => {
     await page.getByTestId('city-São José dos Campos, SP - Brasil').click()
     await page.getByTestId('btn-submit').click()
 
-    await expect(page).toHaveURL(/\/natal/)
-    await page.getByTestId('natal-view-data').click()
+    await expect(page).toHaveURL(/\/map\/astrology\/chart$/)
+    await page.getByTestId('workspace-view-data').click()
     await expect(page.getByTestId('asc-sign')).toContainText(/C[âa]ncer 27°/)
 
     const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('astrelio_people')).list[0])
