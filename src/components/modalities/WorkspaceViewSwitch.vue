@@ -11,14 +11,13 @@ const props = defineProps({
 const { t } = useI18n()
 
 const activeLens = computed(() => props.lens || 'astrology')
+const mapView    = id => ({ name: 'map', params: { lens: activeLens.value, view: id } })
 const views = computed(() => [
-  { id: 'chart',   label: t('map.views.chart') },
-  { id: 'reading', label: t('map.views.reading') },
-  { id: 'data',    label: t('map.views.data') },
-].map(view => ({
-  ...view,
-  to: { name: 'map', params: { lens: activeLens.value, view: view.id } },
-})))
+  { id: 'chart',   to: mapView('chart') },
+  { id: 'reading', to: mapView('reading') },
+  { id: 'data',    to: mapView('data') },
+  { id: 'report',  to: { name: 'report', query: { modality: activeLens.value } } },
+].map(view => ({ ...view, label: t(`map.views.${view.id}`) })))
 </script>
 
 <template lang="pug">

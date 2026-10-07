@@ -169,7 +169,7 @@ const toggleBody = (row) => {
 section.vedic-page(data-testid='vedic-page')
   div(v-if='!person' data-testid='no-person')
     p.text-slate-400 {{ t('chart.select_chart') }}
-  div.grid.gap-6(v-else)
+  div.grid.gap-6(v-else class='grid-cols-[minmax(0,1fr)]')
     .flex.flex-wrap.items-start.justify-between.gap-3(v-if='!workspace')
       div
         h1.text-2xl.font-semibold.text-slate-100 {{ t('vedic.title', { name: person.name }) }}

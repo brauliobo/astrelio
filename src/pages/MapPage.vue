@@ -1,12 +1,9 @@
 <script setup>
 import { computed, defineAsyncComponent, provide } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import ModalityRouteSwitch from '../components/modalities/ModalityRouteSwitch.vue'
-import WorkspaceViewSwitch from '../components/modalities/WorkspaceViewSwitch.vue'
+import { useRoute } from 'vue-router'
+import MapToolbar from '../components/map/MapToolbar.vue'
 
 const route = useRoute()
-const { t } = useI18n()
 
 provide('mapWorkspaceShell', true)
 
@@ -27,12 +24,6 @@ const lensComponents = {
   humanDesign: defineAsyncComponent(() => import('./HumanDesignPage.vue')),
 }
 
-const canonicalLenses = {
-  astrology:   'astrology',
-  vedic:       'vedic',
-  humanDesign: 'human-design',
-}
-
 const workspaceViews = new Set(['chart', 'reading', 'data'])
 
 const activeLens = computed(() => {
@@ -45,7 +36,6 @@ const activeView = computed(() => {
   return workspaceViews.has(view) ? view : 'chart'
 })
 
-const canonicalLens   = computed(() => canonicalLenses[activeLens.value])
 const activeComponent = computed(() => lensComponents[activeLens.value] || lensComponents.astrology)
 </script>
 
@@ -55,15 +45,7 @@ section.map-page(
   :data-map-lens='activeLens'
   :data-workspace-view='activeView'
 )
-  .map-page__toolbar.flex.flex-wrap.items-center.justify-between.gap-3.mb-4
-    .flex.flex-wrap.items-center.gap-2
-      ModalityRouteSwitch(:active='activeLens' :view='activeView' workspace-owner)
-      WorkspaceViewSwitch(:active='activeView' :lens='canonicalLens')
-    RouterLink.rounded.px-3.py-2.text-sm.text-slate-300(
-      :to='{ name: "report", query: { modality: canonicalLens } }'
-      class='bg-white/5 hover:bg-white/10 hover:text-white'
-      data-testid='map-report-action'
-    ) {{ t('report.open') }}
+  MapToolbar(:lens='activeLens' :view='activeView')
   component.map-page__content(
     :is='activeComponent'
     workspace

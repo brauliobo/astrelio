@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+const LEGACY_TIMING_TECHNIQUES = ['transits', 'progressions', 'solar-return', 'profections', 'solar-arc', 'lunar-return']
+
 const routes = [
   { path: '/',             component: () => import('./pages/HomePage.vue'),         name: 'home',         meta: { workspace: 'library' } },
   { path: '/person/:id',   component: () => import('./pages/PersonPage.vue'),       name: 'person',       meta: { workspace: 'library' } },
@@ -9,12 +11,11 @@ const routes = [
   { path: '/human-design', component: () => import('./pages/HumanDesignPage.vue'),  name: 'human-design', meta: { workspace: 'map', modality: 'humanDesign' } },
   { path: '/report',       component: () => import('./pages/ReportPage.vue'),       name: 'report',       meta: { workspace: 'map', modality: 'astrology', mode: 'report' } },
   { path: '/timing/:technique?', component: () => import('./pages/TimingPage.vue'), name: 'timing',       meta: { workspace: 'timing' } },
-  { path: '/transits',     component: () => import('./pages/TimingPage.vue'),       name: 'transits',     meta: { workspace: 'timing', technique: 'transits' } },
-  { path: '/progressions', component: () => import('./pages/TimingPage.vue'),       name: 'progressions', meta: { workspace: 'timing', technique: 'progressions' } },
-  { path: '/solar-return', component: () => import('./pages/TimingPage.vue'),       name: 'solar-return', meta: { workspace: 'timing', technique: 'solar-return' } },
-  { path: '/profections',  component: () => import('./pages/TimingPage.vue'),       name: 'profections',  meta: { workspace: 'timing', technique: 'profections' } },
-  { path: '/solar-arc',    component: () => import('./pages/TimingPage.vue'),       name: 'solar-arc',    meta: { workspace: 'timing', technique: 'solar-arc' } },
-  { path: '/lunar-return', component: () => import('./pages/TimingPage.vue'),       name: 'lunar-return', meta: { workspace: 'timing', technique: 'lunar-return' } },
+  ...LEGACY_TIMING_TECHNIQUES.map(technique => ({
+    path:     `/${technique}`,
+    name:     technique,
+    redirect: ({ query, hash }) => ({ name: 'timing', params: { technique }, query, hash }),
+  })),
   { path: '/planetarium/:view?', component: () => import('./pages/PlanetariumPage.vue'), name: 'planetarium', meta: { workspace: 'planetarium', fullBleed: true } },
   { path: '/synastry',     component: () => import('./pages/SynastryPage.vue'),     name: 'synastry',     meta: { workspace: 'relations' } },
   { path: '/settings',     component: () => import('./pages/SettingsPage.vue'),     name: 'settings',     meta: { workspace: 'settings' } },

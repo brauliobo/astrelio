@@ -37,12 +37,12 @@ const session  = useSessionStore()
 const settings = useSettingsStore()
 
 const techniqueOptions = [
-  { id: 'transits', routeName: 'transits', label: () => t('nav.transits'), testid: 'timing-technique-transits' },
-  { id: 'progressions', routeName: 'progressions', label: () => t('nav.progressions'), testid: 'timing-technique-progressions' },
-  { id: 'solar-return', routeName: 'solar-return', label: () => t('nav.solar_return'), testid: 'timing-technique-solar-return' },
-  { id: 'profections', routeName: 'profections', label: () => t('techniques.nav.profections'), testid: 'timing-technique-profections' },
-  { id: 'solar-arc', routeName: 'solar-arc', label: () => t('techniques.nav.solar_arc'), testid: 'timing-technique-solar-arc' },
-  { id: 'lunar-return', routeName: 'lunar-return', label: () => t('techniques.nav.lunar_return'), testid: 'timing-technique-lunar-return' },
+  { id: 'transits', label: () => t('nav.transits'), testid: 'timing-technique-transits' },
+  { id: 'progressions', label: () => t('nav.progressions'), testid: 'timing-technique-progressions' },
+  { id: 'solar-return', label: () => t('nav.solar_return'), testid: 'timing-technique-solar-return' },
+  { id: 'profections', label: () => t('techniques.nav.profections'), testid: 'timing-technique-profections' },
+  { id: 'solar-arc', label: () => t('techniques.nav.solar_arc'), testid: 'timing-technique-solar-arc' },
+  { id: 'lunar-return', label: () => t('techniques.nav.lunar_return'), testid: 'timing-technique-lunar-return' },
 ]
 
 const knownTechniqueIds = new Set(techniqueOptions.map(option => option.id))
@@ -82,9 +82,7 @@ const activeTechnique = computed(() => routeTechnique.value || localTechnique.va
 
 const selectTechnique = (techniqueId) => {
   localTechnique.value = techniqueId
-  const target         = techniqueOptions.find(option => option.id === techniqueId)
-  if (!target || routeTechnique.value === techniqueId || !router?.hasRoute?.(target.routeName)) return
-  router.push({ name: target.routeName })
+  if (routeTechnique.value !== techniqueId) router.push({ name: 'timing', params: { technique: techniqueId } })
 }
 
 const person = computed(() => people.byId(session.activePersonId) || people.sorted[0] || null)
@@ -262,12 +260,27 @@ const activeTimingLabel = computed(() => ({
 
 <template lang="pug">
 section.timing-page(data-testid='timing-page')
-  .timing-page__heading.flex.flex-wrap.items-center.justify-between.gap-3.mb-5
-    div
-      h1.text-xl.font-semibold.text-slate-100 {{ t('techniques.workspace.title') }}
-      p.text-sm.text-slate-400(v-if='person && timingModality === "astrology"') {{ t('techniques.workspace.subtitle') }} · {{ person.name }}
-      p.text-sm.text-slate-400(v-else-if='person') {{ t('human_design.transits') }} · {{ person.name }}
-    .inline-flex.flex-wrap.gap-1.rounded-lg.border.p-1(
+  .timing-page__heading.flex.flex-wrap.items-center.gap-x-3.gap-y-2.mb-3
+    h1.text-base.font-semibold.text-slate-100(:title='t("techniques.workspace.subtitle")')
+      | {{ t('techniques.workspace.title') }}
+      span.font-normal.text-slate-400(v-if='person')  · {{ person.name }}
+    .timing-page__tabs.inline-flex.flex-wrap.gap-1.rounded-lg.border.p-1(
+      v-if='timingModality === "astrology"'
+      class='border-white/10 bg-white/5'
+      role='tablist'
+      :aria-label='t("techniques.workspace.tabs_aria")'
+    )
+      button.rounded-md.px-3.text-xs.font-medium.transition(
+        v-for='option in techniqueOptions'
+        :key='option.id'
+        type='button'
+        role='tab'
+        :aria-selected='activeTechnique === option.id'
+        :data-testid='option.testid'
+        :class='activeTechnique === option.id ? "py-1.5 bg-amber-300 text-slate-950" : "py-1.5 text-slate-300 hover:bg-white/10 hover:text-slate-100"'
+        @click='selectTechnique(option.id)'
+      ) {{ option.label() }}
+    .inline-flex.flex-wrap.gap-1.rounded-lg.border.p-1.ml-auto(
       class='border-white/10 bg-white/5'
       role='tablist'
       :aria-label='t("modalities.switch_aria")'
@@ -291,23 +304,6 @@ section.timing-page(data-testid='timing-page')
         @click='timingModality = "humanDesign"'
         data-testid='timing-modality-human-design'
       ) {{ t('modalities.human_design') }}
-
-  .inline-flex.flex-wrap.gap-1.rounded-lg.border.p-1.mb-5(
-    v-if='timingModality === "astrology"'
-    class='border-white/10 bg-white/5'
-    role='tablist'
-    :aria-label='t("techniques.workspace.tabs_aria")'
-  )
-      button.rounded-md.px-3.text-xs.font-medium.transition(
-        v-for='option in techniqueOptions'
-        :key='option.id'
-        type='button'
-        role='tab'
-        :aria-selected='activeTechnique === option.id'
-        :data-testid='option.testid'
-        :class='activeTechnique === option.id ? "py-1.5 bg-amber-300 text-slate-950" : "py-1.5 text-slate-300 hover:bg-white/10 hover:text-slate-100"'
-        @click='selectTechnique(option.id)'
-      ) {{ option.label() }}
 
   TimingContextChips(
     v-if='person && timingModality === "astrology"'
@@ -512,6 +508,16 @@ section.timing-page(data-testid='timing-page')
 .transit-side-panel,
 .transit-matrix-panel {
   min-width: 0;
+}
+
+.timing-page__heading {
+  backdrop-filter: blur(8px);
+  background: color-mix(in srgb, var(--app-panel-strong) 84%, transparent);
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  position: sticky;
+  top: var(--app-header-height, 3.25rem);
+  z-index: 10;
 }
 
 .timing-page__heading h1,

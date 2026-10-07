@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
@@ -16,7 +16,6 @@ import { buildVedicChart } from '../lib/vedic/chart.js'
 import { VEDIC_BODY_COLORS, VEDIC_BODY_SYMBOLS } from '../lib/vedic/constants.js'
 import { buildVedicReadingDocument } from '../lib/vedic/reading.js'
 import { birthHeaderForPerson } from '../lib/people/labels.js'
-import { natalRouteForPerson } from '../lib/people/routeQuery.js'
 import { normalizeReportModality, reportModalitySlug } from '../lib/reports/modality.js'
 import AspectMatrix from '../components/chart/AspectMatrix.vue'
 import AspectTable from '../components/chart/AspectTable.vue'
@@ -24,7 +23,7 @@ import Insight from '../components/chart/Insight.vue'
 import Wheel from '../components/chart/Wheel.vue'
 import PlanetList from '../components/chart/PlanetList.vue'
 import HumanDesignWheel from '../components/human-design/Wheel.vue'
-import ModalityRouteSwitch from '../components/modalities/ModalityRouteSwitch.vue'
+import MapToolbar from '../components/map/MapToolbar.vue'
 import ReadingDocumentView from '../components/readings/ReadingDocumentView.vue'
 import { downloadPng, downloadSvg } from '../lib/export/chartImage.js'
 import { safeFilePart, timestampFilePart } from '../lib/export/download.js'
@@ -39,7 +38,6 @@ const person          = computed(() => people.byId(session.activePersonId) || pe
 const modality        = computed(() => normalizeReportModality(route.query.modality))
 const modalitySlug    = computed(() => reportModalitySlug(modality.value))
 const isTropical      = computed(() => modality.value === 'astrology')
-const natalRoute      = computed(() => natalRouteForPerson(person.value))
 const { chart: tropicalChart, error: tropicalError } = useNatalChartState(person, settings)
 const vedicChart      = ref(null)
 const vedicLoading    = ref(false)
@@ -110,10 +108,6 @@ const reportKicker = computed(() => isTropical.value
   ? t('report.kicker')
   : t(`report.modality_kickers.${modalitySlug.value}`)
 )
-const backRoute = computed(() => {
-  if (isTropical.value) return natalRoute.value
-  return { name: modality.value === 'vedic' ? 'vedic' : 'human-design' }
-})
 const readingDocument = computed(() => {
   if (modality.value === 'vedic') return buildVedicReadingDocument(vedicChart.value)
   if (modality.value === 'humanDesign') return buildHumanDesignReadingDocument(humanDesignChart.value)
@@ -191,37 +185,33 @@ const exportPng = async () => {
 
 <template lang="pug">
 section.report-page(ref='reportRoot' data-testid='report-page')
+  MapToolbar(:lens='modality' view='report')
   div(v-if='!person')
     p.text-slate-400 {{ t('chart.select_chart') }}
   div(v-else :data-modality='modalitySlug')
-    .report-toolbar.flex.flex-wrap.items-start.justify-between.gap-3.mb-5
+    .report-toolbar.flex.flex-wrap.items-center.justify-between.gap-x-3.gap-y-2.mb-4
       div
-        h1.text-2xl.font-semibold.text-slate-100 {{ reportTitle }}
+        h1.text-xl.font-semibold.text-slate-100 {{ reportTitle }}
         p.text-xs.text-slate-400 {{ birthHeader }}
       div
-        ModalityRouteSwitch.mb-2(:active='modality')
         .flex.flex-wrap.gap-2
-          RouterLink.rounded.px-3.py-2.text-sm.text-slate-300(
-            :to='backRoute'
-            class='bg-white/5 hover:bg-white/10 hover:text-white'
-            data-testid='report-back'
-          ) {{ t('report.back') }}
-          button.rounded.px-3.py-2.text-sm.text-slate-300(
+          button.rounded.px-3.text-sm.text-slate-300(
             v-if='hasSvgVisual'
             type='button'
-            class='bg-white/5 hover:bg-white/10 hover:text-white'
+            class='py-1.5 bg-white/5 hover:bg-white/10 hover:text-white'
             @click='exportSvg'
             data-testid='report-svg'
           ) {{ t('export.chart.svg') }}
-          button.rounded.px-3.py-2.text-sm.text-slate-300(
+          button.rounded.px-3.text-sm.text-slate-300(
             v-if='hasSvgVisual'
             type='button'
-            class='bg-white/5 hover:bg-white/10 hover:text-white disabled:opacity-60'
+            class='py-1.5 bg-white/5 hover:bg-white/10 hover:text-white disabled:opacity-60'
             :disabled='isExportingPng'
             @click='exportPng'
             data-testid='report-png'
           ) {{ isExportingPng ? t('export.chart.png_working') : t('export.chart.png') }}
-          button.ui-action-primary.px-3.py-2.text-sm(
+          button.ui-action-primary.px-3.text-sm(
+            class='py-1.5'
             type='button'
             @click='printReport'
             data-testid='report-print'

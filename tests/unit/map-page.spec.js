@@ -1,48 +1,30 @@
 import { shallowMount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import MapPage from '../../src/pages/MapPage.vue'
+import MapToolbar from '../../src/components/map/MapToolbar.vue'
 
 const route = { params: {} }
 
-vi.mock('vue-router', async () => {
-  const { defineComponent } = await vi.importActual('vue')
-  return {
-    RouterLink: defineComponent({
-      name:  'RouterLink',
-      props: { to: { type: [String, Object], required: true } },
-      template: '<a><slot /></a>',
-    }),
-    useRoute: () => route,
-  }
-})
+vi.mock('vue-router', () => ({ useRoute: () => route }))
 
-vi.mock('vue-i18n', () => ({
-  useI18n: () => ({ t: key => key }),
-}))
-
-const mountPage = lens => {
-  route.params = { lens, view: 'chart' }
-  return shallowMount(MapPage, {
-    global: {
-      stubs: {
-        ModalityRouteSwitch: true,
-        WorkspaceViewSwitch: true,
-      },
-    },
-  })
+const mountPage = (lens, view = 'chart') => {
+  route.params = { lens, view }
+  return shallowMount(MapPage)
 }
 
-describe('MapPage report routing', () => {
+describe('MapPage toolbar', () => {
   beforeEach(() => { route.params = {} })
 
   it.each([
     ['astrology', 'astrology'],
     ['sidereal', 'vedic'],
-    ['hd', 'human-design'],
-  ])('routes the %s lens to its canonical report modality', (lens, modality) => {
-    const wrapper = mountPage(lens)
-    const report  = wrapper.getComponent({ name: 'RouterLink' })
+    ['hd', 'humanDesign'],
+  ])('resolves the %s lens alias to %s', (alias, lens) => {
+    expect(mountPage(alias).getComponent(MapToolbar).props('lens')).toBe(lens)
+  })
 
-    expect(report.props('to')).toEqual({ name: 'report', query: { modality } })
+  it('passes the active view and falls back to chart for unknown views', () => {
+    expect(mountPage('vedic', 'reading').getComponent(MapToolbar).props('view')).toBe('reading')
+    expect(mountPage('vedic', 'nope').getComponent(MapToolbar).props('view')).toBe('chart')
   })
 })

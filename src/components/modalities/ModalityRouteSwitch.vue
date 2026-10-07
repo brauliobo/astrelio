@@ -19,7 +19,9 @@ const switchItems = computed(() => [
   { id: 'humanDesign', lens: 'human-design', label: t('modalities.human_design'), testId: 'modality-human-design' },
 ].map(item => ({
   ...item,
-  to: { name: 'map', params: { lens: item.lens, view: activeView.value } },
+  to: activeView.value === 'report'
+    ? { name: 'report', query: { modality: item.lens } }
+    : { name: 'map', params: { lens: item.lens, view: activeView.value } },
 })))
 const activeModality = computed(() => props.active || 'astrology')
 const visible        = computed(() => props.workspaceOwner || !workspaceShell)
