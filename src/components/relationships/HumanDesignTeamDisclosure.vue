@@ -30,7 +30,7 @@ const toggleTeamPerson = id => {
 </script>
 
 <template lang="pug">
-details.ui-panel.mt-6(@toggle='setOpen' data-testid='human-design-team-disclosure')
+details.ui-panel(@toggle='setOpen' data-testid='human-design-team-disclosure')
   summary.cursor-pointer.text-sm.font-semibold.text-slate-100(data-testid='human-design-team-toggle') {{ t('human_design.team') }}
   .mt-5(v-if='isOpen')
     TeamPanel(
