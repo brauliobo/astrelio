@@ -89,6 +89,23 @@ rendered as tinted spheres.
 - `astrelio_locale`   — mirrored standalone for first-paint locale detection
 - session store        — in-memory only
 
+## Usability (ISO 9241-11)
+
+`npm run e2e:usability` runs ten task scenarios (`tests/e2e/usability.spec.js`) on desktop and mobile and writes
+`test-results/usability/report.{json,md}` per context of use. Real seeded people are used, never mocks.
+
+- **Effectiveness**: the goal state is reached (completion) with zero console, page or request errors.
+- **Efficiency**: user actions (click, fill, select, key) against the optimal path, time on task, completions per minute.
+- **Satisfaction**: measured only by objective proxies on the final screen: no errors, header <= 10% of the desktop
+  viewport, nav/switcher targets >= 24px (WCAG 2.2) and bottom nav >= 44px on mobile, layout shift < 0.1, no horizontal
+  overflow, destination visible in <= 2s.
+
+Tasks: T1 switch person (2 actions), T2 open a map from the library (1), T3 Vedic map (2), T4 Reading view (2),
+T5 Progressions (2), T6 compare in synastry (2), T7 change language (2), T8 command palette (3),
+T9 first chart as a new user (form inputs + city pick + submit), T10 back to the library (1).
+
+Limitation: the proxy score is not user satisfaction. Real satisfaction needs questionnaires with real users (e.g. SUS).
+
 ## Deploy
 
 Push to `main`. The workflow builds `docs/` with `GITHUB_PAGES=1` so Vite's `base` resolves to `/astrelio/`, then deploys via `actions/deploy-pages@v4`. Repo Settings → Pages → Source = "GitHub Actions".

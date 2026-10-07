@@ -9,7 +9,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 2 : undefined,
-  reporter: process.env.CI ? 'github' : 'list',
+  reporter: [[process.env.CI ? 'github' : 'list'], ['./tests/e2e/support/usability-reporter.js']],
   use: { baseURL: BASE, trace: 'on-first-retry' },
   projects: [
     { name: 'chromium-desktop', use: { ...devices['Desktop Chrome'] } },

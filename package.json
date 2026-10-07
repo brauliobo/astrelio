@@ -17,6 +17,7 @@
     "smoke:dev": "node scripts/smoke-dev-server.mjs",
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
+    "e2e:usability": "playwright test tests/e2e/usability.spec.js",
     "build:icons": "node scripts/build-icons.mjs",
     "build:cities": "node scripts/build-cities.mjs",
     "build:planet-maps": "node scripts/build-planet-maps.mjs",
