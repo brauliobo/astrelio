@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router'
 import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
 import { REPORT_PRESET_KEYS, SETTING_PRESET_KEYS, useSettingsStore } from '../stores/settings.js'
-import { natalRouteForPerson } from '../lib/people/routeQuery.js'
+import { usePersonSwitch } from './shell/usePersonSwitch.js'
 import { broadcastChartHighlight } from '../lib/chart/highlight.js'
 
 const props = defineProps({
@@ -17,6 +17,7 @@ const router    = useRouter()
 const people    = usePeopleStore()
 const session   = useSessionStore()
 const settings  = useSettingsStore()
+const switchPerson = usePersonSwitch()
 const open      = ref(false)
 const query     = ref('')
 const activeIndex = ref(0)
@@ -55,15 +56,18 @@ const command = ({ id, label, group, keywords = [], priority = 0, run }) => ({
   run,
 })
 
-const timingCommand = ({ id, labelKey, routeName, apply, keywords = [] }) => command({
+const mapRoute    = (lens, view = 'chart') => ({ name: 'map', params: { lens, view } })
+const timingRoute = technique => ({ name: 'timing', params: { technique } })
+
+const timingCommand = ({ id, labelKey, technique, apply, keywords = [] }) => command({
   id,
   label:    t(`command_palette.${labelKey}`),
   group:    'techniques',
-  keywords: [routeName.replace('-', ' '), 'timing', ...keywords],
+  keywords: [technique.replace('-', ' '), 'timing', ...keywords],
   priority: 20,
   run:      () => {
     apply()
-    navigate({ name: routeName })
+    navigate(timingRoute(technique))
   },
 })
 
@@ -114,7 +118,7 @@ const houseCommands = computed(() => {
     label:    names?.[index] ? t('houses.numbered_name', { house: index + 1, name: names[index] }) : `House ${index + 1}`,
     group:    'houses',
     keywords: [`house ${index + 1}`, names?.[index] || ''],
-    run:      () => navigate({ name: 'natal' }),
+    run:      () => navigate(mapRoute('astrology')),
   }))
 })
 
@@ -144,25 +148,25 @@ const reportPresetCommands = computed(() => REPORT_PRESET_KEYS.map(preset => com
 
 const commands = computed(() => [
   command({ id: 'home', label: t('nav.home'), group: 'navigation', keywords: ['home', 'people', 'library'], run: () => navigate({ name: 'home' }) }),
-  command({ id: 'map', label: t('nav.map'), group: 'navigation', keywords: ['map', 'natal', 'chart'], run: () => navigate({ name: 'natal' }) }),
-  command({ id: 'vedic', label: t('modalities.vedic'), group: 'modalities', keywords: ['vedic', 'sidereal'], priority: 10, run: () => navigate({ name: 'vedic' }) }),
-  command({ id: 'human-design', label: t('modalities.human_design'), group: 'modalities', keywords: ['human design', 'bodygraph'], priority: 10, run: () => navigate({ name: 'human-design' }) }),
+  command({ id: 'map', label: t('nav.map'), group: 'navigation', keywords: ['map', 'natal', 'chart'], run: () => navigate(mapRoute('astrology')) }),
+  command({ id: 'vedic', label: t('modalities.vedic'), group: 'modalities', keywords: ['vedic', 'sidereal'], priority: 10, run: () => navigate(mapRoute('vedic')) }),
+  command({ id: 'human-design', label: t('modalities.human_design'), group: 'modalities', keywords: ['human design', 'bodygraph'], priority: 10, run: () => navigate(mapRoute('human-design')) }),
   command({ id: 'report', label: t('report.open'), group: 'navigation', keywords: ['report', 'export', 'print'], run: () => navigate({ name: 'report' }) }),
-  command({ id: 'timing', label: t('nav.timing'), group: 'navigation', keywords: ['timing', 'transits'], run: () => navigate({ name: 'transits' }) }),
+  command({ id: 'timing', label: t('nav.timing'), group: 'navigation', keywords: ['timing', 'transits'], run: () => navigate(timingRoute('transits')) }),
   command({ id: 'synastry', label: t('nav.relations'), group: 'navigation', keywords: ['relationship', 'synastry'], run: () => navigate({ name: 'synastry' }) }),
   command({ id: 'settings', label: t('nav.settings'), group: 'settings', keywords: ['settings', 'preset', 'system'], run: () => navigate({ name: 'settings' }) }),
-  timingCommand({ id: 'timing-transits-now', labelKey: 'timing_now', routeName: 'transits', apply: () => session.setTransitDate(Date.now()), keywords: ['now', 'current'] }),
-  timingCommand({ id: 'timing-progressions-today', labelKey: 'progressions_today', routeName: 'progressions', apply: () => session.setProgressionDate(Date.now()), keywords: ['today'] }),
-  timingCommand({ id: 'timing-solar-return-this-year', labelKey: 'solar_return_this_year', routeName: 'solar-return', apply: () => session.setSolarReturnYear(new Date().getFullYear()), keywords: ['return', 'year'] }),
-  timingCommand({ id: 'timing-profections-today', labelKey: 'profections_today', routeName: 'profections', apply: () => session.setProfectionDate(Date.now()), keywords: ['today'] }),
-  timingCommand({ id: 'timing-solar-arc-today', labelKey: 'solar_arc_today', routeName: 'solar-arc', apply: () => session.setSolarArcDate(Date.now()), keywords: ['today'] }),
-  timingCommand({ id: 'timing-lunar-return-today', labelKey: 'lunar_return_today', routeName: 'lunar-return', apply: () => session.setLunarReturnDate(Date.now()), keywords: ['today'] }),
+  timingCommand({ id: 'timing-transits-now', labelKey: 'timing_now', technique: 'transits', apply: () => session.setTransitDate(Date.now()), keywords: ['now', 'current'] }),
+  timingCommand({ id: 'timing-progressions-today', labelKey: 'progressions_today', technique: 'progressions', apply: () => session.setProgressionDate(Date.now()), keywords: ['today'] }),
+  timingCommand({ id: 'timing-solar-return-this-year', labelKey: 'solar_return_this_year', technique: 'solar-return', apply: () => session.setSolarReturnYear(new Date().getFullYear()), keywords: ['return', 'year'] }),
+  timingCommand({ id: 'timing-profections-today', labelKey: 'profections_today', technique: 'profections', apply: () => session.setProfectionDate(Date.now()), keywords: ['today'] }),
+  timingCommand({ id: 'timing-solar-arc-today', labelKey: 'solar_arc_today', technique: 'solar-arc', apply: () => session.setSolarArcDate(Date.now()), keywords: ['today'] }),
+  timingCommand({ id: 'timing-lunar-return-today', labelKey: 'lunar_return_today', technique: 'lunar-return', apply: () => session.setLunarReturnDate(Date.now()), keywords: ['today'] }),
   ...['transits', 'progressions', 'solar-return', 'profections', 'solar-arc', 'lunar-return'].map(name => command({
     id:       `technique-${name}`,
     label:    t(name === 'solar-return' ? 'nav.solar_return' : name === 'profections' ? 'techniques.nav.profections' : name === 'solar-arc' ? 'techniques.nav.solar_arc' : name === 'lunar-return' ? 'techniques.nav.lunar_return' : `nav.${name}`),
     group:    'techniques',
     keywords: [name.replace('-', ' ')],
-    run:      () => navigate({ name }),
+    run:      () => navigate(timingRoute(name)),
   })),
   ...people.sorted.map(person => command({
     id:       `person-${person.id}`,
@@ -171,8 +175,8 @@ const commands = computed(() => [
     keywords: [person.name, person.placeLabel, person.isoLocal, 'active chart', 'switch chart'],
     priority: 15,
     run:      () => {
-      session.setActive(person.id)
-      navigate(natalRouteForPerson(person))
+      switchPerson(person)
+      close()
     },
   })),
   ...settingPresetCommands.value,

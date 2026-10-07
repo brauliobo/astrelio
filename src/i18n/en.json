@@ -19,7 +19,17 @@
     "planetarium": "Planetarium"
   },
   "shell": {
-    "utilities": "Application utilities"
+    "utilities": "Application utilities",
+    "workspaces": "Workspaces",
+    "switch_person": "Switch chart",
+    "active_chart": "Active chart",
+    "no_charts": "No charts yet",
+    "no_matches": "No charts found",
+    "search_people": "Search charts",
+    "new_chart": "New chart",
+    "manage_charts": "Manage charts",
+    "sky_background": "Sky background",
+    "theme": "Theme"
   },
   "theme": {
     "switch_to_dark": "Switch to dark theme",
@@ -30,7 +40,8 @@
     "views": {
       "chart": "Chart",
       "reading": "Reading",
-      "data": "Data"
+      "data": "Data",
+      "report": "Report"
     }
   },
   "context": {
@@ -70,7 +81,16 @@
   "relationship": {
     "overlay": "Overlay",
     "composite": "Composite",
-    "dominant_aspect": "Dominant aspect"
+    "dominant_aspect": "Dominant aspect",
+    "person_a": "Person A",
+    "person_b": "Person B",
+    "swap": "Swap people",
+    "summary": "Overview",
+    "insights": "Themes and house correlations",
+    "aspect_table": "Cross-aspects",
+    "empty_title": "Compare two charts",
+    "empty_description": "Synastry needs at least two saved charts. Add another one to start.",
+    "empty_action": "Add a chart"
   },
   "home": {
     "heading": "Your charts",
@@ -86,6 +106,10 @@
     "active": "Active",
     "new": "New chart",
     "open": "Open",
+    "open_person": "Open {name}",
+    "details": "Details",
+    "search": "Search charts",
+    "no_results": "No charts match your search.",
     "edit": "Edit",
     "duplicate": "Duplicate",
     "delete": "Delete",
@@ -104,7 +128,8 @@
     "timezone": "Timezone",
     "coordinates": "Coordinates",
     "source_city": "Source city",
-    "open_natal": "Natal chart",
+    "open_natal": "Open map",
+    "library": "Charts",
     "open_report": "Report",
     "edit": "Edit",
     "duplicate": "Duplicate",

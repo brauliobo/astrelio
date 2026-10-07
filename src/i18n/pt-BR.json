@@ -4,7 +4,7 @@
     "tagline": "Mapas astrais no navegador"
   },
   "nav": {
-    "charts": "Mapas",
+    "charts": "Cartas",
     "home": "Início",
     "natal": "Mapa Natal",
     "map": "Mapa",
@@ -19,7 +19,17 @@
     "planetarium": "Planetário"
   },
   "shell": {
-    "utilities": "Utilitários do aplicativo"
+    "utilities": "Utilitários do aplicativo",
+    "workspaces": "Áreas",
+    "switch_person": "Trocar mapa",
+    "active_chart": "Mapa ativo",
+    "no_charts": "Nenhum mapa ainda",
+    "no_matches": "Nenhum mapa encontrado",
+    "search_people": "Buscar mapas",
+    "new_chart": "Novo mapa",
+    "manage_charts": "Gerenciar mapas",
+    "sky_background": "Fundo do céu",
+    "theme": "Tema"
   },
   "theme": {
     "switch_to_dark": "Mudar para o tema escuro",
@@ -30,7 +40,8 @@
     "views": {
       "chart": "Mapa",
       "reading": "Leitura",
-      "data": "Dados"
+      "data": "Dados",
+      "report": "Relatório"
     }
   },
   "context": {
@@ -70,7 +81,16 @@
   "relationship": {
     "overlay": "Sobreposição",
     "composite": "Composto",
-    "dominant_aspect": "Aspecto dominante"
+    "dominant_aspect": "Aspecto dominante",
+    "person_a": "Pessoa A",
+    "person_b": "Pessoa B",
+    "swap": "Trocar pessoas",
+    "summary": "Resumo",
+    "insights": "Temas e correlações de casas",
+    "aspect_table": "Aspectos cruzados",
+    "empty_title": "Compare dois mapas",
+    "empty_description": "A sinastria precisa de pelo menos dois mapas salvos. Adicione outro para começar.",
+    "empty_action": "Adicionar mapa"
   },
   "home": {
     "heading": "Seus mapas",
@@ -86,6 +106,10 @@
     "active": "Ativo",
     "new": "Novo mapa",
     "open": "Abrir",
+    "open_person": "Abrir {name}",
+    "details": "Detalhes",
+    "search": "Buscar mapas",
+    "no_results": "Nenhum mapa encontrado.",
     "edit": "Editar",
     "duplicate": "Duplicar",
     "delete": "Excluir",
@@ -104,7 +128,8 @@
     "timezone": "Fuso horário",
     "coordinates": "Coordenadas",
     "source_city": "Cidade de origem",
-    "open_natal": "Mapa natal",
+    "open_natal": "Abrir mapa",
+    "library": "Mapas",
     "open_report": "Relatório",
     "edit": "Editar",
     "duplicate": "Duplicar",
