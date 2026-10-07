@@ -5,9 +5,11 @@ import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { localToUtcMs, offsetMinutesForPerson, timezoneLabelForPerson } from '../lib/astro/timezones.js'
 import { birthHeaderForPerson } from '../lib/people/labels.js'
-import { natalRouteForPerson } from '../lib/people/routeQuery.js'
 import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
+
+const MAP_ROUTE = '/map/astrology/chart'
+const HD_ROUTE  = '/map/human-design/chart'
 
 const route  = useRoute()
 const router = useRouter()
@@ -85,19 +87,9 @@ const remove = () => {
   router.push({ name: 'home' })
 }
 
-const openNatal = () => {
+const openRoute = (to) => {
   activate()
-  router.push(natalRouteForPerson(person.value))
-}
-
-const openReport = () => {
-  activate()
-  router.push({ name: 'report' })
-}
-
-const openHumanDesign = () => {
-  activate()
-  router.push({ name: 'human-design' })
+  router.push(to)
 }
 
 watch(person, (next) => {
@@ -125,25 +117,28 @@ section.person-page(data-testid='person-page')
   div.grid.gap-6(v-else)
     .flex.flex-wrap.items-start.justify-between.gap-3
       div
+        nav.text-xs.text-slate-400.mb-2(:aria-label='t("person.library")' data-testid='person-breadcrumb')
+          RouterLink(to='/' class='hover:text-amber-200' data-testid='person-back-library') {{ t('person.library') }}
+          span.mx-1(aria-hidden='true') /
+          span {{ person.name }}
         h1.text-2xl.font-semibold.text-slate-100(data-testid='person-name') {{ person.name }}
         p.text-xs.text-slate-400.mt-1 {{ birthHeader }}
       .flex.flex-wrap.gap-2
-        button.rounded.px-3.py-2.text-sm.text-slate-300(
+        button.ui-action-primary.px-3.py-2.text-sm(
           type='button'
-          class='bg-white/5 hover:bg-white/10 hover:text-white'
-          @click='openNatal'
+          @click='openRoute(MAP_ROUTE)'
           data-testid='person-open-natal'
         ) {{ t('person.open_natal') }}
         button.rounded.px-3.py-2.text-sm.text-slate-300(
           type='button'
           class='bg-white/5 hover:bg-white/10 hover:text-white'
-          @click='openReport'
+          @click='openRoute({ name: "report" })'
           data-testid='person-open-report'
         ) {{ t('person.open_report') }}
         button.rounded.px-3.py-2.text-sm.text-slate-300(
           type='button'
           class='bg-white/5 hover:bg-white/10 hover:text-white'
-          @click='openHumanDesign'
+          @click='openRoute(HD_ROUTE)'
           data-testid='person-open-human-design'
         ) {{ t('human_design.open') }}
     .grid.gap-6(class='lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.7fr)]')
