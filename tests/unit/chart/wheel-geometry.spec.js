@@ -235,4 +235,19 @@ describe('chart wheel geometry', () => {
 
     expect(placementSnapshot(first)).toEqual(placementSnapshot(second))
   })
+
+  it('fans crowded transit glyphs sideways while keeping exact longitudes on a single orbit', () => {
+    const band       = { inner: 188, outer: 232, fan: true, glyphRadius: 208, labelRadius: 225, glyphSize: 20 }
+    const placements = planetPlacements({ positions: [mk('Sun', 100), mk('Mars', 102), mk('Venus', 104), mk('Moon', 250)] }, 0, band)
+    const byName     = new Map(placements.map(item => [item.planet.name, item]))
+    const crowded    = ['Sun', 'Mars', 'Venus'].map(name => byName.get(name))
+
+    expect(placements.every(item => item.radius === 208)).toBe(true)
+    expect(crowded.map(item => item.longitude)).toEqual([100, 102, 104])
+    expect(new Set(crowded.map(item => item.glyphLongitude)).size).toBe(3)
+    expect(crowded[1].glyphLongitude).toBeCloseTo(102)
+    expect(crowded[2].glyphLongitude - crowded[0].glyphLongitude).toBeGreaterThan(10)
+    expect(byName.get('Moon').glyphLongitude).toBeCloseTo(250)
+    closePoint(byName.get('Moon').leader.from, polarPoint(189, 250))
+  })
 })

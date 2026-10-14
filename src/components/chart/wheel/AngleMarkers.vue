@@ -8,6 +8,7 @@ const props = defineProps({
   chart:            { type: Object, required: true },
   wheelShift:       { type: Number, required: true },
   baseRadius:       { type: Number, default: WHEEL_RADII.zodiacOuter },
+  maxRadius:        { type: Number, default: (VIEWBOX_SIZE / 2) - 12 },
   highlightedWheel: { type: Object, default: null },
 })
 const emit = defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
@@ -29,8 +30,7 @@ const MARKER_OFFSET = {
   label:          20,
 }
 
-const edgePadding      = 12
-const markerRadius     = (radius) => Math.min(props.baseRadius + radius, (VIEWBOX_SIZE / 2) - edgePadding)
+const markerRadius     = (radius) => Math.min(props.baseRadius + radius, props.maxRadius)
 const markerPoint      = (radius, longitude) => polarPoint(markerRadius(radius), longitude)
 const outwardArrowPath = (longitude) =>
   radialTrianglePath(

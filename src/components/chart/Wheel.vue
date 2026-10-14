@@ -15,7 +15,7 @@ import { isTropicalChart } from '../../lib/astro/analysis.js'
 import { broadcastChartHighlight, CHART_HIGHLIGHT_EVENT, normalizeHighlight, sameHighlight } from '../../lib/chart/highlight.js'
 import { isRadialAlignment, RADIAL_ALIGNMENT } from '../../lib/chart/radialSpacing.js'
 
-const displayModes   = ['clean', 'aspects', 'detailed', 'print']
+const displayModes = ['clean', 'aspects', 'detailed']
 const modeSettings = {
   clean: {
     degrees:      false,
@@ -39,7 +39,7 @@ const modeSettings = {
   },
 }
 
-const normalizeMode = (mode) => displayModes.includes(mode) ? mode : 'auto'
+const normalizeMode = (mode) => mode in modeSettings ? mode : 'auto'
 
 const props = defineProps({
   natal:                { type: Object, default: null },
@@ -119,11 +119,10 @@ const style      = computed(() => ({
   width:    `${props.size}px`,
   maxWidth: '100%',
 }))
-const wheelViewBox = computed(() =>
-  hasExteriorOrbit.value || props.showNakshatraRing
-    ? `0 0 ${VIEWBOX_SIZE} ${VIEWBOX_SIZE}`
-    : '40 40 440 440'
-)
+const wheelViewBox = computed(() => {
+  if (hasExteriorOrbit.value) return '-20 -20 560 560'
+  return props.showNakshatraRing ? `0 0 ${VIEWBOX_SIZE} ${VIEWBOX_SIZE}` : '40 40 440 440'
+})
 const displayAttributes = computed(() => ({
   'data-chart-mode':         activeDisplayMode.value,
   'data-show-degrees':       String(displayOptions.value.degrees),
@@ -270,18 +269,20 @@ onBeforeUnmount(() => {
       :modes='displayModes'
       @update:model-value='selectDisplayMode'
     )
-      .chart-orbit-controls.inline-flex.items-center.mr-1.border-r.pr-1(
+      .chart-orbit-controls(
         v-if='baseChart && hasExteriorOrbitOption'
         :aria-label='t("chart.wheel_accessibility.orbit_controls")'
       )
-        button.chart-control-button.chart-transit-orbit-toggle(
+        button.chart-transit-toggle(
           type='button'
           data-testid='chart-toggle-transit-orbit'
-          :class='{ "chart-transit-orbit-toggle--active": showExteriorOrbit }'
+          :class='{ "is-active": showExteriorOrbit }'
           :aria-pressed='showExteriorOrbit'
           :aria-label='t("chart.transit_orbit")'
           @click='toggleExteriorOrbit'
-        ) {{ t('chart.transit_orbit') }}
+        )
+          span.chart-transit-toggle__dot
+          | {{ t('chart.transit_orbit') }}
   .chart-wheel-stage.relative.aspect-square.overflow-hidden.rounded-md(
     ref='stage'
     v-if='baseChart'
@@ -308,18 +309,18 @@ onBeforeUnmount(() => {
           :cy='CENTER'
           :r='WHEEL_RADII.transitOuter'
           fill='none'
-          stroke='var(--chart-frame-stroke)'
-          stroke-width='1.25'
-          stroke-opacity='0.62'
+          stroke='var(--chart-overlay-accent)'
+          stroke-width='1'
+          stroke-opacity='0.5'
         )
         circle(
           :cx='CENTER'
           :cy='CENTER'
-          :r='WHEEL_RADII.transitInner'
+          :r='(WHEEL_RADII.transitOuter + WHEEL_RADII.transitInner) / 2'
           fill='none'
           stroke='var(--chart-overlay-accent)'
-          stroke-width='0.9'
-          stroke-opacity='0.34'
+          :stroke-width='WHEEL_RADII.transitOuter - WHEEL_RADII.transitInner'
+          stroke-opacity='0.08'
         )
       NakshatraRing(
         v-if='showNakshatraRing'
@@ -368,6 +369,7 @@ onBeforeUnmount(() => {
         :chart='baseChart'
         :wheel-shift='wheelShift'
         :base-radius='hasExteriorOrbit ? WHEEL_RADII.transitOuter : WHEEL_RADII.zodiacOuter'
+        :max-radius='hasExteriorOrbit ? 268 : undefined'
         :highlighted-wheel='activeWheel'
         @highlight='setHoverHighlight'
         @clear-highlight='clearHoverHighlight'
@@ -417,43 +419,47 @@ onBeforeUnmount(() => {
   gap: 0.5rem;
 }
 
-.chart-control-button {
+.chart-transit-toggle {
   align-items: center;
-  border-radius: 0.25rem;
-  color: var(--chart-control-text);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 999px;
+  color: rgb(203 213 225);
   display: inline-flex;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  height: 2rem;
-  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  gap: 0.4rem;
   line-height: 1;
-  min-width: 2rem;
-  padding: 0 0.5rem;
+  min-height: 1.875rem;
+  padding: 0 0.8rem 0 0.65rem;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
 }
 
-.chart-orbit-controls {
-  background: var(--chart-control-bg);
-  border-color: var(--app-border);
+.chart-transit-toggle__dot {
+  background: transparent;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  height: 0.5rem;
+  width: 0.5rem;
 }
 
-.chart-transit-orbit-toggle {
-  font-size: 0.6875rem;
-  min-width: 4.25rem;
+.chart-transit-toggle:hover {
+  background: rgb(255 255 255 / 0.08);
+  color: rgb(248 250 252);
 }
 
-.chart-transit-orbit-toggle--active {
-  background: var(--chart-overlay-accent);
-  color: var(--chart-control-active-text, var(--app-bg));
-}
-
-.chart-control-button:hover,
-.chart-control-button:focus-visible {
-  background: var(--chart-control-hover-bg);
-}
-
-.chart-control-button:focus-visible {
+.chart-transit-toggle:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 1px;
+}
+
+.chart-transit-toggle.is-active {
+  background: color-mix(in srgb, var(--chart-overlay-accent) 18%, transparent);
+  border-color: var(--chart-overlay-accent);
+  color: var(--chart-overlay-accent);
+}
+
+.chart-transit-toggle.is-active .chart-transit-toggle__dot {
+  background: currentColor;
 }
 
 .chart-wheel[data-show-degrees="false"] [data-testid="planet-layer"] g[data-planet] text:not([data-role="symbol"]) {

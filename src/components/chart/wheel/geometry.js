@@ -238,12 +238,12 @@ export const mapsFromProps = ({ natal, overlay, charts }) => {
       showAngles:      false,
       exteriorOrbit:   true,
       planetBand:      {
-        inner:        WHEEL_RADII.transitInner,
-        outer:        WHEEL_RADII.transitOuter,
-        defaultRadius: WHEEL_RADII.transitOuter - 18,
-        tickRadius:   WHEEL_RADII.zodiacOuter + 8,
-        glyphPadding: 8,
-        glyphSize:    20,
+        inner:       WHEEL_RADII.transitInner,
+        outer:       WHEEL_RADII.transitOuter,
+        fan:         true,
+        glyphRadius: WHEEL_RADII.transitInner + 21,
+        labelRadius: WHEEL_RADII.transitOuter - 6,
+        glyphSize:   22,
       },
     }))
   }
@@ -363,14 +363,30 @@ const labelPlacement = (glyphPoint) => {
   }
 }
 
+// Fan bands keep every glyph on one orbit and spread crowded clusters sideways around their mean longitude.
+const fanLongitudes = (cluster, band) => {
+  const step   = (band.glyphSize * 1.15 / band.glyphRadius) * (180 / Math.PI)
+  const origin = cluster[0].longitude
+  const offset = cluster.map(planet => ((planet.longitude - origin + 540) % 360) - 180)
+  const mean   = offset.reduce((sum, value) => sum + value, 0) / cluster.length
+  return offset.map((_, index) => origin + mean + (index - (cluster.length - 1) / 2) * step)
+}
+
+const fanLabel = (band, glyphLongitude) => ({
+  labelAnchor: 'middle',
+  labelSide:   'outer',
+  labelPoint:  polarPoint(band.labelRadius, glyphLongitude),
+})
+
 export const planetPlacements = (chart, wheelShift, band, symbols = PLANET_SYMBOLS) => {
   const placements = []
   for (const cluster of clusteredPlanets(wheelPositions(chart), symbols)) {
-    const radii = radiiForCluster(cluster.length, band)
+    const radii           = band.fan ? cluster.map(() => band.glyphRadius) : radiiForCluster(cluster.length, band)
+    const glyphLongitudes = band.fan ? fanLongitudes(cluster, band) : cluster.map(planet => planet.longitude)
     cluster.forEach((planet, index) => {
       const radius         = radii[index]
       const longitude      = norm360(planet.longitude + wheelShift)
-      const glyphLongitude = longitude
+      const glyphLongitude = norm360(glyphLongitudes[index] + wheelShift)
       const glyphPoint     = polarPoint(radius, glyphLongitude)
       placements.push({
         planet,
@@ -383,8 +399,9 @@ export const planetPlacements = (chart, wheelShift, band, symbols = PLANET_SYMBO
         showDegreeLabel: true,
         point:           polarPoint(radius, longitude),
         glyphPoint,
-        ...labelPlacement(glyphPoint),
-        tick: polarPoint(band.tickRadius || WHEEL_RADII.houseOuter - 4, longitude),
+        ...(band.fan ? fanLabel(band, glyphLongitude) : labelPlacement(glyphPoint)),
+        leader: band.fan ? { from: polarPoint(band.inner + 1, longitude), to: polarPoint(radius - 9, glyphLongitude) } : null,
+        tick:   polarPoint(band.tickRadius || WHEEL_RADII.houseOuter - 4, longitude),
       })
     })
   }

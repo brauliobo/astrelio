@@ -1521,8 +1521,7 @@
     "display_modes": {
       "clean": "Limpo",
       "aspects": "Aspectos",
-      "detailed": "Detalhado",
-      "print": "Impressão"
+      "detailed": "Detalhado"
     },
     "selection_details": {
       "sign": "Signo",

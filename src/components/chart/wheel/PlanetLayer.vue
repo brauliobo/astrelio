@@ -43,11 +43,13 @@ const glyphs = computed(() =>
       degree: degreeLabel(item.planet.longitude),
       motion,
       showDegreeLabel: item.showDegreeLabel !== false,
-      fontSize:        props.mapIndex === 0 ? 22 : 17,
+      fontSize:        props.mapIndex === 0 ? 22 : 19,
       glyphScale,
     }
   })
 )
+
+const leaders = computed(() => glyphs.value.filter(item => item.leader))
 
 const highlightPayload    = (body) => ({ bodies: [body], aspectKey: '' })
 const glyphHighlightState = (item) => {
@@ -65,6 +67,16 @@ const glyphHighlightState = (item) => {
 <template lang="pug">
 g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
   circle(:cx='260' :cy='260' :r='WHEEL_RADII.aspect' fill='none' stroke='var(--chart-ink-muted)' stroke-width='0.45' stroke-opacity='0.25')
+  line.planet-leader(
+    v-for='item in leaders'
+    :key='`leader-${item.planet.name}`'
+    :x1='item.leader.from.x'
+    :y1='item.leader.from.y'
+    :x2='item.leader.to.x'
+    :y2='item.leader.to.y'
+    :stroke='color'
+    pointer-events='none'
+  )
   g(
     v-for='item in glyphs'
     :key='`${item.planet.name}-${item.planet.longitude}`'
@@ -111,7 +123,7 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
       :x='item.label.x'
       :y='item.label.y'
       :fill='item.labelColor'
-      :font-size='mapIndex === 0 ? 7.8 : 6.6'
+      :font-size='mapIndex === 0 ? 7.8 : 7.4'
       font-weight='600'
       :text-anchor='item.labelAnchor'
       :data-visible='item.showDegreeLabel || glyphHighlightState(item) === "active"'
@@ -138,6 +150,12 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
 
 .planet-glyph-group[data-highlight='dimmed'] {
   opacity: 0.3;
+}
+
+.planet-leader {
+  stroke-linecap: round;
+  stroke-opacity: 0.55;
+  stroke-width: 1;
 }
 
 .planet-degree-label {

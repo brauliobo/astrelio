@@ -35,7 +35,6 @@ const messages = {
         clean:    'Clean',
         aspects:  'Aspects',
         detailed: 'Detailed',
-        print:    'Print',
       },
     },
     zodiac: {
@@ -106,8 +105,11 @@ describe('chart display modes', () => {
     expect(wrapper.get('[data-testid="chart-wheel"]').attributes('data-show-point-details')).toBe('true')
     expect(wrapper.find('[data-testid="aspect-lines"]').exists()).toBe(true)
 
-    await wrapper.get('[data-testid="chart-mode-print"]').trigger('click')
-    await nextTick()
+    expect(wrapper.find('[data-testid="chart-mode-print"]').exists()).toBe(false)
+  })
+
+  it('keeps print as a prop-only mode for reports', () => {
+    const wrapper = mountWheel({ displayMode: 'print', showModeControls: false })
 
     expect(wrapper.get('[data-testid="chart-wheel"]').attributes('data-chart-mode')).toBe('print')
     expect(wrapper.get('[data-testid="chart-wheel"]').attributes('data-show-degrees')).toBe('true')
@@ -182,10 +184,10 @@ describe('chart display modes', () => {
     await wrapper.get('[data-testid="chart-toggle-transit-orbit"]').trigger('click')
     await nextTick()
 
-    expect(wrapper.get('[data-testid="chart-wheel-svg"]').attributes('viewBox')).toBe('0 0 520 520')
+    expect(wrapper.get('[data-testid="chart-wheel-svg"]').attributes('viewBox')).toBe('-20 -20 560 560')
     expect(wrapper.get('[data-testid="transit-orbit-frame"]').exists()).toBe(true)
     expect(wrapper.get('[data-chart-map="overlay"] [data-testid="planet-glyph-Sun"]').exists()).toBe(true)
-    expect(wrapper.get('[data-testid="transit-orbit-frame"] circle:nth-child(2)').attributes('r')).toBe(String(WHEEL_RADII.zodiacOuter))
+    expect(wrapper.get('[data-testid="transit-orbit-frame"] circle:nth-child(1)').attributes('r')).toBe(String(WHEEL_RADII.transitOuter))
   })
 
   it('toggles the exterior transit orbit and resizes back to the natal frame', async () => {
@@ -208,7 +210,7 @@ describe('chart display modes', () => {
 
     const natalSunAfter = wrapper.get('[data-chart-map="natal"] [data-testid="planet-hit-Sun"]').attributes()
     expect(toggle.attributes('aria-pressed')).toBe('true')
-    expect(wrapper.get('[data-testid="chart-wheel-svg"]').attributes('viewBox')).toBe('0 0 520 520')
+    expect(wrapper.get('[data-testid="chart-wheel-svg"]').attributes('viewBox')).toBe('-20 -20 560 560')
     expect(wrapper.get('[data-testid="transit-orbit-frame"]').exists()).toBe(true)
     expect(natalSunAfter.cx).toBe(natalSunBefore.cx)
     expect(natalSunAfter.cy).toBe(natalSunBefore.cy)

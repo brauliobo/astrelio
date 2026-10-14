@@ -15,10 +15,9 @@ const selectMode = (mode) => {
 </script>
 
 <template lang="pug">
-.chart-display-mode.flex.flex-wrap.items-center.justify-between.gap-2(data-testid='chart-display-mode')
-  span.text-xs.font-medium.text-slate-400 {{ t('chart.display_mode') }}
-  .inline-flex.flex-wrap.rounded.border(class='border-white/10 bg-slate-950/50 p-0.5')
-    slot
+.chart-display-mode(data-testid='chart-display-mode')
+  slot
+  .chart-display-mode__group(role='group' :aria-label='t("chart.display_mode")')
     button.chart-display-mode__button(
       v-for='mode in modes'
       :key='mode'
@@ -31,45 +30,44 @@ const selectMode = (mode) => {
 </template>
 
 <style scoped>
-.chart-display-mode__button {
-  flex: 0 0 auto;
-  border-radius: 0.1875rem;
-  color: rgb(203 213 225);
-  font-size: 0.75rem;
-  font-weight: 700;
-  line-height: 1;
-  min-height: 2rem;
-  padding: 0.45rem 0.65rem;
-  transition: background-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
-  white-space: nowrap;
+.chart-display-mode {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: space-between;
+  min-width: 0;
 }
 
-.chart-display-mode {
-  min-width: 0;
+.chart-display-mode__group {
+  background: rgb(2 6 23 / 0.5);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 0.5rem;
+  display: inline-flex;
+  margin-left: auto;
+  padding: 0.125rem;
+}
+
+.chart-display-mode__button {
+  border-radius: 0.375rem;
+  color: rgb(203 213 225);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  min-height: 1.875rem;
+  padding: 0 0.75rem;
+  transition: background-color 140ms ease, color 140ms ease;
+  white-space: nowrap;
 }
 
 .chart-display-mode__button:hover,
 .chart-display-mode__button:focus-visible {
-  background: rgb(255 255 255 / 0.1);
+  background: rgb(255 255 255 / 0.08);
   color: rgb(248 250 252);
 }
 
 .chart-display-mode__button.is-active {
   background: rgb(252 211 77);
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.28);
   color: rgb(15 23 42);
-}
-
-.chart-display-mode > div {
-  flex: 1 1 auto;
-  flex-wrap: nowrap;
-  max-width: 100%;
-  min-width: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.chart-display-mode > div::-webkit-scrollbar {
-  display: none;
 }
 </style>
