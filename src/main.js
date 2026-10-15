@@ -7,7 +7,18 @@ import { router } from './router.js'
 import { i18n } from './i18n/index.js'
 import './styles/main.css'
 
-registerSW({ immediate: true })
+const UPDATE_CHECK_MS = 10 * 60 * 1000
+
+// autoUpdate activates and reloads on a new worker, but the browser only looks for one on navigation.
+registerSW({
+  immediate: true,
+  onRegisteredSW(_url, registration) {
+    if (!registration) return
+    const check = () => navigator.onLine && registration.update()
+    setInterval(check, UPDATE_CHECK_MS)
+    document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && check())
+  },
+})
 
 const pinia = createPinia()
 pinia.use(piniaPersist)
