@@ -9,9 +9,12 @@ import NakshatraRing from './wheel/NakshatraRing.vue'
 import TickRing from './wheel/TickRing.vue'
 import Frame from './wheel/Frame.vue'
 import SignAxisLayer from './wheel/SignAxisLayer.vue'
+import TransitAspectLayer from './wheel/TransitAspectLayer.vue'
+import TransitReadout from './wheel/TransitReadout.vue'
 import ZodiacRing from './wheel/ZodiacRing.vue'
-import { CENTER, VIEWBOX_SIZE, WHEEL_RADII, mapsFromProps, norm360 } from './wheel/geometry.js'
+import { CENTER, VIEWBOX_SIZE, WHEEL_RADII, mapPlacements, mapsFromProps, norm360 } from './wheel/geometry.js'
 import { isTropicalChart } from '../../lib/astro/analysis.js'
+import { crossAspects } from '../../lib/astro/aspects.js'
 import { broadcastChartHighlight, CHART_HIGHLIGHT_EVENT, normalizeHighlight, sameHighlight } from '../../lib/chart/highlight.js'
 import { isRadialAlignment, RADIAL_ALIGNMENT } from '../../lib/chart/radialSpacing.js'
 
@@ -75,6 +78,8 @@ const stage                 = ref(null)
 const localDisplayMode      = ref('')
 const isSmallScreen         = ref(false)
 const showExteriorOrbit     = ref(false)
+const transitHover          = ref('')
+const transitPinned         = ref('')
 let smallScreenQuery        = null
 
 const updateSmallScreen = () => {
@@ -88,9 +93,11 @@ const clearHighlightState = () => {
   sharedPinnedHighlight.value = null
   sharedHoverAnchor.value     = null
   sharedPinnedAnchor.value    = null
+  transitHover.value          = ''
+  transitPinned.value         = ''
 }
 
-const maps                   = computed(() => mapsFromProps(props))
+const maps                 = computed(() => mapsFromProps(props))
 const hasExteriorOrbitOption = computed(() => maps.value.some(map => map.exteriorOrbit))
 const visibleMaps            = computed(() =>
   maps.value.filter(map => !map.exteriorOrbit || showExteriorOrbit.value)
@@ -172,6 +179,51 @@ const hasActiveSummary = computed(() =>
   activeBodies.value.length || activeAspectKey.value || activeWheel.value
 )
 
+const natalMap          = computed(() => displayMaps.value.find(map => !map.exteriorOrbit))
+const transitMap        = computed(() => displayMaps.value.find(map => map.exteriorOrbit))
+const placementsFor     = map => mapPlacements(map, displayMaps.value.indexOf(map), displayMaps.value.length, wheelShift.value, props.planetAlignment)
+const natalPlacements   = computed(() => natalMap.value ? placementsFor(natalMap.value) : [])
+const transitPlacements = computed(() => transitMap.value ? placementsFor(transitMap.value) : [])
+const transitAspects    = computed(() =>
+  transitMap.value && displayOptions.value.aspects
+    ? crossAspects(natalMap.value.chart, transitMap.value.chart, props.aspectOptions)
+    : []
+)
+const transitFocusName = computed(() => transitMap.value ? transitHover.value || transitPinned.value : '')
+const crossFocus       = computed(() => {
+  if (!transitMap.value) return null
+  if (transitFocusName.value) return { side: 'b', name: transitFocusName.value }
+  const { bodies = [], aspectKey = '' } = localHighlight.value || {}
+  return bodies.length === 1 && !aspectKey ? { side: 'a', name: bodies[0] } : null
+})
+const focusedAspects = computed(() =>
+  crossFocus.value ? transitAspects.value.filter(aspect => aspect[crossFocus.value.side] === crossFocus.value.name) : []
+)
+const focusPartners  = computed(() => focusedAspects.value.map(aspect => aspect[crossFocus.value.side === 'b' ? 'a' : 'b']))
+const readoutPlanet  = computed(() =>
+  transitFocusName.value && displayOptions.value.pointDetails
+    ? transitMap.value.chart.positions.find(position => position.name === transitFocusName.value)
+    : null
+)
+
+const bodiesFor = (map) => {
+  const own = map.exteriorOrbit ? 'b' : 'a'
+  if (!crossFocus.value) return map.exteriorOrbit ? [] : activeBodies.value
+  if (crossFocus.value.side !== own) return focusPartners.value
+  return map.exteriorOrbit ? [crossFocus.value.name] : activeBodies.value
+}
+
+const toggleTransitPin = (name) => {
+  transitPinned.value = transitPinned.value === name ? '' : name
+  transitHover.value  = ''
+}
+
+const onMapHighlight = (map, payload) =>
+  map.exteriorOrbit ? transitHover.value = payload.bodies?.[0] || '' : setHoverHighlight(payload)
+const onMapClear     = (map) => map.exteriorOrbit ? transitHover.value = '' : clearHoverHighlight()
+const onMapToggle    = (map, payload) =>
+  map.exteriorOrbit ? toggleTransitPin(payload.bodies?.[0] || '') : togglePinnedHighlight(payload)
+
 const broadcastHighlight = (highlight, pinned = false) => {
   broadcastChartHighlight({ highlight, pinned, chart: baseChart.value })
 }
@@ -222,6 +274,8 @@ const selectDisplayMode = (mode) => {
 
 const toggleExteriorOrbit = () => {
   showExteriorOrbit.value = !showExteriorOrbit.value
+  transitHover.value      = ''
+  transitPinned.value     = ''
 }
 
 watch(() => props.displayMode, () => {
@@ -352,16 +406,30 @@ onBeforeUnmount(() => {
         :index='index'
         :count='displayMaps.length'
         :wheel-shift='wheelShift'
-        :highlighted-bodies='activeBodies'
+        :highlighted-bodies='bodiesFor(map)'
         :highlighted-aspect-key='activeAspectKey'
         :highlighted-wheel='activeWheel'
         :sign-axis='activeSignAxis'
         :aspect-options='aspectOptions'
         :glyph-renderer='map.planetGlyphRenderer || planetGlyphRenderer'
         :planet-alignment='planetAlignment'
-        @highlight='setHoverHighlight'
-        @clear-highlight='clearHoverHighlight'
-        @toggle-highlight='togglePinnedHighlight'
+        @highlight='onMapHighlight(map, $event)'
+        @clear-highlight='onMapClear(map)'
+        @toggle-highlight='onMapToggle(map, $event)'
+      )
+      TransitAspectLayer(
+        v-if='transitMap && displayOptions.aspects'
+        :aspects='transitAspects'
+        :natal-placements='natalPlacements'
+        :transit-placements='transitPlacements'
+        :focus='crossFocus'
+        :show-idle='displayOptions.degrees'
+      )
+      TransitReadout(
+        v-if='readoutPlanet'
+        :planet='readoutPlanet'
+        :aspects='focusedAspects'
+        :show-degrees='displayOptions.degrees'
       )
       TickRing(:wheel-shift='wheelShift')
       AngleMarkers(
@@ -467,7 +535,7 @@ onBeforeUnmount(() => {
 }
 
 .chart-wheel[data-show-point-details="false"] [data-testid="planet-layer"] g[data-planet] > line,
-.chart-wheel[data-show-point-details="false"] [data-testid="planet-layer"] g[data-planet] > circle:not(.planet-hit-target) {
+.chart-wheel[data-show-point-details="false"] [data-testid="planet-layer"] g[data-planet] > circle:not(.planet-hit-target):not(.planet-chip) {
   display: none;
 }
 

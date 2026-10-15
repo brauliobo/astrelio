@@ -1430,6 +1430,7 @@
     "no_data": "Sem dados para exibir",
     "summary": "Resumo",
     "transit_orbit": "Trânsitos",
+    "transit_no_aspects": "Sem aspectos ao mapa natal",
     "aspect_grid_natal": "Grade de aspectos natal",
     "aspect_grid_comparison": "Grade de aspectos",
     "aspect_legend": "Aspectos",

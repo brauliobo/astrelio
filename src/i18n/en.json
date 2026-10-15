@@ -1430,6 +1430,7 @@
     "no_data": "No data to display",
     "summary": "Summary",
     "transit_orbit": "Transits",
+    "transit_no_aspects": "No aspects to the natal chart",
     "aspect_grid_natal": "Natal aspect grid",
     "aspect_grid_comparison": "Aspect grid",
     "aspect_legend": "Aspects",

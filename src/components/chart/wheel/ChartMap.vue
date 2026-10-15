@@ -4,7 +4,7 @@ import AspectLayer from './AspectLayer.vue'
 import HouseCusps from './HouseCusps.vue'
 import HouseNumbers from './HouseNumbers.vue'
 import PlanetLayer from './PlanetLayer.vue'
-import { planetBandFor, planetPlacements } from './geometry.js'
+import { mapPlacements } from './geometry.js'
 import { isRadialAlignment, RADIAL_ALIGNMENT } from '../../../lib/chart/radialSpacing.js'
 
 const props = defineProps({
@@ -22,14 +22,8 @@ const props = defineProps({
 })
 const emit = defineEmits(['highlight', 'clear-highlight', 'toggle-highlight'])
 
-const band       = computed(() => planetBandFor(props.map, props.index, props.count))
 const placements = computed(() =>
-  planetPlacements(
-    props.map.chart,
-    props.wheelShift,
-    { ...band.value, alignment: props.planetAlignment },
-    props.map.planetSymbols || undefined
-  )
+  mapPlacements(props.map, props.index, props.count, props.wheelShift, props.planetAlignment)
 )
 </script>
 
@@ -72,7 +66,7 @@ g(:data-chart-map='map.id')
     @toggle-highlight='emit("toggle-highlight", $event)'
   )
   HouseNumbers(
-    v-if='map.showHouseLabels && count === 1'
+    v-if='map.showHouseLabels && (count === 1 || map.planetBand)'
     :cusps='map.chart.cusps'
     :wheel-shift='wheelShift'
     :highlighted-wheel='highlightedWheel'

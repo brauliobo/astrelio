@@ -350,4 +350,52 @@ describe('chart display modes', () => {
     expect(endpointDistance(aspectLine.attributes('x1'), aspectLine.attributes('y1'))).toBeLessThan(WHEEL_RADII.houseOuter)
     expect(endpointDistance(aspectLine.attributes('x2'), aspectLine.attributes('y2'))).toBeLessThan(WHEEL_RADII.houseOuter)
   })
+
+  describe('transit interaction', () => {
+    const transitChart = { ...chart, positions: [position('Sun', 300 + 23 + (49 / 60) + 0.2), position('Moon', 200)] }
+    const mountTransits = async (props = {}) => {
+      const wrapper = mountWheel({ overlay: transitChart, ...props })
+      await wrapper.get('[data-testid="chart-toggle-transit-orbit"]').trigger('click')
+      return wrapper
+    }
+
+    it('keeps house numbers visible with the transit orbit on', async () => {
+      const wrapper = await mountTransits()
+
+      expect(wrapper.find('[data-testid="house-numbers"]').exists()).toBe(true)
+    })
+
+    it('draws tight transit-to-natal aspects and details a hovered transit planet', async () => {
+      const wrapper = await mountTransits()
+      const sun     = () => wrapper.get('[data-chart-map="overlay"] [data-testid="planet-glyph-Sun"]')
+
+      expect(wrapper.find('[data-transit-aspect="Sun-Sun-conjunction"]').attributes('data-active')).toBe('false')
+      expect(wrapper.find('[data-testid="transit-readout"]').exists()).toBe(false)
+
+      await sun().trigger('mouseenter')
+      expect(wrapper.find('[data-transit-aspect="Sun-Sun-conjunction"]').attributes('data-active')).toBe('true')
+      expect(wrapper.get('[data-testid="transit-readout"]').text()).toContain('Sun')
+      expect(wrapper.get('[data-chart-map="natal"] [data-testid="planet-glyph-Sun"]').attributes('data-highlight')).toBe('active')
+
+      await sun().trigger('mouseleave')
+      expect(wrapper.find('[data-testid="transit-readout"]').exists()).toBe(false)
+
+      await sun().trigger('click')
+      expect(wrapper.find('[data-testid="transit-readout"]').exists()).toBe(true)
+      await sun().trigger('click')
+      expect(wrapper.find('[data-testid="transit-readout"]').exists()).toBe(false)
+    })
+
+    it('follows the display mode: no cross aspects in clean, no idle lines without degrees', async () => {
+      const wrapper = await mountTransits()
+
+      await wrapper.get('[data-testid="chart-mode-aspects"]').trigger('click')
+      expect(wrapper.find('[data-transit-aspect]').exists()).toBe(false)
+
+      await wrapper.get('[data-testid="chart-mode-clean"]').trigger('click')
+      expect(wrapper.find('[data-testid="transit-aspect-lines"]').exists()).toBe(false)
+      await wrapper.get('[data-chart-map="overlay"] [data-testid="planet-glyph-Sun"]').trigger('mouseenter')
+      expect(wrapper.find('[data-testid="transit-readout"]').exists()).toBe(false)
+    })
+  })
 })

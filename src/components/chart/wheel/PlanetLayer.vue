@@ -26,8 +26,8 @@ const glyphs = computed(() =>
     const label      = item.labelPoint || { x: glyph.x + 10, y: glyph.y - 9 }
     const symbols    = props.symbols || PLANET_SYMBOLS
     const colors     = props.colors || PLANET_COLORS
-    const color      = props.mapIndex === 0 ? colors[item.planet.name] || props.color : props.color
-    const labelColor = props.mapIndex === 0 ? 'var(--chart-ink)' : props.color
+    const color      = (props.mapIndex === 0 || props.colors) && colors[item.planet.name] || props.color
+    const labelColor = props.mapIndex === 0 ? 'var(--chart-ink)' : color
     const name       = props.labels?.[item.planet.name] || item.planet.displayName || item.planet.name
     const glyphScale = planetGlyphScale(item.planet.name)
     const motion     = motionMarker(item.planet)
@@ -74,7 +74,7 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
     :y1='item.leader.from.y'
     :x2='item.leader.to.x'
     :y2='item.leader.to.y'
-    :stroke='color'
+    :stroke='item.color'
     pointer-events='none'
   )
   g(
@@ -83,6 +83,7 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
     :data-planet='item.planet.name'
     :data-testid='`planet-glyph-${item.planet.name}`'
     :data-highlight='glyphHighlightState(item)'
+    :style='{ "--glyph-color": item.color }'
     :aria-label='`${item.name} ${item.degree} degrees`'
     :aria-pressed='highlightedBodySet.has(item.planet.name)'
     role='button'
@@ -105,6 +106,12 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
       pointer-events='all'
       cursor='pointer'
       :data-testid='`planet-hit-${item.planet.name}`'
+    )
+    circle.planet-chip(
+      v-if='mapIndex > 0'
+      :cx='item.glyph.x'
+      :cy='item.glyph.y'
+      r='12'
     )
     CelestialGlyph(
       mode='svg'
@@ -154,8 +161,26 @@ g(data-testid='planet-layer' font-family='serif' text-anchor='middle')
 
 .planet-leader {
   stroke-linecap: round;
-  stroke-opacity: 0.55;
-  stroke-width: 1;
+  stroke-opacity: 0.8;
+  stroke-width: 1.2;
+}
+
+.planet-chip {
+  fill: color-mix(in srgb, var(--glyph-color) 20%, transparent);
+  stroke: var(--glyph-color);
+  stroke-opacity: 0.9;
+  stroke-width: 1.3;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 140ms ease, filter 140ms ease, fill 140ms ease;
+}
+
+.planet-glyph-group:hover .planet-chip,
+.planet-glyph-group[data-highlight='active'] .planet-chip {
+  fill: color-mix(in srgb, var(--glyph-color) 38%, transparent);
+  filter: drop-shadow(0 0 5px var(--glyph-color));
+  stroke-width: 1.8;
+  transform: scale(1.22);
 }
 
 .planet-degree-label {

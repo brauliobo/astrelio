@@ -51,6 +51,25 @@ export const PLANET_SYMBOLS = {
   Spirit:    '✶',
 }
 
+// Saturated mid-tones that stay readable on both the dark and light chart themes.
+export const TRANSIT_PLANET_COLORS = {
+  Sun:       '#f59e0b',
+  Moon:      '#38bdf8',
+  Mercury:   '#84cc16',
+  Venus:     '#ec4899',
+  Mars:      '#ef4444',
+  Jupiter:   '#f97316',
+  Saturn:    '#8b5cf6',
+  Uranus:    '#06b6d4',
+  Neptune:   '#6366f1',
+  Pluto:     '#d946ef',
+  NorthNode: '#10b981',
+  SouthNode: '#10b981',
+  Lilith:    '#f43f5e',
+  Chiron:    '#14b8a6',
+  Fortune:   '#eab308',
+}
+
 export const PLANET_COLORS = {
   Sun:       'var(--chart-sun-color)',
   Moon:      'var(--chart-ink)',
@@ -237,6 +256,7 @@ export const mapsFromProps = ({ natal, overlay, charts }) => {
       showAspects:     false,
       showAngles:      false,
       exteriorOrbit:   true,
+      planetColors:    TRANSIT_PLANET_COLORS,
       planetBand:      {
         inner:       WHEEL_RADII.transitInner,
         outer:       WHEEL_RADII.transitOuter,
@@ -430,3 +450,11 @@ export const naturalAspectLines = (chart, wheelShift, radius = WHEEL_RADII.aspec
     })
     .filter(line => line.a && line.b)
 }
+
+export const mapPlacements = (map, index, count, wheelShift, alignment) =>
+  planetPlacements(
+    map.chart,
+    wheelShift,
+    { ...planetBandFor(map, index, count), alignment },
+    map.planetSymbols || undefined
+  )
