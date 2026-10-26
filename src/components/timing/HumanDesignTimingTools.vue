@@ -50,6 +50,7 @@ section.grid.gap-4(data-testid='human-design-timing-tools')
     p.text-xs.text-slate-400.mb-3(v-if='transitStatus === "loading"' data-testid='hd-transit-status') {{ t('human_design.loading_transits') }}
     p.text-xs.text-rose-200.mb-3(v-else-if='transitStatus === "error"' data-testid='hd-transit-status') {{ t('human_design.transit_error') }}
     TransitPanel(
+      :chart='chart'
       :transit-chart='transitChart'
       :connection='transitConnection'
       v-model:date-input='transitDateInput'

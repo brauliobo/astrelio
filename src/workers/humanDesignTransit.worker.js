@@ -1,4 +1,5 @@
-import { buildHumanDesignTransitContext } from '../lib/human-design/transit-context.js'
+// The ephemeris module awaits wasm at top level, so the handler is registered first and waits for it.
+const transitContext = import('../lib/human-design/transit-context.js')
 
 const serializeError = error => ({
   name:    error?.name || 'Error',
@@ -6,18 +7,13 @@ const serializeError = error => ({
   stack:   error?.stack || '',
 })
 
-self.onmessage = (event) => {
+self.onmessage = async (event) => {
   const { id, payload } = event.data || {}
 
   try {
-    self.postMessage({
-      id,
-      data: buildHumanDesignTransitContext(payload),
-    })
+    const { buildHumanDesignTransitContext } = await transitContext
+    self.postMessage({ id, data: buildHumanDesignTransitContext(payload) })
   } catch (error) {
-    self.postMessage({
-      id,
-      error: serializeError(error),
-    })
+    self.postMessage({ id, error: serializeError(error) })
   }
 }
