@@ -208,6 +208,14 @@
     "connection_themes": "Temas da conexão",
     "no_defined_channels": "Sem canais definidos",
     "bodygraph_aria": "Bodygraph de Human Design",
+    "bodygraph": {
+      "hint": "As setas movem entre os centros. Enter fixa um centro e abre seus portões, C alterna seus canais, Escape volta um nível.",
+      "both": "Design e Personalidade",
+      "inactive": "Não ativado",
+      "gate_aria": "Portão {gate}, {center}, {state}",
+      "channel_aria": "Canal {channel}, de {from} para {to}, {state}",
+      "center_state_aria": "Centro {center}, {state}"
+    },
     "wheel_aria": "Mandala de Human Design com bodygraph",
     "connection": "Conexão em Human Design",
     "shared_centers": "Centros compartilhados",
@@ -681,9 +689,10 @@
       "emotional": "Emocional",
       "sacral": "Sacral",
       "splenic": "Esplênica",
+      "ego_manifested": "Ego Manifestado",
       "ego_projected": "Ego Projetado",
       "self_projected": "Self Projetado",
-      "sounding_board": "Ambiente",
+      "sounding_board": "Mental / Ambiental",
       "lunar": "Lunar"
     },
     "definitions": {
@@ -757,7 +766,7 @@
     },
     "gate_names": {
       "1": "Autoexpressão",
-      "2": "Saber Superior",
+      "2": "Direção do Self",
       "3": "Ordenação",
       "4": "Formulação",
       "5": "Ritmos Fixos",
@@ -873,7 +882,7 @@
       "Mind": "Mente",
       "Form": "Forma",
       "Bonding": "Vínculo",
-      "Energy": "Energia"
+      "Transformation": "Transformação"
     },
     "layers": {
       "personality": "Personalidade",
@@ -967,7 +976,787 @@
     },
     "planet_activation_summary": "{planet} carrega este portão pela camada de {layer}.",
     "line_activation_summary": "Linha {line}: {role} com ênfase em {keynote}.",
-    "line_lens_summary": "Linha {line}: {role}, {keynote}."
+    "line_lens_summary": "Linha {line}: {role}, {keynote}.",
+    "content": {
+      "types": {
+        "generator": {
+          "aura": "Aberta e envolvente",
+          "strategy": "Esperar para responder",
+          "signature": "Satisfação",
+          "not_self": "Frustração",
+          "summary": "Geradores têm o Sacral definido e nenhuma ligação de motor com a Garganta. O sistema descreve uma força vital sustentável, que rende melhor quando é investida no que desperta uma resposta genuína.",
+          "guidance": "Perceba o que o atrai, comprometa-se onde o seu corpo diz sim e deixe o resto passar sem forçar."
+        },
+        "manifesting_generator": {
+          "aura": "Aberta, envolvente e veloz",
+          "strategy": "Esperar para responder, depois informar",
+          "signature": "Satisfação",
+          "not_self": "Frustração",
+          "summary": "Geradores Manifestantes combinam o Sacral definido com um motor ligado à Garganta. O sistema descreve uma energia rápida e multidirecional, que responde primeiro e depois avança depressa, muitas vezes pulando etapas.",
+          "guidance": "Responda primeiro e depois avise as pessoas afetadas pelo seu movimento. Espere mudar de rumo quando algo deixar de soar certo."
+        },
+        "manifestor": {
+          "aura": "Fechada e iniciadora",
+          "strategy": "Informar antes de agir",
+          "signature": "Paz",
+          "not_self": "Raiva",
+          "summary": "Manifestadores têm um motor ligado à Garganta e o Sacral indefinido. O sistema descreve uma energia iniciadora que age por impulso próprio e costuma encontrar resistência quando os outros são pegos de surpresa.",
+          "guidance": "Antes de agir, diga o que vai fazer. Informar abre caminho e reduz o atrito com quem está por perto."
+        },
+        "projector": {
+          "aura": "Focada e absorvente",
+          "strategy": "Esperar reconhecimento e convite",
+          "signature": "Sucesso",
+          "not_self": "Amargura",
+          "summary": "Projetores têm o Sacral indefinido e nenhum motor ligado à Garganta. O sistema descreve um dom para enxergar pessoas e sistemas com clareza e para orientar, mais do que para fazer de forma contínua.",
+          "guidance": "Ofereça orientações importantes onde for reconhecido e convidado. Descanse com generosidade, pois sua energia não é feita para ser constante."
+        },
+        "reflector": {
+          "aura": "Amostradora e reflexiva",
+          "strategy": "Esperar pelo ciclo lunar",
+          "signature": "Surpresa",
+          "not_self": "Decepção",
+          "summary": "Refletores não têm nenhum centro definido. O sistema descreve alguém que experimenta e espelha as pessoas e os lugares ao redor, e cuja clareza se constrói devagar conforme a Lua percorre toda a roda.",
+          "guidance": "Dê às decisões importantes cerca de um ciclo lunar, converse com pessoas de confiança e escolha seus ambientes com cuidado."
+        }
+      },
+      "authorities": {
+        "emotional": {
+          "how": "A clareza viria com o tempo, conforme a onda emocional sobe e desce, e nunca de um único momento de intensidade.",
+          "practice": "Durma sobre as decisões, espere a onda assentar e observe se a resposta permanece estável."
+        },
+        "sacral": {
+          "how": "As decisões vêm de uma resposta corporal imediata, de intuição visceral, diante de algo concreto, como uma sensação de expansão ou de contração.",
+          "practice": "Faça perguntas de sim ou não, em voz alta ou mentalmente, e observe o som ou a sensação da resposta."
+        },
+        "splenic": {
+          "how": "Um saber silencioso, espontâneo e no momento presente sobre o que é saudável para você. Ele fala uma vez e não se repete.",
+          "practice": "Preste atenção à primeira impressão sutil e aja a partir dela, em vez de esperar que ela volte."
+        },
+        "ego_manifested": {
+          "how": "A força de vontade se expressa pela Garganta. O sistema aponta para o que você realmente quer e está disposto a assumir.",
+          "practice": "Diga em voz alta o que você quer e consegue cumprir, e então informe as pessoas afetadas."
+        },
+        "ego_projected": {
+          "how": "A força de vontade é processada ao conversar com pessoas de confiança. Ouvir a si mesmo falar do que quer revela o que você consegue assumir.",
+          "practice": "Converse sobre uma decisão com alguém de confiança e escute as suas próprias palavras enquanto fala."
+        },
+        "self_projected": {
+          "how": "Identidade e direção ficam claras ao falar em voz alta. A própria voz, e não a resposta de quem ouve, é onde a resposta aparece.",
+          "practice": "Expresse seus pensamentos a alguém de confiança que escute e perceba o que soa verdadeiro para você."
+        },
+        "sounding_board": {
+          "how": "Não há autoridade interna. A clareza surgiria da conversa com pessoas de confiança e da qualidade do ambiente ao redor.",
+          "practice": "Converse sobre as decisões com pessoas de confiança, em ambientes diferentes, e note onde você se sente claro."
+        },
+        "lunar": {
+          "how": "A clareza se constrói devagar ao longo de um ciclo lunar completo, enquanto cada portão da Lua atravessa o mapa indefinido e oferece uma visão diferente.",
+          "practice": "Retome as decisões importantes ao longo de cerca de 28 dias e compare como elas soam conforme o ciclo avança."
+        }
+      },
+      "definitions": {
+        "none": {
+          "summary": "Nenhum centro está definido, o padrão do Refletor. Todos os centros estão abertos ao ambiente, sem uma conexão interna fixa em que se apoiar."
+        },
+        "single": {
+          "summary": "Todos os centros definidos estão ligados em um único grupo, então a energia flui em um circuito autocontido e soa internamente coerente."
+        },
+        "split": {
+          "summary": "Duas áreas definidas separadas não estão ligadas entre si. O sistema sugere buscar pessoas, lugares ou portões que façam a ponte."
+        },
+        "triple_split": {
+          "summary": "Três áreas definidas separadas não estão ligadas entre si. O sistema descreve a necessidade de companhia mais variada e de tempo para se sentir conectado."
+        },
+        "quad_split": {
+          "summary": "Quatro áreas definidas separadas não estão ligadas entre si. O sistema descreve a necessidade de bastante variedade e de tempo para integrar suas diferentes partes."
+        }
+      },
+      "split_size": {
+        "small": "Uma divisão pequena pode ser fechada por portões externos isolados, em geral na companhia de outra pessoa ou de um trânsito.",
+        "large": "Uma divisão grande precisa de um canal externo inteiro para fechar ao menos uma lacuna, então a conexão tende a levar mais tempo ou exigir companhia mais deliberada."
+      },
+      "bridge": {
+        "summary": "Uma ponte é um portão ou canal, vindo de outra pessoa ou de um trânsito, que liga áreas definidas separadas enquanto estiver presente."
+      },
+      "profiles": {
+        "1_3": {
+          "name": "Investigador / Mártir",
+          "summary": "Estuda a fundo para construir uma base sólida de conhecimento e depois a testa na prática. Os erros viram informação, e a combinação tende a um aprendizado resiliente e experiencial."
+        },
+        "1_4": {
+          "name": "Investigador / Oportunista",
+          "summary": "Pesquisa com profundidade e compartilha o que aprende com um círculo próximo. Relações de confiança levam a mensagem, e uma base segura vem antes de se posicionar."
+        },
+        "2_4": {
+          "name": "Eremita / Oportunista",
+          "summary": "Os dons naturais aparecem quando são chamados, e a solitude os restaura. Uma rede familiar tende a reconhecer o talento e abrir portas."
+        },
+        "2_5": {
+          "name": "Eremita / Herege",
+          "summary": "Talentos naturais e reservados, sobre os quais os outros projetam esperanças. Resultados práticos geram confiança, e o recolhimento protege o dom das expectativas externas."
+        },
+        "3_5": {
+          "name": "Mártir / Herege",
+          "summary": "Aprende experimentando e ajustando. O que sobrevive aos experimentos vira sabedoria prática, e os outros podem procurá-lo em busca de soluções."
+        },
+        "3_6": {
+          "name": "Mártir / Modelo",
+          "summary": "Vive muita tentativa e erro antes de ganhar perspectiva. O percurso de vida em três fases transforma experiência em objetividade e orientação mais tarde."
+        },
+        "4_6": {
+          "name": "Oportunista / Modelo",
+          "summary": "Constrói influência por meio dos relacionamentos e passa por três fases de vida. Calor humano e rede vêm primeiro, e uma postura mais observadora e exemplar cresce com o tempo."
+        },
+        "4_1": {
+          "name": "Oportunista / Investigador",
+          "summary": "O único perfil de justaposição. Uma base firme de conhecimento é compartilhada por meio de uma rede familiar, com uma abordagem fixa e constante da vida."
+        },
+        "5_1": {
+          "name": "Herege / Investigador",
+          "summary": "Os outros esperam soluções práticas, e uma base bem pesquisada ajuda a atendê-las. A projeção externa pode pesar, então a confiabilidade importa."
+        },
+        "5_2": {
+          "name": "Herege / Eremita",
+          "summary": "Dons naturais sobre os quais os outros projetam e que procuram. O tempo a sós protege o talento, e entregar na prática constrói confiança."
+        },
+        "6_2": {
+          "name": "Modelo / Eremita",
+          "summary": "Um caminho de vida em três fases, com dons naturais. A observação a certa distância amadurece em orientação, e o recolhimento ajuda a manter a visão clara."
+        },
+        "6_3": {
+          "name": "Modelo / Mártir",
+          "summary": "Um caminho de vida em três fases moldado pela experimentação. A tentativa e erro dos primeiros anos acaba virando orientação objetiva e fundamentada."
+        }
+      },
+      "line_archetypes": {
+        "1": {
+          "name": "Investigador",
+          "summary": "Constrói uma base segura por meio de estudo e preparo. Sentir-se seguro no que se compreende é o tema central da linha."
+        },
+        "2": {
+          "name": "Eremita",
+          "summary": "Talento natural e espontâneo, que tende a ser reconhecido pelos outros. Aparece quando é chamado e precisa de recolhimento para se restaurar."
+        },
+        "3": {
+          "name": "Mártir",
+          "summary": "Aprende por tentativa e erro e se adapta ao que não funciona. A experiência, inclusive os erros, vira conhecimento prático duradouro."
+        },
+        "4": {
+          "name": "Oportunista",
+          "summary": "Conecta-se por meio de uma rede de confiança e de influência compartilhada. As oportunidades tendem a chegar por relações familiares."
+        },
+        "5": {
+          "name": "Herege",
+          "summary": "Encontra projeções e expectativas dos outros. Soluções práticas e universais geram confiança, enquanto expectativas frustradas podem atrair críticas."
+        },
+        "6": {
+          "name": "Modelo",
+          "summary": "Passa da experimentação à observação e à orientação exemplar. Objetividade e perspectiva de longo prazo são a marca da linha."
+        }
+      },
+      "line6_stages": {
+        "trial": {
+          "summary": "Do nascimento até cerca de 30 anos. A vida da linha 6 se parece com a da linha 3: aprender testando, errando e acumulando experiência."
+        },
+        "roof": {
+          "summary": "De cerca de 30 a 50 anos, após o retorno de Saturno. Um subir simbólico ao telhado, observando a vida de longe e com mais objetividade."
+        },
+        "role_model": {
+          "summary": "A partir de cerca de 50 anos, após o retorno de Quíron. O sistema descreve descer do telhado, compartilhar a perspectiva conquistada e viver o que se sabe."
+        }
+      },
+      "centers": {
+        "head": {
+          "biology": "Associado simbolicamente à glândula pineal.",
+          "role": "Pressão para pensar; origem da inspiração e das perguntas.",
+          "defined": "Um jeito estável e consistente de se inspirar e formular perguntas.",
+          "undefined": "Absorve a pressão mental alheia e pode correr atrás de perguntas que não são suas.",
+          "not_self_question": "Estou tentando responder a perguntas que não são minhas?",
+          "healthy": "Sabe quais perguntas valem a pena e deixa o resto de lado."
+        },
+        "ajna": {
+          "biology": "Associado simbolicamente ao hipotálamo e à hipófise.",
+          "role": "Conceitualização: formar opiniões, ideias e estruturas mentais.",
+          "defined": "Um modo fixo e confiável de processar e sustentar ideias.",
+          "undefined": "Pensamento flexível, que experimenta muitos pontos de vista e pode fingir certeza.",
+          "not_self_question": "Estou fingindo ter certeza?",
+          "healthy": "Segura as ideias com leveza e valoriza a liberdade de ver vários lados."
+        },
+        "throat": {
+          "biology": "Associado simbolicamente à tireoide e às paratireoides.",
+          "role": "Expressão e manifestação: onde a energia vira palavra e ação.",
+          "defined": "Um modo consistente e reconhecível de falar e agir.",
+          "undefined": "A expressão varia conforme a companhia e pode buscar atenção.",
+          "not_self_question": "Estou falando ou agindo só para ser notado?",
+          "healthy": "Fala e age quando o momento realmente pede."
+        },
+        "g": {
+          "biology": "Associado simbolicamente ao fígado e ao sangue.",
+          "role": "Identidade, direção e a experiência do amor.",
+          "defined": "Um senso estável de si e de direção.",
+          "undefined": "Identidade e direção mudam com o lugar e a companhia e são sensíveis ao ambiente.",
+          "not_self_question": "Estou forçando uma identidade ou direção em vez de confiar no lugar e nas pessoas certas?",
+          "healthy": "Encontra direção estando no lugar certo, com as pessoas certas."
+        },
+        "ego": {
+          "biology": "Associado simbolicamente ao coração, ao estômago, à vesícula biliar e ao timo.",
+          "role": "Força de vontade, valor e promessas materiais.",
+          "defined": "Uma reserva confiável de vontade para promessas e esforço.",
+          "undefined": "A vontade não é constante, então há um impulso de provar o próprio valor.",
+          "not_self_question": "Tenho algo a provar?",
+          "healthy": "Conhece o próprio valor sem precisar prová-lo."
+        },
+        "solar_plexus": {
+          "biology": "Associado simbolicamente aos rins, ao pâncreas, à próstata, ao sistema nervoso e aos pulmões.",
+          "role": "Emoções e sentimento; ondas de humor que trazem clareza com o tempo.",
+          "defined": "Uma onda emocional que passa por altos e baixos.",
+          "undefined": "Absorve e amplifica as emoções alheias e pode evitar conflitos.",
+          "not_self_question": "Estou evitando uma verdade ou um confronto para manter a paz?",
+          "healthy": "Permanece firme diante de emoções fortes e nomeia a verdade com gentileza."
+        },
+        "spleen": {
+          "biology": "Associado simbolicamente ao baço, ao sistema linfático e às células T.",
+          "role": "Intuição, consciência imediata e senso do que é saudável.",
+          "defined": "Um senso espontâneo e confiável do que é seguro e saudável.",
+          "undefined": "Absorve os medos alheios e se agarra ao que já não serve.",
+          "not_self_question": "Estou me agarrando a algo que não me faz bem?",
+          "healthy": "Solta a tempo e confia no próprio senso do que é bom para si."
+        },
+        "sacral": {
+          "biology": "Associado simbolicamente aos ovários e aos testículos.",
+          "role": "Força vital, vitalidade e capacidade de responder e trabalhar.",
+          "defined": "Uma fonte confiável de energia para o trabalho e a resposta.",
+          "undefined": "A energia é emprestada dos outros e pode ser gasta além do limite.",
+          "not_self_question": "Sei quando já é o bastante?",
+          "healthy": "Sabe quando parar e descansar, tomando energia emprestada sem gastar demais."
+        },
+        "root": {
+          "biology": "Associado simbolicamente às glândulas suprarrenais.",
+          "role": "Pressão de adrenalina e impulso para fazer as coisas acontecerem.",
+          "defined": "Um motor estável de pressão e impulso.",
+          "undefined": "Absorve a urgência alheia e pode se apressar para se livrar da pressão.",
+          "not_self_question": "Estou me apressando para me livrar da pressão?",
+          "healthy": "Lida com a pressão com calma e trabalha no próprio ritmo."
+        }
+      },
+      "center_states": {
+        "defined": {
+          "label": "Definido",
+          "summary": "Ligado por um canal completo, então o centro funciona de modo estável e repetível, familiar e consistente em como você opera."
+        },
+        "undefined": {
+          "label": "Indefinido",
+          "summary": "Tem um portão solto, mas nenhum canal completo. Está aberto ao ambiente e pode ser tanto um canal de condicionamento quanto, com o tempo, de sabedoria."
+        },
+        "open": {
+          "label": "Aberto",
+          "summary": "Nenhum portão está ativado aqui. O centro está totalmente aberto, e o sistema sugere que ele seja especialmente receptivo ao ambiente."
+        }
+      },
+      "variables": {
+        "areas": {
+          "digestion": {
+            "summary": "Lida a partir do Sol do Design e chamada de Determinação. Descreve simbolicamente em que condições o corpo recebe alimento e estímulos sensoriais com conforto."
+          },
+          "environment": {
+            "summary": "Lido a partir do Nodo Norte do Design. Descreve simbolicamente os tipos de ambiente em que o corpo se sente assentado e bem amparado."
+          },
+          "motivation": {
+            "summary": "Lida a partir do Sol da Personalidade e também chamada de Consciência. Descreve o impulso por trás das escolhas e o que mantém você em movimento."
+          },
+          "perspective": {
+            "summary": "Lida a partir do Nodo Norte da Personalidade e também chamada de Visão. Descreve a lente pela qual você enxerga e foca o mundo."
+          }
+        },
+        "colors": {
+          "digestion": {
+            "1": {
+              "summary": "Apetite: como os alimentos são combinados, um de cada vez ou em mistura."
+            },
+            "2": {
+              "summary": "Sabor: como o cenário influencia o comer, de relaxado e aberto a silencioso e controlado."
+            },
+            "3": {
+              "summary": "Sede: a temperatura dos alimentos e bebidas que cai melhor."
+            },
+            "4": {
+              "summary": "Toque: o quanto o cenário da refeição é agitado ou calmo."
+            },
+            "5": {
+              "summary": "Som: o quanto o ambiente é barulhento ou silencioso durante as refeições."
+            },
+            "6": {
+              "summary": "Luz: o quanto o ambiente é claro ou sombreado durante as refeições."
+            }
+          },
+          "environment": {
+            "1": {
+              "summary": "Cavernas: ambientes fechados e abrigados, que dão sensação de privacidade."
+            },
+            "2": {
+              "summary": "Mercados: lugares movimentados de troca e atividade social."
+            },
+            "3": {
+              "summary": "Cozinhas: lugares quentes e domésticos de nutrição e conforto."
+            },
+            "4": {
+              "summary": "Montanhas: lugares elevados e abertos, com vistas amplas."
+            },
+            "5": {
+              "summary": "Vales: lugares baixos e abrigados, cercados pela paisagem."
+            },
+            "6": {
+              "summary": "Costas: lugares na fronteira entre a terra e a água."
+            }
+          },
+          "motivation": {
+            "1": {
+              "summary": "Medo: a cautela e o desejo de segurança moldam as escolhas."
+            },
+            "2": {
+              "summary": "Esperança: esperar um bom desfecho puxa você adiante."
+            },
+            "3": {
+              "summary": "Desejo: um forte anseio ou vontade move você."
+            },
+            "4": {
+              "summary": "Necessidade: a noção do que é necessário impulsiona a ação."
+            },
+            "5": {
+              "summary": "Culpa: um senso de obrigação e responsabilidade põe as coisas em movimento."
+            },
+            "6": {
+              "summary": "Inocência: um impulso aberto e espontâneo move você sem agenda."
+            }
+          },
+          "perspective": {
+            "1": {
+              "summary": "Sobrevivência: enxerga pela lente do que mantém as coisas seguras e sustentáveis."
+            },
+            "2": {
+              "summary": "Possibilidade: enxerga pela lente do que pode acontecer."
+            },
+            "3": {
+              "summary": "Poder: enxerga pela lente de alavancagem e influência."
+            },
+            "4": {
+              "summary": "Querer: enxerga pela lente do que é desejado."
+            },
+            "5": {
+              "summary": "Probabilidade: enxerga pela lente do que é provável."
+            },
+            "6": {
+              "summary": "Pessoal: enxerga pela lente da experiência individual e vivida."
+            }
+          }
+        },
+        "arrows": {
+          "left": {
+            "digestion": {
+              "summary": "Seta esquerda: ativa e focada, com uma abordagem seletiva de como as coisas são recebidas."
+            },
+            "environment": {
+              "summary": "Seta esquerda: ativa e focada, com uma abordagem deliberada na escolha dos ambientes."
+            },
+            "motivation": {
+              "summary": "Seta esquerda: estratégica e focada, impulsionando rumo a um objetivo direto."
+            },
+            "perspective": {
+              "summary": "Seta esquerda: estratégica e focada, com um ponto de vista fixo."
+            }
+          },
+          "right": {
+            "digestion": {
+              "summary": "Seta direita: receptiva e periférica, recebendo o que o cenário oferece."
+            },
+            "environment": {
+              "summary": "Seta direita: receptiva e periférica, aceitando o ambiente como ele vem."
+            },
+            "motivation": {
+              "summary": "Seta direita: receptiva e periférica, movida pelo que aparece."
+            },
+            "perspective": {
+              "summary": "Seta direita: receptiva e periférica, com um campo de visão amplo."
+            }
+          }
+        },
+        "cognition": {
+          "smell": {
+            "name": "Olfato",
+            "summary": "Lê a atmosfera de lugares, pessoas e situações ao sentir o que soa fresco ou fora do lugar."
+          },
+          "taste": {
+            "name": "Paladar",
+            "summary": "Discerne provando, com sensibilidade para qualidade, preferência e o que combina."
+          },
+          "outer_vision": {
+            "name": "Visão Externa",
+            "summary": "Compreende observando o que está diante dos olhos, enxergando padrões no mundo exterior."
+          },
+          "inner_vision": {
+            "name": "Visão Interna",
+            "summary": "Compreende por imagens internas, imaginação e figuras mentais."
+          },
+          "feeling": {
+            "name": "Sentimento",
+            "summary": "Sabe pelo sentir corporal e emocional, percebendo mudanças sutis."
+          },
+          "touch": {
+            "name": "Tato",
+            "summary": "Sabe pelo contato direto e pela experiência física de pessoas e coisas."
+          }
+        },
+        "shorthand": {
+          "note": "O código lista primeiro a Personalidade (Motivação, depois Perspectiva) e depois o Design (Digestão, depois Ambiente). L significa esquerda e R, direita."
+        }
+      },
+      "circuits_info": {
+        "individual": {
+          "summary": "O circuito do empoderamento e da singularidade: pessoas que trazem ideias novas, mudança e a própria voz distinta."
+        },
+        "collective_logic": {
+          "summary": "O circuito do compartilhamento de padrões: preocupado em testar, refinar e transmitir o que funciona."
+        },
+        "collective_abstract": {
+          "summary": "O circuito do compartilhamento de experiência: sentimento, memória e narrativa como modos de aprender com o que foi vivido."
+        },
+        "tribal": {
+          "summary": "O circuito do apoio e da lealdade: cuidar de família, comunidade, recursos e compromissos mútuos."
+        },
+        "knowing": {
+          "summary": "Fluxo individual de saber interior e expressão criativa, muitas vezes chegando como uma contribuição única."
+        },
+        "centering": {
+          "summary": "Fluxo individual de amor-próprio, direção e poder centrado a partir de dentro."
+        },
+        "integration": {
+          "summary": "Fluxo individual de autonomia e consciência do momento presente para permanecer no próprio caminho."
+        },
+        "understanding": {
+          "summary": "Fluxo coletivo de reconhecimento lógico de padrões: compartilhar o que se sustenta e corrigir o que não."
+        },
+        "sensing": {
+          "summary": "Fluxo coletivo de experiência sentida, compartilhada por histórias e reflexões sobre o que aconteceu."
+        },
+        "ego": {
+          "summary": "Fluxo tribal de promessas, recursos e acordos que mantêm uma comunidade unida."
+        },
+        "defense": {
+          "summary": "Fluxo tribal de cuidado, vínculo e proteção do grupo e de seus limites."
+        }
+      },
+      "crosses": {
+        "right_angle": {
+          "summary": "Destino pessoal: o tema de vida é vivido pelo próprio caminho, moldado sobretudo pela experiência própria."
+        },
+        "juxtaposition": {
+          "summary": "Destino fixo, visto apenas no perfil 4/1: um tema consistente, com base estável e pouca variação."
+        },
+        "left_angle": {
+          "summary": "Destino transpessoal: o tema de vida é vivido por meio da interação com outras pessoas."
+        }
+      },
+      "quarters": {
+        "initiation": {
+          "summary": "Primeiro quarto, com o tema Mente: propósito por meio de iniciar, pensar e compreender."
+        },
+        "civilization": {
+          "summary": "Segundo quarto, com o tema Forma: propósito por meio de construir, estruturar e contribuir na prática."
+        },
+        "duality": {
+          "summary": "Terceiro quarto, com o tema Vínculo: propósito por meio das relações e da dança entre dois."
+        },
+        "mutation": {
+          "summary": "Quarto quarto, com o tema Transformação: propósito por meio da mudança, da evolução e da quebra de formas antigas."
+        }
+      },
+      "relationships": {
+        "electromagnetic": {
+          "name": "Eletromagnético",
+          "summary": "Cada pessoa tem um portão diferente do mesmo canal. Juntos vocês o completam, e o sistema associa isso à atração."
+        },
+        "companionship": {
+          "name": "Companheirismo",
+          "summary": "Vocês dois têm o canal inteiro. O sistema associa isso a facilidade compartilhada, familiaridade e um modo parecido de operar."
+        },
+        "compromise": {
+          "name": "Compromisso",
+          "summary": "Uma pessoa tem o canal inteiro e a outra tem um portão dele. O sistema sugere que a segunda se adapte à primeira."
+        },
+        "dominance": {
+          "name": "Dominância",
+          "summary": "Uma pessoa tem o canal inteiro e a outra não tem nenhum dos portões. O sistema associa isso à influência constante de quem tem o canal completo."
+        },
+        "composite": {
+          "summary": "O composto combina os dois mapas para mostrar quais centros e canais ficam definidos juntos. É uma lente simbólica, não um veredicto sobre a relação."
+        }
+      },
+      "cycles": {
+        "saturn_return": {
+          "name": "Retorno de Saturno",
+          "summary": "Por volta dos 29 a 30 anos e de novo perto dos 59. Saturno volta à posição do nascimento, tradicionalmente um momento de rever responsabilidades, estrutura e rumo."
+        },
+        "uranus_opposition": {
+          "name": "Oposição de Urano",
+          "summary": "Por volta dos 42 anos. Urano se opõe à posição do nascimento, tradicionalmente um momento de questionar o caminho e desejar mais liberdade."
+        },
+        "chiron_return": {
+          "name": "Retorno de Quíron",
+          "summary": "Por volta dos 50 anos. Quíron volta à posição do nascimento, tradicionalmente ligado a antigas feridas, sabedoria e à passagem para a terceira fase da vida."
+        },
+        "uranus_return": {
+          "name": "Retorno de Urano",
+          "summary": "Por volta dos 84 anos. Urano completa sua órbita, tradicionalmente visto como o fechamento de um ciclo de vida completo."
+        },
+        "lunar": {
+          "summary": "A Lua percorre os 64 portões em cerca de 28 dias. Refletores acompanham esse ciclo para perceber seus próprios padrões consistentes."
+        }
+      },
+      "sensitivity": {
+        "title": "Sensibilidade ao horário de nascimento",
+        "note": "Um pequeno erro no horário de nascimento pode alterar detalhes rápidos ou refinados. Trate resultados perto de um limite como incertos.",
+        "fields": {
+          "gate": "Um portão dura cerca de 5,6 dias para o Sol, mas corpos rápidos como a Lua mudam de portão em poucas horas.",
+          "line": "As linhas mudam antes dos portões: cerca de um dia para o Sol e menos de duas horas para a Lua.",
+          "color": "As cores mudam a cada poucas horas para o Sol e em minutos para a Lua.",
+          "tone": "Os tons mudam em menos de uma hora para o Sol, então a precisão em minutos importa.",
+          "base": "As bases mudam a cada poucos minutos para o Sol, sendo o detalhe mais sensível ao horário de nascimento.",
+          "profile": "O perfil depende das linhas do Sol, então cruzar o limite de uma linha pode alterá-lo.",
+          "cross": "A cruz de encarnação depende dos portões do Sol e da Terra e do ângulo do perfil.",
+          "type": "O tipo vem de quais canais estão completos, então a mudança de um portão pode alterá-lo.",
+          "authority": "A autoridade segue os centros definidos, então a mudança de um portão pode alterá-la."
+        }
+      }
+    },
+    "ui": {
+      "relations": {
+        "composite_title": "Mapa composto",
+        "holds_whole": "{name} tem o canal inteiro",
+        "no_channels": "Nenhum canal nesta dinâmica.",
+        "centers": {
+          "both": "Ambos definidos",
+          "onlyA": "Só {a}",
+          "onlyB": "Só {b}",
+          "together": "Definido em conjunto",
+          "open": "Aberto para ambos"
+        },
+        "team_owners": "Com {names}"
+      },
+      "timing": {
+        "legend": {
+          "natal": "Natal",
+          "transit": "Trânsito",
+          "both": "Natal e trânsito"
+        },
+        "none": "Nenhum no momento.",
+        "activations": {
+          "title": "Planetas no céu",
+          "hits_natal": "Cai em um dos seus portões"
+        },
+        "hits": {
+          "completed_note": "Um portão em trânsito encontra a outra metade de um dos seus portões pendentes, completando o canal por um dia.",
+          "natal_note": "Os planetas em trânsito estão sobre portões que você carrega no seu mapa."
+        },
+        "conditioning": {
+          "title": "Centros abertos sendo condicionados",
+          "note": "Centros abertos absorvem a energia ao redor. Estes recebem portões em trânsito agora, então o que você sente pode ser emprestado, não seu.",
+          "gates": "Portões {gates}",
+          "none": "Nenhum centro aberto recebe um portão em trânsito agora."
+        },
+        "changes": {
+          "line": "Linha",
+          "gate": "Portão"
+        }
+      },
+      "analysis": {
+        "tablist": "Visões da análise",
+        "tabs": {
+          "centers": "Centros",
+          "channels": "Canais e circuitos",
+          "gates": "Portas e linhas",
+          "profile": "Perfil · Cruz · Variáveis",
+          "cycles": "Ciclos",
+          "sensitivity": "Sensibilidade"
+        },
+        "show_on_chart": "Mostrar no mapa",
+        "more": "Mais",
+        "less": "Menos",
+        "legend": "Estados dos centros",
+        "centers_intro": "Nove centros, agrupados pela função. Centros definidos funcionam do mesmo jeito todos os dias; os indefinidos e abertos são receptivos e moldados pelas pessoas e lugares ao redor.",
+        "center_classes": {
+          "pressure": {
+            "name": "Pressão",
+            "summary": "Impulsionam o pensamento e a ação: de onde vem a pressão para pensar e realizar."
+          },
+          "awareness": {
+            "name": "Percepção",
+            "summary": "Captam o mundo por ideias, instinto e emoção."
+          },
+          "motor": {
+            "name": "Motores",
+            "summary": "Fornecem a energia que move a vida: vitalidade, vontade e emoção."
+          },
+          "expression": {
+            "name": "Expressão",
+            "summary": "Transformam o que há dentro em palavras e ação."
+          },
+          "identity": {
+            "name": "Identidade",
+            "summary": "Sustentam o senso de si, de direção e de amor."
+          }
+        },
+        "also_class": "Também {class}",
+        "gates_held": "{held} de {total} portas",
+        "gates_in_channels": "Portas em canais",
+        "carriers_title": "Portas soltas (portadoras de condicionamento)",
+        "carriers_note": "Ativas aqui sem um canal completo, por isso absorvem e amplificam o condicionamento de outras pessoas.",
+        "not_self_question": "Pergunta do não-self",
+        "healthy": "Expressão saudável",
+        "biology": "Biologia",
+        "channels_intro": "Canais são as conexões entre centros. Cada um une duas portas; o canal está definido quando você tem as duas, e colore o seu jeito consistente de operar.",
+        "defined_channels": "Canais definidos ({n})",
+        "balance_title": "Equilíbrio dos circuitos",
+        "balance_note": "Como seus canais definidos se dividem entre as famílias de circuitos.",
+        "channel_count": "nenhum canal | {n} canal | {n} canais",
+        "area": "Área {n}",
+        "split_small": "Divisão pequena",
+        "split_large": "Divisão grande",
+        "gate_bridges": "Portas que fariam a ponte",
+        "channel_bridges": "Canais que fariam a ponte",
+        "bridge_holds": "você tem a {held} ({who}); ligaria as áreas {areas}",
+        "bridge_needs": "precisa das portas {gates} de fora; ligaria as áreas {areas}",
+        "hanging_note": "Portas que você tem cuja porta parceira falta. Elas buscam completude em outras pessoas e nos trânsitos.",
+        "hanging_needs": "A porta {gate} ({name}) completaria o canal {channel}.",
+        "themes_title": "Temas",
+        "theme_love": "Portas do amor",
+        "theme_love_note": "As portas do centro G ligadas a amor e direção.",
+        "theme_material": "Canais materiais",
+        "theme_material_note": "Canais do circuito tribal do ego ligados a recursos e promessas.",
+        "theme_penta": "Portas da Penta",
+        "theme_penta_note": "Portas que entram na dinâmica de grupo de pequenas equipes.",
+        "gates_intro": "Busque as 64 portas por número, nome ou centro. As portas preenchidas são as do seu mapa.",
+        "filter": "Filtrar portas",
+        "all_centers": "Todos os centros",
+        "all_circuits": "Todos os circuitos",
+        "mode_all": "Todas",
+        "mode_active": "Ativas",
+        "mode_defined": "Em um canal",
+        "mode_hanging": "Soltas",
+        "channel_defined": "Canal definido",
+        "partner_held": "Você tem esta porta",
+        "partner_missing": "Fora do seu mapa",
+        "profile_intro": "Perfil, cruz de encarnação e variáveis descrevem o seu tema de vida e o jeito como corpo e mente estão ajustados para receber o mundo.",
+        "conscious": "Consciente",
+        "unconscious": "Inconsciente",
+        "line6_title": "Fases de vida da linha 6",
+        "stage_trial": "Experimentação",
+        "stage_roof": "O telhado",
+        "stage_role_model": "Modelo de papel",
+        "you_are_here": "Você está aqui",
+        "profile_unlisted": "Esta combinação de linhas não é um dos doze perfis padrão.",
+        "cognition": "Cognição",
+        "transference": "Transferência",
+        "distraction": "Distração",
+        "cycles_intro": "Ciclos planetários que marcam os grandes limiares de uma vida, medidos a partir do seu momento de nascimento.",
+        "cycle_past": "Passou",
+        "cycle_next": "Próximo",
+        "cycle_future": "Depois",
+        "nth_2": "2º",
+        "age": "idade {n}",
+        "years_ago": "há {n} anos",
+        "in_years": "em {n} anos",
+        "also_passes": "Também passa em",
+        "moon_now": "Lua agora",
+        "moon_in": "Lua na porta {gate} · {name}",
+        "moon_next": "Passa para a porta {gate} ({name}) em {when}.",
+        "moon_completes": "Completa com suas portas: {channels}.",
+        "moon_map": "Próximos 28 dias: portas da Lua que completam um canal com você",
+        "variables_note": "Uma cor, tom ou base de uma seta das Variáveis está perto de um limite.",
+        "min_unit": "min",
+        "minutes": "{n} min",
+        "hours": "{n} h",
+        "days": "{n} d",
+        "verdict_stable": "Seus resultados principais se mantêm em ±{minutes} minutos no horário de nascimento.",
+        "verdict_change": "{n} resultado principal pode mudar em ±{minutes} minutos no horário de nascimento. | {n} resultados principais podem mudar em ±{minutes} minutos no horário de nascimento.",
+        "result_profile": "Perfil",
+        "result_cross": "Cruz de encarnação",
+        "result_variables": "Variáveis",
+        "result_gates": "Portas",
+        "result_type": "Tipo e autoridade",
+        "stable": "Estável",
+        "could_change": "Pode mudar",
+        "fine_details": "Detalhes finos",
+        "activations_count": "{n} ativação ao alcance | {n} ativações ao alcance",
+        "level_gate": "Porta",
+        "level_line": "Linha",
+        "level_color": "Cor",
+        "level_tone": "Tom",
+        "level_base": "Base",
+        "closest": "Mais perto de um limite de linha",
+        "line_in": "linha muda em {when}",
+        "gate_in": "porta em {when}"
+      },
+      "shell": {
+        "summary_aria": "Resumo do mapa",
+        "fact_aria": "{label}: {value}. Mostrar a explicação",
+        "signature": "Assinatura",
+        "not_self": "Tema do não-eu",
+        "reset_zoom": "Redefinir zoom",
+        "view_aria": "Visualização do mapa",
+        "bodygraph": "Bodygraph",
+        "mandala": "Mandala",
+        "layers_aria": "Camadas desenhadas no bodygraph",
+        "both": "Ambos",
+        "labels": "Rótulos",
+        "detail": "Cor · Tom · Base",
+        "lists_aria": "Lista de ativações",
+        "activation_aria": "{layer} {planet}, portão {gate} linha {line}",
+        "activation_title": "{layer} {planet}, linha {line}",
+        "panel_aria": "Detalhes da seleção",
+        "pinned": "Fixado",
+        "overview": "Visão geral",
+        "clear": "Limpar",
+        "expand": "Expandir detalhes",
+        "collapse": "Recolher detalhes",
+        "overview_title": "{type} {profile}",
+        "empty_hint": "Selecione um centro, canal ou portão no bodygraph, uma linha das listas ou qualquer item acima para ler o que significa.",
+        "guidance": "Orientação",
+        "aura": "Aura",
+        "strategy": "Estratégia",
+        "practice": "Prática",
+        "when_defined": "Quando definido",
+        "when_open": "Quando aberto",
+        "not_self_question": "Pergunta do não-eu",
+        "healthy": "Expressão saudável",
+        "biology": "Biologia",
+        "hanging_note": "Um portão pendente está ativado mas não tem canal completo, então essa energia não é constante: é um ponto de abertura e condicionamento.",
+        "all_lines": "Todas as seis linhas",
+        "status_defined": "Definido",
+        "status_hanging": "Pendente",
+        "status_open": "Aberto",
+        "channel_defined": "Os dois portões estão ativados, então a energia flui de forma constante entre {from} e {to}.",
+        "channel_hanging": "Só o portão {gate} está ativado. O canal fica incompleto até que outra pessoa ou um trânsito traga o portão {other}.",
+        "channel_open": "Nenhum dos dois portões está ativado neste mapa, então este canal está aberto.",
+        "conscious_line": "Linha consciente {line}",
+        "unconscious_line": "Linha inconsciente {line}",
+        "personalitySun": "Sol da Personalidade",
+        "personalityEarth": "Terra da Personalidade",
+        "designSun": "Sol do Design",
+        "designEarth": "Terra do Design",
+        "area": "Área de definição {n}",
+        "split": "Divisão",
+        "bridges": "Pontes",
+        "bridge_counts": "{gates} pontes de um portão e {channels} pontes de canal completo uniriam essas áreas.",
+        "signature_text": "Tema de assinatura: {value}. É o sentimento que o sistema associa a viver pela sua estratégia e autoridade.",
+        "notSelf_text": "Tema do não-eu: {value}. É o sentimento que o sistema associa a passar por cima da sua estratégia e autoridade. Use como sinal para pausar e reconsiderar, não como veredito.",
+        "variable_code": "Código das variáveis {code}",
+        "circuit_balance": "Equilíbrio dos circuitos",
+        "defined_centers": "{n} de 9 centros definidos",
+        "defined_open": "{defined} definidos, {open} abertos ou indefinidos",
+        "gates_active": "{n} portões ativados",
+        "open_centers": "Centros abertos e indefinidos"
+      }
+    }
   },
   "vedic": {
     "title": "Astrologia védica de {name}",

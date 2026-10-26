@@ -208,6 +208,14 @@
     "connection_themes": "Connection themes",
     "no_defined_channels": "No defined channels",
     "bodygraph_aria": "Human Design bodygraph",
+    "bodygraph": {
+      "hint": "Arrow keys move between centers. Enter pins a center and opens its gates, C cycles its channels, Escape steps back.",
+      "both": "Design and Personality",
+      "inactive": "Not activated",
+      "gate_aria": "Gate {gate}, {center}, {state}",
+      "channel_aria": "Channel {channel}, {from} to {to}, {state}",
+      "center_state_aria": "{center} center, {state}"
+    },
     "wheel_aria": "Human Design mandala wheel with bodygraph",
     "connection": "Human Design connection",
     "shared_centers": "Shared centers",
@@ -681,9 +689,10 @@
       "emotional": "Emotional",
       "sacral": "Sacral",
       "splenic": "Splenic",
+      "ego_manifested": "Ego Manifested",
       "ego_projected": "Ego Projected",
       "self_projected": "Self Projected",
-      "sounding_board": "Sounding Board",
+      "sounding_board": "Mental / Environmental",
       "lunar": "Lunar"
     },
     "definitions": {
@@ -757,7 +766,7 @@
     },
     "gate_names": {
       "1": "Self-Expression",
-      "2": "Higher Knowing",
+      "2": "Direction of the Self",
       "3": "Ordering",
       "4": "Formulization",
       "5": "Fixed Rhythms",
@@ -873,7 +882,7 @@
       "Mind": "Mind",
       "Form": "Form",
       "Bonding": "Bonding",
-      "Energy": "Energy"
+      "Transformation": "Transformation"
     },
     "layers": {
       "personality": "Personality",
@@ -967,7 +976,787 @@
     },
     "planet_activation_summary": "{planet} carries this gate through the {layer} layer.",
     "line_activation_summary": "Line {line}: {role} with {keynote} emphasis.",
-    "line_lens_summary": "Line {line}: {role}, {keynote}."
+    "line_lens_summary": "Line {line}: {role}, {keynote}.",
+    "content": {
+      "types": {
+        "generator": {
+          "aura": "Open and enveloping",
+          "strategy": "Wait to respond",
+          "signature": "Satisfaction",
+          "not_self": "Frustration",
+          "summary": "Generators have a defined Sacral and no motor-to-Throat link. The framework describes sustainable life-force that works best when it is spent on things that draw a genuine response.",
+          "guidance": "Notice what you feel pulled toward, commit where your gut says yes, and let the rest pass without forcing it."
+        },
+        "manifesting_generator": {
+          "aura": "Open, enveloping, and fast-moving",
+          "strategy": "Wait to respond, then inform",
+          "signature": "Satisfaction",
+          "not_self": "Frustration",
+          "summary": "Manifesting Generators combine a defined Sacral with a motor connected to the Throat. The framework describes quick, multi-directional energy that responds first and then moves swiftly, often skipping steps.",
+          "guidance": "Respond first, then tell the people your move affects. Expect to change course when something stops feeling right."
+        },
+        "manifestor": {
+          "aura": "Closed and initiating",
+          "strategy": "Inform before acting",
+          "signature": "Peace",
+          "not_self": "Anger",
+          "summary": "Manifestors have a motor connected to the Throat and an undefined Sacral. The framework describes an initiating energy that acts on its own impulse and often meets resistance when others are caught off guard.",
+          "guidance": "Before you act, say what you are about to do. Informing clears the path and eases friction with people nearby."
+        },
+        "projector": {
+          "aura": "Focused and absorbing",
+          "strategy": "Wait for recognition and invitation",
+          "signature": "Success",
+          "not_self": "Bitterness",
+          "summary": "Projectors have an undefined Sacral and no motor connected to the Throat. The framework describes a gift for seeing others and systems clearly, and for guiding, rather than for sustained doing.",
+          "guidance": "Offer big guidance where you are recognized and invited. Rest generously, since your energy is not meant to be constant."
+        },
+        "reflector": {
+          "aura": "Sampling and reflective",
+          "strategy": "Wait through the lunar cycle",
+          "signature": "Surprise",
+          "not_self": "Disappointment",
+          "summary": "Reflectors have no defined centers. The framework describes someone who samples and mirrors the surrounding people and places, and whose clarity builds slowly as the Moon moves through the whole wheel.",
+          "guidance": "Give major decisions about a lunar cycle of time, talk them through with trusted people, and choose your surroundings with care."
+        }
+      },
+      "authorities": {
+        "emotional": {
+          "how": "Clarity is said to come over time as the emotional wave rises and falls, never from a single moment of intensity.",
+          "practice": "Sleep on decisions, wait for the wave to settle, and notice whether the answer stays steady."
+        },
+        "sacral": {
+          "how": "Decisions come from an immediate, bodily gut response to something in front of you, such as an expansive or a contracting feeling.",
+          "practice": "Ask yes-or-no questions out loud or to yourself and notice the sound or sensation of the answer."
+        },
+        "splenic": {
+          "how": "A quiet, spontaneous, in-the-moment knowing about what is healthy for you. It speaks once and does not repeat itself.",
+          "practice": "Pay attention to the first subtle impression and act on it, rather than waiting for it to come back."
+        },
+        "ego_manifested": {
+          "how": "Willpower speaks through the Throat. The framework points to what you truly want and are willing to commit to.",
+          "practice": "Say out loud what you want and can follow through on, then inform the people it affects."
+        },
+        "ego_projected": {
+          "how": "Willpower is processed by speaking with trusted people. Hearing yourself talk about what you want reveals what you can actually commit to.",
+          "practice": "Talk through a decision with someone you trust and listen to your own words as you speak."
+        },
+        "self_projected": {
+          "how": "Identity and direction become clear by speaking aloud. The voice itself, not the listener's reply, is where the answer shows up.",
+          "practice": "Voice your thoughts to a trusted sounding board and listen for what rings true to you."
+        },
+        "sounding_board": {
+          "how": "There is no inner authority. Clarity is said to emerge from talking with trusted people and from the quality of your surroundings.",
+          "practice": "Discuss decisions with people you trust, in different settings, and notice where you feel clear."
+        },
+        "lunar": {
+          "how": "Clarity builds slowly across a full lunar cycle, as each Moon gate passes through the undefined chart and offers a different view.",
+          "practice": "Revisit major decisions over about 28 days and compare how they feel as the cycle moves."
+        }
+      },
+      "definitions": {
+        "none": {
+          "summary": "No center is defined, which is the Reflector pattern. Every center is open to the surroundings, and there is no fixed internal connection to rely on."
+        },
+        "single": {
+          "summary": "All defined centers are connected in one group, so the energy flows within a single, self-contained circuit and feels internally consistent."
+        },
+        "split": {
+          "summary": "Two separate defined areas are not linked to each other. The framework suggests seeking people, places, or gates that bridge the gap."
+        },
+        "triple_split": {
+          "summary": "Three separate defined areas are not linked to each other. The framework describes a need for more varied company and time to feel connected."
+        },
+        "quad_split": {
+          "summary": "Four separate defined areas are not linked to each other. The framework describes a need for plenty of variety and time to integrate your different parts."
+        }
+      },
+      "split_size": {
+        "small": "A small split can be closed by single outside gates, usually in the company of another person or a passing transit.",
+        "large": "A large split needs a whole outside channel to close at least one gap, so connection tends to take longer or more deliberate company."
+      },
+      "bridge": {
+        "summary": "A bridge is a gate or channel, from another person or a transit, that links separate defined areas for as long as it is present."
+      },
+      "profiles": {
+        "1_3": {
+          "name": "Investigator / Martyr",
+          "summary": "Studies deeply to build a solid base of knowledge, then tests it in practice. Mistakes become information, and the combination tends toward resilient, experiential learning."
+        },
+        "1_4": {
+          "name": "Investigator / Opportunist",
+          "summary": "Researches thoroughly and shares what is learned with a close circle. Trusted relationships carry the message, and a secure foundation matters before speaking out."
+        },
+        "2_4": {
+          "name": "Hermit / Opportunist",
+          "summary": "Natural gifts show up when called on, and solitude restores them. A familiar network tends to recognize the talent and open doors."
+        },
+        "2_5": {
+          "name": "Hermit / Heretic",
+          "summary": "Private, natural talents that others project hopes onto. Practical results earn trust, while retreat protects the gift from outside expectations."
+        },
+        "3_5": {
+          "name": "Martyr / Heretic",
+          "summary": "Learns by experimenting and adjusting. What survives the experiments becomes practical wisdom that others may look to for solutions."
+        },
+        "3_6": {
+          "name": "Martyr / Role Model",
+          "summary": "Lives through bold trial and error before gaining perspective. The three-stage life arc turns experience into objectivity and guidance later on."
+        },
+        "4_6": {
+          "name": "Opportunist / Role Model",
+          "summary": "Builds influence through relationships and moves through three life phases. Warmth and network come first, with a more observant, exemplary stance growing over time."
+        },
+        "4_1": {
+          "name": "Opportunist / Investigator",
+          "summary": "The only juxtaposition profile. A firm foundation of knowledge is shared through a familiar network, with a fixed, steady approach to life."
+        },
+        "5_1": {
+          "name": "Heretic / Investigator",
+          "summary": "Others expect practical solutions, and a well-researched foundation helps meet them. Projection from the outside can be heavy, so reliability matters."
+        },
+        "5_2": {
+          "name": "Heretic / Hermit",
+          "summary": "Natural gifts that others project onto and call upon. Alone time protects the talent, while delivering practically builds trust."
+        },
+        "6_2": {
+          "name": "Role Model / Hermit",
+          "summary": "A three-phase life path with natural gifts. Observation from a little distance matures into guidance, and withdrawal helps keep a clear view."
+        },
+        "6_3": {
+          "name": "Role Model / Martyr",
+          "summary": "A three-phase life path shaped by experimentation. Early trial and error eventually grows into objective, grounded guidance."
+        }
+      },
+      "line_archetypes": {
+        "1": {
+          "name": "Investigator",
+          "summary": "Builds a secure foundation through study and preparation. Feeling safe in what you understand is the line's central theme."
+        },
+        "2": {
+          "name": "Hermit",
+          "summary": "Natural, unforced talent that tends to be recognized by others. It appears when called on and needs withdrawal to restore."
+        },
+        "3": {
+          "name": "Martyr",
+          "summary": "Learns through trial and error and adapts to what does not work. Experience, including mistakes, becomes lasting practical knowledge."
+        },
+        "4": {
+          "name": "Opportunist",
+          "summary": "Connects through a trusted network and shared influence. Opportunities tend to arrive through familiar relationships."
+        },
+        "5": {
+          "name": "Heretic",
+          "summary": "Meets projections and expectations from others. Practical, universal solutions earn trust, while unmet expectations can draw criticism."
+        },
+        "6": {
+          "name": "Role Model",
+          "summary": "Moves from experimentation to observation to exemplary guidance. Objectivity and long perspective are the line's hallmark."
+        }
+      },
+      "line6_stages": {
+        "trial": {
+          "summary": "From birth to about age 30. The line 6 life resembles line 3: learning by trying things, making mistakes, and gathering experience."
+        },
+        "roof": {
+          "summary": "From about 30 to 50, after the Saturn return. A symbolic move onto the roof, observing life from a distance with more objectivity."
+        },
+        "role_model": {
+          "summary": "From about 50, after the Chiron return. The framework describes stepping down from the roof, sharing hard-won perspective, and living what you know."
+        }
+      },
+      "centers": {
+        "head": {
+          "biology": "Symbolically linked to the pineal gland.",
+          "role": "Pressure to think; the source of inspiration and questions.",
+          "defined": "A steady, consistent way of being inspired and posing questions.",
+          "undefined": "Takes in others' mental pressure and may chase questions that are not its own.",
+          "not_self_question": "Am I trying to answer questions that are not mine?",
+          "healthy": "Knows which questions are worth pursuing and lets the rest go."
+        },
+        "ajna": {
+          "biology": "Symbolically linked to the hypothalamus and pituitary.",
+          "role": "Conceptualizing: forming opinions, ideas, and mental frameworks.",
+          "defined": "A fixed, reliable way of processing and holding ideas.",
+          "undefined": "Flexible thinking that can try on many views, and may pretend to be certain.",
+          "not_self_question": "Am I pretending to be certain?",
+          "healthy": "Holds ideas lightly and values the freedom to see many sides."
+        },
+        "throat": {
+          "biology": "Symbolically linked to the thyroid and parathyroid.",
+          "role": "Expression and manifestation: where energy becomes words and action.",
+          "defined": "A consistent, recognizable way of speaking and acting.",
+          "undefined": "Expression varies with company and may reach for attention.",
+          "not_self_question": "Am I speaking or acting just to be noticed?",
+          "healthy": "Speaks and acts when the moment genuinely calls for it."
+        },
+        "g": {
+          "biology": "Symbolically linked to the liver and blood.",
+          "role": "Identity, direction, and the experience of love.",
+          "defined": "A steady sense of self and direction.",
+          "undefined": "Identity and direction shift with place and company and are sensitive to surroundings.",
+          "not_self_question": "Am I forcing an identity or a direction instead of trusting the right place and people?",
+          "healthy": "Finds direction through being in the right place with the right people."
+        },
+        "ego": {
+          "biology": "Symbolically linked to the heart, stomach, gallbladder, and thymus.",
+          "role": "Willpower, value, and material promises.",
+          "defined": "A reliable pool of willpower for promises and effort.",
+          "undefined": "Willpower is not consistent, so there is a pull to prove worth.",
+          "not_self_question": "Do I have something to prove?",
+          "healthy": "Knows its worth without needing to prove it."
+        },
+        "solar_plexus": {
+          "biology": "Symbolically linked to the kidneys, pancreas, prostate, nervous system, and lungs.",
+          "role": "Emotions and feeling; waves of mood that bring clarity over time.",
+          "defined": "An emotional wave that moves through highs and lows.",
+          "undefined": "Absorbs and amplifies others' emotions and may avoid conflict.",
+          "not_self_question": "Am I avoiding a truth or a confrontation to keep the peace?",
+          "healthy": "Stays steady around strong emotions and can name truth gently."
+        },
+        "spleen": {
+          "biology": "Symbolically linked to the spleen, lymph, and T-cells.",
+          "role": "Intuition, immediate awareness, and a sense of what is healthy.",
+          "defined": "A spontaneous, reliable sense of what is safe and healthy.",
+          "undefined": "Takes in others' fears and holds on to what no longer serves.",
+          "not_self_question": "Am I holding on to something that is not good for me?",
+          "healthy": "Lets go in time and trusts its own sense of what is good for it."
+        },
+        "sacral": {
+          "biology": "Symbolically linked to the ovaries and testes.",
+          "role": "Life force, vitality, and the capacity to respond and work.",
+          "defined": "A dependable source of energy for work and response.",
+          "undefined": "Energy is borrowed from others and may be spent past its limit.",
+          "not_self_question": "Do I know when enough is enough?",
+          "healthy": "Knows when to stop and rest, borrowing energy without overspending it."
+        },
+        "root": {
+          "biology": "Symbolically linked to the adrenals.",
+          "role": "Adrenaline pressure and the drive to get things done.",
+          "defined": "A steady engine of pressure and momentum.",
+          "undefined": "Takes in others' urgency and may rush to be free of pressure.",
+          "not_self_question": "Am I rushing to get rid of pressure?",
+          "healthy": "Handles pressure calmly and works at its own pace."
+        }
+      },
+      "center_states": {
+        "defined": {
+          "label": "Defined",
+          "summary": "Connected by a complete channel, so the center works in a steady, repeatable way that feels familiar and is a consistent part of how you operate."
+        },
+        "undefined": {
+          "label": "Undefined",
+          "summary": "Has a hanging gate but no complete channel. It is open to the surroundings, and it can be a carrier of conditioning and, with time, of wisdom."
+        },
+        "open": {
+          "label": "Open",
+          "summary": "No gate is activated here at all. The center is fully open, and the framework suggests it is especially receptive to its surroundings."
+        }
+      },
+      "variables": {
+        "areas": {
+          "digestion": {
+            "summary": "Read from the Design Sun and called Determination. Symbolically describes the conditions under which the body takes in food and sensory input comfortably."
+          },
+          "environment": {
+            "summary": "Read from the Design North Node. Symbolically describes the kinds of surroundings in which the body feels settled and well supported."
+          },
+          "motivation": {
+            "summary": "Read from the Personality Sun and also called Awareness. Describes the underlying driver behind choices and what keeps you moving."
+          },
+          "perspective": {
+            "summary": "Read from the Personality North Node and also called View. Describes the lens through which you see and focus on the world."
+          }
+        },
+        "colors": {
+          "digestion": {
+            "1": {
+              "summary": "Appetite: how foods are combined, either one thing at a time or in a mix."
+            },
+            "2": {
+              "summary": "Taste: how the setting shapes eating, from relaxed and open to quiet and controlled."
+            },
+            "3": {
+              "summary": "Thirst: the temperature of food and drink that feels best."
+            },
+            "4": {
+              "summary": "Touch: how busy or calm the eating setting is."
+            },
+            "5": {
+              "summary": "Sound: how loud or quiet the surroundings are at meals."
+            },
+            "6": {
+              "summary": "Light: how bright or shaded the surroundings are while eating."
+            }
+          },
+          "environment": {
+            "1": {
+              "summary": "Caves: enclosed, sheltered surroundings that give a sense of privacy."
+            },
+            "2": {
+              "summary": "Markets: busy places of exchange and social activity."
+            },
+            "3": {
+              "summary": "Kitchens: warm, domestic places of nourishment and comfort."
+            },
+            "4": {
+              "summary": "Mountains: elevated, open places with wide views."
+            },
+            "5": {
+              "summary": "Valleys: low-lying, sheltered places surrounded by landscape."
+            },
+            "6": {
+              "summary": "Shores: places at the border between land and water."
+            }
+          },
+          "motivation": {
+            "1": {
+              "summary": "Fear: caution and the wish for safety shape choices."
+            },
+            "2": {
+              "summary": "Hope: expecting a good outcome draws you forward."
+            },
+            "3": {
+              "summary": "Desire: a strong wish or craving moves you."
+            },
+            "4": {
+              "summary": "Need: a sense of what is necessary drives action."
+            },
+            "5": {
+              "summary": "Guilt: a sense of obligation and responsibility sets things in motion."
+            },
+            "6": {
+              "summary": "Innocence: an open, unselfconscious drive moves you without agenda."
+            }
+          },
+          "perspective": {
+            "1": {
+              "summary": "Survival: sees through the lens of what keeps things safe and sustainable."
+            },
+            "2": {
+              "summary": "Possibility: sees through the lens of what could happen."
+            },
+            "3": {
+              "summary": "Power: sees through the lens of leverage and influence."
+            },
+            "4": {
+              "summary": "Wanting: sees through the lens of what is desired."
+            },
+            "5": {
+              "summary": "Probability: sees through the lens of what is likely to happen."
+            },
+            "6": {
+              "summary": "Personal: sees through the lens of individual, lived experience."
+            }
+          }
+        },
+        "arrows": {
+          "left": {
+            "digestion": {
+              "summary": "Left arrow: active and focused, with a selective approach to how things are taken in."
+            },
+            "environment": {
+              "summary": "Left arrow: active and focused, with a deliberate approach to choosing surroundings."
+            },
+            "motivation": {
+              "summary": "Left arrow: strategic and focused, driving toward a direct aim."
+            },
+            "perspective": {
+              "summary": "Left arrow: strategic and focused, with a fixed point of view."
+            }
+          },
+          "right": {
+            "digestion": {
+              "summary": "Right arrow: receptive and peripheral, taking in what the setting provides."
+            },
+            "environment": {
+              "summary": "Right arrow: receptive and peripheral, taking the surroundings as they come."
+            },
+            "motivation": {
+              "summary": "Right arrow: receptive and peripheral, moved by what comes along."
+            },
+            "perspective": {
+              "summary": "Right arrow: receptive and peripheral, with a wide field of view."
+            }
+          }
+        },
+        "cognition": {
+          "smell": {
+            "name": "Smell",
+            "summary": "Reads the atmosphere of places, people, and situations by sensing what feels fresh or off."
+          },
+          "taste": {
+            "name": "Taste",
+            "summary": "Discerns by sampling, with a feel for quality, preference, and what suits."
+          },
+          "outer_vision": {
+            "name": "Outer Vision",
+            "summary": "Understands by observing what is in front of the eyes, seeing patterns in the outer world."
+          },
+          "inner_vision": {
+            "name": "Inner Vision",
+            "summary": "Understands through inner images, imagination, and mental pictures."
+          },
+          "feeling": {
+            "name": "Feeling",
+            "summary": "Knows through bodily and emotional sensing, picking up on subtle shifts."
+          },
+          "touch": {
+            "name": "Touch",
+            "summary": "Knows through direct contact and physical experience of people and things."
+          }
+        },
+        "shorthand": {
+          "note": "The code lists Personality first (Motivation, then Perspective), then Design (Digestion, then Environment). L stands for left and R for right."
+        }
+      },
+      "circuits_info": {
+        "individual": {
+          "summary": "The circuit of empowerment and uniqueness: people who bring new ideas, change, and their own distinctive voice."
+        },
+        "collective_logic": {
+          "summary": "The circuit of sharing patterns: concerned with testing, refining, and passing on what works."
+        },
+        "collective_abstract": {
+          "summary": "The circuit of sharing experience: feeling, memory, and storytelling as ways to learn from what has been lived."
+        },
+        "tribal": {
+          "summary": "The circuit of support and loyalty: caring for family, community, resources, and mutual commitments."
+        },
+        "knowing": {
+          "summary": "Individual stream of inner knowing and creative expression, often arriving as a unique contribution."
+        },
+        "centering": {
+          "summary": "Individual stream of self-love, direction, and centered power from within."
+        },
+        "integration": {
+          "summary": "Individual stream of self-reliance and present-time awareness for staying on your own path."
+        },
+        "understanding": {
+          "summary": "Collective stream of logical pattern recognition: sharing what holds up and correcting what does not."
+        },
+        "sensing": {
+          "summary": "Collective stream of felt experience, shared through stories and reflections on what happened."
+        },
+        "ego": {
+          "summary": "Tribal stream of promises, resources, and bargains that hold a community together."
+        },
+        "defense": {
+          "summary": "Tribal stream of care, bonding, and protection of the group and its boundaries."
+        }
+      },
+      "crosses": {
+        "right_angle": {
+          "summary": "Personal destiny: the life theme is lived through your own path, mostly shaped by your own experience."
+        },
+        "juxtaposition": {
+          "summary": "Fixed destiny, seen only in the 4/1 profile: a consistent theme with a stable footing and little variation."
+        },
+        "left_angle": {
+          "summary": "Transpersonal destiny: the life theme is lived through interactions with other people."
+        }
+      },
+      "quarters": {
+        "initiation": {
+          "summary": "First quarter, themed around Mind: purpose through initiating, thinking, and understanding."
+        },
+        "civilization": {
+          "summary": "Second quarter, themed around Form: purpose through building, structure, and practical contribution."
+        },
+        "duality": {
+          "summary": "Third quarter, themed around Bonding: purpose through relationships and the dance between two."
+        },
+        "mutation": {
+          "summary": "Fourth quarter, themed around Transformation: purpose through change, evolution, and breaking old forms."
+        }
+      },
+      "relationships": {
+        "electromagnetic": {
+          "name": "Electromagnetic",
+          "summary": "Each person holds a different gate of the same channel. Together you complete it, and the framework links this to attraction."
+        },
+        "companionship": {
+          "name": "Companionship",
+          "summary": "You both hold the full channel. The framework links this to shared ease, familiarity, and a similar way of operating."
+        },
+        "compromise": {
+          "name": "Compromise",
+          "summary": "One person has the whole channel and the other holds one gate of it. The framework suggests the second adapts to the first."
+        },
+        "dominance": {
+          "name": "Dominance",
+          "summary": "One person has the whole channel and the other has neither gate. The framework links this to the full-channel person's steady influence."
+        },
+        "composite": {
+          "summary": "The composite combines both charts to show which centers and channels are defined together. It is a symbolic lens, not a verdict on the relationship."
+        }
+      },
+      "cycles": {
+        "saturn_return": {
+          "name": "Saturn Return",
+          "summary": "Around ages 29 to 30 and again near 59. Saturn returns to its birth position, traditionally a time to review responsibilities, structure, and direction."
+        },
+        "uranus_opposition": {
+          "name": "Uranus Opposition",
+          "summary": "Around age 42. Uranus opposes its birth position, traditionally a time of questioning the path and wanting more freedom."
+        },
+        "chiron_return": {
+          "name": "Chiron Return",
+          "summary": "Around age 50. Chiron returns to its birth position, traditionally linked to old wounds, wisdom, and the move into the third life phase."
+        },
+        "uranus_return": {
+          "name": "Uranus Return",
+          "summary": "Around age 84. Uranus completes its orbit, traditionally seen as the close of a full life cycle."
+        },
+        "lunar": {
+          "summary": "The Moon travels through all 64 gates in about 28 days. Reflectors follow this cycle to see their own consistent patterns."
+        }
+      },
+      "sensitivity": {
+        "title": "Birth time sensitivity",
+        "note": "A small error in the birth time can change fast-moving or fine-grained details. Treat results near a boundary as uncertain.",
+        "fields": {
+          "gate": "A gate lasts about 5.6 days for the Sun, but fast bodies like the Moon change gates within hours.",
+          "line": "Line changes come sooner than gate changes: roughly a day for the Sun, under two hours for the Moon.",
+          "color": "Color changes come every few hours for the Sun, and within minutes for the Moon.",
+          "tone": "Tone changes occur in under an hour for the Sun, so minute-level accuracy matters.",
+          "base": "Base changes occur every few minutes for the Sun, so it is the most birth-time-sensitive detail.",
+          "profile": "The profile depends on the Sun lines, so a line boundary crossing can change it.",
+          "cross": "The incarnation cross depends on the Sun and Earth gates and the profile angle.",
+          "type": "The type comes from which channels are complete, so a gate change can shift it.",
+          "authority": "The authority follows the defined centers, so a gate change can alter it."
+        }
+      }
+    },
+    "ui": {
+      "relations": {
+        "composite_title": "Composite chart",
+        "holds_whole": "{name} holds the whole channel",
+        "no_channels": "No channels in this dynamic.",
+        "centers": {
+          "both": "Both defined",
+          "onlyA": "Only {a}",
+          "onlyB": "Only {b}",
+          "together": "Defined together",
+          "open": "Open for both"
+        },
+        "team_owners": "Held by {names}"
+      },
+      "timing": {
+        "legend": {
+          "natal": "Natal",
+          "transit": "Transit",
+          "both": "Natal and transit"
+        },
+        "none": "None right now.",
+        "activations": {
+          "title": "Planets in the sky",
+          "hits_natal": "Lands on one of your gates"
+        },
+        "hits": {
+          "completed_note": "A transiting gate meets the other half of one of your hanging gates, so the channel is complete for the day.",
+          "natal_note": "Transiting planets are on gates you carry in your chart."
+        },
+        "conditioning": {
+          "title": "Open centers being conditioned",
+          "note": "Open centers take in the energy around them. These receive transit gates now, so the feeling may be borrowed rather than yours.",
+          "gates": "Gates {gates}",
+          "none": "No open center receives a transit gate right now."
+        },
+        "changes": {
+          "line": "Line",
+          "gate": "Gate"
+        }
+      },
+      "analysis": {
+        "tablist": "Analysis views",
+        "tabs": {
+          "centers": "Centers",
+          "channels": "Channels & Circuits",
+          "gates": "Gates & Lines",
+          "profile": "Profile · Cross · Variables",
+          "cycles": "Cycles",
+          "sensitivity": "Sensitivity"
+        },
+        "show_on_chart": "Show on chart",
+        "more": "More",
+        "less": "Less",
+        "legend": "Center states",
+        "centers_intro": "Nine centers, grouped by what they do. Defined centers work the same way every day; undefined and open ones are receptive and shaped by the people and places around you.",
+        "center_classes": {
+          "pressure": {
+            "name": "Pressure",
+            "summary": "Drive thoughts and action: where the push to think and to get things done comes from."
+          },
+          "awareness": {
+            "name": "Awareness",
+            "summary": "Take in the world through ideas, instinct and feeling."
+          },
+          "motor": {
+            "name": "Motors",
+            "summary": "Supply the energy that moves life along: vitality, will and emotion."
+          },
+          "expression": {
+            "name": "Expression",
+            "summary": "Turn what is inside into words and action."
+          },
+          "identity": {
+            "name": "Identity",
+            "summary": "Hold the sense of self, direction and love."
+          }
+        },
+        "also_class": "Also {class}",
+        "gates_held": "{held} of {total} gates",
+        "gates_in_channels": "Gates in channels",
+        "carriers_title": "Hanging gates (conditioning carriers)",
+        "carriers_note": "Active here without a complete channel, so they take in and amplify conditioning from other people.",
+        "not_self_question": "Not-self question",
+        "healthy": "Healthy expression",
+        "biology": "Biology",
+        "channels_intro": "Channels are the connections between centers. Each one pairs two gates; a channel is defined when you hold both, and it colors how you consistently operate.",
+        "defined_channels": "Defined channels ({n})",
+        "balance_title": "Circuit balance",
+        "balance_note": "How your defined channels are shared between the circuit families.",
+        "channel_count": "no channels | {n} channel | {n} channels",
+        "area": "Area {n}",
+        "split_small": "Small split",
+        "split_large": "Large split",
+        "gate_bridges": "Gates that would bridge",
+        "channel_bridges": "Channels that would bridge",
+        "bridge_holds": "you hold {held} ({who}); it would link areas {areas}",
+        "bridge_needs": "needs gates {gates} from outside; it would link areas {areas}",
+        "hanging_note": "Gates you hold whose partner gate is missing. They look for completion in other people and in transits.",
+        "hanging_needs": "Gate {gate} ({name}) would complete channel {channel}.",
+        "themes_title": "Themes",
+        "theme_love": "Love gates",
+        "theme_love_note": "The G center gates linked to love and direction.",
+        "theme_material": "Material channels",
+        "theme_material_note": "Channels of the ego tribal circuit linked to resources and promises.",
+        "theme_penta": "Penta gates",
+        "theme_penta_note": "Gates that play into the group dynamic of small teams.",
+        "gates_intro": "Search the 64 gates by number, name or center. Filled gates are the ones in your chart.",
+        "filter": "Filter gates",
+        "all_centers": "All centers",
+        "all_circuits": "All circuits",
+        "mode_all": "All",
+        "mode_active": "Active",
+        "mode_defined": "In a channel",
+        "mode_hanging": "Hanging",
+        "channel_defined": "Channel defined",
+        "partner_held": "You hold this gate",
+        "partner_missing": "Not in your chart",
+        "profile_intro": "Profile, incarnation cross and variables describe your life theme and the way your body and mind are wired to take in the world.",
+        "conscious": "Conscious",
+        "unconscious": "Unconscious",
+        "line6_title": "Line 6 life stages",
+        "stage_trial": "Trial",
+        "stage_roof": "The roof",
+        "stage_role_model": "Role model",
+        "you_are_here": "You are here",
+        "profile_unlisted": "This combination of lines is not one of the twelve standard profiles.",
+        "cognition": "Cognition",
+        "transference": "Transference",
+        "distraction": "Distraction",
+        "cycles_intro": "Planetary cycles that mark the major thresholds of a life, measured from your birth moment.",
+        "cycle_past": "Passed",
+        "cycle_next": "Next",
+        "cycle_future": "Later",
+        "nth_2": "2nd",
+        "age": "age {n}",
+        "years_ago": "{n} years ago",
+        "in_years": "in {n} years",
+        "also_passes": "Also passes on",
+        "moon_now": "Moon right now",
+        "moon_in": "Moon in gate {gate} · {name}",
+        "moon_next": "Moves into gate {gate} ({name}) on {when}.",
+        "moon_completes": "Completes with your gates: {channels}.",
+        "moon_map": "Next 28 days: Moon gates that complete a channel with you",
+        "variables_note": "A color, tone or base of a Variable arrow sits close to a boundary.",
+        "min_unit": "min",
+        "minutes": "{n} min",
+        "hours": "{n} h",
+        "days": "{n} d",
+        "verdict_stable": "Your headline results hold within ±{minutes} minutes of birth time.",
+        "verdict_change": "{n} headline result could change within ±{minutes} minutes of birth time. | {n} headline results could change within ±{minutes} minutes of birth time.",
+        "result_profile": "Profile",
+        "result_cross": "Incarnation cross",
+        "result_variables": "Variables",
+        "result_gates": "Gates",
+        "result_type": "Type and authority",
+        "stable": "Stable",
+        "could_change": "Could change",
+        "fine_details": "Fine details",
+        "activations_count": "{n} activation within reach | {n} activations within reach",
+        "level_gate": "Gate",
+        "level_line": "Line",
+        "level_color": "Color",
+        "level_tone": "Tone",
+        "level_base": "Base",
+        "closest": "Closest to a line boundary",
+        "line_in": "line changes within {when}",
+        "gate_in": "gate within {when}"
+      },
+      "shell": {
+        "summary_aria": "Chart summary",
+        "fact_aria": "{label}: {value}. Show the explanation",
+        "signature": "Signature",
+        "not_self": "Not-self theme",
+        "reset_zoom": "Reset zoom",
+        "view_aria": "Chart view",
+        "bodygraph": "Bodygraph",
+        "mandala": "Mandala",
+        "layers_aria": "Layers drawn on the bodygraph",
+        "both": "Both",
+        "labels": "Labels",
+        "detail": "Color · Tone · Base",
+        "lists_aria": "Activation list",
+        "activation_aria": "{layer} {planet}, gate {gate} line {line}",
+        "activation_title": "{layer} {planet}, line {line}",
+        "panel_aria": "Selection details",
+        "pinned": "Pinned",
+        "overview": "Overview",
+        "clear": "Clear",
+        "expand": "Expand details",
+        "collapse": "Collapse details",
+        "overview_title": "{type} {profile}",
+        "empty_hint": "Select a center, channel or gate on the bodygraph, a row in the lists or any fact above to read what it means.",
+        "guidance": "Guidance",
+        "aura": "Aura",
+        "strategy": "Strategy",
+        "practice": "Practice",
+        "when_defined": "When defined",
+        "when_open": "When open",
+        "not_self_question": "Not-self question",
+        "healthy": "Healthy expression",
+        "biology": "Biology",
+        "hanging_note": "A hanging gate is activated but has no complete channel, so that energy is not steady: it is a point of openness and conditioning.",
+        "all_lines": "All six lines",
+        "status_defined": "Defined",
+        "status_hanging": "Hanging",
+        "status_open": "Open",
+        "channel_defined": "Both gates are activated, so energy flows steadily between {from} and {to}.",
+        "channel_hanging": "Only gate {gate} is activated. The channel stays incomplete until another person or a transit supplies gate {other}.",
+        "channel_open": "Neither gate is activated in this chart, so this channel is open.",
+        "conscious_line": "Conscious line {line}",
+        "unconscious_line": "Unconscious line {line}",
+        "personalitySun": "Personality Sun",
+        "personalityEarth": "Personality Earth",
+        "designSun": "Design Sun",
+        "designEarth": "Design Earth",
+        "area": "Definition area {n}",
+        "split": "Split",
+        "bridges": "Bridges",
+        "bridge_counts": "{gates} single-gate bridges and {channels} full-channel bridges would join these areas.",
+        "signature_text": "Signature theme: {value}. It is the feeling the framework associates with living by your strategy and authority.",
+        "notSelf_text": "Not-self theme: {value}. It is the feeling the framework associates with overriding your strategy and authority. Treat it as a cue to pause and reconsider, not as a verdict.",
+        "variable_code": "Variable code {code}",
+        "circuit_balance": "Circuit balance",
+        "defined_centers": "{n} of 9 centers defined",
+        "defined_open": "{defined} defined, {open} open or undefined",
+        "gates_active": "{n} gates activated",
+        "open_centers": "Open and undefined centers"
+      }
+    }
   },
   "vedic": {
     "title": "Vedic astrology for {name}",
