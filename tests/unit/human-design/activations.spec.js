@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { activationCode, activationFromLongitude } from '../../../src/lib/human-design/activations.js'
-import { buildHumanDesignChart } from '../../../src/lib/human-design/bodygraph.js'
+import { computeChart } from '../../../src/lib/astro/ephemeris.js'
+import { activationCode, activationFromLongitude, activationsForChart, hdActivationAt } from '../../../src/lib/human-design/activations.js'
+import { buildHumanDesignChart, buildHumanDesignTransitChart, humanDesignTransitConnection } from '../../../src/lib/human-design/bodygraph.js'
+import { HD_PLANETS } from '../../../src/lib/human-design/constants.js'
 
 const referencePerson = {
   id:              'ref-person',
@@ -44,5 +46,53 @@ describe('Human Design activations', () => {
     expect(chart.authority).toBe('Emotional')
     expect(chart.profile).toBe('6 / 2')
     expect(chart.definition).toBe('Triple Split Definition')
+  })
+
+  it('derives the reference chart topology from the gate graph', () => {
+    const chart = buildHumanDesignChart(referencePerson)
+
+    expect(chart.gates).toEqual([...chart.gates].sort((a, b) => a - b))
+    expect(chart.centers).toEqual(['Ego', 'G', 'Root', 'Sacral', 'Solar Plexus', 'Spleen'])
+    expect(chart.definitionAreas).toHaveLength(3)
+    expect(chart.splitSize).toBe('small')
+    expect(chart.bridges.gates.map(bridge => bridge.gate)).toEqual(expect.arrayContaining([52, 57, 18, 50, 38]))
+    expect(chart.motorsToThroat).toEqual([])
+    expect([chart.strategy, chart.signature, chart.notSelfTheme]).toEqual(['Wait to respond', 'Satisfaction', 'Frustration'])
+    expect(chart.details.gates.find(gate => gate.gate === 14).center).toBe('Sacral')
+    expect(chart.details.gates.find(gate => gate.gate === 4).center).toBe('Ajna')
+  })
+})
+
+describe('Human Design next activation changes', () => {
+  const dateMs  = Date.UTC(2026, 0, 1, 12)
+  const transit = buildHumanDesignTransitChart(dateMs, 0, 0)
+
+  it('computes single-body activations identical to the full chart', () => {
+    const full = activationsForChart(computeChart(transit.birthJd, 0, 0, { zodiac: 'tropical', houseSystem: 'whole_sign', nodeMode: 'true' }))
+
+    for (const planet of HD_PLANETS) expect(activationCode(hdActivationAt(planet, transit.birthJd))).toBe(activationCode(full[planet]))
+  })
+
+  it('finds a future line and gate change for every body, including the outer planets', () => {
+    const connection = humanDesignTransitConnection({ gates: [], channels: [] }, transit)
+    const planets    = level => connection[level].map(change => change.planet).sort()
+
+    expect(planets('nextLineChanges')).toEqual([...HD_PLANETS].sort())
+    expect(planets('nextGateChanges')).toEqual([...HD_PLANETS].sort())
+    for (const change of [...connection.nextLineChanges, ...connection.nextGateChanges]) {
+      expect(change.dateMs).toBeGreaterThan(dateMs)
+      expect(activationCode(change.from)).not.toBe(activationCode(change.to))
+    }
+  })
+
+  it('lands each change on the first cell boundary after the start', () => {
+    const connection = humanDesignTransitConnection({ gates: [], channels: [] }, transit)
+
+    for (const change of connection.nextLineChanges) {
+      const before = hdActivationAt(change.planet, change.jdUt - 1e-6)
+      expect([before.gate, before.line]).toEqual([change.from.gate, change.from.line])
+      expect([change.to.gate, change.to.line]).not.toEqual([change.from.gate, change.from.line])
+    }
+    expect(connection.nextColorToneBaseChanges.length).toBeGreaterThan(0)
   })
 })

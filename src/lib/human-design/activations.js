@@ -1,4 +1,5 @@
 import { computeChart, sunLongitude } from '../astro/ephemeris.js'
+import { SWISS_BODY, SWISS_FLAGS, swissPosition } from '../astro/swisseph.js'
 import { norm180, norm360 } from '../astro/zodiac.js'
 import { GATE_ORDER, HD_PLANETS } from './constants.js'
 
@@ -8,6 +9,14 @@ const LINE_ARC_DEGREES             = GATE_ARC_DEGREES / 6
 const COLOR_ARC_DEGREES            = LINE_ARC_DEGREES / 6
 const TONE_ARC_DEGREES             = COLOR_ARC_DEGREES / 6
 const BASE_ARC_DEGREES             = TONE_ARC_DEGREES / 5
+
+export const CELL_ARC_DEGREES = {
+  gate:  GATE_ARC_DEGREES,
+  line:  LINE_ARC_DEGREES,
+  color: COLOR_ARC_DEGREES,
+  tone:  TONE_ARC_DEGREES,
+  base:  BASE_ARC_DEGREES,
+}
 
 const roundDegree = value => Number(value.toFixed(6))
 
@@ -73,6 +82,21 @@ export const designJdForPersonalitySun = (jdUt) => {
 
   return designJd
 }
+
+const HD_BODY = { Earth: 'Sun', NorthNode: 'NorthNodeTrue', SouthNode: 'NorthNodeTrue' }
+
+// Earth and the South Node sit opposite the Sun and the true North Node.
+const OPPOSITE_PLANETS = new Set(['Earth', 'SouthNode'])
+
+export const hdLongitudeAt = (planet, jdUt) => {
+  const longitude = swissPosition(SWISS_BODY[HD_BODY[planet] || planet], jdUt, SWISS_FLAGS)[0]
+  return OPPOSITE_PLANETS.has(planet) ? norm360(longitude + 180) : longitude
+}
+
+export const hdActivationAt = (planet, jdUt) => ({
+  planet,
+  ...activationFromLongitude(hdLongitudeAt(planet, jdUt)),
+})
 
 const positionsByName = (chart) =>
   new Map((chart?.positions || []).map(position => [position.name, position]))
