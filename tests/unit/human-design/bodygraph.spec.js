@@ -48,13 +48,43 @@ describe('Human Design bodygraph derivation', () => {
       channel:      '20-34',
       name:         'Charisma',
       circuitGroup: 'Individual',
-      stream:       'Sacral Manifestation',
+      stream:       'Integration',
     })
     expect(chart.details.gates.map(gate => gate.gate)).toEqual([3, 4, 20, 34])
     expect(chart.details.gates.find(gate => gate.gate === 34)).toMatchObject({
       summary: expect.stringMatching(/power|respond/i),
       lines:   [expect.objectContaining({ line: 3, role: 'Adaptation' })],
     })
+  })
+
+  it('sorts chart gates numerically and derives Manifesting Generator through 10-34', () => {
+    const chart = deriveHumanDesignGraph({
+      personId:    'numeric',
+      personName:  'Numeric',
+      birthJd:     1,
+      designJd:    0,
+      personality: { Sun: activation('Sun', 10), Earth: activation('Earth', 34) },
+      design:      { Sun: activation('Sun', 8), Earth: activation('Earth', 1) },
+    })
+
+    expect(chart.gates).toEqual([1, 8, 10, 34])
+    expect(chart.personalityGates).toEqual([10, 34])
+    expect(chart.channels).toEqual(['1-8', '10-34'])
+    expect(chart.type).toBe('Manifesting Generator')
+    expect(chart.details.gates.find(gate => gate.gate === 34).center).toBe('Sacral')
+  })
+
+  it('derives Ego Manifested authority for a Manifestor with Ego connected to the Throat', () => {
+    const chart = deriveHumanDesignGraph({
+      personId:    'ego',
+      personName:  'Ego',
+      birthJd:     1,
+      designJd:    0,
+      personality: { Sun: activation('Sun', 21), Earth: activation('Earth', 45) },
+      design:      {},
+    })
+
+    expect([chart.type, chart.authority, chart.strategy]).toEqual(['Manifestor', 'Ego Manifested', 'Inform before acting'])
   })
 
   it('treats charts without channels as reflectors', () => {
@@ -162,7 +192,7 @@ describe('Human Design bodygraph derivation', () => {
     expect(gateLibraryEntry(34)).toMatchObject({
       gate:    34,
       name:    'Power',
-      streams: expect.arrayContaining(['Sacral Manifestation']),
+      streams: expect.arrayContaining(['Integration']),
       summary: expect.stringMatching(/power|respond/i),
     })
     expect(lineLibraryEntry(34, 5)).toMatchObject({
