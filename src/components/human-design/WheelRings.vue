@@ -10,7 +10,7 @@ import { humanDesignPalette, humanDesignWheelPalette } from './visualTheme.js'
 
 const props = defineProps({
   chart:       { type: Object, required: true },
-  hover:       { type: Object, default: null },
+  litGates:    { type: Object, default: null },
   visualTheme: { type: String, default: 'dark' },
 })
 
@@ -47,8 +47,8 @@ const gateSegments = computed(() =>
   })
 )
 
-const isGateHovered = gate => props.hover?.type === 'gate' && Number(props.hover.value) === Number(gate)
-const hasGateHover  = computed(() => props.hover?.type === 'gate')
+const isGateHovered = gate => Boolean(props.litGates?.has(Number(gate)))
+const hasGateHover  = computed(() => Boolean(props.litGates))
 
 const zodiacSegments = computed(() =>
   zodiacSegmentLayout({ inner: wheelRingRadii.zodiacInner, outer: wheelRingRadii.zodiacOuter, labelRadius: zodiacLabelRadius.value }).map((segment) => {
@@ -145,15 +145,6 @@ g.hd-wheel-rings
 </template>
 
 <style scoped>
-.hd-wheel-rings {
-  opacity: 0.58;
-  transition: opacity 160ms ease;
-}
-
-.hd-wheel-rings:hover {
-  opacity: 0.92;
-}
-
 .wheel-gate-label {
   cursor: pointer;
   transition: fill 140ms ease, fill-opacity 140ms ease, font-size 140ms ease, opacity 140ms ease, stroke 140ms ease, stroke-width 140ms ease;

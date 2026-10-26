@@ -19,11 +19,12 @@ test.describe('Human Design', () => {
     await expect(page.getByTestId('hd-authority')).toBeVisible()
     await expect(page.getByTestId('hd-profile')).toBeVisible()
     await expect(page.getByTestId('bodygraph-chart')).toBeVisible()
+    await expect(page.getByTestId('hd-variables-glance')).toBeVisible()
+    await expect(page.getByTestId('hd-insights-glance')).toBeVisible()
+    await page.getByTestId('hd-view-mandala').click()
     await expect(page.getByTestId('rave-mandala')).toBeVisible()
-    await expect(page.getByTestId('hd-variable-summary')).toBeVisible()
     await expect(page.getByTestId('mandala-gate')).toHaveCount(64)
     await expect(page.locator('[data-testid="mandala-gate"][data-active="true"]').first()).toBeVisible()
-    await expect(page.getByTestId('human-design-insights')).toBeVisible()
     await expect(page.getByTestId('workspace-reference-panel')).toHaveCount(0)
 
     await page.getByTestId('workspace-view-reading').click()
@@ -39,8 +40,6 @@ test.describe('Human Design', () => {
     await expect(page).toHaveURL(/\/map\/human-design\/data$/)
     await expect(page.getByTestId('human-design-data')).toBeVisible()
     await expect(page.getByTestId('workspace-reference-chart')).toHaveCount(0)
-    await page.getByTestId('hd-data-toggle-activations').click()
-    await expect(page.getByTestId('human-design-activation-table')).toBeVisible()
 
     await expect(page.getByTestId('hd-data-section-transits')).toHaveCount(0)
     await expect(page.getByTestId('hd-data-section-correlations')).toHaveCount(0)
@@ -69,6 +68,7 @@ test.describe('Human Design', () => {
 
   test('reactively updates Human Design wheel colors when theme changes', async ({ page }) => {
     await page.goto('/#/human-design')
+    await page.getByTestId('hd-view-mandala').click()
     const activeGate = page.locator('[data-testid="mandala-gate-sector"][data-active="true"]').first()
     const darkFill   = await activeGate.evaluate(el => getComputedStyle(el).fill)
 
@@ -87,7 +87,7 @@ test.describe('Human Design', () => {
     await expect(page.getByTestId('human-design-connection')).toBeVisible()
     await expect(page.getByTestId('human-design-connection-details')).toBeVisible()
     await expect(page.getByTestId('human-design-connection-theme')).toBeVisible()
-    await expect(page.getByTestId('bodygraph-chart')).toHaveCount(2)
+    await expect(page.getByTestId('bodygraph-svg')).toHaveCount(3)
   })
 
   test('renders Human Design correlations in Timing', async ({ page }) => {

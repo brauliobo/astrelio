@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { ichingLinesForGate } from '../../../src/components/human-design/ichingGeometry.js'
 import { planetGlyphBand, planetGlyphLayout } from '../../../src/components/human-design/planetGlyphGeometry.js'
-import { referenceBrauliWheelPositions } from '../../../src/components/human-design/referencePositions.js'
 import { gateSegmentLayout, zodiacSegmentLayout } from '../../../src/components/human-design/ringSegmentGeometry.js'
 import {
   mandalaAngleForActivation,
@@ -28,15 +27,7 @@ describe('Human Design wheel geometry', () => {
     expect(angularDistance(sunAngle, aquarius.midAngle)).toBeLessThan(8)
   })
 
-  it('matches the extracted reference orientation for 1986-02-12 18:10 São José dos Campos', () => {
-    const [personalitySun, designSun] = referenceBrauliWheelPositions.placements
-
-    expect(referenceBrauliWheelPositions.person.isoLocal).toBe('1986-02-12T18:10')
-    expect(personalitySun).toMatchObject({ layer: 'personality', planet: 'Sun', gate: 49, sign: '♒' })
-    expect(designSun).toMatchObject({ layer: 'design', planet: 'Sun', gate: 14, sign: '♐' })
-    expect(referenceBrauliWheelPositions.placements).toHaveLength(26)
-    expect(referenceBrauliWheelPositions.placements).toContainEqual({ layer: 'personality', planet: 'Neptune', gate: 58, sign: '♑' })
-    expect(referenceBrauliWheelPositions.placements).toContainEqual({ layer: 'design', planet: 'Mars', gate: 48, sign: '♎' })
+  it('keeps the reference orientation: gate 10 line 3 at the top, Sun gate 49 line 6 in Aquarius', () => {
     expect(mandalaAngleForActivation({ gate: 10, line: 3 })).toBeGreaterThan(-10)
     expect(mandalaAngleForActivation({ gate: 10, line: 3 })).toBeLessThan(10)
     expect(angularDistance(mandalaAngleForActivation({ gate: 49, line: 6 }), 308.90625)).toBeLessThan(0.001)

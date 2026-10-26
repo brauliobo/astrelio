@@ -35,7 +35,7 @@ const planets = computed(() => {
   return planetGlyphLayout(rows, { alignment: props.planetAlignment }).map((item) => {
     return {
       ...item,
-      color: item.layer === 'personality' ? 'rgba(248,250,252,0.86)' : 'rgba(239,85,87,0.88)',
+      color: item.layer === 'personality' ? 'var(--hd-text)' : 'var(--hd-design)',
       size:  PLANET_GLYPH_SIZE,
       scale: hdPlanetGlyphScale(item.planet),
     }
@@ -63,14 +63,3 @@ g.hd-wheel-planets(data-testid='hd-wheel-planets')
     :data-lane='planet.lane'
   )
 </template>
-
-<style scoped>
-.hd-wheel-planets {
-  opacity: 0.9;
-  transition: opacity 160ms ease;
-}
-
-.hd-wheel-planets:hover {
-  opacity: 1;
-}
-</style>

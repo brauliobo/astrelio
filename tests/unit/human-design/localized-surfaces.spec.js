@@ -2,10 +2,6 @@ import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
 import { describe, expect, it } from 'vitest'
 import CorrelationPanel from '../../../src/components/human-design/CorrelationPanel.vue'
-import GateDetailTable from '../../../src/components/human-design/GateDetailTable.vue'
-import GateExplorer from '../../../src/components/human-design/GateExplorer.vue'
-import MandalaPrecisionPanel from '../../../src/components/human-design/MandalaPrecisionPanel.vue'
-import TransitPanel from '../../../src/components/human-design/TransitPanel.vue'
 import { humanDesignInterpretationSections } from '../../../src/lib/human-design/interpretations.js'
 import en from '../../../src/i18n/en.json'
 import ptBR from '../../../src/i18n/pt-BR.json'
@@ -68,43 +64,6 @@ describe('Human Design localized detail surfaces', () => {
     expect(items.find(item => item.key === 'gate-49').text).not.toContain('Raw English')
   })
 
-  it('uses translated fallback line metadata and planet labels in Gate Explorer', () => {
-    const wrapper = mount(GateExplorer, {
-      props:  { chart: { details: { gates: [gate] } } },
-      global: { plugins: [i18n('pt-BR')] },
-    })
-
-    expect(wrapper.text()).toContain('Sol')
-    expect(wrapper.text()).toContain('Fundação')
-    expect(wrapper.text()).toContain('investigação')
-    expect(wrapper.text()).toContain('Síntese')
-    expect(wrapper.text()).not.toContain('Investigates the base pattern')
-    expect(wrapper.text()).not.toContain('Principles')
-  })
-
-  it.each([
-    ['en', 'Sun', 'Synthesis'],
-    ['pt-BR', 'Sol', 'Síntese'],
-  ])('formats transit dates and domain labels with the %s locale', (locale, planet, channel) => {
-    const dateMs  = Date.UTC(2026, 0, 2, 15, 4)
-    const wrapper = mount(TransitPanel, {
-      props: {
-        dateInput: '2026-01-02T15:04',
-        connection: {
-          activationWatch:    gate.activations,
-          completedChannels:  ['19-49'],
-          activatedNatalGates: [49],
-          nextChanges:         [{ planet: 'Sun', dateMs, fromCode: '49.1.1.1.1', toCode: '49.2.1.1.1' }],
-        },
-      },
-      global: { plugins: [i18n(locale)] },
-    })
-
-    expect(wrapper.text()).toContain(planet)
-    expect(wrapper.text()).toContain(channel)
-    expect(wrapper.text()).toContain(new Date(dateMs).toLocaleString(locale))
-  })
-
   it('does not prioritize raw engine summaries over translated generated correlation rows', () => {
     const wrapper = mount(CorrelationPanel, {
       props: {
@@ -121,17 +80,5 @@ describe('Human Design localized detail surfaces', () => {
     expect(wrapper.get('[data-correlation="lines"]').text()).toContain('Linha 1: 1 ativação(ões), portões 49.')
     expect(wrapper.text()).toContain('Sol: portão 49.1')
     expect(wrapper.text()).not.toContain('Raw English engine summary')
-  })
-
-  it('localizes planet labels in gate and precision tables', () => {
-    const chart = { details: { gates: [gate], activations: [{ ...gate.activations[0], center: 'Solar Plexus', longitude: 323.36, progress: 0.5 }] } }
-    const options = { props: { chart }, global: { plugins: [i18n('pt-BR')] } }
-    const gateTable = mount(GateDetailTable, options)
-    const precision = mount(MandalaPrecisionPanel, options)
-
-    expect(gateTable.text()).toContain('Sol')
-    expect(gateTable.text()).not.toContain('Sun')
-    expect(precision.text()).toContain('Sol')
-    expect(precision.text()).toContain('Plexo Solar')
   })
 })

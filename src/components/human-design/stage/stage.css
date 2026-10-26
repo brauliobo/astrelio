@@ -1,0 +1,102 @@
+/* Shared surface language of the Human Design chart stage: opaque cards, one chip, one segmented control. */
+.hd-scope {
+  --hd-line:  color-mix(in srgb, var(--hd-text) 16%, transparent);
+  --hd-soft:  color-mix(in srgb, var(--hd-text) 7%, var(--hd-surface));
+  --hd-faint: color-mix(in srgb, var(--hd-text) 11%, var(--hd-surface));
+
+  color: var(--hd-text);
+  min-width: 0;
+}
+
+.hd-scope *, .hd-scope *::before, .hd-scope *::after { box-sizing: border-box; }
+.hd-scope :focus-visible { outline: 2px solid var(--hd-focus); outline-offset: 2px; }
+
+.hd-card {
+  min-width: 0;
+  background: var(--hd-surface);
+  border: 1px solid var(--hd-line);
+  border-radius: 18px;
+}
+
+.hd-kicker {
+  color: var(--hd-text-2);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.hd-title { margin: 0; color: var(--hd-text); font-size: 18px; font-weight: 650; line-height: 1.2; }
+.hd-body  { margin: 0; color: var(--hd-text-2); font-size: 13.5px; line-height: 1.55; overflow-wrap: anywhere; }
+.hd-lead  { margin: 0; color: var(--hd-text); font-size: 14.5px; line-height: 1.55; overflow-wrap: anywhere; }
+.hd-num   { font-variant-numeric: tabular-nums; }
+
+.hd-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 11px;
+  border: 1px solid var(--hd-line);
+  border-radius: 999px;
+  background: var(--hd-soft);
+  color: var(--hd-text);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1;
+  overflow-wrap: anywhere;
+}
+
+button.hd-chip { cursor: pointer; transition: background 140ms ease, border-color 140ms ease; }
+button.hd-chip:hover { background: var(--hd-faint); border-color: var(--hd-text-muted); }
+button.hd-chip[aria-pressed="true"] { background: var(--hd-text); border-color: var(--hd-text); color: var(--hd-surface); }
+
+.hd-chip[data-tone="design"]      { border-color: var(--hd-design); }
+.hd-chip[data-tone="personality"] { border-color: var(--hd-text); }
+.hd-chip[data-tone="muted"]       { color: var(--hd-text-2); font-weight: 500; }
+
+.hd-seg {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  border: 1px solid var(--hd-line);
+  border-radius: 999px;
+  background: var(--hd-surface-2);
+}
+
+.hd-seg button {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--hd-text-2);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease;
+}
+
+.hd-seg button:hover { color: var(--hd-text); }
+.hd-seg button[aria-pressed="true"] { background: var(--hd-text); color: var(--hd-surface); }
+
+.hd-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--hd-text-muted);
+}
+.hd-dot[data-tone="design"]      { background: var(--hd-design); }
+.hd-dot[data-tone="personality"] { background: var(--hd-text); }
+.hd-dot[data-tone="defined"]     { background: var(--hd-red); }
+
+@media (prefers-reduced-motion: reduce) {
+  .hd-scope * { transition: none !important; animation: none !important; }
+}
+
+.hd-detail { display: grid; gap: 16px; min-width: 0; }
+.hd-question { font-style: italic; }

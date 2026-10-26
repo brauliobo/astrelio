@@ -3,14 +3,13 @@ import { createI18n } from 'vue-i18n'
 import { describe, expect, it } from 'vitest'
 import ModalityRouteSwitch from '../../../src/components/modalities/ModalityRouteSwitch.vue'
 import WorkspaceViewSwitch from '../../../src/components/modalities/WorkspaceViewSwitch.vue'
-import ActivationColumns from '../../../src/components/human-design/ActivationColumns.vue'
-import ActivationTable from '../../../src/components/human-design/ActivationTable.vue'
-import BodygraphGates from '../../../src/components/human-design/BodygraphGates.vue'
-import InsightPanel from '../../../src/components/human-design/InsightPanel.vue'
+import ActivationLists from '../../../src/components/human-design/stage/ActivationLists.vue'
+import HdSummaryChips from '../../../src/components/human-design/stage/HdSummaryChips.vue'
 import IChingRing from '../../../src/components/human-design/IChingRing.vue'
 import WheelPlanets from '../../../src/components/human-design/WheelPlanets.vue'
 import WheelRings from '../../../src/components/human-design/WheelRings.vue'
 import { MANDALA_GATE_ORDER } from '../../../src/lib/human-design/constants.js'
+import { referenceChart } from './reference-chart.js'
 import { wheelRingRadii } from '../../../src/components/human-design/wheelCore.js'
 import { humanDesignWheelPalette } from '../../../src/components/human-design/visualTheme.js'
 import en from '../../../src/i18n/en.json'
@@ -206,73 +205,23 @@ describe('Human Design visual components', () => {
     expect(wrapper.get('[data-planet="Mars"]').attributes('transform')).toContain('scale(2.2866666666666666 2.2866666666666666)')
   })
 
-  it('uses the shared glyph renderer for Human Design side columns and activation tables', () => {
-    const chart = {
-      personality: {
-        Moon:    { planet: 'Moon', gate: 21, line: 1, color: 3, tone: 3, base: 3 },
-        Mercury: { planet: 'Mercury', gate: 55, line: 4, color: 1, tone: 1, base: 2 },
-      },
-      design: {
-        Venus: { planet: 'Venus', gate: 30, line: 6, color: 3, tone: 6, base: 1 },
-      },
-    }
-    const column = mount(ActivationColumns, {
-      props: {
-        chart,
-        side:          'personality',
-        glyphRenderer: 'svg',
-      },
-      global: { plugins: [i18n('en')] },
-    })
-    const table = mount(ActivationTable, {
-      props:  { chart, glyphRenderer: 'svg' },
+  it('uses the shared glyph renderer for the activation lists and marks lit rows', () => {
+    const lists = mount(ActivationLists, {
+      props:  { chart: referenceChart(), glyphRenderer: 'svg', lit: { centers: [], channels: [], gates: [14] } },
       global: { plugins: [i18n('en')] },
     })
 
-    expect(column.findAll('.celestial-glyph-icon-html path').length).toBeGreaterThan(0)
-    expect(column.text()).not.toContain('☿')
-    expect(table.findAll('.celestial-glyph-icon-html path').length).toBeGreaterThan(0)
+    expect(lists.findAll('.hd-act-glyph path').length).toBeGreaterThan(0)
+    expect(lists.findAll('.hd-act[data-state="lit"]').map(row => row.attributes('data-gate'))).toEqual(['14'])
+    expect(lists.findAll('.hd-act[data-state="dim"]')).toHaveLength(25)
   })
 
-  it('splits a design and personality gate into true half fills', () => {
-    const wrapper = mountInSvg(BodygraphGates, {
-      chart: {
-        gates:            [28],
-        personalityGates: [28],
-        designGates:      [28],
-      },
-    })
-    const parts = wrapper.findAll('[data-testid="bodygraph-gate-part"][data-gate="28"]')
+  it('localizes the summary facts', () => {
+    const wrapper = mount(HdSummaryChips, { props: { chart: referenceChart() }, global: { plugins: [i18n('pt-BR')] } })
 
-    expect(parts).toHaveLength(2)
-    expect(parts.map(part => part.attributes('fill'))).toEqual(['var(--hd-design)', 'var(--hd-contrast)'])
-    expect(wrapper.find('[data-testid="bodygraph-gate-part"][data-gate="28"]').exists()).toBe(true)
-  })
-
-  it('localizes Human Design enum labels and insight copy', () => {
-    const wrapper = mount(InsightPanel, {
-      props: {
-        chart: {
-          type:             'Generator',
-          authority:        'Emotional',
-          profile:          '6 / 2',
-          definition:       'Triple Split Definition',
-          circuits:         ['Collective Logic'],
-          centers:          ['Solar Plexus', 'Sacral', 'Root'],
-          channels:         ['19-49', '30-41', '3-60'],
-          gates:            [49],
-          personalityGates: [49],
-          designGates:      [],
-        },
-      },
-      global: { plugins: [i18n('pt-BR')] },
-    })
-
-    expect(wrapper.text()).toContain('Gerador')
-    expect(wrapper.text()).toContain('Emocional')
-    expect(wrapper.text()).toContain('Definição Tripla Dividida')
-    expect(wrapper.text()).toContain('Coletivo Lógico')
+    expect(wrapper.get('[data-testid="hd-type"]').text()).toBe('Gerador')
+    expect(wrapper.get('[data-testid="hd-authority"]').text()).toBe('Emocional')
+    expect(wrapper.get('[data-testid="hd-definition"]').text()).toBe('Definição Tripla Dividida')
     expect(wrapper.text()).not.toContain('Triple Split Definition')
-    expect(wrapper.text()).not.toContain('Collective Logic')
   })
 })
