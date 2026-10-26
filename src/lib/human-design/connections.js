@@ -1,83 +1,65 @@
-import { channelKey } from './activations.js'
-import { CENTER_THEMES, CENTERS, CHANNEL_CENTERS, CHANNEL_NAMES, GATE_NAMES, HARMONIC_GATES, LOVE_GATES, MATERIAL_CHANNELS } from './constants.js'
+import { CENTER_THEMES, CENTERS, CHANNEL_BY_KEY, CHANNELS, GATE_NAMES, LOVE_GATES, MATERIAL_CHANNELS } from './constants.js'
+import { channelsForGates, humanDesignStateForGates } from './definition.js'
 
 const intersection = (a, b) => a.filter(value => b.includes(value))
-const difference   = (a, b) => a.filter(value => !b.includes(value))
 
-const channelGates = (channel) => channel.split('-').map(Number)
+const gatesFor = (chart) => new Set(chart?.gates || [])
 
-const hasAnyGate = (gateSet, gates) => gates.some(gate => gateSet.has(gate))
-
-const fullChannelsFor = (chart) => new Set(chart?.channels || [])
-const gatesFor        = (chart) => new Set(chart?.gates || [])
-
-const channelsForGates = (gateSet) =>
-  [...gateSet].flatMap(gate =>
-    (HARMONIC_GATES[gate] || [])
-      .filter(harmonic => gateSet.has(harmonic))
-      .map(harmonic => channelKey(gate, harmonic))
-      .filter(channel => CHANNEL_CENTERS[channel])
-  )
+const heldGates = (channel, gateSet) => channel.gates.filter(gate => gateSet.has(gate))
 
 const channelDetail = channel => ({
   channel,
-  name:       CHANNEL_NAMES[channel] || channel,
-  centers:    CHANNEL_CENTERS[channel] || [],
-  gates:      channelGates(channel),
-  isLove:     channelGates(channel).some(gate => LOVE_GATES.includes(gate)),
+  name:       CHANNEL_BY_KEY[channel].name,
+  centers:    CHANNEL_BY_KEY[channel].centers,
+  gates:      CHANNEL_BY_KEY[channel].gates,
+  isLove:     CHANNEL_BY_KEY[channel].gates.some(gate => LOVE_GATES.includes(gate)),
   isMaterial: MATERIAL_CHANNELS.includes(channel),
 })
 
-const electromagneticChannels = (chartA, chartB) => {
-  const gatesA   = gatesFor(chartA)
-  const gatesB   = gatesFor(chartB)
-  const channels = []
+// Each channel falls in at most one relation; `side` is the person holding the whole channel.
+const relationFor = (channel, gatesA, gatesB) => {
+  const heldA = heldGates(channel, gatesA)
+  const heldB = heldGates(channel, gatesB)
+  const fullA = heldA.length === 2
+  const fullB = heldB.length === 2
 
-  for (const gate of gatesA) {
-    for (const harmonic of HARMONIC_GATES[gate] || []) {
-      const key = channelKey(gate, harmonic)
-      if (CHANNEL_CENTERS[key] && gatesB.has(harmonic)) channels.push(key)
-    }
+  if (fullA && fullB) return { relation: 'companionship' }
+  if (fullA || fullB) {
+    const other = fullA ? heldB : heldA
+    return { relation: other.length ? 'compromise' : 'dominance', side: fullA ? 'A' : 'B' }
   }
-
-  return [...new Set(channels)].sort()
+  if (heldA.length === 1 && heldB.length === 1 && heldA[0] !== heldB[0]) return { relation: 'electromagnetic' }
+  return null
 }
 
-const compromiseChannels = (definedChart, partialChart) => {
-  const partialGates = gatesFor(partialChart)
-  return (definedChart?.channels || [])
-    .filter(channel => {
-      const gates = channelGates(channel)
-      return hasAnyGate(partialGates, gates) && !gates.every(gate => partialGates.has(gate))
-    })
-    .sort()
-}
-
-const dominanceChannels = (definedChart, otherChart) => {
-  const otherGates = gatesFor(otherChart)
-  return (definedChart?.channels || [])
-    .filter(channel => !hasAnyGate(otherGates, channelGates(channel)))
-    .sort()
+const centerStatus = (definedByA, definedByB) => {
+  if (definedByA && definedByB) return 'both'
+  if (definedByA) return 'onlyA'
+  return definedByB ? 'onlyB' : 'open'
 }
 
 export const humanDesignConnection = (chartA, chartB) => {
   if (!chartA || !chartB) return null
 
-  const channelsA         = fullChannelsFor(chartA)
-  const channelsB         = fullChannelsFor(chartB)
-  const compositeGates    = new Set([...gatesFor(chartA), ...gatesFor(chartB)])
-  const compositeChannels = [...new Set(channelsForGates(compositeGates))].sort()
-  const compositeCenters  = [...new Set(compositeChannels.flatMap(channel => CHANNEL_CENTERS[channel] || []))].sort()
-  const companionship     = [...channelsA].filter(channel => channelsB.has(channel)).sort()
-  const electromagnetic   = difference(electromagneticChannels(chartA, chartB), companionship)
-  const compromise        = [
-    ...compromiseChannels(chartA, chartB).map(channel => ({ channel, owner: chartA.personId })),
-    ...compromiseChannels(chartB, chartA).map(channel => ({ channel, owner: chartB.personId })),
-  ]
-  const dominance = [
-    ...dominanceChannels(chartA, chartB).map(channel => ({ channel, owner: chartA.personId })),
-    ...dominanceChannels(chartB, chartA).map(channel => ({ channel, owner: chartB.personId })),
-  ]
+  const gatesA            = gatesFor(chartA)
+  const gatesB            = gatesFor(chartB)
+  const compositeGates    = new Set([...gatesA, ...gatesB])
+  const composite         = humanDesignStateForGates(compositeGates)
+  const compositeChannels = channelsForGates(compositeGates)
+  const compositeCenters  = composite.centers
+  const ownerOf           = side => side === 'A' ? chartA.personId : chartB.personId
+  const relations         = CHANNELS
+    .map(channel => ({ channel: channel.key, ...relationFor(channel, gatesA, gatesB) }))
+    .filter(item => item.relation)
+  const channelsOf = relation => relations.filter(item => item.relation === relation)
+  const ownedBy    = relation => ['A', 'B'].flatMap(side =>
+    channelsOf(relation).filter(item => item.side === side).map(item => ({ channel: item.channel, owner: ownerOf(side) }))
+  )
+
+  const electromagnetic = channelsOf('electromagnetic').map(item => item.channel)
+  const companionship   = channelsOf('companionship').map(item => item.channel)
+  const compromise      = ownedBy('compromise')
+  const dominance       = ownedBy('dominance')
 
   const themes = [
     electromagnetic.length ? 'electromagnetic' : '',
@@ -86,21 +68,46 @@ export const humanDesignConnection = (chartA, chartB) => {
     dominance.length ? 'dominance' : '',
   ].filter(Boolean)
 
-  return {
-    personAId:      chartA.personId,
-    personBId:      chartB.personId,
-    sharedCenters:  intersection(chartA.centers, chartB.centers),
-    openCenters:    CENTERS.filter(center => !compositeCenters.includes(center)),
-    centerDynamics: CENTERS.map(center => ({
+  const centerDynamics = CENTERS.map((center) => {
+    const definedByA = chartA.centers.includes(center)
+    const definedByB = chartB.centers.includes(center)
+    return {
       center,
       theme:              CENTER_THEMES[center],
       definedInComposite: compositeCenters.includes(center),
-      definedByA:         chartA.centers.includes(center),
-      definedByB:         chartB.centers.includes(center),
-    })),
-    connectionTheme:   `${compositeCenters.length}-${CENTERS.length - compositeCenters.length}`,
+      definedByA,
+      definedByB,
+      status:             centerStatus(definedByA, definedByB),
+    }
+  })
+  const centersWithStatus = status => centerDynamics.filter(item => item.status === status).map(item => item.center)
+
+  return {
+    personAId:     chartA.personId,
+    personBId:     chartB.personId,
+    sharedCenters: intersection(chartA.centers, chartB.centers),
+    openCenters:   CENTERS.filter(center => !compositeCenters.includes(center)),
+    centerDynamics,
+    centerClassification: {
+      both:  centersWithStatus('both'),
+      onlyA: centersWithStatus('onlyA'),
+      onlyB: centersWithStatus('onlyB'),
+      open:  centersWithStatus('open'),
+    },
+    connectionTheme: `${compositeCenters.length}-${CENTERS.length - compositeCenters.length}`,
+    composite:       {
+      type:       composite.type,
+      authority:  composite.authority,
+      definition: composite.definition,
+      areas:      composite.components,
+      splitSize:  composite.splitSize,
+      bridges:    composite.bridges,
+      centers:    compositeCenters,
+      channels:   compositeChannels,
+    },
     compositeGates:    [...compositeGates].sort((a, b) => a - b).map(gate => ({ gate, name: GATE_NAMES[gate] || `Gate ${gate}` })),
     compositeChannels: compositeChannels.map(channelDetail),
+    channelRelations:  relations.map(({ channel, relation, side }) => ({ channel, relation, owner: side ? ownerOf(side) : null })),
     electromagnetic,
     electromagneticDetails: electromagnetic.map(channelDetail),
     compromise,
