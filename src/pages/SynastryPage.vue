@@ -1,19 +1,17 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { usePeopleStore } from '../stores/people.js'
 import { useSessionStore } from '../stores/session.js'
 import { useSettingsStore } from '../stores/settings.js'
 import { modalityChart, modalityConnection } from '../lib/modalities/index.js'
-import {
-  humanDesignChannelLabel,
-  humanDesignListLabel,
-} from '../lib/human-design/labels.js'
 import Biwheel from '../components/chart/Biwheel.vue'
 import AspectTable from '../components/chart/AspectTable.vue'
 import ComparisonInsightPanel from '../components/chart/ComparisonInsightPanel.vue'
-import BodygraphChart from '../components/human-design/BodygraphChart.vue'
-import InsightPanel from '../components/human-design/InsightPanel.vue'
+import CenterClassification from '../components/human-design/relations/CenterClassification.vue'
+import CompositeSummary from '../components/human-design/relations/CompositeSummary.vue'
+import RelationBodygraphs from '../components/human-design/relations/RelationBodygraphs.vue'
+import RelationCards from '../components/human-design/relations/RelationCards.vue'
 import HumanDesignTeamDisclosure from '../components/relationships/HumanDesignTeamDisclosure.vue'
 import RelationshipSection from '../components/relationships/RelationshipSection.vue'
 import SynastryEmptyState from '../components/relationships/SynastryEmptyState.vue'
@@ -32,16 +30,11 @@ const chartB   = computed(() => modalityChart('astrology', personB.value, settin
 const hdChartA = computed(() => modalityChart('humanDesign', personA.value))
 const hdChartB = computed(() => modalityChart('humanDesign', personB.value))
 
-const aspects           = computed(() => modalityConnection('astrology', chartA.value, chartB.value, settings).aspects)
-const hdConnection      = computed(() => modalityConnection('humanDesign', hdChartA.value, hdChartB.value))
-const sharedCenterLabel = computed(() =>
-  hdConnection.value?.sharedCenters?.length ? humanDesignListLabel(t, 'center', hdConnection.value.sharedCenters) : '—'
-)
-const openCenterLabel = computed(() =>
-  hdConnection.value?.openCenters?.length ? humanDesignListLabel(t, 'center', hdConnection.value.openCenters) : '—'
-)
-const channelLabel = channel => `${channel} · ${humanDesignChannelLabel(t, channel)}`
-const channelListLabel = channels => channels?.length ? channels.map(channelLabel).join(', ') : '—'
+const aspects      = computed(() => modalityConnection('astrology', chartA.value, chartB.value, settings).aspects)
+const hdConnection = computed(() => modalityConnection('humanDesign', hdChartA.value, hdChartB.value))
+const hdHighlight  = ref(null)
+const hdNames      = computed(() => ({ a: personA.value?.name, b: personB.value?.name }))
+const hdOwners     = computed(() => ({ [hdChartA.value?.personId]: hdNames.value.a, [hdChartB.value?.personId]: hdNames.value.b }))
 
 const relationshipModality = computed(() => session.relationshipModality || 'astrology')
 const dominantAspect = computed(() => [...aspects.value].sort((a, b) => (b.strength || 0) - (a.strength || 0))[0] || null)
@@ -54,7 +47,7 @@ const relationshipSummary = computed(() => relationshipModality.value === 'astro
     ]
   : [
       { key: 'mode', label: t('relationship.composite'), value: personB.value?.name || '—' },
-      { key: 'theme', label: t('human_design.connection_theme'), value: hdConnection.value?.connectionTheme || '—' },
+      { key: 'theme', label: t('human_design.connection_theme'), value: hdConnection.value?.connectionTheme || '—', testid: 'human-design-connection-theme' },
       { key: 'shared', label: t('human_design.shared_centers'), value: hdConnection.value?.sharedCenters?.length || 0 },
       { key: 'channels', label: t('human_design.composite_channels'), value: hdConnection.value?.compositeChannels?.length || 0 },
     ]
@@ -88,16 +81,18 @@ section.synastry-page.flex.flex-col.gap-3(data-testid='synastry-page')
           :aspect-options='settings.aspectOptions'
           :planet-glyph-renderer='settings.planetGlyphRenderer'
         )
-    .grid.gap-4(v-else class='lg:grid-cols-2' data-testid='human-design-connection')
-      .ui-panel(v-if='hdChartA')
-        h2.text-sm.font-semibold.text-slate-100.mb-3 {{ personA.name }}
-        BodygraphChart(:chart='hdChartA' :visual-theme='settings.theme')
-      .ui-panel(v-if='hdChartB')
-        h2.text-sm.font-semibold.text-slate-100.mb-3 {{ personB?.name }}
-        BodygraphChart(:chart='hdChartB' :visual-theme='settings.theme')
+    RelationBodygraphs(
+      v-else-if='hdChartA && hdChartB && hdConnection'
+      :chart-a='hdChartA'
+      :chart-b='hdChartB'
+      :name-a='hdNames.a'
+      :name-b='hdNames.b'
+      :composite='hdConnection.composite'
+      :highlight='hdHighlight'
+    )
 
     .grid.gap-2(class='grid-cols-2 lg:grid-cols-4' data-testid='relationship-summary')
-      .rounded.border.px-3.py-2(v-for='item in relationshipSummary' :key='item.key' class='border-white/10 bg-white/5')
+      .rounded.border.px-3.py-2(v-for='item in relationshipSummary' :key='item.key' class='border-white/10 bg-white/5' :data-testid='item.testid')
         .text-xs.uppercase.tracking-wide.text-slate-500 {{ item.label }}
         .text-sm.font-semibold.text-slate-100 {{ item.value }}
 
@@ -108,22 +103,11 @@ section.synastry-page.flex.flex-col.gap-3(data-testid='synastry-page')
         AspectTable(:aspects='aspects' :chart='chartA')
     template(v-else)
       RelationshipSection(v-if='hdConnection' :title='t("human_design.connection")' open data-testid='human-design-connection-details')
-        InsightPanel(:connection='hdConnection')
-        .grid.gap-3.mt-4(class='md:grid-cols-2')
-          p.text-xs.text-slate-400 {{ t('human_design.shared_centers') }}: {{ sharedCenterLabel }}
-          p.text-xs.text-slate-400 {{ t('human_design.open_centers') }}: {{ openCenterLabel }}
-          p.text-xs.text-slate-400(data-testid='human-design-connection-theme') {{ t('human_design.connection_theme') }}: {{ hdConnection.connectionTheme }}
-          p.text-xs.text-slate-400 {{ t('human_design.electromagnetic') }}: {{ channelListLabel(hdConnection.electromagnetic) }}
-          p.text-xs.text-slate-400 {{ t('human_design.companionship') }}: {{ channelListLabel(hdConnection.companionship) }}
-          p.text-xs.text-slate-400 {{ t('human_design.compromise') }}: {{ channelListLabel(hdConnection.compromise.map(item => item.channel)) }}
-      RelationshipSection(v-if='hdConnection' :title='t("human_design.composite_channels")')
-        .grid.gap-2(class='md:grid-cols-2')
-          .rounded.border.p-2.text-xs(
-            v-for='channel in hdConnection.compositeChannels'
-            :key='channel.channel'
-            class='border-white/10 bg-white/5'
-          )
-            .text-slate-100 {{ channelLabel(channel.channel) }}
-            .text-slate-400 {{ humanDesignListLabel(t, 'center', channel.centers).replaceAll(', ', ' / ') }}
+        .grid.gap-5
+          CompositeSummary(:connection='hdConnection')
+          RelationCards(:connection='hdConnection' :owners='hdOwners' @highlight='hdHighlight = $event')
+          section
+            h3.mb-3.text-sm.font-semibold.text-slate-100 {{ t('human_design.centers_title') }}
+            CenterClassification(:dynamics='hdConnection.centerDynamics' :names='hdNames' @highlight='hdHighlight = $event')
       HumanDesignTeamDisclosure(:people='people.sorted')
 </template>

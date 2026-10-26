@@ -2,7 +2,7 @@
 import { useI18n } from 'vue-i18n'
 import { humanDesignChannelLabel, humanDesignGateLabel, humanDesignListLabel } from '../../lib/human-design/labels.js'
 
-defineProps({
+const props = defineProps({
   analysis:    { type: Object, default: null },
   people:      { type: Array, default: () => [] },
   selectedIds: { type: Array, default: () => [] },
@@ -11,6 +11,7 @@ defineProps({
 const emit = defineEmits(['toggle'])
 const { t } = useI18n()
 const isSelected = (id, selectedIds) => selectedIds.includes(id)
+const ownerNames = item => props.people.filter(person => item.owners.includes(person.id)).map(person => person.name).join(', ')
 </script>
 
 <template lang="pug">
@@ -33,7 +34,7 @@ const isSelected = (id, selectedIds) => selectedIds.includes(id)
           :class='item.covered ? "border-amber-300/30 bg-amber-300/10 text-amber-100" : "border-white/10 bg-white/5 text-slate-400"'
         )
           .font-semibold {{ item.gate }} · {{ humanDesignGateLabel(t, item.gate, item.name) }}
-          .mt-1 {{ item.owners.length ? t('human_design.member_count', { count: item.owners.length }) : t('human_design.open_state') }}
+          .mt-1 {{ item.owners.length ? t('human_design.ui.relations.team_owners', { names: ownerNames(item) }) : t('human_design.open_state') }}
     section
       h3.text-sm.font-semibold.text-slate-100.mb-3 {{ t('human_design.composite_channels') }}
       .grid.gap-2.text-xs
