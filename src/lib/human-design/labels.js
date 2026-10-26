@@ -10,6 +10,7 @@ const valueMaps = {
     Emotional:        'emotional',
     Sacral:           'sacral',
     Splenic:          'splenic',
+    'Ego Manifested': 'ego_manifested',
     'Ego Projected':  'ego_projected',
     'Self Projected': 'self_projected',
     'Sounding Board': 'sounding_board',
@@ -33,6 +34,15 @@ const valueMaps = {
     Collective:  'collective',
     Tribal:      'tribal',
     Integration: 'integration',
+  },
+  subCircuit: {
+    Knowing:       'knowing',
+    Centering:     'centering',
+    Integration:   'integration',
+    Understanding: 'understanding',
+    Sensing:       'sensing',
+    Ego:           'ego',
+    Defense:       'defense',
   },
   center: {
     Head:           'head',
@@ -64,10 +74,14 @@ const localeGroups = {
   definition:    'definitions',
   circuit:       'circuits',
   circuitGroup:  'circuit_groups',
+  subCircuit:    'stream_names',
   center:        'centers',
   layer:         'layers',
   crossGeometry: 'cross_geometries',
 }
+
+/** Token key of reading prose in `human_design.content`, e.g. `types.generator.summary`. */
+export const humanDesignContentKey = (...parts) => ['human_design', 'content', ...parts].join('.')
 
 const label = (t, path, fallback) => {
   const translated = t(path)

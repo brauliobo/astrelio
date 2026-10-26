@@ -28,189 +28,26 @@ export const MANDALA_GATE_ORDER = [
   26, 5, 9, 34, 14, 43, 1, 44, 28, 50, 32, 57, 48, 18, 46, 6,
 ]
 
-export const HARMONIC_GATES = {
-  1:  [8],
-  2:  [14],
-  3:  [60],
-  4:  [63],
-  5:  [15],
-  6:  [59],
-  7:  [31],
-  8:  [1],
-  9:  [52],
-  10: [20, 34, 57],
-  11: [56],
-  12: [22],
-  13: [33],
-  14: [2],
-  15: [5],
-  16: [48],
-  17: [62],
-  18: [58],
-  19: [49],
-  20: [10, 34, 57],
-  21: [45],
-  22: [12],
-  23: [43],
-  24: [61],
-  25: [51],
-  26: [44],
-  27: [50],
-  28: [38],
-  29: [46],
-  30: [41],
-  31: [7],
-  32: [54],
-  33: [13],
-  34: [10, 20, 57],
-  35: [36],
-  36: [35],
-  37: [40],
-  38: [28],
-  39: [55],
-  40: [37],
-  41: [30],
-  42: [53],
-  43: [23],
-  44: [26],
-  45: [21],
-  46: [29],
-  47: [64],
-  48: [16],
-  49: [19],
-  50: [27],
-  51: [25],
-  52: [9],
-  53: [42],
-  54: [32],
-  55: [39],
-  56: [11],
-  57: [10, 20, 34],
-  58: [18],
-  59: [6],
-  60: [3],
-  61: [24],
-  62: [17],
-  63: [4],
-  64: [47],
+export const CENTER_GATES = {
+  Head:           [64, 61, 63],
+  Ajna:           [47, 24, 4, 17, 43, 11],
+  Throat:         [62, 23, 56, 16, 35, 20, 12, 45, 31, 8, 33],
+  G:              [1, 7, 13, 10, 25, 15, 46, 2],
+  Ego:            [21, 51, 26, 40],
+  'Solar Plexus': [36, 22, 37, 6, 49, 55, 30],
+  Spleen:         [48, 57, 44, 50, 32, 28, 18],
+  Sacral:         [5, 14, 29, 34, 59, 27, 42, 3, 9],
+  Root:           [53, 60, 52, 54, 19, 38, 39, 58, 41],
 }
 
-export const CHANNEL_CENTERS = {
-  '1-8':   ['G', 'Throat'],
-  '2-14':  ['Sacral', 'G'],
-  '3-60':  ['Root', 'Sacral'],
-  '4-63':  ['Head', 'Ajna'],
-  '5-15':  ['Sacral', 'G'],
-  '6-59':  ['Sacral', 'Solar Plexus'],
-  '7-31':  ['G', 'Throat'],
-  '9-52':  ['Root', 'Sacral'],
-  '10-20': ['G', 'Throat'],
-  '10-34': ['G', 'Sacral'],
-  '10-57': ['G', 'Spleen'],
-  '11-56': ['Ajna', 'Throat'],
-  '12-22': ['Throat', 'Solar Plexus'],
-  '13-33': ['G', 'Throat'],
-  '16-48': ['Spleen', 'Throat'],
-  '17-62': ['Ajna', 'Throat'],
-  '18-58': ['Root', 'Spleen'],
-  '19-49': ['Root', 'Solar Plexus'],
-  '20-34': ['Throat', 'Sacral'],
-  '20-57': ['Throat', 'Spleen'],
-  '21-45': ['Ego', 'Throat'],
-  '23-43': ['Ajna', 'Throat'],
-  '24-61': ['Head', 'Ajna'],
-  '25-51': ['Ego', 'G'],
-  '26-44': ['Spleen', 'Ego'],
-  '27-50': ['Spleen', 'Sacral'],
-  '28-38': ['Spleen', 'Root'],
-  '29-46': ['Sacral', 'G'],
-  '30-41': ['Root', 'Solar Plexus'],
-  '32-54': ['Root', 'Spleen'],
-  '34-57': ['Sacral', 'Spleen'],
-  '35-36': ['Solar Plexus', 'Throat'],
-  '37-40': ['Ego', 'Solar Plexus'],
-  '39-55': ['Root', 'Solar Plexus'],
-  '42-53': ['Root', 'Sacral'],
-  '47-64': ['Head', 'Ajna'],
-}
+export const CENTERS       = Object.keys(CENTER_GATES)
+export const MOTOR_CENTERS = ['Sacral', 'Solar Plexus', 'Ego', 'Root']
 
-export const CHANNEL_CIRCUITS = {
-  '1-8':   'Individual',
-  '2-14':  'Individual',
-  '3-60':  'Individual',
-  '4-63':  'Collective Logic',
-  '5-15':  'Collective Logic',
-  '6-59':  'Tribal',
-  '7-31':  'Collective Logic',
-  '9-52':  'Collective Logic',
-  '10-20': 'Individual',
-  '10-34': 'Individual',
-  '10-57': 'Individual',
-  '11-56': 'Collective Abstract',
-  '12-22': 'Individual',
-  '13-33': 'Collective Abstract',
-  '16-48': 'Collective Logic',
-  '17-62': 'Collective Logic',
-  '18-58': 'Collective Logic',
-  '19-49': 'Tribal',
-  '20-34': 'Individual',
-  '20-57': 'Individual',
-  '21-45': 'Tribal',
-  '23-43': 'Individual',
-  '24-61': 'Individual',
-  '25-51': 'Individual',
-  '26-44': 'Tribal',
-  '27-50': 'Tribal',
-  '28-38': 'Individual',
-  '29-46': 'Collective Abstract',
-  '30-41': 'Collective Abstract',
-  '32-54': 'Tribal',
-  '34-57': 'Individual',
-  '35-36': 'Collective Abstract',
-  '37-40': 'Tribal',
-  '39-55': 'Individual',
-  '42-53': 'Collective Abstract',
-  '47-64': 'Collective Abstract',
-}
+export const GATE_CENTER = Object.fromEntries(
+  Object.entries(CENTER_GATES).flatMap(([center, gates]) => gates.map(gate => [gate, center]))
+)
 
-export const CHANNEL_NAMES = {
-  '1-8':   'Inspiration',
-  '2-14':  'The Beat',
-  '3-60':  'Mutation',
-  '4-63':  'Logic',
-  '5-15':  'Rhythm',
-  '6-59':  'Mating',
-  '7-31':  'The Alpha',
-  '9-52':  'Concentration',
-  '10-20': 'Awakening',
-  '10-34': 'Exploration',
-  '10-57': 'Perfected Form',
-  '11-56': 'Curiosity',
-  '12-22': 'Openness',
-  '13-33': 'The Prodigal',
-  '16-48': 'The Wavelength',
-  '17-62': 'Acceptance',
-  '18-58': 'Judgment',
-  '19-49': 'Synthesis',
-  '20-34': 'Charisma',
-  '20-57': 'The Brain Wave',
-  '21-45': 'Money',
-  '23-43': 'Structuring',
-  '24-61': 'Awareness',
-  '25-51': 'Initiation',
-  '26-44': 'Surrender',
-  '27-50': 'Preservation',
-  '28-38': 'Struggle',
-  '29-46': 'Discovery',
-  '30-41': 'Recognition',
-  '32-54': 'Transformation',
-  '34-57': 'Power',
-  '35-36': 'Transitoriness',
-  '37-40': 'Community',
-  '39-55': 'Emoting',
-  '42-53': 'Maturation',
-  '47-64': 'Abstraction',
-}
+export const GATE_CENTERS = GATE_CENTER
 
 export const CHANNEL_CIRCUIT_GROUPS = {
   Individual:            'Individual',
@@ -219,48 +56,75 @@ export const CHANNEL_CIRCUIT_GROUPS = {
   Tribal:                'Tribal',
 }
 
-export const CHANNEL_STREAMS = {
-  '1-8':   'Knowing',
-  '2-14':  'Knowing',
-  '3-60':  'Mutation',
-  '4-63':  'Understanding',
-  '5-15':  'Understanding',
-  '6-59':  'Defense',
-  '7-31':  'Understanding',
-  '9-52':  'Understanding',
-  '10-20': 'Integration',
-  '10-34': 'Integration',
-  '10-57': 'Integration',
-  '11-56': 'Sensing',
-  '12-22': 'Knowing',
-  '13-33': 'Sensing',
-  '16-48': 'Understanding',
-  '17-62': 'Understanding',
-  '18-58': 'Understanding',
-  '19-49': 'Defense',
-  '20-34': 'Integration',
-  '20-57': 'Integration',
-  '21-45': 'Ego',
-  '23-43': 'Knowing',
-  '24-61': 'Knowing',
-  '25-51': 'Centering',
-  '26-44': 'Ego',
-  '27-50': 'Defense',
-  '28-38': 'Knowing',
-  '29-46': 'Sensing',
-  '30-41': 'Sensing',
-  '32-54': 'Ego',
-  '34-57': 'Integration',
-  '35-36': 'Sensing',
-  '37-40': 'Ego',
-  '39-55': 'Knowing',
-  '42-53': 'Sensing',
-  '47-64': 'Sensing',
-}
+// [channel, name, circuit, sub-circuit]; the sub-circuit is the stream a channel belongs to.
+const CHANNEL_ROWS = [
+  ['1-8',   'Inspiration',    'Individual',          'Knowing'],
+  ['2-14',  'The Beat',       'Individual',          'Knowing'],
+  ['3-60',  'Mutation',       'Individual',          'Knowing'],
+  ['4-63',  'Logic',          'Collective Logic',    'Understanding'],
+  ['5-15',  'Rhythm',         'Collective Logic',    'Understanding'],
+  ['6-59',  'Mating',         'Tribal',              'Defense'],
+  ['7-31',  'The Alpha',      'Collective Logic',    'Understanding'],
+  ['9-52',  'Concentration',  'Collective Logic',    'Understanding'],
+  ['10-20', 'Awakening',      'Individual',          'Integration'],
+  ['10-34', 'Exploration',    'Individual',          'Centering'],
+  ['10-57', 'Perfected Form', 'Individual',          'Integration'],
+  ['11-56', 'Curiosity',      'Collective Abstract', 'Sensing'],
+  ['12-22', 'Openness',       'Individual',          'Knowing'],
+  ['13-33', 'The Prodigal',   'Collective Abstract', 'Sensing'],
+  ['16-48', 'The Wavelength', 'Collective Logic',    'Understanding'],
+  ['17-62', 'Acceptance',     'Collective Logic',    'Understanding'],
+  ['18-58', 'Judgment',       'Collective Logic',    'Understanding'],
+  ['19-49', 'Synthesis',      'Tribal',              'Ego'],
+  ['20-34', 'Charisma',       'Individual',          'Integration'],
+  ['20-57', 'The Brain Wave', 'Individual',          'Knowing'],
+  ['21-45', 'Money',          'Tribal',              'Ego'],
+  ['23-43', 'Structuring',    'Individual',          'Knowing'],
+  ['24-61', 'Awareness',      'Individual',          'Knowing'],
+  ['25-51', 'Initiation',     'Individual',          'Centering'],
+  ['26-44', 'Surrender',      'Tribal',              'Ego'],
+  ['27-50', 'Preservation',   'Tribal',              'Defense'],
+  ['28-38', 'Struggle',       'Individual',          'Knowing'],
+  ['29-46', 'Discovery',      'Collective Abstract', 'Sensing'],
+  ['30-41', 'Recognition',    'Collective Abstract', 'Sensing'],
+  ['32-54', 'Transformation', 'Tribal',              'Ego'],
+  ['34-57', 'Power',          'Individual',          'Integration'],
+  ['35-36', 'Transitoriness', 'Collective Abstract', 'Sensing'],
+  ['37-40', 'Community',      'Tribal',              'Ego'],
+  ['39-55', 'Emoting',        'Individual',          'Knowing'],
+  ['42-53', 'Maturation',     'Collective Abstract', 'Sensing'],
+  ['47-64', 'Abstraction',    'Collective Abstract', 'Sensing'],
+]
+
+export const CHANNELS = CHANNEL_ROWS.map(([key, name, circuit, subCircuit]) => {
+  const gates = key.split('-').map(Number)
+  return {
+    key,
+    gates,
+    centers:      gates.map(gate => GATE_CENTER[gate]),
+    name,
+    circuit,
+    circuitGroup: CHANNEL_CIRCUIT_GROUPS[circuit],
+    subCircuit,
+    stream:       subCircuit,
+  }
+})
+
+const channelMap = field => Object.fromEntries(CHANNELS.map(channel => [channel.key, channel[field]]))
+
+export const CHANNEL_BY_KEY   = Object.fromEntries(CHANNELS.map(channel => [channel.key, channel]))
+const partnerGates = gate =>
+  CHANNELS.filter(channel => channel.gates.includes(gate)).flatMap(channel => channel.gates.filter(other => other !== gate))
+
+export const HARMONIC_GATES = Object.fromEntries(Object.keys(GATE_CENTER).map(gate => [gate, partnerGates(Number(gate))]))
+
+export const CHANNEL_CENTERS  = channelMap('centers')
+export const CHANNEL_CIRCUITS = channelMap('circuit')
+export const CHANNEL_NAMES    = channelMap('name')
+export const CHANNEL_STREAMS  = channelMap('stream')
 
 export const CIRCUIT_STREAM_THEMES = {
   Knowing:       'individual knowing, mutation, and personal expression',
-  Mutation:      'individual pressure to adapt and transform limits',
   Centering:     'self-love, direction, and centered empowerment',
   Integration:   'self-preservation through present-time awareness',
   Understanding: 'logical pattern recognition, correction, and projection',
@@ -302,6 +166,27 @@ export const TYPE_MECHANICS = {
   },
 }
 
+export const HD_TYPES = Object.keys(TYPE_MECHANICS)
+
+export const HD_AUTHORITIES = [
+  'Emotional',
+  'Sacral',
+  'Splenic',
+  'Ego Manifested',
+  'Ego Projected',
+  'Self Projected',
+  'Sounding Board',
+  'Lunar',
+]
+
+export const HD_DEFINITIONS = [
+  'No Definition',
+  'Single Definition',
+  'Split Definition',
+  'Triple Split Definition',
+  'Quad Split Definition',
+]
+
 export const CENTER_THEMES = {
   Head:           'inspiration and mental pressure',
   Ajna:           'conceptual processing and opinions',
@@ -316,7 +201,7 @@ export const CENTER_THEMES = {
 
 export const GATE_NAMES = {
   1:  'Self-Expression',
-  2:  'Higher Knowing',
+  2:  'Direction of the Self',
   3:  'Ordering',
   4:  'Formulization',
   5:  'Fixed Rhythms',
@@ -448,80 +333,6 @@ export const GATE_KEYNOTES = {
   64: 'Confusion that holds many images before clarity arrives.',
 }
 
-export const LINE_ARCHETYPES = {
-  1: {
-    name:     'Foundation',
-    keynote:  'investigate the base before relying on the pattern',
-    polarity: {
-      exalted:   'grounded preparation, patience, and respect for fundamentals',
-      detriment: 'insecurity, haste, or over-reliance on borrowed certainty',
-    },
-  },
-  2: {
-    name:     'Natural',
-    keynote:  'let innate capacity be called out by the right field',
-    polarity: {
-      exalted:   'unforced talent, receptivity, and simple correctness',
-      detriment: 'withdrawal, projection pressure, or talent used without discernment',
-    },
-  },
-  3: {
-    name:     'Adaptation',
-    keynote:  'learn by contact with what does and does not work',
-    polarity: {
-      exalted:   'resilience, experimentation, and practical adjustment',
-      detriment: 'reactivity, wasteful trial, or discouragement from early friction',
-    },
-  },
-  4: {
-    name:     'Externalization',
-    keynote:  'stabilize the theme through relationship and influence',
-    polarity: {
-      exalted:   'reliable networks, clear communication, and consistent friendship',
-      detriment: 'fixed agendas, opportunism, or dependence on approval',
-    },
-  },
-  5: {
-    name:     'Projection',
-    keynote:  'meet expectations with practical leadership and clean boundaries',
-    polarity: {
-      exalted:   'useful guidance, disciplined timing, and serviceable solutions',
-      detriment: 'seduction by expectation, blame, or promising beyond capacity',
-    },
-  },
-  6: {
-    name:     'Role Model',
-    keynote:  'observe the whole arc and model maturity after lived experience',
-    polarity: {
-      exalted:   'perspective, integrity, and wise distance',
-      detriment: 'aloofness, disillusionment, or superiority before integration',
-    },
-  },
-}
-
-export const PLANET_ARCHETYPES = {
-  Sun:       'core life-force and the visible theme of expression',
-  Earth:     'grounding, balance, and the stabilizing counterpoint',
-  NorthNode: 'the direction of environmental development',
-  SouthNode: 'familiar environmental patterning and early orientation',
-  Moon:      'movement, needs, and what pulls attention into motion',
-  Mercury:   'language, naming, exchange, and mental communication',
-  Venus:     'values, relating standards, aesthetics, and social agreements',
-  Mars:      'raw growth edge, immaturity becoming courage through experience',
-  Jupiter:   'principles, protection, law, and the larger field of meaning',
-  Saturn:    'discipline, consequence, responsibility, and maturation',
-  Uranus:    'difference, disruption, mutation, and unconventional intelligence',
-  Neptune:   'sensitivity, veiling, imagination, and spiritualized ambiguity',
-  Pluto:     'deep pressure, transformation, power, and irreversible truth',
-}
-
-export const CROSS_GATE_ROLES = {
-  personalitySun:   'conscious life theme',
-  personalityEarth: 'conscious grounding theme',
-  designSun:        'unconscious life-force imprint',
-  designEarth:      'unconscious grounding imprint',
-}
-
 export const INCARNATION_CROSS_GEOMETRY_BY_PROFILE = {
   '1/3': 'Right Angle',
   '1/4': 'Right Angle',
@@ -608,7 +419,7 @@ export const INCARNATION_QUARTERS = [
   { id: 1, name: 'Initiation', theme: 'Mind', gates: [13, 49, 30, 55, 37, 63, 22, 36, 25, 17, 21, 51, 42, 3, 27, 24] },
   { id: 2, name: 'Civilization', theme: 'Form', gates: [2, 23, 8, 20, 16, 35, 45, 12, 15, 52, 39, 53, 62, 56, 31, 33] },
   { id: 3, name: 'Duality', theme: 'Bonding', gates: [7, 4, 29, 59, 40, 64, 47, 6, 46, 18, 48, 57, 32, 50, 28, 44] },
-  { id: 4, name: 'Mutation', theme: 'Energy', gates: [1, 43, 14, 34, 9, 5, 26, 11, 10, 58, 38, 54, 61, 60, 41, 19] },
+  { id: 4, name: 'Mutation', theme: 'Transformation', gates: [1, 43, 14, 34, 9, 5, 26, 11, 10, 58, 38, 54, 61, 60, 41, 19] },
 ]
 
 export const VARIABLE_KEYS = [
@@ -628,33 +439,3 @@ export const VARIABLE_COLOR_LABELS = {
 export const PENTA_GATES       = [31, 8, 33, 7, 1, 13, 15, 2, 46, 5, 14, 29]
 export const LOVE_GATES        = [10, 15, 25, 46]
 export const MATERIAL_CHANNELS = ['21-45', '26-44', '32-54', '37-40']
-
-export const CENTERS = [
-  'Head',
-  'Ajna',
-  'Throat',
-  'G',
-  'Ego',
-  'Solar Plexus',
-  'Spleen',
-  'Sacral',
-  'Root',
-]
-
-export const CENTER_COORDS = {
-  Head:           { x: 250, y: 38, points: '250,8 288,72 212,72' },
-  Ajna:           { x: 250, y: 112, points: '212,88 288,88 288,136 212,136' },
-  Throat:         { x: 250, y: 200, points: '205,170 295,170 295,230 205,230' },
-  G:              { x: 250, y: 306, points: '250,250 305,306 250,362 195,306' },
-  Ego:            { x: 348, y: 332, points: '326,304 384,318 370,366 316,352' },
-  'Solar Plexus': { x: 348, y: 456, points: '314,408 384,408 384,504 314,504' },
-  Spleen:         { x: 152, y: 426, points: '116,378 190,398 178,486 108,468' },
-  Sacral:         { x: 250, y: 448, points: '205,405 295,405 295,491 205,491' },
-  Root:           { x: 250, y: 582, points: '250,520 310,610 190,610' },
-}
-
-export const GATE_CENTERS = Object.fromEntries(
-  Object.entries(CHANNEL_CENTERS).flatMap(([channel, centers]) =>
-    channel.split('-').map((gate, index) => [Number(gate), centers[index]])
-  )
-)

@@ -78,44 +78,7 @@ export const PLANET_ACTIVATION_MEANINGS = {
   Pluto:     'depth, compulsion, and transformational pressure',
 }
 
-export const STREAM_BY_CHANNEL = {
-  '1-8':   'Creative Contribution',
-  '2-14':  'Direction and Resources',
-  '3-60':  'Mutation',
-  '4-63':  'Logic',
-  '5-15':  'Rhythm',
-  '6-59':  'Intimacy and Bonding',
-  '7-31':  'Leadership',
-  '9-52':  'Concentration',
-  '10-20': 'Awakening',
-  '10-34': 'Integration',
-  '10-57': 'Survival Form',
-  '11-56': 'Sensing and Story',
-  '12-22': 'Emotional Expression',
-  '13-33': 'Memory',
-  '16-48': 'Talent',
-  '17-62': 'Organization',
-  '18-58': 'Correction',
-  '19-49': 'Sensitivity and Principles',
-  '20-34': 'Sacral Manifestation',
-  '20-57': 'Intuitive Awareness',
-  '21-45': 'Material Stewardship',
-  '23-43': 'Knowing',
-  '24-61': 'Inner Knowing',
-  '25-51': 'Initiation',
-  '26-44': 'Transmission and Sales',
-  '27-50': 'Care and Values',
-  '28-38': 'Purpose Struggle',
-  '29-46': 'Experience',
-  '30-41': 'Desire and Feeling',
-  '32-54': 'Transformation',
-  '34-57': 'Power and Survival',
-  '35-36': 'Experience and Change',
-  '37-40': 'Community Bargain',
-  '39-55': 'Emotional Spirit',
-  '42-53': 'Cycles',
-  '47-64': 'Abstract Realization',
-}
+export const STREAM_BY_CHANNEL = CHANNEL_STREAMS
 
 const unique    = values => [...new Set(values.filter(Boolean))]
 const round     = (value, places = 4) => Number(value.toFixed(places))
@@ -208,7 +171,7 @@ export const libraryChannelsForGate = gate =>
 export const channelLibraryEntry = channel => {
   const gates   = channel.split('-').map(Number)
   const circuit = CHANNEL_CIRCUITS[channel] || ''
-  const stream  = STREAM_BY_CHANNEL[channel] || CHANNEL_STREAMS[channel] || circuit
+  const stream  = CHANNEL_STREAMS[channel] || circuit
   return {
     channel,
     name: CHANNEL_NAMES[channel] || channel,
@@ -217,7 +180,7 @@ export const channelLibraryEntry = channel => {
     circuit,
     circuitGroup: CHANNEL_CIRCUIT_GROUPS[circuit] || circuit,
     stream,
-    streamTheme: CIRCUIT_STREAM_THEMES[CHANNEL_STREAMS[channel]] || CIRCUIT_STREAM_THEMES[stream] || '',
+    streamTheme: CIRCUIT_STREAM_THEMES[stream] || '',
     summary:     `${CHANNEL_NAMES[channel] || channel} connects gates ${gates.join(' and ')} through ${stream || circuit || 'a defined'} circuitry.`,
   }
 }
