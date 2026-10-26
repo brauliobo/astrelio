@@ -2,7 +2,12 @@ import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
 import { describe, expect, it, vi } from 'vitest'
 import ReadingDocumentView from '../../../src/components/readings/ReadingDocumentView.vue'
+import en from '../../../src/i18n/en.json'
+import ptBR from '../../../src/i18n/pt-BR.json'
 import { CHART_HIGHLIGHT_EVENT } from '../../../src/lib/chart/highlight.js'
+import { lineContent } from '../../../src/lib/human-design/content/index.js'
+import { buildHumanDesignReadingDocument } from '../../../src/lib/human-design/interpretations.js'
+import { referenceChart } from '../human-design/reference-chart.js'
 import {
   humanDesignDocument,
   messages,
@@ -21,6 +26,23 @@ const render = (document, locale, chart = null, slots = {}) => mount(ReadingDocu
 })
 
 describe('ReadingDocumentView', () => {
+  it.each(['en', 'pt-BR'])('resolves Human Design line texts of the chapters in %s', (locale) => {
+    const chart    = referenceChart()
+    const document = buildHumanDesignReadingDocument(chart)
+    const wrapper  = mount(ReadingDocumentView, {
+      props:  { document, chart },
+      global: { plugins: [createI18n({ legacy: false, locale, messages: { en, 'pt-BR': ptBR } })] },
+    })
+    const entries  = wrapper.findAll('[data-reading-line-role]')
+    const ids      = document.chapters.flatMap(chapter => chapter.lineTextIds)
+    const first    = document.facts.lineTexts.find(item => item.id === ids[0])
+
+    expect(entries).toHaveLength(ids.length)
+    expect(entries[0].text()).toContain(lineContent(locale, first.gate, first.line).keynote)
+    expect(entries[0].find('[data-reading-keyword-kind="activation"]').exists()).toBe(true)
+    expect(wrapper.text()).not.toMatch(RAW_TRANSLATION_KEY)
+  })
+
   it.each([
     ['en', tropicalDocument, 'Tropical psychological reading', 'Sun in Aries'],
     ['pt-BR', tropicalDocument, 'Leitura psicológica tropical', 'Sol em Áries'],

@@ -6,6 +6,7 @@ import {
   normalizeHighlight,
   wheelHighlight,
 } from '../chart/highlight.js'
+import { lineContent } from '../human-design/content/index.js'
 
 const BODY_PARAMS = new Set([
   'a',
@@ -467,10 +468,30 @@ const chapterRows = (chapter, evidenceById, modality, t) => {
   }, 0, evidenceById, modality, t)].filter(Boolean)
 }
 
-const normalizeChapters = (document, evidenceById, modality, t) => (document.chapters || []).map(chapter => ({
-  id:    chapter.id,
-  title: translateReadingToken(chapter.title, t),
-  items: chapterRows(chapter, evidenceById, modality, t),
+/** A gate line from `facts.lineTexts`: a keyword-linked heading, the activation caption and the line prose of the locale. */
+const lineTextEntry = (fact, evidenceById, modality, t, locale) => {
+  const heading  = `${fact.gate}.${fact.line} ${translateReadingToken(fact.label, t)}`
+  const keywords = evidenceKeywords(fact.evidenceIds, evidenceById, modality, t)
+  return {
+    id:      fact.id,
+    role:    fact.role,
+    caption: translateReadingToken({ key: 'human_design.reading.activations.label', params: { layer: fact.layer, planet: fact.planet, gate: fact.gate, line: fact.line } }, t),
+    heading: { id: fact.id, text: heading, keywords, segments: [{ text: heading, keyword: keywords[0] || null }] },
+    ...lineContent(locale, fact.gate, fact.line),
+  }
+}
+
+const chapterLineTexts = (chapter, document, evidenceById, modality, t, locale) => {
+  const facts = new Map((document.facts?.lineTexts || []).map(fact => [fact.id, fact]))
+  return (chapter.lineTextIds || []).map(id => facts.get(id)).filter(Boolean)
+    .map(fact => lineTextEntry(fact, evidenceById, modality, t, locale))
+}
+
+const normalizeChapters = (document, evidenceById, modality, t, locale) => (document.chapters || []).map(chapter => ({
+  id:        chapter.id,
+  title:     translateReadingToken(chapter.title, t),
+  items:     chapterRows(chapter, evidenceById, modality, t),
+  lineTexts: chapterLineTexts(chapter, document, evidenceById, modality, t, locale),
 })).filter(chapter => chapter.title && chapter.items.length)
 
 const normalizeGuidance = (document, evidenceById, modality, t) => {
@@ -487,7 +508,7 @@ const normalizeGuidance = (document, evidenceById, modality, t) => {
   return output
 }
 
-export const normalizeReadingDocument = (document, t) => {
+export const normalizeReadingDocument = (document, t, locale = 'en') => {
   if (!document) return null
   const modality     = modalityFor(document)
   const evidenceById = new Map((document.evidence || []).map(evidence => [evidence.id, evidence]))
@@ -499,7 +520,7 @@ export const normalizeReadingDocument = (document, t) => {
     title:      translateReadingToken(titleToken, t),
     themes:     summary.themes,
     prominence: summary.prominence,
-    chapters:   normalizeChapters(document, evidenceById, modality, t),
+    chapters:   normalizeChapters(document, evidenceById, modality, t, locale),
     guidance,
     caveats:    (document.caveats || []).map(token => translateReadingToken(token, t)).filter(Boolean),
   }

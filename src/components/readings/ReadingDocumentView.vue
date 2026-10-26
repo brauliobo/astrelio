@@ -16,9 +16,9 @@ const props = defineProps({
   chart:    { type: Object, default: null },
 })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const slots = useSlots()
-const reading = computed(() => normalizeReadingDocument(props.document, t))
+const reading = computed(() => normalizeReadingDocument(props.document, t, locale.value))
 const hoverHighlight  = ref(null)
 const pinnedHighlight = ref(null)
 const pinnedAnchor    = ref(null)
@@ -134,6 +134,20 @@ article.reading-document.grid.gap-6(v-if='reading' data-testid='reading-document
               @clear-hover='clearHoverKeyword'
               @toggle-pin='togglePinnedKeyword'
             )
+          section.reading-line-texts(v-if='chapter.lineTexts.length' :data-testid='`reading-line-texts-${chapter.id}`')
+            article.reading-line-text(v-for='line in chapter.lineTexts' :key='line.id' :data-reading-line-role='line.role')
+              .text-sm.font-semibold.text-slate-100(role='heading' aria-level='4')
+                ReadingText(
+                  :row='line.heading'
+                  :active-highlight='activeHighlight'
+                  :pinned-highlight='pinnedHighlight'
+                  @hover='setHoverKeyword'
+                  @clear-hover='clearHoverKeyword'
+                  @toggle-pin='togglePinnedKeyword'
+                )
+              p.text-xs.text-slate-400 {{ line.caption }}
+              p.mt-2.text-sm.font-medium.text-amber-200 {{ line.keynote }}
+              p.mt-1.text-sm.leading-6.text-slate-300 {{ line.text }}
         article.reading-reference-chart.rounded.p-3(
           v-if='referencePlacement === "chapter" && chapter === reading.chapters[0]'
           data-testid='reading-reference-chart'
@@ -203,6 +217,17 @@ article.reading-document.grid.gap-6(v-if='reading' data-testid='reading-document
   max-width: 320px;
   pointer-events: auto;
   width: 100%;
+}
+
+.reading-line-texts {
+  display: grid;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.reading-line-text {
+  border-left: 2px solid rgb(148 163 184 / 0.45);
+  padding-left: 0.75rem;
 }
 
 @media (min-width: 1024px) {
