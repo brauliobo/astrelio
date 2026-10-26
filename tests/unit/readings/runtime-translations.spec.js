@@ -64,12 +64,14 @@ const humanDesignChart = () => deriveHumanDesignGraph({
   lat:        0,
   lon:        0,
   personality: {
-    Sun:   activation('Sun', 23, 6, 2, 5, 1),
-    Earth: activation('Earth', 43, 6, 2, 5, 1),
+    Sun:       activation('Sun', 23, 6, 2, 5, 1),
+    Earth:     activation('Earth', 43, 6, 2, 5, 1),
+    NorthNode: activation('NorthNode', 27, 1, 2, 4, 3),
   },
   design: {
-    Sun:   activation('Sun', 23, 2, 3, 3, 5),
-    Earth: activation('Earth', 43, 2, 3, 3, 5),
+    Sun:       activation('Sun', 23, 2, 3, 3, 5),
+    Earth:     activation('Earth', 43, 2, 3, 3, 5),
+    NorthNode: activation('NorthNode', 24, 2, 4, 5, 1),
   },
 })
 

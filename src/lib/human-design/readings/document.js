@@ -1,5 +1,7 @@
 import { CENTERS, HD_PLANETS } from '../constants.js'
 import { humanDesignValueKey } from '../labels.js'
+import { chapterSections, lineTextFacts } from './sections.js'
+import { sensitivityFacts } from './sensitivity-facts.js'
 
 export const HUMAN_DESIGN_READING_SCHEMA  = 'human-design.reading-document'
 export const HUMAN_DESIGN_READING_VERSION = 1
@@ -60,10 +62,12 @@ const activationRows = chart => ['personality', 'design'].flatMap(layer =>
 
 const evidenceRecord = (id, kind, path, facts) => ({ id, kind, path, facts })
 
-const chapter = (id, evidenceIds, params = {}) => ({
+const chapter = (id, evidenceIds, params = {}, { items = [], lineTextIds = [] } = {}) => ({
   id,
   title:    token(`human_design.reading.chapters.${id}.title`),
   overview: token(`human_design.reading.chapters.${id}.overview`, params),
+  items:    [{ id: `${id}-overview`, content: token(`human_design.reading.chapters.${id}.overview`, params), evidenceIds }, ...items],
+  lineTextIds,
   evidenceIds,
   strengths: [token(`human_design.reading.strengths.${id}`, params)],
   challenges: [token(`human_design.reading.challenges.${id}`, params)],
@@ -215,6 +219,7 @@ const crossFacts = chart => {
   return {
     geometry: canonicalValue('crossGeometry', cross.geometry),
     quarter:  cross.quarter?.id || null,
+    quarterKey: slug(cross.quarter?.name),
     gates:    [...(cross.gates || [])].map(Number),
     roles:    (cross.roles || cross.gateDetails || []).map(role => ({
       id:    role.role || role.key,
@@ -335,7 +340,7 @@ const prominenceFacts = (gates, activations, channels) => {
   return [...repeatedGates, ...prominentLines, ...prominentCircuits].slice(0, 4)
 }
 
-const readingChapters = ({ mechanics, profile, definition, centers, channels, gates, activations, cross, variables }) => {
+const readingChapters = ({ mechanics, profile, definition, centers, channels, gates, activations, cross, variables, sections }) => {
   const definedCenterIds = centers.filter(center => center.defined).map(center => `center:${center.id}`)
   const openCenterIds    = centers.filter(center => !center.defined).map(center => `center:${center.id}`)
   const channelIds       = channels.map(channel => `channel:${channel.id}`)
@@ -347,36 +352,36 @@ const readingChapters = ({ mechanics, profile, definition, centers, channels, ga
       authority: mechanics.authority.value,
       signature: mechanics.signature.value,
       notSelf:   mechanics.notSelf.value,
-    }),
+    }, sections.decision_making),
     chapter('energy_and_expression', [...definedCenterIds, ...channelIds], {
       definedCenters:    definedCenterIds.length,
       definedCenterNames: centers.filter(center => center.defined).map(center => center.id),
       channels:          channels.length,
       channelNames:      channels.map(channel => channel.id),
-    }),
+    }, sections.energy_and_expression),
     chapter('identity_and_role', ['profile', ...(cross ? ['incarnation-cross'] : [])], {
       personalityLine: profile.personalityLine,
       designLine:      profile.designLine,
-    }),
+    }, sections.identity_and_role),
     chapter('conditioning_and_openness', openCenterIds, {
       openCenters:    openCenterIds.length,
       openCenterNames: centers.filter(center => !center.defined).map(center => center.id),
-    }),
+    }, sections.conditioning_and_openness),
     chapter('relationships_and_circuitry', channelIds, {
       channels:     channels.length,
       channelNames: channels.map(channel => channel.id),
-    }),
-    chapter('life_theme', cross ? ['incarnation-cross'] : [], { available: Boolean(cross) }),
+    }, sections.relationships_and_circuitry),
+    chapter('life_theme', cross ? ['incarnation-cross'] : [], { available: Boolean(cross) }, sections.life_theme),
     chapter('variables_and_transference', variables.map(variable => `variable:${variable.id}`), {
       variables:     variables.length,
       variableNames: variables.map(variable => variable.id),
-    }),
+    }, sections.variables_and_transference),
     chapter('gates_and_lines', activationIds, {
       gates:       gates.length,
       gateNames:   gates.map(gate => gate.gate),
       activations: activations.length,
-    }),
-    chapter('integration', ['definition', ...definedCenterIds], { definition: definition.value }),
+    }, sections.gates_and_lines),
+    chapter('integration', ['definition', ...definedCenterIds], { definition: definition.value }, sections.integration),
   ].filter(item => {
     if (item.id === 'life_theme') return Boolean(cross)
     if (item.id === 'variables_and_transference') return variables.length > 0
@@ -403,7 +408,11 @@ export const buildHumanDesignReadingDocument = chart => {
   const cross       = crossFacts(chart)
   const variables   = variableFacts(chart)
   const evidence    = buildEvidence({ chart, mechanics, profile, centers, channels, gates, activations, cross, variables })
-  const chapters    = readingChapters({ mechanics, profile, definition, centers, channels, gates, activations, cross, variables })
+  const lineTexts   = lineTextFacts(gates, activations)
+  const sensitivity = sensitivityFacts(chart)
+  const sections    = chapterSections({ chart, mechanics, definition, channels, cross, lineTexts })
+  const chapters    = readingChapters({ mechanics, profile, definition, centers, channels, gates, activations, cross, variables, sections })
+  const caveats     = [EXACT_TIME_CAVEAT, ...(sensitivity.flagged ? [sensitivity.note] : [])]
   const expectedActivationCount = activationRows(chart).length
 
   return {
@@ -451,6 +460,11 @@ export const buildHumanDesignReadingDocument = chart => {
       activations,
       incarnationCross: cross,
       variables,
+      profileInfo:      chart.profileInfo,
+      centerStates:     chart.centerStates,
+      variableDetails:  chart.variableDetails,
+      lineTexts,
+      sensitivity,
     },
     summary: {
       themes: [
@@ -467,7 +481,7 @@ export const buildHumanDesignReadingDocument = chart => {
       challenges: chapters.flatMap(item => item.challenges),
       practices:  chapters.flatMap(item => item.practices),
     },
-    caveats: [EXACT_TIME_CAVEAT],
+    caveats,
     evidence,
   }
 }
