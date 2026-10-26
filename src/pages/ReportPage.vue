@@ -22,6 +22,7 @@ import AspectTable from '../components/chart/AspectTable.vue'
 import Insight from '../components/chart/Insight.vue'
 import Wheel from '../components/chart/Wheel.vue'
 import PlanetList from '../components/chart/PlanetList.vue'
+import Bodygraph from '../components/human-design/bodygraph/Bodygraph.vue'
 import HumanDesignWheel from '../components/human-design/Wheel.vue'
 import MapToolbar from '../components/map/MapToolbar.vue'
 import ReadingDocumentView from '../components/readings/ReadingDocumentView.vue'
@@ -308,6 +309,7 @@ section.report-page(ref='reportRoot' data-testid='report-page')
               :visual-theme='settings.theme'
               :planet-glyph-renderer='settings.planetGlyphRenderer'
             )
+              Bodygraph(:chart='humanDesignChart' size='compact' :animate='false')
         section.report-section.report-reading(v-if='readingDocument' data-testid='report-interpretations-section')
           ReadingDocumentView(:document='readingDocument')
 </template>

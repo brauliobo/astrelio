@@ -196,11 +196,17 @@ export const skyLongitudeForPosition = ({ longitude, mode = 'astrology', wheelSh
     ? skyLongitudeForHumanDesignLongitude(longitude)
     : norm360(longitude + wheelShift)
 
-const chartSelector = mode => mode === 'humanDesign' ? '[data-testid="bodygraph-svg"]' : CHART_SELECTOR
+const HD_WHEEL_SELECTOR     = '[data-testid="mandala-svg"]'
+const HD_BODYGRAPH_SELECTOR = '[data-testid="bodygraph-svg"]'
+
+// The sky orbits the mandala wheel; a page showing only bodygraphs falls back to the first one.
+const chartElement = mode => mode === 'humanDesign'
+  ? document.querySelector(HD_WHEEL_SELECTOR) || document.querySelector(HD_BODYGRAPH_SELECTOR)
+  : document.querySelector(CHART_SELECTOR)
 
 const chartBounds = (canvas, mode) => {
   const rect  = canvas.getBoundingClientRect()
-  const chart = document.querySelector(chartSelector(mode))?.getBoundingClientRect()
+  const chart = chartElement(mode)?.getBoundingClientRect()
 
   if (!chart || chart.width < 40 || chart.height < 40) {
     const radius = Math.min(rect.width, rect.height) * 0.44

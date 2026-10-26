@@ -74,7 +74,8 @@ test.describe('Report', () => {
     await page.goto('/#/report?modality=human-design')
 
     await expect(page.getByTestId('human-design-print-report')).toBeVisible()
-    await expect(page.getByTestId('bodygraph-svg')).toBeVisible()
+    await expect(page.getByTestId('rave-mandala')).toBeVisible()
+    await expect(page.getByTestId('rave-mandala').getByTestId('bodygraph-chart')).toBeVisible()
     await expect(page.getByTestId('reading-document-view')).toBeVisible()
     await expect(page.getByTestId('report-print')).toBeVisible()
   })
