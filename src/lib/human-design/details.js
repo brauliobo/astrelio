@@ -1,6 +1,8 @@
 import { computeChart } from '../astro/ephemeris.js'
 import { jdToMs, msToJd } from '../astro/timezones.js'
-import { activationCode, activationsForChart, channelKey } from './activations.js'
+import { activationCode, activationsForChart, CELL_ARC_DEGREES, channelKey, hdActivationAt } from './activations.js'
+import { centerStates } from './centers.js'
+import { lifeCycles } from './cycles.js'
 import {
   activationLibraryEntry,
   channelLibraryEntry,
@@ -34,6 +36,9 @@ import {
   VARIABLE_COLOR_LABELS,
   VARIABLE_KEYS,
 } from './constants.js'
+import { profileFor } from './profiles.js'
+import { sensitivity } from './sensitivity.js'
+import { ARROWS, orientationForTone, pairedColor, variablesForChart } from './variables.js'
 
 const sortedUnique = values => [...new Set(values)].sort((a, b) => {
   if (typeof a === 'number' && typeof b === 'number') return a - b
@@ -214,8 +219,6 @@ export const deriveIncarnationCross = (chart) => {
   }
 }
 
-const orientationForTone = tone => tone <= 3 ? 'left' : 'right'
-
 export const deriveHumanDesignVariables = (chart) => {
   if (!chart) return []
 
@@ -223,6 +226,7 @@ export const deriveHumanDesignVariables = (chart) => {
     const activation  = chart[variable.layer]?.[variable.planet]
     const orientation = activation ? orientationForTone(activation.tone) : 'unknown'
     const labels      = VARIABLE_COLOR_LABELS[variable.id] || []
+    const paired      = activation ? labels[pairedColor(activation.color) - 1] : ''
     return {
       ...variable,
       activation,
@@ -231,7 +235,8 @@ export const deriveHumanDesignVariables = (chart) => {
       tone:         activation?.tone || null,
       base:         activation?.base || null,
       colorLabel:   activation ? labels[activation.color - 1] || `Color ${activation.color}` : '',
-      transference: activation ? labels[(activation.color + 2) % 6] || '' : '',
+      transference: variable.id === 'motivation' ? paired : '',
+      distraction:  variable.id === 'perspective' ? paired : '',
       code:         activation ? activationCode(activation) : '',
     }
   })
@@ -310,61 +315,63 @@ export const buildHumanDesignTransitChart = (dateMs = Date.now(), lat = 0, lon =
   }
 }
 
-const activationChanged = (left, right, level = 'line') => {
-  if (!left || !right) return false
-  if (left.gate !== right.gate) return true
-  if (level === 'gate') return false
-  if (level === 'base') return left.base !== right.base
-  if (level === 'tone') return left.tone !== right.tone || left.base !== right.base
-  if (level === 'color') return left.color !== right.color || left.tone !== right.tone || left.base !== right.base
-  return left.line !== right.line
+const CELL_LEVELS = Object.keys(CELL_ARC_DEGREES)
+
+const activationChanged = (left, right, level = 'line') =>
+  CELL_LEVELS.slice(0, CELL_LEVELS.indexOf(level) + 1).some(field => left[field] !== right[field])
+
+// Upper bound on apparent speed (degrees/day) so a scan step can never skip a whole cell.
+const MAX_SPEED_DEG_PER_DAY = {
+  Sun: 1.1, Earth: 1.1, Moon: 16, Mercury: 2.4, Venus: 1.3, Mars: 0.8, Jupiter: 0.3,
+  Saturn: 0.15, Uranus: 0.08, Neptune: 0.05, Pluto: 0.07, NorthNode: 3, SouthNode: 3,
 }
 
-const findNextActivationChange = ({ startJd, lat, lon, planet, level = 'line' }) => {
-  const start = transitChartForJd(startJd, lat, lon).personality[planet]
-  if (!start) return null
+const SCAN_HORIZON_DAYS = { gate: 3650, line: 1000, color: 400, tone: 400, base: 400 }
 
-  let step = {
-    gate:  1,
-    line:  1 / 12,
-    color: 1 / 72,
-    tone:  1 / 288,
-    base:  1 / 720,
-  }[level] || 1 / 12
-  let cursor  = startJd + step
-  let current = transitChartForJd(cursor, lat, lon).personality[planet]
-  let guard   = 0
+const findNextActivationChange = ({ startJd, planet, level = 'line' }) => {
+  const start   = hdActivationAt(planet, startJd)
+  const step    = (CELL_ARC_DEGREES[level] / 2) / MAX_SPEED_DEG_PER_DAY[planet]
+  const changed = jd => activationChanged(start, hdActivationAt(planet, jd), level)
+  const endJd   = startJd + SCAN_HORIZON_DAYS[level]
 
-  const maxGuards = level === 'gate' ? 480 : 720
-  while (!activationChanged(start, current, level) && guard < maxGuards) {
-    cursor += step
-    current = transitChartForJd(cursor, lat, lon).personality[planet]
-    guard += 1
-  }
+  let low = startJd
+  while (low < endJd && !changed(low + step)) low += step
+  if (low >= endJd) return null
 
-  if (!activationChanged(start, current, level)) return null
-
-  let low  = cursor - step
-  let high = cursor
-  for (let i = 0; i < 24; i += 1) {
-    const mid           = (low + high) / 2
-    const midActivation = transitChartForJd(mid, lat, lon).personality[planet]
-    if (activationChanged(start, midActivation, level)) high = mid
+  let high = low + step
+  for (let i = 0; i < 40; i += 1) {
+    const mid = (low + high) / 2
+    if (changed(mid)) high = mid
     else low = mid
   }
 
-  const next = transitChartForJd(high, lat, lon).personality[planet]
   return {
     planet,
     level,
     from:   start,
-    to:     next,
+    to:     hdActivationAt(planet, high),
     jdUt:   high,
     dateMs: jdToMs(high),
   }
 }
 
-export const humanDesignTransitConnection = (natalChart, transitChart, { lat = natalChart?.lat || 0, lon = natalChart?.lon || 0 } = {}) => {
+const describeChange = change => ({
+  ...change,
+  fromCode: activationCode(change.from),
+  toCode:   activationCode(change.to),
+  fromLine: lineLibraryEntry(change.from.gate, change.from.line),
+  toLine:   lineLibraryEntry(change.to.gate, change.to.line),
+  fromGate: gateLibraryEntry(change.from.gate),
+  toGate:   gateLibraryEntry(change.to.gate),
+})
+
+const nextChangesByLevel = (startJd) =>
+  Object.fromEntries(CELL_LEVELS.map(level => [
+    level,
+    HD_PLANETS.map(planet => findNextActivationChange({ startJd, planet, level })).filter(Boolean).map(describeChange),
+  ]))
+
+export const humanDesignTransitConnection = (natalChart, transitChart) => {
   if (!natalChart || !transitChart) return null
 
   const natalGates          = new Set(natalChart.gates || [])
@@ -382,6 +389,8 @@ export const humanDesignTransitConnection = (natalChart, transitChart, { lat = n
   }
 
   const startJd = transitChart.birthJd || msToJd(transitChart.dateMs || Date.now())
+  const changes = nextChangesByLevel(startJd)
+
   return {
     activatedNatalGates: sortedUnique(activatedNatalGates),
     completedChannels:   sortedUnique(completedChannels),
@@ -398,44 +407,10 @@ export const humanDesignTransitConnection = (natalChart, transitChart, { lat = n
         lineDetail:    lineLibraryEntry(activation.gate, activation.line),
         mandala:       mandalaDegreeDetailForActivation(activation),
       })),
-    nextChanges: ['line', 'gate'].flatMap(level =>
-      HD_PLANETS.map(planet => findNextActivationChange({ startJd, lat, lon, planet, level }))
-    )
-      .filter(Boolean)
-      .map(change => ({
-        ...change,
-        fromCode: activationCode(change.from),
-        toCode:   activationCode(change.to),
-        fromLine: lineLibraryEntry(change.from.gate, change.from.line),
-        toLine:   lineLibraryEntry(change.to.gate, change.to.line),
-      })),
-    nextLineChanges: HD_PLANETS.map(planet => findNextActivationChange({ startJd, lat, lon, planet, level: 'line' }))
-      .filter(Boolean)
-      .map(change => ({
-        ...change,
-        fromCode: activationCode(change.from),
-        toCode:   activationCode(change.to),
-        fromLine: lineLibraryEntry(change.from.gate, change.from.line),
-        toLine:   lineLibraryEntry(change.to.gate, change.to.line),
-      })),
-    nextGateChanges: HD_PLANETS.map(planet => findNextActivationChange({ startJd, lat, lon, planet, level: 'gate' }))
-      .filter(Boolean)
-      .map(change => ({
-        ...change,
-        fromCode: activationCode(change.from),
-        toCode:   activationCode(change.to),
-        fromGate: gateLibraryEntry(change.from.gate),
-        toGate:   gateLibraryEntry(change.to.gate),
-      })),
-    nextColorToneBaseChanges: ['color', 'tone', 'base'].flatMap(level =>
-      HD_PLANETS.map(planet => findNextActivationChange({ startJd, lat, lon, planet, level }))
-    )
-      .filter(Boolean)
-      .map(change => ({
-        ...change,
-        fromCode: activationCode(change.from),
-        toCode:   activationCode(change.to),
-      })),
+    nextChanges:              [...changes.line, ...changes.gate],
+    nextLineChanges:          changes.line,
+    nextGateChanges:          changes.gate,
+    nextColorToneBaseChanges: [...changes.color, ...changes.tone, ...changes.base],
     todayThemes: sortedUnique([...transitGates]).map(gate => gateLibraryEntry(gate).summary),
   }
 }
@@ -483,17 +458,27 @@ export const humanDesignTeamAnalysis = (charts = []) => {
   }
 }
 
+export const lifeCyclesForChart = chart => lifeCycles(chart.birthJd)
+
+export const sensitivityForChart = (chart, options) => sensitivity(chart, options)
+
+const hasVariableBodies = chart => ARROWS.every(arrow => chart[arrow.layer]?.[arrow.body])
+
 export const enrichHumanDesignChart = chart => {
   if (!chart) return null
   const mechanics = TYPE_MECHANICS[chart.type] || {}
   const enriched  = {
     ...chart,
-    strategy:  mechanics.strategy || '',
-    signature: mechanics.signature || '',
-    notSelf:   mechanics.notSelf || '',
-    aura:      mechanics.aura || '',
+    strategy:     mechanics.strategy || '',
+    signature:    mechanics.signature || '',
+    notSelf:      mechanics.notSelf || '',
+    notSelfTheme: mechanics.notSelf || '',
+    aura:         mechanics.aura || '',
   }
+  enriched.profileInfo            = profileFor(chart.personality.Sun?.line, chart.design.Sun?.line) ?? null
+  enriched.centerStates           = centerStates(enriched)
   enriched.variables              = deriveHumanDesignVariables(enriched)
+  enriched.variableDetails        = hasVariableBodies(enriched) ? variablesForChart(enriched) : null
   enriched.incarnationCross       = deriveIncarnationCross(enriched)
   enriched.incarnationCrossDetail = enriched.incarnationCross
   enriched.details                = deriveHumanDesignDetails(enriched)

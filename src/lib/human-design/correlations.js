@@ -394,30 +394,23 @@ export const variableConsistencyChecks = (chart, opts = {}) => {
     right:   variables.filter(variable => variable.orientation === 'right').length,
     unknown: variables.filter(variable => !['left', 'right'].includes(variable.orientation)).length,
   }
-  const checks = variables.map(variable => {
-    const expected = variable.tone ? (variable.tone <= 3 ? 'left' : 'right') : 'unknown'
-    return {
-      id:                  variable.id,
-      label:               variable.label,
-      planet:              variable.planet,
-      layer:               variable.layer,
-      color:               variable.color,
-      tone:                variable.tone,
-      base:                variable.base,
-      orientation:         variable.orientation,
-      expectedOrientation: expected,
-      consistent:          variable.orientation === expected,
-      note:                expected === 'unknown'
-        ? 'Tone is unavailable, so orientation cannot be checked.'
-        : `Tone ${variable.tone} maps to ${expected} orientation.`,
-    }
-  })
+  const checks = variables.map(variable => ({
+    id:          variable.id,
+    label:       variable.label,
+    planet:      variable.planet,
+    layer:       variable.layer,
+    color:       variable.color,
+    tone:        variable.tone,
+    base:        variable.base,
+    orientation: variable.orientation,
+    fragile:     unknownTime || !variable.tone,
+  }))
 
   return {
     requiresMinuteAccuracy:    true,
     birthTimePrecision:        precision,
     birthTimePrecisionMinutes: Number.isFinite(precisionMinutes) ? precisionMinutes : null,
-    reliable:                  !unknownTime && checks.every(check => check.consistent),
+    reliable:                  !checks.some(check => check.fragile),
     orientationPattern:        variables.map(variable => {
       if (variable.orientation === 'left') return 'L'
       if (variable.orientation === 'right') return 'R'
@@ -425,15 +418,9 @@ export const variableConsistencyChecks = (chart, opts = {}) => {
     }).join(''),
     orientationCounts,
     checks,
-    variables: checks.map(check => ({
-      ...check,
-      fragile: unknownTime || check.expectedOrientation === 'unknown',
-    })),
-    warnings: [
-      unknownTime ? 'Variable color, tone, and base are time-sensitive; use exact birth time before treating this analysis as stable.' : '',
-      checks.some(check => !check.consistent) ? 'One or more variable arrows do not match the tone orientation rule.' : '',
-    ].filter(Boolean),
-    summary: `Variables currently show ${orientationCounts.left} left and ${orientationCounts.right} right orientations.`,
+    variables: checks,
+    warnings:  unknownTime ? ['Variable color, tone, and base are time-sensitive; use exact birth time before treating this analysis as stable.'] : [],
+    summary:   `Variables currently show ${orientationCounts.left} left and ${orientationCounts.right} right orientations.`,
   }
 }
 
